@@ -1,0 +1,13 @@
+/* Scale tokens plus the two literal values the product actually leans on:
+   6px (inputs, tables, cards) and 4px / rounded-xs (buttons, checkbox). */
+:root{
+  --radius-xs:4px;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --radius-full:9999px;
+  --radius-control:6px;   /* input, table wrapper, dropdown, card */
+  --radius-button:4px;    /* Button base is rounded-xs */
+  --radius-glass:16px;    /* home/marketing surface cards */
+  --radius-glass-bar:20px;/* home floating toolbar */
+}
