@@ -13,3 +13,6 @@ create policy "mapstone_public_rw"
   for all
   using (true)
   with check (true);
+
+-- Realtime so other browsers pick up changes
+alter publication supabase_realtime add table public.mapstone_boards;
