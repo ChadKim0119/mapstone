@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -18,7 +20,7 @@
   <link rel="stylesheet" href="_ds/ucmp-design-system-ec5463fc-a92f-48a5-9f49-32417bbef2fc/tokens/base.css">
   <link rel="stylesheet" href="_ds/ucmp-design-system-ec5463fc-a92f-48a5-9f49-32417bbef2fc/styles.css">
   <script src="_ds/ucmp-design-system-ec5463fc-a92f-48a5-9f49-32417bbef2fc/_ds_bundle.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <script src="./vendor/html-to-image.js"></script>
   <style>
     html, body { margin: 0; background: #fff; }
     * { box-sizing: border-box; }
@@ -93,7 +95,7 @@
                   <div style="position:absolute;left:-6px;bottom:0;width:15px;height:15px;border-radius:9999px;border:3px solid;background:#fff;border-color:{{ p.color }}"></div>
                   <div style="position:absolute;right:-6px;bottom:0;width:15px;height:15px;border-radius:9999px;border:3px solid;background:#fff;border-color:{{ p.color }}"></div>
                   <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                    <input value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" autofocus="true" style="position:absolute;left:0;top:-4px;min-width:120px;border:1px solid #000;border-radius:4px;padding:2px 6px;font-size:13px;font-weight:700;background:#fff;outline:none;z-index:3">
+                    <input value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:0;top:-4px;min-width:120px;border:1px solid #000;border-radius:4px;padding:2px 6px;font-size:13px;font-weight:700;background:#fff;outline:none;z-index:3">
                   </sc-if>
                   <sc-if value="{{ p.showLabel }}" hint-placeholder-val="{{ true }}">
                     <div style="position:absolute;left:50%;bottom:13px;transform:translateX(-50%);white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.01em;padding:0 6px;background:#fff;pointer-events:none;color:{{ p.color }}">{{ p.label }}</div>
@@ -116,7 +118,7 @@
                   <div style="position:absolute;left:0;bottom:2px;width:9px;height:9px;border-radius:9999px;background:{{ a.color }}"></div>
                   <div style="position:absolute;right:0;bottom:1px;width:0;height:0;border-top:5.5px solid transparent;border-bottom:5.5px solid transparent;border-left-width:10px;border-left-style:solid;border-left-color:{{ a.color }}"></div>
                   <sc-if value="{{ a.editing }}" hint-placeholder-val="{{ false }}">
-                    <input value="{{ a.label }}" data-id="{{ a.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" autofocus="true" style="position:absolute;left:0;top:-6px;min-width:180px;border:1px solid #000;border-radius:4px;padding:2px 6px;font-size:13px;font-weight:600;background:#fff;outline:none;z-index:3">
+                    <input value="{{ a.label }}" data-id="{{ a.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:0;top:-6px;min-width:180px;border:1px solid #000;border-radius:4px;padding:2px 6px;font-size:13px;font-weight:600;background:#fff;outline:none;z-index:3">
                   </sc-if>
                   <sc-if value="{{ a.showLabel }}" hint-placeholder-val="{{ true }}">
                     <div style="position:absolute;left:50%;bottom:11px;transform:translateX(-50%);white-space:nowrap;font-size:13px;font-weight:600;letter-spacing:-.01em;pointer-events:none;color:{{ a.color }}">{{ a.label }}</div>
@@ -137,7 +139,7 @@
                 <div data-id="{{ m.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:24px;padding-right:6px;white-space:nowrap;cursor:grab;left:{{ m.left }};top:{{ m.top }}">
                   <span style="font-size:13px;line-height:1;margin-left:-6px;color:{{ m.color }}">{{ m.glyph }}</span>
                   <sc-if value="{{ m.editing }}" hint-placeholder-val="{{ false }}">
-                    <input value="{{ m.label }}" data-id="{{ m.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" autofocus="true" style="min-width:200px;border:1px solid #000;border-radius:4px;padding:2px 6px;font-size:13px;font-weight:600;background:#fff;outline:none">
+                    <input value="{{ m.label }}" data-id="{{ m.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:200px;border:1px solid #000;border-radius:4px;padding:2px 6px;font-size:13px;font-weight:600;background:#fff;outline:none">
                   </sc-if>
                   <sc-if value="{{ m.showLabel }}" hint-placeholder-val="{{ true }}">
                     <span style="font-size:13px;font-weight:600;letter-spacing:-.01em;pointer-events:none;color:{{ m.color }}">{{ m.label }}</span>
@@ -151,7 +153,7 @@
               <sc-for list="{{ row.memos }}" as="t" hint-placeholder-count="1">
                 <div data-id="{{ t.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" style="position:absolute;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1);padding:8px 10px;cursor:grab;overflow:hidden;left:{{ t.left }};width:{{ t.width }};top:{{ t.top }};height:{{ t.height }}">
                   <sc-if value="{{ t.editing }}" hint-placeholder-val="{{ false }}">
-                    <textarea value="{{ t.label }}" data-id="{{ t.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" autofocus="true" style="width:100%;height:100%;border:none;background:transparent;font-size:13px;line-height:1.5;color:var(--color-text-neutral-5);resize:none;outline:none"></textarea>
+                    <textarea value="{{ t.label }}" data-id="{{ t.id }}" onChange="{{ onLabelInput }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:13px;line-height:1.5;color:var(--color-text-neutral-5);resize:none;outline:none"></textarea>
                   </sc-if>
                   <sc-if value="{{ t.showLabel }}" hint-placeholder-val="{{ true }}">
                     <div style="font-size:13px;line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ t.color }}">{{ t.label }}</div>
@@ -369,15 +371,19 @@ class Component extends DCLogic {
   componentWillUnmount() { document.removeEventListener('keydown', this._key); this.stopDrag(); }
   componentDidUpdate() { this.save(); }
   save() {
+    const json=this.snapshot();
+    if (json===this._savedData || json===this._queuedData) return;
+    this._queuedData=json;
     clearTimeout(this._t);
     this._t = setTimeout(() => {
       const s = this.state;
       try {
         window.localStorage.setItem(this.KEY, JSON.stringify({ title: s.title, cfg: s.cfg, rows: s.rows, items: s.items, now: s.now }));
+        this._savedData=this.snapshot(); this._queuedData=null;
         const d = new Date();
         const p = (n) => String(n).padStart(2, '0');
         this.setState({ saved: '자동 저장 ' + p(d.getHours()) + ':' + p(d.getMinutes()) });
-      } catch (err) { /* ignore */ }
+      } catch (err) { this.setState({ saved: "저장 실패 · 브라우저 저장 공간을 확인하세요" }); }
     }, 500);
   }
 

@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+.env*
+.mapstone-admin-key
+.mapstone-connection
+__pycache__/
+test-results/
