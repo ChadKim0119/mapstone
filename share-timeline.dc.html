@@ -36,6 +36,7 @@
   <script src="_ds/ucmp-design-system-ec5463fc-a92f-48a5-9f49-32417bbef2fc/_ds_bundle.js"></script>
   <script src="./vendor/html-to-image.js"></script>
   <script src="./vendor/pptxgen.js"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23181a1b'/%3E%3Crect x='5.5' y='7.5' width='13' height='4.6' rx='2.3' fill='%23ffffff'/%3E%3Crect x='9.5' y='13.7' width='17' height='4.6' rx='2.3' fill='%23e30084'/%3E%3Crect x='5.5' y='19.9' width='10' height='4.6' rx='2.3' fill='%23ffffff' opacity='.5'/%3E%3C/svg%3E">
   <style>
     html, body { margin: 0; background: #fff; }
     [data-app] { -webkit-user-select: none; user-select: none; }
@@ -84,7 +85,8 @@
       <span style="width:1px;height:22px;background:var(--color-border-neutral-2);margin:0 2px"></span>
       <button onClick="{{ openClear }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:#7c1712;cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 12.5h9L17.5 7"></path></svg>{{ L.clearAll }}</button>
       <span style="flex:1"></span>
-      <button onClick="{{ openHelp }}" title="{{ L.helpT }}" style="width:32px;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:9999px;background:#fff;font-size:14px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">?</button>
+      <button onClick="{{ openHelp }}" title="{{ L.helpTip }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border:1px solid #181a1b;border-radius:4px;background:#181a1b;font-size:13px;font-weight:700;color:#fff;cursor:pointer" style-hover="background:#33383c"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.6 9.4a2.5 2.5 0 114.3 1.8c-1 .8-1.9 1.2-1.9 2.4M12 16.6h.01"></path></svg>{{ L.helpT }}</button>
+      <button onClick="{{ togglePanel }}" title="{{ panelLabel }}" aria-pressed="{{ panel }}" style="display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid {{ panelBorder }};border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg>{{ L.panelF }}<span style="position:relative;flex:none;width:30px;height:16px;border-radius:9999px;background:{{ panelTrack }}"><span style="position:absolute;top:2px;left:{{ panelKnob }};width:12px;height:12px;border-radius:9999px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></span></button>
     </div>
 
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1)">
@@ -98,15 +100,19 @@
       <button onClick="{{ openText }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 3.5h9l3.5 3.5v13H6z"></path><path d="M9.5 11h6M9.5 14.5h6"></path></svg>{{ L.textTitle }}</button>
       <span style="flex:1"></span>
       <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5M8.5 11h5"></path></svg>{{ L.zoom }}</span>
+      <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:150px;accent-color:#e30084">
+      <span style="min-width:44px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
       <button class="ms-button" onClick="{{ fitWidth }}">너비 맞춤</button>
       <button class="ms-button" onClick="{{ toggleFocus }}" title="Esc 또는 F 키로 돌아오기">전체보기</button>
-      <button class="ms-button" onClick="{{ openImport }}">가져오기</button>
-      <button class="ms-button" onClick="{{ openWorkspace }}">공유</button>
-      <button class="ms-button" onClick="{{ exportJson }}">JSON 백업</button>
-      <button class="ms-button" onClick="{{ exportPptx }}">PPT</button>
-      <button class="ms-button" onClick="{{ doPrint }}">인쇄 / PDF</button>
-      <input aria-label="확대 / 축소" type="range" min="4" max="640" step="1" value="{{ weekPx }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:120px;accent-color:#e30084">
-      <button onClick="{{ togglePanel }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg>{{ panelLabel }}</button>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1)">
+      <span style="padding: 3px 8px; border-radius: 9999px; border: 1px solid var(--color-border-neutral-2); font-size: 11px; font-weight: 700; color: var(--color-text-neutral-4); letter-spacing: .02em; background-color: var(--color-magenta-50)">{{ L.shareG }}</span>
+      <button onClick="{{ openImport }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 15.5V4M7.5 9.5L12 4l4.5 5.5M4.5 19.5h15"></path></svg>{{ L.importG }}</button>
+      <button onClick="{{ openWorkspace }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="6.5" cy="12" r="2.5"></circle><circle cx="17.5" cy="6" r="2.5"></circle><circle cx="17.5" cy="18" r="2.5"></circle><path d="M8.8 10.8l6.4-3.5M8.8 13.2l6.4 3.5"></path></svg>{{ L.shareBtn }}</button>
+      <button onClick="{{ exportJson }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4v11.5M7.5 11l4.5 4.5 4.5-4.5M4.5 19.5h15"></path></svg>{{ L.jsonBak }}</button>
+      <button onClick="{{ exportPptx }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="4.5" width="18" height="12" rx="2"></rect><path d="M12 16.5v3M8.5 19.5h7"></path></svg>{{ L.ppt }}</button>
+      <button onClick="{{ doPrint }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M7 8.5V4h10v4.5M7 17H5.5a1.5 1.5 0 01-1.5-1.5v-4A1.5 1.5 0 015.5 10h13a1.5 1.5 0 011.5 1.5v4A1.5 1.5 0 0118.5 17H17"></path><rect x="7" y="14" width="10" height="6"></rect></svg>{{ L.print }}</button>
     </div>
   </div>
 
@@ -386,6 +392,7 @@
                       <input type="number" step="{{ timeStep }}" value="{{ selS }}" data-field="s" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                       <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
+                    <input type="date" value="{{ selSISO }}" data-field="s" onChange="{{ onDateField }}" title="{{ L.dateSet }}" style="width:100%;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);background:#fff;outline:none" style-focus="border-color:#000">
                     <span style="font-size:11px;color:var(--color-text-neutral-3)">{{ selSDate }}</span>
                   </div>
                   <div style="display:flex;flex-direction:column;gap:6px">
@@ -395,8 +402,13 @@
                       <input type="number" step="{{ timeStep }}" value="{{ selE }}" data-field="e" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                       <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
+                    <input type="date" value="{{ selEISO }}" data-field="e" onChange="{{ onDateField }}" title="{{ L.dateSet }}" style="width:100%;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);background:#fff;outline:none" style-focus="border-color:#000">
                     <span style="font-size:11px;color:var(--color-text-neutral-3)">{{ selEDate }}</span>
                   </div>
+                </div>
+                <div style="display:flex;gap:7px;padding:9px 11px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;color:var(--color-text-neutral-3)"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5.5M12 7.8h.01"></path></svg>
+                  <span style="font-size:11.5px;line-height:1.65;color:var(--color-text-neutral-4)">{{ L.dateHint }}</span>
                 </div>
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1)">
                   <label style="display:flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" checked="{{ selHideDuration }}" onChange="{{ onHideDuration }}">기간 삭제 (표시 숨김)</label>
@@ -634,6 +646,22 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ mouseTipOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="" onClick="{{ closeMouseTip }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:{{ mouseTipBg }};color:{{ mouseTipFg }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"></path><circle cx="12" cy="12" r="2.4"></circle></svg></span>
+          <span style="font-size:17px;font-weight:700">{{ L.interact }} {{ interactState }}</span>
+        </div>
+        <span style="font-size:13px;line-height:1.85;white-space:pre-line;color:var(--color-text-neutral-5)">{{ L.mouseTipMsg }}</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:4px;border-top:1px solid var(--color-border-neutral-1)">
+          <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--color-text-neutral-4);cursor:pointer"><input type="checkbox" checked="{{ mouseTipMuted }}" onChange="{{ onMuteMouseTip }}" style="cursor:pointer">{{ L.dontShow }}</label>
+          <button onClick="{{ closeMouseTip }}" style="height:40px;padding:0 18px;border:1px solid #000;border-radius:4px;background:#000;font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.close }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ relOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeRel }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
       <div onClick="{{ stopClick }}" style="width:100%;max-width:620px;max-height:82vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
@@ -718,6 +746,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.3', items: ['블록 시작 · 종료를 날짜로 직접 지정', '세부 조정 시 마그네틱 스냅 안내 문구', "'인터랙션' → '마우스 컨트롤'로 이름 변경", '마우스 컨트롤 토글 시 조작 안내 팝업(다시 보지 않기 지원)', '확대 · 축소 슬라이더를 로그 스케일로 재조정하고 배율 표시 추가', '가져오기 · 공유 · JSON 백업 · PPT · 인쇄를 별도 섹션으로 분리', "물음표 버튼을 '사용법'으로 명시", "패널 열기/닫기를 '설정 패널' 토글 스위치로 변경", "속성 패널의 '설정' 탭을 '전체 설정'으로 변경", '파비콘 추가'] },
     { v: 'v9.2', items: ['접속 암호와 보기·편집 권한을 설정하는 공유 링크', '공유 링크 접속 시 암호 확인 후 일정 열기', '기존 접속 코드와 DB 관리는 고급 메뉴로 유지'] },
     { v: 'v9.1', items: ['이미지를 분석해 편집 가능한 일정 블록으로 변환', '기존 참조 이미지 추가 방식 유지', '분석 결과 적용 전 현재 일정 자동 백업', '릴리스 노트에 기능 변경 사항 기록'] },
     { v: 'v9.0', items: ['블록 조절 핸들 축소·반투명 처리', '블록 기간 숨김 옵션', '헤더·팝업·메모 겹침 문제 수정', '전체보기와 단기 일정 정밀 조정', '접속 코드 공동 편집·Supabase DB 관리', 'JavaScript·JSON·이미지 가져오기', '확대 범위 확장'] },
@@ -730,19 +759,28 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(간계·라벨 스트립)', '텍스트 대부 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '밌라우재 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.2';
+  APP_VER = 'v9.3';
   KEY = 'mapstone.timeline.v1';
+  TIP_KEY = 'mapstone.mouseTip.muted';
+  /* zoom slider: weekPx is mapped exponentially so each slider step is a
+     constant ratio. A linear track spent ~95% of its length above 130px/week,
+     where the board is already unreadably wide — every useful setting was
+     crammed into the first fifth. */
+  ZMIN = 5; ZMAX = 480; ZTRACK = 1000;
   PAL = [['그레이','#66707a'],['다크','#3b4040'],['퍼플','#5b3fd1'],['네이비','#1e3a8a'],['틸','#17a2a2'],['블루','#0078d4'],['오렌지','#f86800'],['레드','#e22a21'],['크림','#a8792a']];
   DICT = {
     ko: {
       lang: '日本語', add: '생성 · 추가', chev: '단계 블록', plain: '일반 블록', band: '구간 밴드', marker: '기준선', flag: '이슈 표시', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      view: '마우스 동작', interact: '인터랙션', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수', nowToday: 'NOW → 오늘',
+      view: '마우스 동작', interact: '마우스 컨트롤', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수', nowToday: 'NOW → 오늘',
+      mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
-      exp: '자료 만들기', png: 'PNG', ppt: 'PPT', print: '인쇄 / PDF', restore: '원본 복원', weekPx: '주 폭', panelClose: '패널 닫기', panelOpen: '패널 열기',
+      exp: '자료 만들기', png: 'PNG', ppt: 'PPT', print: '인쇄 / PDF', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
+      shareG: '가져오기 · 공유', importG: '가져오기', shareBtn: '공유', jsonBak: 'JSON 백업', panelF: '설정 패널', helpTip: '단축키와 조작 방법 보기',
+      dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하시려면 '마그네틱 스냅' 기능을 off 해주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '수정 이력 · 릴리스 노트', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·이슈 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더붔클릭: 오늘 날짜로 이동', dup: '복제',
-      tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '구분', verNone: '버전 미저장', savedAuto: '자동 저장',
+      tabProp: '속성', tabSet: '전체 설정', tabVer: '버전', category: '구분', verNone: '버전 미저장', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '블록 메모 (마우스 오버 시 표시)', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
       kChev: '단계 블록', kPlain: '일반 블록 (행 메모)', kBand: '구간 밴드 (행 세로 확장)', kMarker: '기준선', kFlag: '이슈 표시',
       rowF: '행', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이 (레인 수)',
@@ -758,7 +796,7 @@ class Component extends DCLogic {
       noVer: '저장된 버전이 없습니다.\n작성자와 날짜를 입력하고 현재 상태를 저장하세요.',
       verReady: '저장하면 현재 일정 상태가 스냅샷으로 보관됩니다.', verNeed: '작성자와 날짜를 입력하면 저장할 수 있습니다.',
       noSel: '선택된 항목이 없습니다', focusRowLbl: '포커스 행', none: '없음',
-      help: '· 행을 클릭하면 그 행이 포커스됩니다 — 추가 버튼은 포커스된 행에 만들어집니다\n· 블록 클릭 → 선택, 드래그 → 이동(행·레인 변경 포함)\n· 양끝 핸들 드래그 → 기간 조정, 핸들 더블클릭 → 옆 블록에 맞춰 자동 조정\n· 더블클릭 → 라벨 편집 / 빈 칸 더블클릭 → 블록 추가\n· Cmd(Ctrl) + C / X / V → 복사 · 잘라내기 · 붙여넣기\n· Cmd(Ctrl) + Z / Shift + Z → 되돌리기 · 다시 실행\n· 인터랙션 ON: 휠 = 확대 · 축소, 우클릭 드래그 = 패닝',
+      help: '· 행을 클릭하면 그 행이 포커스됩니다 — 추가 버튼은 포커스된 행에 만들어집니다\n· 블록 클릭 → 선택, 드래그 → 이동(행·레인 변경 포함)\n· 양끝 핸들 드래그 → 기간 조정, 핸들 더블클릭 → 옆 블록에 맞춰 자동 조정\n· 더블클릭 → 라벨 편집 / 빈 칸 더블클릭 → 블록 추가\n· Cmd(Ctrl) + C / X / V → 복사 · 잘라내기 · 붙여넣기\n· Cmd(Ctrl) + Z / Shift + Z → 되돌리기 · 다시 실행\n· 마우스 컨트롤 ON: 휠 = 확대 · 축소, 우클릭 드래그 = 패닝\n· 속성 패널에서 시작 · 종료를 날짜로 직접 지정할 수 있습니다',
       confReset: '원본 일정으로 되돌릴까요? 편집 내용이 사라집니다. (버전 히스토리는 유지)',
       confRowDel: '이 행의 항목이 함께 삭제됩니다. 계속할까요?', needAuthor: '작성자와 날짜는 필수 입력입니다.',
       confRestore: ' 버전으로 복원할까요? 현재 상태는 되돌리기(Cmd+Z)로 복구할 수 있습니다.',
@@ -773,12 +811,15 @@ class Component extends DCLogic {
     ja: {
       lang: '한국어', add: '追加', chev: 'フェーズブロック', plain: 'メモブロック', band: '期間バンド', marker: '基準線', flag: '● 課題マーク', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      view: 'マウス操作', interact: '操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数', nowToday: 'NOW → 今日',
+      view: 'マウス操作', interact: 'マウスコントロール', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数', nowToday: 'NOW → 今日',
+      mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
-      exp: '資料を作る', png: 'PNG', ppt: 'PPT', print: '印刷 / PDF', restore: '初期状態に戻す', weekPx: '週幅', panelClose: 'パネルを閉じる', panelOpen: 'パネルを開く',
+      exp: '資料を作る', png: 'PNG', ppt: 'PPT', print: '印刷 / PDF', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
+      shareG: '取り込み · 共有', importG: '取り込み', shareBtn: '共有', jsonBak: 'JSONバックアップ', panelF: '設定パネル', helpTip: 'ショートカットと操作方法を見る',
+      dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「マグネットスナップ」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: '変更履歴・リリースノート', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・課題マークが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
-      tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: '区分', verNone: 'バージョン未保存', savedAuto: '自動保存',
+      tabProp: 'プロパティ', tabSet: '全体設定', tabVer: 'バージョン', category: '区分', verNone: 'バージョン未保存', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ブロックメモ（ホバーで表示）', phMemo: '背景・リスク・担当など', kindF: '種類',
       kChev: 'フェーズブロック', kPlain: 'メモブロック（行メモ）', kBand: '期間バンド（行をまたぐ）', kMarker: '基準線', kFlag: '課題マーク',
       rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ（レーン数）',
@@ -794,7 +835,7 @@ class Component extends DCLogic {
       noVer: '保存されたバージョンがありません。\n作成者と日付を入力して保存してください。',
       verReady: '保存すると現在の日程がスナップショットとして残ります。', verNeed: '作成者と日付を入力すると保存できます。',
       noSel: '選択された項目がありません', focusRowLbl: 'フォーカス行', none: 'なし',
-      help: '· 行をクリックするとその行がフォーカスされます — 追加ボタンはフォーカス行に作成されます\n· ブロックをクリック → 選択、ドラッグ → 移動（行・レーン変更も可）\n· 両端ハンドルをドラッグ → 期間調整、ダブルクリック → 隣に合わせて自動調整\n· ダブルクリック → ラベル編集 / 空白をダブルクリック → ブロック追加\n· Cmd(Ctrl) + C / X / V → コピー・切り取り・貼り付け\n· Cmd(Ctrl) + Z / Shift + Z → 元に戻す・やり直す\n· 操作ON：ホイール = 拡大・縮小、右ドラッグ = パン',
+      help: '· 行をクリックするとその行がフォーカスされます — 追加ボタンはフォーカス行に作成されます\n· ブロックをクリック → 選択、ドラッグ → 移動（行・レーン変更も可）\n· 両端ハンドルをドラッグ → 期間調整、ダブルクリック → 隣に合わせて自動調整\n· ダブルクリック → ラベル編集 / 空白をダブルクリック → ブロック追加\n· Cmd(Ctrl) + C / X / V → コピー・切り取り・貼り付け\n· Cmd(Ctrl) + Z / Shift + Z → 元に戻す・やり直す\n· マウスコントロール ON：ホイール = 拡大・縮小、右ドラッグ = パン\n· プロパティパネルで開始・終了を日付で直接指定できます',
       confReset: '初期状態に戻しますか？編集内容は失われます（バージョン履歴は保持）。',
       confRowDel: 'この行の項目も削除されます。続行しますか？', needAuthor: '作成者と日付は必須です。',
       confRestore: ' のバージョンに戻しますか？現在の状態は Cmd+Z で復元できます。',
@@ -812,7 +853,8 @@ class Component extends DCLogic {
     sel: null, editing: null, editNote: null, hover: null, focusRow: 'gs',
     panel: true, tab: 'prop', hist: [], future: [], clip: null, saved: '',
     interact: false, lang: 'ko', vAuthor: '', vDate: '', vNote: '',
-    helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, relOpen: false, rowDelId: null, hoverRow: null, sx: 0, sw: 1, cw: 1
+    helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, relOpen: false, rowDelId: null, hoverRow: null, sx: 0, sw: 1, cw: 1,
+    mouseTipOpen: false, mouseTipMuted: this.mouseTipMuted()
   }, this.seed());
 
   uid() { return 'i' + Math.random().toString(36).slice(2, 9); }
@@ -950,7 +992,7 @@ class Component extends DCLogic {
       const rect = el.getBoundingClientRect();
       const ax = el.scrollLeft + (ev.clientX - rect.left) - 192;
       const old = this.state.cfg.weekPx;
-      const next = Math.max(4, Math.min(640, old * (ev.deltaY > 0 ? 0.92 : 1.08)));
+      const next = Math.max(this.ZMIN, Math.min(this.ZMAX, old * (ev.deltaY > 0 ? 0.92 : 1.08)));
       if (Math.abs(next - old) < 0.01) return;
       this.mutate((d) => { d.cfg.weekPx = Math.round(next * 10) / 10; }, false);
       el.scrollLeft += ax * (next / old - 1);
@@ -1199,6 +1241,40 @@ class Component extends DCLogic {
     const mm = ((t % 12) + 12) % 12;
     if (c.months < 5) { const days=new Date(y,mm+1,0).getDate(); return y+'.'+String(mm+1).padStart(2,'0')+'.'+String(Math.min(days,1+Math.floor((m-idx)*days+1e-7))).padStart(2,'0'); }
     return y + '년 ' + (mm + 1) + '월' + (m - idx >= 0.5 ? ' 중순' : ' 초');
+  }
+  /* month offset → yyyy-mm-dd, matching dateOf()'s day resolution */
+  isoOf(m) {
+    const c = this.state.cfg;
+    const idx = Math.floor(m);
+    const t = c.startM - 1 + idx;
+    const y = c.startY + Math.floor(t / 12);
+    const mm = ((t % 12) + 12) % 12;
+    const days = new Date(y, mm + 1, 0).getDate();
+    const dd = Math.min(days, Math.max(1, 1 + Math.floor((m - idx) * days + 1e-7)));
+    const p = (n) => String(n).padStart(2, '0');
+    return y + '-' + p(mm + 1) + '-' + p(dd);
+  }
+  /* yyyy-mm-dd → month offset; inverse of isoOf */
+  monthOfISO(iso) {
+    const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    if (!p) return null;
+    const y = +p[1], mm = +p[2] - 1, dd = +p[3];
+    if (mm < 0 || mm > 11) return null;
+    const c = this.state.cfg;
+    const days = new Date(y, mm + 1, 0).getDate();
+    if (dd < 1 || dd > days) return null;
+    return (y * 12 + mm) - (c.startY * 12 + (c.startM - 1)) + (dd - 1) / days;
+  }
+  zoomToSlider(wp) {
+    const r = Math.min(this.ZMAX, Math.max(this.ZMIN, wp)) / this.ZMIN;
+    return Math.round((Math.log(r) / Math.log(this.ZMAX / this.ZMIN)) * this.ZTRACK);
+  }
+  zoomFromSlider(t) {
+    const f = Math.min(1, Math.max(0, t / this.ZTRACK));
+    return Math.round(this.ZMIN * Math.pow(this.ZMAX / this.ZMIN, f) * 10) / 10;
+  }
+  mouseTipMuted() {
+    try { return window.localStorage.getItem(this.TIP_KEY) === '1'; } catch (err) { return false; }
   }
   durOf(s, e) {
     const v = Math.round((e - s) * 1000) / 1000;
@@ -1671,6 +1747,27 @@ class Component extends DCLogic {
       if (f === 's' || f === 'e' || f === 'lane' || f === 'span' || f === 'row') this.resolve(d, id);
     }, f === 'label' || f === 'memo' ? false : true);
   };
+  onDateField = (e) => {
+    const f = e.currentTarget.dataset.field;
+    const m = this.monthOfISO(e.currentTarget.value);
+    if (m === null) return;
+    const id = this.state.sel;
+    this.mutate((d) => {
+      const it = d.items.find((i) => i.id === id);
+      if (!it) return;
+      const pin = it.kind === 'marker' || it.kind === 'flag';
+      if (f === 's') {
+        it.s = m;
+        if (pin) it.e = m;
+        else if (it.e < it.s + this.timeStep()) it.e = it.s + this.timeStep();
+      } else if (pin) {
+        it.s = m; it.e = m;
+      } else {
+        it.e = Math.max(m, it.s + this.timeStep());
+      }
+      this.resolve(d, id);
+    });
+  };
   onStep = (e) => {
     const d0 = e.currentTarget.dataset;
     const delta = parseFloat(d0.delta);
@@ -1709,10 +1806,16 @@ class Component extends DCLogic {
     });
   }
   onCfg = (e) => { const v = parseFloat(e.currentTarget.value); if (isNaN(v)) return; this.applyCfg(e.currentTarget.dataset.cfg, v, 0); };
-  onWeekPx = (e) => { const v = parseFloat(e.currentTarget.value); this.mutate((d) => { d.cfg.weekPx = Math.max(4, Math.min(640, v)); }, false); };
+  onWeekPx = (e) => { const t = parseFloat(e.currentTarget.value); if (isNaN(t)) return; const wp = this.zoomFromSlider(t); this.mutate((d) => { d.cfg.weekPx = wp; }, false); };
   onWeekMode = (e) => { const m = e.currentTarget.dataset.week; this.mutate((d) => { d.cfg.weekMode = m; }); };
   toggleWeekMode = () => { this.mutate((d) => { d.cfg.weekMode = d.cfg.weekMode === 'actual' ? 'uniform' : 'actual'; }); };
-  toggleInteract = () => this.setState((s) => ({ interact: !s.interact }));
+  toggleInteract = () => this.setState((s) => ({ interact: !s.interact, mouseTipOpen: !this.mouseTipMuted() }));
+  closeMouseTip = () => this.setState({ mouseTipOpen: false });
+  onMuteMouseTip = (e) => {
+    const on = !!e.currentTarget.checked;
+    try { window.localStorage.setItem(this.TIP_KEY, on ? '1' : '0'); } catch (err) { /* private mode — tip just keeps showing */ }
+    this.setState({ mouseTipMuted: on });
+  };
   nowToday = () => {
     const c = this.state.cfg;
     const d = new Date();
@@ -2104,16 +2207,25 @@ class Component extends DCLogic {
       ovShrink: ovBtn('shrink'), ovMoveOther: ovBtn('moveOther'), ovMoveSelf: ovBtn('moveSelf'), setOverlap: this.setOverlap,
       addPlain: this.addPlain, onHandleDbl: this.onHandleDbl,
       title: st.title, savedLabel: st.saved, panel: st.panel, panelLabel: st.panel ? T.panelClose : T.panelOpen,
+      panelBorder: st.panel ? '#181a1b' : 'var(--color-border-neutral-2)',
+      panelTrack: st.panel ? '#e30084' : '#c3cad1', panelKnob: st.panel ? '16px' : '2px',
       cols: cols, gridCols: gridCols, rowsView: rowsView, bandsView: bandsView,
       markersView: markersView, markerLines: markerLines, markerStripH: px(stripH),
       notesView: st.notes.map((n) => ({ id: n.id, text: n.text, editing: st.editNote === n.id, show: st.editNote !== n.id })),
       boardW: px(O[cfg.months] || 0),
       weekPx: cfg.weekPx, startY: cfg.startY, startM: cfg.startM, months: cfg.months, laneH: laneH,
+      weekPxSlider: this.zoomToSlider(this.weekPxVal()),
+      zoomPct: Math.round((this.weekPxVal() / 19) * 100) + '%',
+      zoomTip: T.weekPx + ' ' + (Math.round(this.weekPxVal() * 10) / 10) + 'px',
       nowVal: st.now, nowDate: this.dateOf(st.now), showNow: this.props.showNowLine !== false,
       nowLeft: px(192 + this.xOf(st.now)), nowLineLeft: px(172 + this.xOf(st.now)), nowTop: px(26),
       interactState: st.interact ? 'ON' : 'OFF',
       interactBg: st.interact ? '#181a1b' : '#fff', interactFg: st.interact ? '#fff' : 'var(--color-text-neutral-5)',
       interactBorder: st.interact ? '#181a1b' : 'var(--color-border-neutral-2)',
+      mouseTipOpen: st.mouseTipOpen, closeMouseTip: this.closeMouseTip, onMuteMouseTip: this.onMuteMouseTip,
+      mouseTipMuted: st.mouseTipMuted,
+      mouseTipBg: st.interact ? '#181a1b' : 'var(--color-bg-neutral-2)',
+      mouseTipFg: st.interact ? '#fff' : 'var(--color-text-neutral-4)',
       weekModeLabel: cfg.weekMode === 'actual' ? T.actualW : T.uniform4,
       weekBg: cfg.weekMode === 'actual' ? '#181a1b' : '#fff', weekFg: cfg.weekMode === 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
       weekBorder: cfg.weekMode === 'actual' ? '#181a1b' : 'var(--color-border-neutral-2)',
@@ -2132,6 +2244,7 @@ class Component extends DCLogic {
       selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && (sel.kind === 'chev' || sel.kind === 'flag'),
       selS: sel ? sel.s : 0, selE: sel ? sel.e : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? sel.span || 1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
+      selSISO: sel ? this.isoOf(sel.s) : '', selEISO: sel ? this.isoOf(sel.e) : '', onDateField: this.onDateField,
       selDur: sel ? this.durOf(sel.s, sel.e) + ' (' + Math.round((sel.e - sel.s) * 4) + '주)' : '',
       showProp: st.tab === 'prop', showSet: st.tab === 'set', showVer: st.tab === 'ver',
       tabPropFg: tabC('prop'), tabSetFg: tabC('set'), tabVerFg: tabC('ver'),
