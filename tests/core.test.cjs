@@ -11,3 +11,14 @@ test('Concurrent additions retained',()=>{const b=doc(),l=C.clone(b),r=C.clone(b
 test('Merged cross-field invalid dates fail rather than corrupt room',()=>{const b=doc(),l=C.clone(b),r=C.clone(b);l.items[0].s=.4;r.items[0].e=.25;assert.match(C.merge(b,l,r).conflicts[0],/구조/);});
 test('Snapshot limit protects browser storage',()=>{const d=doc();d.versions=Array.from({length:31},(_,i)=>({id:String(i),snap:'{}'}));assert.throws(()=>C.validate(d),/30/);});
 module.exports={doc};
+test('AI analysis output becomes a repaired, validated document',()=>{const d=C.fromAnalysis({title:'로드맵',rangeStart:'2026-03',rangeEnd:'2026-06-30',now:'2026-04-16',rows:[{id:'dev',name:'개발',color:'bad'},{id:'qa',name:'QA',color:'#eaf2fb'}],items:[
+  {type:'chev',row:'dev',start:'2026-03-01',end:'2026-04-16',label:'구현',lane:0,color:'#5B3FD1'},
+  {type:'chev',row:'개발',start:'2026-05-01',end:'2026-05-01',label:'역전',lane:1.6},
+  {type:'marker',start:'2026-06-30',label:'오픈',color:''},
+  {type:'flag',row:'nowhere',start:'2026-04-10',label:'이슈'},
+  {type:'band',row:'qa',rowTo:'dev',start:'2026-05-01',end:'2026-06-01',label:'프리즈'},
+  {type:'sticky',start:'2026-03-01',label:'범례'},{type:'chev',row:'dev',start:'날짜없음',label:'skip'}]},'2030-01-01');
+  assert.deepEqual([d.cfg.startY,d.cfg.startM,d.cfg.months],[2026,3,4]);assert.equal(d.rows[0].color,undefined);assert.equal(d.rows[1].color,'#eaf2fb');
+  const [a,b,m,f,band,st]=d.items;assert.equal(d.items.length,6);assert.equal(a.s,0);assert.equal(a.e,1+15/30);assert.equal(b.row,'r1');assert.equal(b.lane,2);assert.equal(b.e,b.s+.125);
+  assert.equal(m.kind,'marker');assert.equal(m.row,'');assert.equal(m.s,m.e);assert.equal(f.row,'r1');assert.deepEqual([band.rowFrom,band.rowTo],['r1','r2']);assert.equal(st.kind,'sticky');assert.ok(st.w>0);assert.equal(d.now,1+15/30);
+  assert.equal(new Set(d.items.map(i=>i.id)).size,6);assert.throws(()=>C.fromAnalysis({items:[{start:'?'}]}));});

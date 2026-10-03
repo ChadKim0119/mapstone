@@ -50,6 +50,44 @@
     versions.forEach(v => { if (!v || typeof v.id !== 'string' || typeof v.snap !== 'string' || v.snap.length > 8*1024*1024) fail('버전 형식 오류'); });
     return {schemaVersion:1, title:text(data.title || '새 일정','제목',500), cfg, rows, items, notes:clone(notes), now:finite(data.now ?? 0,'NOW',-1200,1200), versions:clone(versions)};
   }
+  // AI analysis output (ISO dates, free-form ids) → validated document. Repairs instead of rejecting:
+  // unknown rows fall back to the first row, bad colors to a palette, reversed ranges get a minimum length.
+  function fromAnalysis(p, today) {
+    p = p && typeof p === 'object' ? p : {};
+    const day = v => { const m = /^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?/.exec(String(v || '')); if (!m) return null; const y = +m[1], mo = +m[2]; if (mo < 1 || mo > 12) return null; const dim = new Date(Date.UTC(y, mo, 0)).getUTCDate(); return {i: y * 12 + mo - 1, d: Math.min(Math.max(+(m[3] || 1), 1), dim), dim}; };
+    const src = Array.isArray(p.items) ? p.items : [];
+    const dates = [p.rangeStart, p.rangeEnd, ...src.flatMap(i => [i && i.start, i && i.end])].map(day).filter(Boolean);
+    if (!dates.length) fail('일정 날짜를 찾지 못했습니다. 날짜나 기간이 보이는 자료를 사용하세요.');
+    const first = Math.min(...dates.map(d => d.i));
+    const off = v => { const d = day(v); return d ? d.i - first + (d.d - 1) / d.dim : null; };
+    const hex = v => /^#[0-9a-f]{6}$/i.test(v || '') ? v : null;
+    const str = (v, max) => String(v ?? '').slice(0, max);
+    const rows = [], rowOf = new Map();
+    (Array.isArray(p.rows) ? p.rows : []).slice(0, 200).forEach(r => { if (!r) return; const id = 'r' + (rows.length + 1), row = {id, name: str(r.name || r.id || id, 500)}; if (hex(r.color)) row.color = r.color; rows.push(row); for (const k of [r.id, r.name]) if (k && !rowOf.has(String(k))) rowOf.set(String(k), id); });
+    if (!rows.length) rows.push({id: 'r1', name: str(p.title || '일정', 500)});
+    const rowId = v => rowOf.get(String(v ?? '')) || rows[0].id;
+    const palette = ['#5b3fd1', '#0078d4', '#17a2a2', '#f86800', '#1e3a8a', '#66707a'];
+    const fallback = {marker: '#66707a', flag: '#e22a21', band: '#1e3a8a', sticky: '#fdf3d0'};
+    const kinds = ['chev', 'plain', 'band', 'marker', 'flag', 'sticky'];
+    const items = []; let stickies = 0, end = 0;
+    src.slice(0, 5000).forEach((i, n) => {
+      if (!i) return;
+      const kind = kinds.includes(i.type) ? i.type : 'chev';
+      const s = off(i.start) ?? off(i.end); if (s === null) return;
+      let e = ['marker', 'flag', 'sticky'].includes(kind) ? s : (off(i.end) ?? s);
+      if (['chev', 'plain', 'band'].includes(kind) && e <= s) e = s + 0.125;
+      const it = {id: 'a' + (n + 1), kind, row: '', lane: Math.min(20, Math.max(0, Math.round(+i.lane || 0))), span: 1, s, e, label: str(i.label, 2000), memo: str(i.memo, 20000), color: hex(i.color) || fallback[kind] || palette[n % palette.length], variant: i.variant === 'tint' || (kind === 'plain' && i.variant !== 'solid') ? 'tint' : 'solid'};
+      if (['chev', 'plain', 'flag'].includes(kind)) it.row = rowId(i.row);
+      if (kind === 'band') { const a = rows.findIndex(r => r.id === rowId(i.row)), b = rows.findIndex(r => r.id === rowId(i.rowTo || i.row)); it.rowFrom = rows[Math.min(a, b)].id; it.rowTo = rows[Math.max(a, b)].id; it.row = it.rowFrom; it.lane = 0; }
+      if (kind === 'sticky') { Object.assign(it, {y: 40 + stickies * 96, w: 240, h: 88}); stickies++; }
+      if (i.hideDuration === true) it.hideDuration = true;
+      end = Math.max(end, e); items.push(it);
+    });
+    const last = Math.max(first, ...dates.map(d => d.i));
+    const months = Math.min(48, Math.max(1, last - first + 1, Math.ceil(end - 1e-9)));
+    const now = off(p.now) ?? off(today);
+    return validate({title: str(p.title || '가져온 일정', 500), cfg: {startY: Math.floor(first / 12), startM: first % 12 + 1, months, weekPx: 100, weekMode: 'actual', laneH: 44, magnet: true, overlap: 'moveOther'}, rows, items, notes: [], now: now !== null && now >= 0 && now <= months ? now : 0, versions: []});
+  }
   function documentOf(s) { const d={schemaVersion:1}; for (const k of keys) d[k]=clone(s[k] ?? (['rows','items','notes','versions'].includes(k)?[]:null)); return d; }
   // Parses only data literals, never evaluates JavaScript (no functions, calls, getters, imports).
   function parseImport(input) {
@@ -90,5 +128,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,documentOf,merge,clone,equal,uid};
+  return {validate,parseImport,fromAnalysis,documentOf,merge,clone,equal,uid};
 });

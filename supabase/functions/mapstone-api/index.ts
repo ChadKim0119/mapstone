@@ -29,21 +29,40 @@ async function saveRoom(room:any,document:any,expected:number) {
   if(!updated?.length){const current=await getRoom(room.id);return json({error:'다른 사용자의 수정이 먼저 저장되었습니다.',room:current?publicRoom(current):null},409);}
   return json(publicRoom(updated[0]));
 }
-const scheduleSchema={type:'object',additionalProperties:false,required:['title','startYear','startMonth','months','rows','items'],properties:{
-  title:{type:'string'},startYear:{type:'integer',minimum:1900,maximum:2200},startMonth:{type:'integer',minimum:1,maximum:12},months:{type:'integer',minimum:1,maximum:48},
-  rows:{type:'array',minItems:1,maxItems:80,items:{type:'object',additionalProperties:false,required:['id','name'],properties:{id:{type:'string'},name:{type:'string'}}}},
-  items:{type:'array',maxItems:1000,items:{type:'object',additionalProperties:false,required:['id','row','start','end','label','type','memo','hideDuration'],properties:{id:{type:'string'},row:{type:'string'},start:{type:'number'},end:{type:'number'},label:{type:'string'},type:{type:'string',enum:['chev','plain','flag']},memo:{type:'string'},hideDuration:{type:'boolean'}}}}
+const str={type:'string'},nstr={type:['string','null']};
+const scheduleSchema={type:'object',additionalProperties:false,required:['title','rangeStart','rangeEnd','now','rows','items'],properties:{
+  title:str,rangeStart:nstr,rangeEnd:nstr,now:nstr,
+  rows:{type:'array',items:{type:'object',additionalProperties:false,required:['id','name','color'],properties:{id:str,name:str,color:str}}},
+  items:{type:'array',items:{type:'object',additionalProperties:false,required:['type','row','rowTo','lane','start','end','label','memo','color','variant','hideDuration'],properties:{
+    type:{type:'string',enum:['chev','plain','band','marker','flag','sticky']},row:str,rowTo:str,lane:{type:'integer'},start:str,end:str,label:str,memo:str,color:str,variant:{type:'string',enum:['solid','tint']},hideDuration:{type:'boolean'}}}}
 }};
+const analysisPrompt=`첨부한 자료(이미지 또는 텍스트)에 담긴 프로젝트 일정·마일스톤·로드맵을 Mapstone 일정 데이터로 변환하세요. 간트 차트, 로드맵, 표, 슬라이드, 손그림, 회의록, 메일, PRD, 엑셀 복사본 등 형식은 무엇이든 될 수 있습니다.
+읽을 수 있는 정보는 빠짐없이 옮기세요. 요약하거나 생략하지 말고, 원문 언어와 표기를 그대로 보존하세요.
+- rows: 구분 행(팀, 트랙, 시스템, 단계 그룹 등). 행 이름은 원문 그대로. 행 배경색이 있으면 #RRGGBB, 없으면 "".
+- chev: 기간이 있는 일반 작업·단계·스프린트.
+- plain: 설명성·참고성 기간(예: 협의 기간, 준비 기간, 옅게 표시된 구간).
+- band: 여러 행에 걸친 공통 구간(프리즈, 안정화, 휴가, 감사 기간 등). row는 시작 행, rowTo는 끝 행.
+- marker: 전체 공통 마일스톤(세로선, 상단 ◆·▼·★, 오픈·릴리스·킥오프·게이트 등 특정 날짜). row와 rowTo는 "".
+- flag: 특정 행에만 속한 마일스톤·이슈·체크포인트(행 안의 ◆, ●, ! 등). end는 start와 같게.
+- sticky: 범례, 주석, 비고, 전제, 리스크, 담당자 메모 등 일정에 묶이지 않는 텍스트. row는 "", start는 관련 시점 또는 전체 시작일.
+- 날짜는 모두 YYYY-MM-DD. 연도가 없으면 자료의 맥락으로 추정하고, 일(day)을 모르면 월 초 01(종료는 말일)을 사용하세요. 날짜가 전혀 없으면 축·눈금·위치로 합리적으로 추정하고 memo에 "날짜 추정"을 남기세요.
+- end는 작업이 끝나는 날짜이며 start보다 늦어야 합니다.
+- 같은 행에서 기간이 겹치는 항목은 lane을 0, 1, 2…로 나누고, 겹치지 않으면 0을 사용하세요. 자료에서 위아래로 쌓여 있으면 그 순서를 lane으로 보존하세요.
+- label에는 표시된 작업명, memo에는 담당자·상태·진척률·산출물·비고·세부 설명 등 그 항목에 대한 나머지 정보를 모두 담으세요.
+- color: 자료에 보이는 색과 가장 가까운 #RRGGBB, 알 수 없으면 "". variant는 진한 채움이면 solid, 옅거나 테두리만 있으면 tint.
+- hideDuration은 기본 false.
+- rangeStart/rangeEnd: 자료에 보이는 전체 시간축의 처음과 끝(없으면 null). now: 오늘·NOW·현재 표시선이 있으면 그 날짜(없으면 null).
+- title: 자료의 제목, 없으면 내용을 대표하는 짧은 제목.`;
 function outputText(response:any){for(const item of response.output||[])for(const content of item.content||[])if(content.type==='output_text'&&typeof content.text==='string')return content.text;throw new Error('ai_output_missing');}
-async function analyzeImage(image:string){
+async function analyze(body:any){
   const key=Deno.env.get('OPENAI_API_KEY');if(!key)throw new Error('ai_not_configured');
-  if(typeof image!=='string'||image.length>2800000||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(image))throw new Error('invalid_image');
-  const prompt='이미지의 프로젝트 일정표를 Mapstone 데이터로 변환하세요. 표의 행 이름과 작업명을 원문 언어로 보존하세요. start/end는 전체 시작 월을 0으로 한 개월 단위 숫자이며 5개월 미만 일정은 0.125 단위로 맞추세요. 종료는 시작보다 커야 합니다. 날짜를 읽을 수 없으면 시각적 위치로 합리적으로 추정하고 memo에 추정이라고 기록하세요. id는 영문 소문자, 숫자, 하이픈만 사용하고 모두 고유하게 만드세요. 일반 작업은 chev, 설명성 작업은 plain, 단일 이슈는 flag를 사용하세요.';
-  const ai=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:Deno.env.get('OPENAI_VISION_MODEL')||'gpt-4.1-mini',store:false,input:[{role:'user',content:[{type:'input_text',text:prompt},{type:'input_image',image_url:image,detail:'high'}]}],text:{format:{type:'json_schema',name:'mapstone_schedule',strict:true,schema:scheduleSchema}}})});
+  const image=body.image,text=body.text,content:any[]=[{type:'input_text',text:analysisPrompt}];
+  if(image!==undefined){if(typeof image!=='string'||image.length>2800000||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(image))throw new Error('invalid_image');content.push({type:'input_image',image_url:image,detail:'high'});}
+  if(text!==undefined){if(typeof text!=='string'||!text.trim()||text.length>200000)throw new Error('invalid_text');content.push({type:'input_text',text:'--- 자료 시작 ---\n'+text+'\n--- 자료 끝 ---'});}
+  if(content.length<2)throw new Error('invalid_text');
+  const ai=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:Deno.env.get('OPENAI_VISION_MODEL')||'gpt-4.1-mini',store:false,input:[{role:'user',content}],text:{format:{type:'json_schema',name:'mapstone_schedule',strict:true,schema:scheduleSchema}}})});
   const raw=await ai.json();if(!ai.ok)throw new Error('ai_request_failed:'+String(raw?.error?.message||ai.status));
-  const parsed=JSON.parse(outputText(raw));const colors=['#5b3fd1','#0078d4','#17a2a2','#f86800','#e22a21','#66707a'];
-  const document={schemaVersion:1,title:parsed.title,cfg:{startY:parsed.startYear,startM:parsed.startMonth,months:parsed.months,weekPx:100,weekMode:'actual',laneH:44,magnet:true,overlap:'moveOther'},rows:parsed.rows,items:parsed.items.map((it:any,n:number)=>({id:it.id,kind:it.type,row:it.row,lane:0,span:1,s:it.start,e:it.type==='flag'?it.start:it.end,label:it.label,color:colors[n%colors.length],variant:'solid',memo:it.memo,hideDuration:it.hideDuration})),notes:[],now:0,versions:[]};
-  return Core.validate(document);
+  return Core.fromAnalysis(JSON.parse(outputText(raw)),new Date().toISOString().slice(0,10));
 }
 Deno.serve(async (req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
@@ -103,7 +122,7 @@ Deno.serve(async (req:Request)=>{
     if(!/^[A-Za-z0-9_-]{24,128}$/.test(code))return json({error:'접속 코드가 필요합니다.'},401);
     const rooms=await db('mapstone_rooms?code_hash=eq.'+await hash(code)+'&archived=eq.false');
     const room=rooms[0];if(!room)return json({error:'접속 코드가 올바르지 않거나 보관된 일정입니다.'},401);
-    if(path.length===1&&path[0]==='analyze-image'&&req.method==='POST'){const body=await readBody(req);return json({document:await analyzeImage(body.image)});}
+    if(path.length===1&&['analyze','analyze-image'].includes(path[0])&&req.method==='POST'){const body=await readBody(req);return json({document:await analyze(body)});}
     if(path.length!==1||path[0]!=='room')return json({error:'존재하지 않는 경로입니다.'},404);
     if(req.method==='GET'){
       if(u.searchParams.get('after')===String(room.revision))return new Response(null,{status:304,headers:cors});
@@ -114,5 +133,5 @@ Deno.serve(async (req:Request)=>{
       return await saveRoom(room,body.document,body.revision);
     }
     return json({error:'지원하지 않는 요청입니다.'},405);
-  }catch(e){const message=e instanceof Error?e.message:'unknown';if(message==='database_error')return json({error:'DB 요청에 실패했습니다. 잠시 후 다시 시도하세요.'},503);if(message==='body_too_large')return json({error:'요청은 9MB 이하여야 합니다.'},413);if(message==='ai_not_configured')return json({error:'이미지 분석 API가 아직 설정되지 않았습니다. 관리자에게 문의하세요.'},503);if(message==='invalid_image')return json({error:'2MB 이하 PNG/JPEG/WebP 이미지를 사용하세요.'},400);if(message.startsWith('ai_request_failed:'))return json({error:'이미지 분석에 실패했습니다. 잠시 후 다시 시도하세요.'},502);return json({error:message==='invalid_json'?'JSON 형식을 확인하세요.':message},400);}
+  }catch(e){const message=e instanceof Error?e.message:'unknown';if(message==='database_error')return json({error:'DB 요청에 실패했습니다. 잠시 후 다시 시도하세요.'},503);if(message==='body_too_large')return json({error:'요청은 9MB 이하여야 합니다.'},413);if(message==='ai_not_configured')return json({error:'AI 분석 API가 아직 설정되지 않았습니다. 관리자에게 문의하세요.'},503);if(message==='invalid_image')return json({error:'2MB 이하 PNG/JPEG/WebP 이미지를 사용하세요.'},400);if(message==='invalid_text')return json({error:'분석할 내용은 1~200,000자여야 합니다.'},400);if(message.startsWith('ai_request_failed:'))return json({error:'AI 분석에 실패했습니다. 잠시 후 다시 시도하세요.'},502);return json({error:message==='invalid_json'?'JSON 형식을 확인하세요.':message},400);}
 });
