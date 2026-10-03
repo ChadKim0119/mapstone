@@ -10,7 +10,7 @@ https://mffysunppwqscbljooda.supabase.co/functions/v1/mapstone-api
 
 ## 이미지 · 텍스트 일정 분석
 
-`POST /analyze`에 `X-Mapstone-Code` 헤더와 `{"image":"data:image/png;base64,..."}` 또는 `{"text":"..."}` 본문을 전송합니다. 이미지는 2MB 이하 PNG/JPEG/WebP data URL, 텍스트는 200,000자 이하입니다. 성공하면 브라우저와 동일한 데이터 계약의 `{"document":{...}}`를 반환합니다. 결과에는 구분 행, 블록(`chev`/`plain`), 공통 구간(`band`), 마일스톤(`marker`), 행 마일스톤·이슈(`flag`), 메모(`sticky`)와 색상·레인·메모가 포함됩니다. 이전 경로 `POST /analyze-image`도 같은 동작을 합니다.
+`POST /analyze`에 (선택) `X-Mapstone-Code` 헤더와 `{"image":"data:image/png;base64,..."}` 또는 `{"text":"..."}` 본문을 전송합니다. 이미지는 2MB 이하 PNG/JPEG/WebP data URL, 텍스트는 200,000자 이하입니다. 성공하면 브라우저와 동일한 데이터 계약의 `{"document":{...}}`를 반환합니다. 결과에는 구분 행, 블록(`chev`/`plain`), 공통 구간(`band`), 마일스톤(`marker`), 행 마일스톤·이슈(`flag`), 메모(`sticky`)와 색상·레인·메모가 포함됩니다. 이전 경로 `POST /analyze-image`도 같은 동작을 합니다.
 
 ## 일정 읽기
 

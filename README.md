@@ -2,9 +2,9 @@
 
 ## 이미지 · 텍스트 일정 분석
 
-**가져오기** 창에서 마일스톤이 담긴 이미지(간트 차트, 로드맵, 표, 캡처, 손그림 등)나 텍스트(회의록, 메일, PRD, 표 복사본 등)를 파일 추가, 끌어놓기, 붙여넣기로 넣고 분석하면 구분 행, 블록, 마일스톤, 이슈, 공통 구간, 메모와 색상까지 Mapstone 일정으로 변환합니다. 결과를 검토한 뒤 교체하며, 기존 일정은 JSON으로 백업됩니다. 분석 호출은 Supabase Edge Function에서 처리하며 공동 편집 접속 코드가 필요합니다. Mapstone JSON/JavaScript 데이터는 연결 없이 바로 가져옵니다. 이미지는 **참조 이미지로만 추가**할 수도 있습니다.
+**가져오기** 창에서 마일스톤이 담긴 이미지(간트 차트, 로드맵, 표, 캡처, 손그림 등)나 텍스트(회의록, 메일, PRD, 표 복사본 등)를 파일 추가, 끌어놓기, 붙여넣기로 넣고 분석하면 구분 행, 블록, 마일스톤, 이슈, 공통 구간, 메모와 색상까지 Mapstone 일정으로 변환합니다. 결과를 검토한 뒤 교체하며, 기존 일정은 JSON으로 백업됩니다. 분석 호출은 Supabase Edge Function에서 처리하며 접속 코드 없이도 사용할 수 있습니다(코드 미연결 시 IP당 시간당 20회 제한). 비용 상한은 Gemini/OpenAI 키의 사용량 한도로 설정하세요. Mapstone JSON/JavaScript 데이터는 연결 없이 바로 가져옵니다. 이미지는 **참조 이미지로만 추가**할 수도 있습니다.
 
-운영 환경의 Supabase Edge Function Secrets에 `GEMINI_API_KEY`(Google, 우선 사용) 또는 `OPENAI_API_KEY`를 설정해야 합니다. 모델은 `GEMINI_MODEL`(기본 `gemini-2.5-flash`) 또는 `OPENAI_VISION_MODEL`(기본 `gpt-4.1-mini`)로 바꿀 수 있습니다.
+운영 환경의 Supabase Edge Function Secrets에 `GEMINI_API_KEY`(Google, 우선 사용) 또는 `OPENAI_API_KEY`를 설정해야 합니다. 모델은 `GEMINI_MODEL`(기본 `gemini-3.8-flash`) 또는 `OPENAI_VISION_MODEL`(기본 `gpt-4.1-mini`)로 바꿀 수 있습니다.
 
 브라우저에서 개발 일정을 편집하고 PNG, PPTX, PDF, 텍스트로 내보내는 일정 보드입니다. `index.html`은 외부 CDN 없이 실행되는 단일 파일 배포본입니다.
 

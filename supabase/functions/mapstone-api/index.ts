@@ -62,7 +62,7 @@ async function askOpenAI(key:string,content:any[]){
 }
 async function askGemini(key:string,content:any[]){
   const parts=content.map(c=>c.type==='input_image'?(([,mime,data])=>({inline_data:{mime_type:mime,data}}))(/^data:([^;]+);base64,(.*)$/.exec(c.image_url)!):{text:c.text});
-  const model=Deno.env.get('GEMINI_MODEL')||'gemini-2.5-flash';
+  const model=Deno.env.get('GEMINI_MODEL')||'gemini-3.8-flash';
   const ai=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{method:'POST',headers:{'x-goog-api-key':key,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',responseJsonSchema:geminiSchema}})});
   const raw=await ai.json();if(!ai.ok)throw new Error('ai_request_failed:'+String(raw?.error?.message||ai.status));
   const text=(raw.candidates?.[0]?.content?.parts||[]).map((p:any)=>p.text||'').join('');if(!text)throw new Error('ai_output_missing');return text;
@@ -76,6 +76,14 @@ async function analyze(body:any){
   const out=gemini?await askGemini(gemini,content):await askOpenAI(openai!,content);
   let parsed;try{parsed=JSON.parse(out);}catch{throw new Error('ai_output_missing');}
   return Core.fromAnalysis(parsed,new Date().toISOString().slice(0,10));
+}
+// ponytail: per-isolate memory, so the cap is per instance and resets on cold start. Set a daily quota on the
+// Gemini/OpenAI key as the real spending ceiling; move this to a DB counter if anonymous abuse shows up.
+const ANON_PER_HOUR=20,anonHits=new Map<string,number[]>();
+function allowAnonymous(req:Request){
+  const ip=(req.headers.get('x-forwarded-for')||'').split(',')[0].trim()||'unknown',now=Date.now();
+  const hits=(anonHits.get(ip)||[]).filter(t=>now-t<3600000);if(hits.length>=ANON_PER_HOUR)return false;
+  hits.push(now);anonHits.set(ip,hits);if(anonHits.size>5000)anonHits.clear();return true;
 }
 Deno.serve(async (req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
@@ -131,11 +139,16 @@ Deno.serve(async (req:Request)=>{
       }
       return json({error:'지원하지 않는 관리자 요청입니다.'},405);
     }
+    if(path.length===1&&['analyze','analyze-image'].includes(path[0])&&req.method==='POST'){
+      const code=req.headers.get('X-Mapstone-Code')||'';
+      const member=/^[A-Za-z0-9_-]{24,128}$/.test(code)&&(await db('mapstone_rooms?select=id&code_hash=eq.'+await hash(code)+'&archived=eq.false')).length>0;
+      if(!member&&!allowAnonymous(req))return json({error:'분석 요청이 많습니다. 1시간 뒤 다시 시도하거나 접속 코드로 연결해 사용하세요.'},429);
+      const body=await readBody(req);return json({document:await analyze(body)});
+    }
     const code=req.headers.get('X-Mapstone-Code')||'';
     if(!/^[A-Za-z0-9_-]{24,128}$/.test(code))return json({error:'접속 코드가 필요합니다.'},401);
     const rooms=await db('mapstone_rooms?code_hash=eq.'+await hash(code)+'&archived=eq.false');
     const room=rooms[0];if(!room)return json({error:'접속 코드가 올바르지 않거나 보관된 일정입니다.'},401);
-    if(path.length===1&&['analyze','analyze-image'].includes(path[0])&&req.method==='POST'){const body=await readBody(req);return json({document:await analyze(body)});}
     if(path.length!==1||path[0]!=='room')return json({error:'존재하지 않는 경로입니다.'},404);
     if(req.method==='GET'){
       if(u.searchParams.get('after')===String(room.revision))return new Response(null,{status:304,headers:cors});
