@@ -284,13 +284,13 @@
           </div>
 
           <sc-for list="{{ imagesView }}" as="im">
-            <div data-id="{{ im.id }}" data-sticky="" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:35;left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
+            <div data-id="{{ im.id }}" data-sticky="" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:70;left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
               <img data-ms-src="{{ im.src }}" alt="{{ im.label }}" draggable="false" style="width:100%;height:100%;object-fit:contain;pointer-events:none">
               <sc-if value="{{ im.sel }}"><div data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(227,0,132,.45);cursor:nwse-resize"></div></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
-            <div data-id="{{ p.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:40;border-radius:2px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
+            <div data-id="{{ p.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:72;border-radius:2px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
                 <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:13px;line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
               </sc-if>
@@ -745,6 +745,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.5', items: ['포스트잇 메모 · 참조 이미지가 상단 월 헤더에 가려지던 문제 수정'] },
     { v: 'v9.4', items: ['색상 이름 · NOW 툴팁 · 지난 릴리스 노트의 깨진 한글 수정', '중복 스타일 로드로 생기던 콘솔 404 오류 제거'] },
     { v: 'v9.3', items: ['블록 시작 · 종료를 날짜로 직접 지정', '세부 조정 시 마그네틱 스냅 안내 문구', "'인터랙션' → '마우스 컨트롤'로 이름 변경", '마우스 컨트롤 토글 시 조작 안내 팝업(다시 보지 않기 지원)', '확대 · 축소 슬라이더를 로그 스케일로 재조정하고 배율 표시 추가', '가져오기 · 공유 · JSON 백업 · PPT · 인쇄를 별도 섹션으로 분리', "물음표 버튼을 '사용법'으로 명시", "패널 열기/닫기를 '설정 패널' 토글 스위치로 변경", "속성 패널의 '설정' 탭을 '전체 설정'으로 변경", '파비콘 추가'] },
     { v: 'v9.2', items: ['접속 암호와 보기·편집 권한을 설정하는 공유 링크', '공유 링크 접속 시 암호 확인 후 일정 열기', '기존 접속 코드와 DB 관리는 고급 메뉴로 유지'] },
@@ -759,7 +760,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.4';
+  APP_VER = 'v9.5';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
