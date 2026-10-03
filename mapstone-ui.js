@@ -64,9 +64,10 @@
   function imports(app,body){
     const message=el('p','',{className:'ms-message'});message.setAttribute('role','status');const review=el('section',null,{className:'ms-review'});review.hidden=true;let pending=null;
     const apply=button('검토한 일정으로 교체',()=>{if(!pending)return;download(app.dataDocument(),'mapstone-before-import.json');app.importDocument(pending);closeModal();requestAnimationFrame(()=>fitWidth(app));});
-    const show=(doc,how)=>{pending=doc;review.hidden=false;review.replaceChildren(el('h3','분석 결과 검토'),el('strong',doc.title),el('p',summary(doc)),el('p',doc.items.slice(0,20).map(i=>i.label).filter(Boolean).join(' / ')),apply);message.textContent=how+' 교체 전에 기존 일정을 JSON으로 백업하며, 교체 후 실행 취소도 가능합니다.';review.scrollIntoView({block:'nearest'});};
-    const reset=text=>{pending=null;review.hidden=true;message.textContent=text||'';};
-    const busy=async(btn,fn)=>{btn.disabled=true;try{await fn();}catch(e){reset(e.message);}finally{btn.disabled=false;}};
+    const show=(doc,how)=>{pending=doc;review.hidden=false;spot.append(review,message);review.replaceChildren(el('h3','분석 결과 검토'),el('strong',doc.title),el('p',summary(doc)),el('p',doc.items.slice(0,20).map(i=>i.label).filter(Boolean).join(' / ')),apply);message.textContent=how+' 교체 전에 기존 일정을 JSON으로 백업하며, 교체 후 실행 취소도 가능합니다.';review.scrollIntoView({block:'nearest'});};
+    const imgSpot=el('div'),txtSpot=el('div');let spot=imgSpot;
+    const reset=text=>{pending=null;review.hidden=true;message.textContent=text||'';if(text){spot.append(message);message.scrollIntoView({block:'nearest'});}};
+    const busy=async(btn,fn)=>{const label=btn.textContent;btn.disabled=true;btn.textContent='분석 중…';try{await fn();}catch(e){reset(e.message);}finally{btn.disabled=false;btn.textContent=label;}};
     const ai=async(payload,what)=>{if(!app.sync.code)throw new Error('AI 분석은 공동 편집 접속 코드로 연결한 뒤 사용할 수 있습니다. (Mapstone JSON/JavaScript 데이터는 연결 없이 가져올 수 있습니다.)');reset(what+'에서 일정·마일스톤을 분석하고 있습니다… 자료가 크면 1~2분 걸릴 수 있습니다.');const r=await request(app.sync.endpoint,'/analyze',app.sync.code,'POST',payload,'code',180000);return C.validate(r.document);};
 
     body.append(el('h3','1. 이미지 가져오기'),el('p','간트 차트, 로드맵, 표, 슬라이드·화면 캡처, 손그림 등 마일스톤이 담긴 이미지를 분석해 구분 행, 블록, 마일스톤, 이슈, 공통 구간, 메모와 색상까지 Mapstone 일정으로 변환합니다.'));
@@ -86,9 +87,10 @@
     syncImage();
     const analyzeImage=button('이미지 분석 → 일정으로 변환',()=>busy(analyzeImage,async()=>{if(!picked)throw new Error('이미지를 먼저 추가하세요.');show(await ai({image:picked.src},'이미지'),'이미지 분석이 완료되었습니다.');}));analyzeImage.classList.add('ms-primary');
     const overlay=button('참조 이미지로만 추가',()=>{if(!picked)return reset('이미지를 먼저 추가하세요.');const w=Math.min(600,picked.width),h=w*picked.height/picked.width,id=C.uid(),{src,name}=picked;app.mutate(d=>{d.items.push({id,kind:'image',src,label:name,row:'',lane:0,span:1,s:0,e:0,y:70,w,h,color:'#ffffff',variant:'solid',memo:''});});app.setState({sel:id});closeModal();});
-    body.append(analyzeImage,overlay);
+    body.append(analyzeImage,overlay,imgSpot);
 
-    body.append(el('h3','2. 내용(텍스트) 가져오기'),el('p','회의록, 메일, PRD, 엑셀·표 복사본, 마크다운, CSV 등 마일스톤이 담긴 텍스트를 붙여넣거나 파일로 추가하세요. Mapstone JSON/JavaScript 데이터는 분석 없이 바로 가져옵니다.'));
+    const txtHead=el('h3','2. 내용(텍스트) 가져오기');
+    body.append(txtHead,el('p','회의록, 메일, PRD, 엑셀·표 복사본, 마크다운, CSV 등 마일스톤이 담긴 텍스트를 붙여넣거나 파일로 추가하세요. Mapstone JSON/JavaScript 데이터는 분석 없이 바로 가져옵니다.'));
     const setText=async f=>{try{if(f.type.startsWith('image/'))return setImage(f);if(f.size>8*1024*1024)throw new Error('텍스트 파일은 8MB 이하여야 합니다.');input.value=await f.text();syncText();reset(f.name+' 내용을 불러왔습니다.');}catch(e){reset(e.message);}};
     const txtZone=dropZone(body,'텍스트 파일 추가','.txt,.md,.csv,.tsv,.json,.js,.html,.xml,text/*,application/json',setText);
     const input=field(body,'내용 붙여넣기','textarea');input.rows=8;input.placeholder='예) 3/2 킥오프, 3월 요구사항 정의, 4~5월 개발(프론트·백엔드), 6/15 QA 착수, 6/30 오픈';input.addEventListener('input',()=>{reset();syncText();});
@@ -100,11 +102,12 @@
       ['Excel · Google 스프레드시트: 행 · 작업 · 시작일 · 종료일이 있는 범위를 선택해 ','⌘/Ctrl C',' → [텍스트 붙여넣기]. 표 구조가 그대로 전달됩니다.'],
       ['문서 · 메일 · Notion · Confluence: 일정 · 마일스톤이 있는 부분을 선택해 복사하세요. 날짜와 작업명이 함께 있으면 정확도가 높아집니다.'],
       ['PDF: 텍스트를 선택해 복사하세요. 스캔본처럼 텍스트가 선택되지 않으면 캡처해서 이미지 가져오기를 사용하세요.'],
-      ['긴 문서는 일정과 관련된 부분만 붙여넣는 것이 좋습니다. (최대 200,000자)']]),analyzeText);
+      ['긴 문서는 일정과 관련된 부분만 붙여넣는 것이 좋습니다. (최대 200,000자)']]),analyzeText,txtSpot);
     const help=el('details');help.append(el('summary','외부 LLM용 요청문 · 데이터 예제'));const prompt='PRD를 분석해 아래 형식의 const schedule 데이터만 작성해 줘. 시작 월을 0으로 하고 s/e는 개월 단위(5개월 미만은 0.125 단위)로 지정해. rows의 id와 items의 row를 일치시키고 블록 id는 고유하게 지정해. 실행 함수나 계산식 없이 데이터 리터럴로 출력해.\n\nconst schedule = '+JSON.stringify(example,null,2)+';';help.append(el('pre',prompt));help.append(button('요청문 복사',async()=>{try{await navigator.clipboard.writeText(prompt);}catch{download(prompt,'mapstone-llm-prompt.txt');}}));
-    body.append(help,review,message);
+    body.append(help);imgSpot.append(review,message);
+    const dialog=body.closest('dialog');for(const t of ['pointerdown','drop','input','change'])dialog.addEventListener(t,e=>{spot=txtHead.compareDocumentPosition(e.target)&Node.DOCUMENT_POSITION_FOLLOWING?txtSpot:imgSpot;},true);
     // Paste anywhere in the dialog: images go to section 1, text outside the textarea goes into it.
-    body.closest('dialog').addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])].find(x=>x.type.startsWith('image/'));if(f){e.preventDefault();setImage(f);return;}if(e.target!==input){const t=e.clipboardData?.getData('text');if(t){e.preventDefault();input.value=t;input.focus();syncText();reset();}}});
+    dialog.addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])].find(x=>x.type.startsWith('image/'));if(f){e.preventDefault();spot=imgSpot;setImage(f);return;}spot=txtSpot;if(e.target!==input){const t=e.clipboardData?.getData('text');if(t){e.preventDefault();input.value=t;input.focus();syncText();reset();}}});
   }
   function workspace(app,body){const sync=app.sync,shareId=new URLSearchParams(location.search).get('share'),message=el('p','',{className:'ms-message'});message.setAttribute('role','status');
     if(shareId){body.append(el('p','공유받은 일정입니다. 공유자가 설정한 접속 암호를 입력하세요.'));const password=field(body,'접속 암호','password');password.autocomplete='current-password';body.append(button('공유 일정 열기',async()=>{try{message.textContent='접속 중…';await sync.joinShare(shareId,password.value);closeModal();}catch(e){message.textContent=e.message;}}),message);return;}
