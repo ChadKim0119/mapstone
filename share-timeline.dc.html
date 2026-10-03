@@ -745,6 +745,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.9', items: ['AI 분석에 Google Gemini API 지원(GEMINI_API_KEY), OpenAI와 선택 사용', 'AI 분석 실패 시 원인 메시지 표시'] },
     { v: 'v9.8', items: ['블록 시작일 ~ 종료일을 바로 뜨는 툴팁으로 표시(메모가 있으면 함께 표시)', '가져오기 창 개편: 1. 이미지 가져오기 2. 내용(텍스트) 가져오기', '이미지 · 텍스트 AI 분석으로 마일스톤, 이슈, 공통 구간, 메모, 색상, 레인까지 변환', '파일 추가 · 끌어놓기 · 붙여넣기(Ctrl/Cmd+V) 지원', '2MB를 넘거나 PNG/JPEG/WebP가 아닌 이미지도 자동 변환해 사용', '분석 결과를 검토한 뒤 교체'] },
     { v: 'v9.7', items: ['블록에 마우스를 올리면 시작일 ~ 종료일 표시'] },
     { v: 'v9.6', items: ['첫 행 블록의 기간(M) 표시가 헤더에 가려지던 문제 수정', '확대 시 헤더의 주 수(w)와 날짜 눈금이 겹치던 문제 수정', "상단 '행' 추가 버튼 제거 → 행 이름 영역에 마우스를 올리면 + 버튼으로 바로 아래에 행 추가", '마지막 남은 행은 삭제되지 않도록 보호'] },
@@ -763,7 +764,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.8';
+  APP_VER = 'v9.9';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a

@@ -51,18 +51,31 @@ const analysisPrompt=`첨부한 자료(이미지 또는 텍스트)에 담긴 프
 - label에는 표시된 작업명, memo에는 담당자·상태·진척률·산출물·비고·세부 설명 등 그 항목에 대한 나머지 정보를 모두 담으세요.
 - color: 자료에 보이는 색과 가장 가까운 #RRGGBB, 알 수 없으면 "". variant는 진한 채움이면 solid, 옅거나 테두리만 있으면 tint.
 - hideDuration은 기본 false.
-- rangeStart/rangeEnd: 자료에 보이는 전체 시간축의 처음과 끝(없으면 null). now: 오늘·NOW·현재 표시선이 있으면 그 날짜(없으면 null).
+- rangeStart/rangeEnd: 자료에 보이는 전체 시간축의 처음과 끝(없으면 null 또는 ""). now: 오늘·NOW·현재 표시선이 있으면 그 날짜(없으면 null 또는 "").
 - title: 자료의 제목, 없으면 내용을 대표하는 짧은 제목.`;
 function outputText(response:any){for(const item of response.output||[])for(const content of item.content||[])if(content.type==='output_text'&&typeof content.text==='string')return content.text;throw new Error('ai_output_missing');}
+// Gemini's JSON schema subset: no nullable unions or additionalProperties, so empty strings stand in for null.
+const geminiSchema=JSON.parse(JSON.stringify(scheduleSchema,(k,v)=>k==='additionalProperties'?undefined:k==='type'&&Array.isArray(v)?v[0]:v));
+async function askOpenAI(key:string,content:any[]){
+  const ai=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:Deno.env.get('OPENAI_VISION_MODEL')||'gpt-4.1-mini',store:false,input:[{role:'user',content}],text:{format:{type:'json_schema',name:'mapstone_schedule',strict:true,schema:scheduleSchema}}})});
+  const raw=await ai.json();if(!ai.ok)throw new Error('ai_request_failed:'+String(raw?.error?.message||ai.status));return outputText(raw);
+}
+async function askGemini(key:string,content:any[]){
+  const parts=content.map(c=>c.type==='input_image'?(([,mime,data])=>({inline_data:{mime_type:mime,data}}))(/^data:([^;]+);base64,(.*)$/.exec(c.image_url)!):{text:c.text});
+  const model=Deno.env.get('GEMINI_MODEL')||'gemini-2.5-flash';
+  const ai=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{method:'POST',headers:{'x-goog-api-key':key,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',responseJsonSchema:geminiSchema}})});
+  const raw=await ai.json();if(!ai.ok)throw new Error('ai_request_failed:'+String(raw?.error?.message||ai.status));
+  const text=(raw.candidates?.[0]?.content?.parts||[]).map((p:any)=>p.text||'').join('');if(!text)throw new Error('ai_output_missing');return text;
+}
 async function analyze(body:any){
-  const key=Deno.env.get('OPENAI_API_KEY');if(!key)throw new Error('ai_not_configured');
+  const gemini=Deno.env.get('GEMINI_API_KEY'),openai=Deno.env.get('OPENAI_API_KEY');if(!gemini&&!openai)throw new Error('ai_not_configured');
   const image=body.image,text=body.text,content:any[]=[{type:'input_text',text:analysisPrompt}];
   if(image!==undefined){if(typeof image!=='string'||image.length>2800000||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(image))throw new Error('invalid_image');content.push({type:'input_image',image_url:image,detail:'high'});}
   if(text!==undefined){if(typeof text!=='string'||!text.trim()||text.length>200000)throw new Error('invalid_text');content.push({type:'input_text',text:'--- 자료 시작 ---\n'+text+'\n--- 자료 끝 ---'});}
   if(content.length<2)throw new Error('invalid_text');
-  const ai=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:Deno.env.get('OPENAI_VISION_MODEL')||'gpt-4.1-mini',store:false,input:[{role:'user',content}],text:{format:{type:'json_schema',name:'mapstone_schedule',strict:true,schema:scheduleSchema}}})});
-  const raw=await ai.json();if(!ai.ok)throw new Error('ai_request_failed:'+String(raw?.error?.message||ai.status));
-  return Core.fromAnalysis(JSON.parse(outputText(raw)),new Date().toISOString().slice(0,10));
+  const out=gemini?await askGemini(gemini,content):await askOpenAI(openai!,content);
+  let parsed;try{parsed=JSON.parse(out);}catch{throw new Error('ai_output_missing');}
+  return Core.fromAnalysis(parsed,new Date().toISOString().slice(0,10));
 }
 Deno.serve(async (req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
@@ -133,5 +146,5 @@ Deno.serve(async (req:Request)=>{
       return await saveRoom(room,body.document,body.revision);
     }
     return json({error:'지원하지 않는 요청입니다.'},405);
-  }catch(e){const message=e instanceof Error?e.message:'unknown';if(message==='database_error')return json({error:'DB 요청에 실패했습니다. 잠시 후 다시 시도하세요.'},503);if(message==='body_too_large')return json({error:'요청은 9MB 이하여야 합니다.'},413);if(message==='ai_not_configured')return json({error:'AI 분석 API가 아직 설정되지 않았습니다. 관리자에게 문의하세요.'},503);if(message==='invalid_image')return json({error:'2MB 이하 PNG/JPEG/WebP 이미지를 사용하세요.'},400);if(message==='invalid_text')return json({error:'분석할 내용은 1~200,000자여야 합니다.'},400);if(message.startsWith('ai_request_failed:'))return json({error:'AI 분석에 실패했습니다. 잠시 후 다시 시도하세요.'},502);return json({error:message==='invalid_json'?'JSON 형식을 확인하세요.':message},400);}
+  }catch(e){const message=e instanceof Error?e.message:'unknown';if(message==='database_error')return json({error:'DB 요청에 실패했습니다. 잠시 후 다시 시도하세요.'},503);if(message==='body_too_large')return json({error:'요청은 9MB 이하여야 합니다.'},413);if(message==='ai_not_configured')return json({error:'AI 분석 API가 아직 설정되지 않았습니다. 관리자에게 문의하세요.'},503);if(message==='invalid_image')return json({error:'2MB 이하 PNG/JPEG/WebP 이미지를 사용하세요.'},400);if(message==='invalid_text')return json({error:'분석할 내용은 1~200,000자여야 합니다.'},400);if(message.startsWith('ai_request_failed:')){console.error(message);return json({error:'AI 분석에 실패했습니다: '+message.slice(18,300)},502);}if(message==='ai_output_missing')return json({error:'AI가 일정 데이터를 돌려주지 않았습니다. 다시 시도하거나 더 선명한 자료를 사용하세요.'},502);return json({error:message==='invalid_json'?'JSON 형식을 확인하세요.':message},400);}
 });
