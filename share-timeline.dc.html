@@ -80,7 +80,6 @@
       <button onClick="{{ addMarker }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
       <button onClick="{{ addFlag }}" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px; border: 1px solid var(--color-border-neutral-2); border-radius: 4px; background: #fff; font-size: 13px; font-weight: 600; color: var(--color-black); cursor: pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
       <button onClick="{{ addSticky }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button>
-      <button onClick="{{ addRow }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>{{ L.row }}</button>
       <span style="width:1px;height:22px;background:var(--color-border-neutral-2);margin:0 2px"></span>
       <button onClick="{{ openClear }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:#7c1712;cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 12.5h9L17.5 7"></path></svg>{{ L.clearAll }}</button>
       <span style="flex:1"></span>
@@ -143,9 +142,9 @@
           <div style="display:flex;align-items:stretch;position:sticky;top:0;z-index:62;background:#fff">
             <div style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700">{{ L.category }}</div>
             <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
-<sc-for list="{{ subdivisions }}" as="q"><span style="position:absolute;bottom:1px;left:{{ q.left }};font-size:9px;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
+<sc-for list="{{ subdivisions }}" as="q"><span style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
               <sc-for list="{{ cols }}" as="c" hint-placeholder-count="22">
-                <div style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 0;border-left:1px solid rgba(255,255,255,.22);color:#fff;width:{{ c.width }}">
+                <div style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }}">
                   <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.75);height:13px">{{ c.yearLabel }}</span>
                   <span style="font-size:13px;font-weight:700">{{ c.label }}</span>
                   <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,.75)">{{ c.weeks }}</span>
@@ -163,6 +162,7 @@
                     <div data-noprint="" style="display:flex;gap:4px">
                       <button data-id="{{ row.id }}" onClick="{{ onRowUp }}" title="{{ L.moveUp }}" style="width:30px;height:26px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:700;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">↑</button>
                       <button data-id="{{ row.id }}" onClick="{{ onRowDown }}" title="{{ L.moveDown }}" style="width:30px;height:26px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:700;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">↓</button>
+                      <button data-id="{{ row.id }}" onClick="{{ addRow }}" title="{{ L.rowAdd }}" style="width:30px;height:26px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:14px;font-weight:700;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">+</button>
                       <button data-id="{{ row.id }}" onClick="{{ askRowDelete }}" title="{{ L.rowDel }}" style="width:30px;height:26px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:700;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">✕</button>
                     </div>
                   </sc-if>
@@ -199,7 +199,7 @@
                         <div style="position:absolute;right:19px;bottom:1px;white-space:nowrap;font-size:10.5px;font-weight:700;border-radius:9999px;pointer-events:none;padding:{{ b.durPad }};background:{{ b.durBg }};color:{{ b.durFg }}">{{ b.dur }}</div>
                       </sc-if>
                       <sc-if value="{{ b.durOut }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:50%;transform:translateX(-50%);top:-16px;white-space:nowrap;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:9999px;background:#181a1b;color:#fff;pointer-events:none;z-index:12">{{ b.dur }}</div>
+                        <div style="position:absolute;left:50%;transform:translateX(-50%);top:{{ b.durTop }};white-space:nowrap;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:9999px;background:#181a1b;color:#fff;pointer-events:none;z-index:12">{{ b.dur }}</div>
                       </sc-if>
                       <sc-if value="{{ b.hasMemo }}" hint-placeholder-val="{{ false }}">
                         <div style="position:absolute;right:5px;top:3px;width:9px;height:9px;border-radius:9999px;border:1.5px solid #fff;background:#e30084;pointer-events:none;z-index:13"></div>
@@ -745,6 +745,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.6', items: ['첫 행 블록의 기간(M) 표시가 헤더에 가려지던 문제 수정', '확대 시 헤더의 주 수(w)와 날짜 눈금이 겹치던 문제 수정', "상단 '행' 추가 버튼 제거 → 행 이름 영역에 마우스를 올리면 + 버튼으로 바로 아래에 행 추가", '마지막 남은 행은 삭제되지 않도록 보호'] },
     { v: 'v9.5', items: ['포스트잇 메모 · 참조 이미지가 상단 월 헤더에 가려지던 문제 수정'] },
     { v: 'v9.4', items: ['색상 이름 · NOW 툴팁 · 지난 릴리스 노트의 깨진 한글 수정', '중복 스타일 로드로 생기던 콘솔 404 오류 제거'] },
     { v: 'v9.3', items: ['블록 시작 · 종료를 날짜로 직접 지정', '세부 조정 시 마그네틱 스냅 안내 문구', "'인터랙션' → '마우스 컨트롤'로 이름 변경", '마우스 컨트롤 토글 시 조작 안내 팝업(다시 보지 않기 지원)', '확대 · 축소 슬라이더를 로그 스케일로 재조정하고 배율 표시 추가', '가져오기 · 공유 · JSON 백업 · PPT · 인쇄를 별도 섹션으로 분리', "물음표 버튼을 '사용법'으로 명시", "패널 열기/닫기를 '설정 패널' 토글 스위치로 변경", "속성 패널의 '설정' 탭을 '전체 설정'으로 변경", '파비콘 추가'] },
@@ -760,7 +761,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.5';
+  APP_VER = 'v9.6';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -804,7 +805,7 @@ class Component extends DCLogic {
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
       newChev: '새 단계', newPlain: '메모를 입력하세요', newBand: '새 구간', newMarker: '새 기준선', newFlag: '이슈', newRow: '새 구분', newNote: '공지 메모를 입력하세요',
       zoom: '확대 / 축소', magnetF: '마그네틱 스냅', magnetHint: '5개월 미만은 0.125개월(월 8단계), 그 외에는 0.25개월 단위와 인접 블록 끝에 맞춥니다. 끄면 자유롭게 조정합니다.',
-      helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제',
+      helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
       clearAll: '전체 지우기', clearTitle: '전체 지우기', clearMsg: '현재 화면의 모든 바·밴드·기준선·이슈·메모가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
@@ -843,7 +844,7 @@ class Component extends DCLogic {
       pptFail: 'PPT書き出しモジュールを読み込めませんでした。ネットワークを確認して再試行してください。',
       newChev: '新しいフェーズ', newPlain: 'メモを入力', newBand: '新しい期間', newMarker: '新しい基準線', newFlag: '課題', newRow: '新しい区分', newNote: 'お知らせメモを入力',
       zoom: '拡大・縮小', magnetF: 'マグノティックスナップ', magnetHint: 'ONにすると0.25ヶ月グリッドと隣接ブロックの端に吸着します。OFFなら自由に配置できます。',
-      helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除',
+      helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除', rowAdd: '下に行を追加',
       rowHint: '行の境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
       clearAll: '全て削除', clearTitle: '全て削除', clearMsg: '現在の画面のすべてのブロック・バンド・基準線・課題・メモが削除されます。\n行とタイムライン設定、バージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
@@ -1174,7 +1175,7 @@ class Component extends DCLogic {
   stopClick = (e) => e.stopPropagation();
   openRel = () => this.setState({ relOpen: true });
   closeRel = () => this.setState({ relOpen: false });
-  askRowDelete = (e) => { e.stopPropagation(); this.setState({ rowDelId: e.currentTarget.dataset.id }); };
+  askRowDelete = (e) => { e.stopPropagation(); if (this.state.rows.length < 2) return; this.setState({ rowDelId: e.currentTarget.dataset.id }); };
   cancelRowDelete = () => this.setState({ rowDelId: null });
   confirmRowDelete = () => {
     const id = this.state.rowDelId;
@@ -1711,7 +1712,7 @@ class Component extends DCLogic {
   addFlag = () => this.addAt('flag');
   deleteSel = () => { const id = this.state.sel; this.mutate((d) => { d.items = d.items.filter((i) => i.id !== id); }); this.setState({ sel: null, editing: null }); };
 
-  addRow = () => { const id = this.uid(); this.mutate((d) => { d.rows.push({ id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
+  addRow = (e) => { e.stopPropagation(); const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
   onRowName = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) r.name = v; }, false); };
   onRowDelete = (e) => {
     const id = e.currentTarget.dataset.id;
@@ -2044,7 +2045,7 @@ class Component extends DCLogic {
         outLeft: !editing && m.mode === 'left', outStrip: !editing && m.mode === 'strip',
         stripTop: px(stripTop), connTop: px(h), connH: px(Math.max(0, stripTop - h + 4)),
         dur: it.hideDuration ? '' : this.durOf(it.s, it.e),
-        durIn: !it.hideDuration && !editing && m.mode === 'in', durOut: !it.hideDuration && !editing && m.mode !== 'in',
+        durTop: px(it.row === st.rows[0].id && it.lane === 0 ? -6 : -16), durIn: !it.hideDuration && !editing && m.mode === 'in', durOut: !it.hideDuration && !editing && m.mode !== 'in',
         hasMemo: !!(it.memo || '').trim(),
         tip: hov && !!(it.memo || '').trim() && !editing,
         trans: drag ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
@@ -2178,7 +2179,7 @@ class Component extends DCLogic {
     return {
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
       focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, exportJson:this.exportJson,
-      timeStep:this.timeStep(), negativeTimeStep:-this.timeStep(), onHideDuration:this.onHideDuration, selHideDuration:!!(sel && sel.hideDuration), subdivisions,
+      timeStep:this.timeStep(), colPad: subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), onHideDuration:this.onHideDuration, selHideDuration:!!(sel && sel.hideDuration), subdivisions,
       imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:st.sel===it.id,border:st.sel===it.id?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
