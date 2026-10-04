@@ -7,7 +7,7 @@ for name in ['share-timeline.dc.html','개발 일정 및 진행 현황.dc.html']
     target=next((p for p in ROOT.glob('*.dc.html') if unicodedata.normalize('NFC',p.name)==name), ROOT/name)
     target.write_text(source)
 (ROOT/'share/schedule-maker.html').write_text(source)
-for name in ['support.js','mapstone-core.js','mapstone-ui.js']:
+for name in ['support.js','mapstone-core.js','mapstone-ui.js','mapstone-help.js']:
     shutil.copyfile(ROOT/name,ROOT/'share'/name)
 shutil.copytree(ROOT/'vendor',ROOT/'share/vendor',dirs_exist_ok=True)
 shutil.copyfile(ROOT/'mapstone-core.js',ROOT/'supabase/functions/mapstone-api/mapstone-core.js')

@@ -14,6 +14,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 </script>
 <script src="./mapstone-core.js"></script>
 <script src="./mapstone-ui.js"></script>
+<script src="./mapstone-help.js"></script>
 <script src="./vendor/react.js"></script>
 <script src="./vendor/react-dom.js"></script>
 <script src="./support.js"></script>
@@ -82,12 +83,15 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-toolbar-group { display:inline-flex;align-items:center;gap:6px; }
     .ms-link-target { outline:3px solid #e30084;outline-offset:3px;z-index:25; }
     .ms-toolbar-label { flex:none;padding:3px 8px;border:1px solid var(--color-border-neutral-2);border-radius:9999px;background:var(--color-magenta-50);font-size:11px;font-weight:700;color:var(--color-text-neutral-4);letter-spacing:.02em; }
+    .ms-accent { border-color:#e30084 !important;color:#c2006f !important;background:#fff !important;box-shadow:0 0 0 3px rgba(227,0,132,.08); }
+    .ms-accent:hover { background:#fff5fa !important; }
+    @media (max-width:1700px) { .ms-toolbar-row .ms-tool-button:not(.ms-icon-button):not(.ms-accent) > svg { display:none; } }
     .ms-toolbar-sep { flex:none;width:1px;height:22px;margin:0 2px;background:var(--color-border-neutral-2); }
-    .ms-tool-button { display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer;white-space:nowrap; }
+    .ms-tool-button { display:inline-flex;align-items:center;justify-content:center;gap:5px;height:32px;padding:0 9px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer;white-space:nowrap; }
     .ms-tool-button:hover, .ms-tool-menu > summary:hover { background:var(--color-bg-neutral-1); }
     .ms-tool-menu { position:relative; }
     .ms-icon-button { width:32px;padding:0 !important;justify-content:center; }
-    .ms-tool-menu > summary { display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer;list-style:none;white-space:nowrap; }
+    .ms-tool-menu > summary { display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 9px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer;list-style:none;white-space:nowrap; }
     .ms-tool-menu > summary::-webkit-details-marker { display:none; }
     .ms-tool-menu[open] > summary { border-color:#181a1b; }
     .ms-tool-popover { position:absolute;right:0;top:calc(100% + 6px);z-index:220;display:flex;min-width:190px;flex-direction:column;gap:4px;padding:6px;border:1px solid var(--color-border-neutral-2);border-radius:8px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.16); }
@@ -116,51 +120,48 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     </div>
 
     <div class="ms-toolbar-row">
-      <span class="ms-toolbar-label">{{ L.add }}</span>
-      <button class="ms-tool-button" onClick="{{ addChev }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
-      <button class="ms-tool-button" onClick="{{ addPlain }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
-      <button class="ms-tool-button" onClick="{{ addBand }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
-      <button class="ms-tool-button" onClick="{{ addMarker }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
-      <button class="ms-tool-button" onClick="{{ addFlag }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
-      <button class="ms-tool-button" onClick="{{ addSticky }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button>
+      <div class="ms-toolbar-group">
+        <span class="ms-toolbar-label">{{ L.add }}</span>
+        <button class="ms-tool-button" onClick="{{ addChev }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
+        <button class="ms-tool-button" onClick="{{ addMarker }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
+        <button class="ms-tool-button" onClick="{{ addFlag }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
+        <details class="ms-tool-menu"><summary>{{ L.moreG }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
+          <button class="ms-tool-button" onClick="{{ addPlain }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
+          <button class="ms-tool-button" onClick="{{ addBand }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
+          <button class="ms-tool-button" onClick="{{ addSticky }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button>
+        </div></details>
+      </div>
+      <span class="ms-toolbar-sep"></span>
+      <div class="ms-toolbar-group">
+        <span class="ms-toolbar-label">{{ L.viewG }}</span>
+        <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durUnit }}</button>
+        <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
+        <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
+        <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
+        <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
+      </div>
+      <span class="ms-toolbar-sep"></span>
+      <div class="ms-toolbar-group">
+        <span class="ms-toolbar-label">{{ L.screenG }}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
+        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:#e30084">
+        <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
+        <button class="ms-tool-button" onClick="{{ fitWidth }}">{{ L.fit }}</button>
+        <button class="ms-tool-button" onClick="{{ toggleFocus }}" title="Esc 또는 F 키로 돌아오기">{{ L.full }}</button>
+      </div>
       <span style="flex:1"></span>
-      <button class="ms-tool-button" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg>{{ L.importG }}</button>
+      <button class="ms-tool-button ms-accent" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg>{{ L.importG }}</button>
       <button class="ms-tool-button" onClick="{{ openFile }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>{{ L.fileG }}</button>
       <details class="ms-tool-menu"><summary>{{ L.exp }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
         <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.saveFile }}</button>
         <button class="ms-tool-button" onClick="{{ exportPng }}">{{ L.png }}</button>
         <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
         <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
+        <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
       </div></details>
-      <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
-    </div>
-
-    <div class="ms-toolbar-row">
-      <div class="ms-toolbar-group">
-        <span class="ms-toolbar-label">{{ L.editTools }}</span>
-        <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
-        <button onClick="{{ toggleInteract }}" title="{{ L.interactTip }}" class="ms-tool-button" style="border-color:{{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"></path><circle cx="12" cy="12" r="2.4"></circle></svg>{{ L.interact }}</button>
-      </div>
       <span class="ms-toolbar-sep"></span>
-      <div class="ms-toolbar-group">
-        <span class="ms-toolbar-label">{{ L.viewG }}</span>
-        <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durUnit }}</button>
-        <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
-        <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
-        <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
-      </div>
-      <span class="ms-toolbar-sep"></span>
-      <div class="ms-toolbar-group">
-        <span class="ms-toolbar-label">{{ L.screenG }}</span>
-        <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
-        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:110px;accent-color:#e30084">
-        <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
-        <button class="ms-tool-button" onClick="{{ fitWidth }}">{{ L.fit }}</button>
-        <button class="ms-tool-button" onClick="{{ toggleFocus }}" title="Esc 또는 F 키로 돌아오기">{{ L.full }}</button>
-      </div>
-      <span style="flex:1"></span>
-      <button class="ms-tool-button" onClick="{{ togglePanel }}" title="{{ panelLabel }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg>{{ L.panelF }}</button>
       <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" title="{{ L.clearAll }}" aria-label="{{ L.clearAll }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg></button>
+      <button class="ms-tool-button" onClick="{{ togglePanel }}" title="{{ panelLabel }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg>{{ L.panelF }}</button>
     </div>
   </div>
 
@@ -597,6 +598,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.durUnitHint }}</span>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.interact }}</span><span style="font-size:11px;color:var(--color-text-neutral-3)">{{ L.interactTip }}</span></span>
+              <button onClick="{{ toggleInteract }}" role="switch" aria-checked="{{ interactChecked }}" aria-label="{{ L.interact }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ interactTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ interactKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.animF }}</span>
               <button onClick="{{ toggleAnim }}" role="switch" aria-checked="{{ animChecked }}" aria-label="{{ L.animF }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ animTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ animKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
@@ -667,20 +672,6 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     </sc-if>
   </div>
 
-  <sc-if value="{{ helpOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ closeHelp }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.helpT }}" style="width:100%;max-width:560px;max-height:80vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:18px;font-weight:700">{{ L.helpT }}</span>
-          <button onClick="{{ closeHelp }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
-        </div>
-        <span style="font-size:13px;line-height:1.9;white-space:pre-line;color:var(--color-text-neutral-5)">{{ L.help }}</span>
-        <span style="font-size:12px;line-height:1.7;color:var(--color-text-neutral-3)">{{ L.rowHint }}</span>
-        <span style="font-size:12px;line-height:1.7;color:var(--color-text-neutral-3)">{{ L.magnetHint }}</span>
-        <span style="font-size:12px;line-height:1.7;color:var(--color-text-neutral-3)">{{ L.overlapHint }}</span>
-      </div>
-    </div>
-  </sc-if>
 
   <sc-if value="{{ mouseTipOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeMouseTip }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
@@ -796,6 +787,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.39', title: '메뉴바 한 줄 재배치·사용법 개편', items: ['메뉴바를 한 줄로 재배치: 항목 추가(일정·마일스톤·메모·더보기) · 보기(MM·일자·툴팁·Week·눈금 맞춤) · 화면 · 분석 · 불러오기 · 내보내기 · ↻ · 설정창 보기', '참고·공통·포스트잇은 [더보기], 공유는 [내보내기] 안으로 이동', '이미지/텍스트 분석 버튼 강조', '마우스 조작은 설정의 스위치로 이동', '사용법을 큰 화면 · 섹션별 안내와 화면 캡처로 새로 구성(분석 → 일정 조작 → 눈금 맞춤 → 메모 → 마일스톤·NOW → 행 → 보기 → 설정창 → 파일, 단축키)'] },
     { v: 'v9.38', title: '설정창 래퍼 크기·주차 말줄임·토글·애니메이션 확대', items: ['설정창 숫자 입력(−/+) 래퍼를 버튼과 같은 30px로 맞추고 이중 테두리 제거, 탭 높이 36px', "헤더 주차는 최대한 모두 표시하고 공간이 부족하면 뒤쪽(5w 등)부터 숨기며 마지막 라벨에 '…' 표시", '설정의 기간 단위·애니메이션을 버튼 하나로 토글, 애니메이션 부연설명 삭제', '표시 개월 수 증감, 행 추가·이동, 설정 탭 전환에도 애니메이션'] },
     { v: 'v9.37', title: '용어 정리·MM/MD·애니메이션·설정창 크기 통일', items: ["메뉴 용어 정리: 작업→일정, 작업 방식→동작, '구간' 삭제(참고·공통), 겹침 정책 '위치변경', 전체 설정→설정", 'Week 표시에서 공간이 부족한 주차·일자 라벨을 숨겨 헤더 글자 겹침 해결(실제 주 수 포함)', '배율 핸들 더블클릭 시 너비 맞춤', '설정에서 기간 단위 MM / MD 선택(1MM = 22MD, KOSA 기준), 메뉴 버튼과 툴팁 연동', '설정창 열기·닫기, 항목 생성·삭제, 팝업에 짧은 애니메이션 · 설정에서 켜기/끄기', '설정창 버튼·입력 높이를 30px로 통일(기존의 약 80%)'] },
     { v: 'v9.36', title: '높이 눈금 맞춤·행 맞춤·메뉴 IA 정리', items: ['눈금 맞춤 ON이면 항목 높이 조절이 레인 눈금에 맞춰지고, 행 경계에서는 항상 살짝 걸리는 효과', '행 구분선 더블클릭으로 행 높이를 항목에 맞춤(빈 행은 기본 높이)', '메모 연결점 드래그 시 생기던 점선 제거', "'설정'을 '설정창 보기'로 바꾸고 두 번째 줄로 이동, 전체 지우기는 오른쪽 새로고침 아이콘", '이미지/텍스트 분석과 불러오기를 첫 번째 줄 버튼으로 노출', '불러오기 창에서 맵스톤 파일 가져오기와 JSON 붙여넣기 안내', "내보내기 '파일 저장[JSON]'", 'AI 분석 시 연도가 없으면 2026년 기준', 'NOW 더블클릭 시 오늘이 기간 밖이면 기간 확장 확인 팝업'] },
@@ -844,7 +836,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.38';
+  APP_VER = 'v9.39';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1367,7 +1359,7 @@ class Component extends DCLogic {
     const ratio = (e.clientX - tr.left) / tr.width;
     el.scrollTo({ left: ratio * el.scrollWidth - el.clientWidth / 2, behavior: 'smooth' });
   };
-  openHelp = () => this.setState({ helpOpen: true });
+  openHelp = () => MapstoneUI.open(this, 'help');
   closeHelp = () => this.setState({ helpOpen: false });
   clearMemo = () => { const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.memo = ''; }); };
   rowTop(id) {
@@ -2570,7 +2562,7 @@ class Component extends DCLogic {
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
-      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM'), onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? '#181a1b' : '#c5cdd6', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
+      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM'), onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, interactChecked: st.interact ? 'true' : 'false', interactTrack: st.interact ? '#181a1b' : '#c5cdd6', interactKnob: st.interact ? '23px' : '3px', toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? '#181a1b' : '#c5cdd6', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
       showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
       showTooltip:cfg.showTooltip !== false, toggleTooltip:this.toggleTooltip,
       tooltipBg:cfg.showTooltip !== false ? '#181a1b' : '#f3f5f6', tooltipFg:cfg.showTooltip !== false ? '#fff' : '#66707a', tooltipBorder:cfg.showTooltip !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
