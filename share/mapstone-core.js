@@ -18,9 +18,9 @@
   const uid = () => 'i' + (globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
   function syncLinks(items) {
     for (const flag of items.filter(i => i.kind === 'flag' && i.targetId)) {
-      const target = items.find(i => i.id === flag.targetId && ['chev','plain'].includes(i.kind));
+      const target = items.find(i => i.id === flag.targetId && ['chev','plain','band'].includes(i.kind));
       if (!target) { flag.targetId = ''; delete flag.linkOffset; delete flag.linkY; continue; }
-      flag.row = target.row; flag.lane = target.lane;
+      flag.row = target.kind === 'band' ? target.rowFrom : target.row; flag.lane = target.kind === 'band' ? 0 : target.lane;
       flag.s = flag.e = target.s + (target.e - target.s) * (flag.linkOffset ?? 1);
     }
   }
@@ -31,7 +31,7 @@
     if (JSON.stringify(data).length > 8 * 1024 * 1024) fail('일정은 8MB 이하여야 합니다.');
     if (!Array.isArray(data.rows) || !data.rows.length || data.rows.length > 200) fail('구분 행은 1~200개가 필요합니다.');
     if (!Array.isArray(data.items) || data.items.length > 5000) fail('블록은 최대 5,000개입니다.');
-    const cfg = Object.assign({ startY: 2026, startM: 1, months: 12, weekPx: 19, weekMode: 'uniform', laneH: 44, magnet: true, overlap: 'shrink' }, data.cfg || {});
+    const cfg = Object.assign({ startY: 2026, startM: 1, months: 12, weekPx: 19, weekMode: 'uniform', laneH: 44, magnet: true, overlap: 'shrink', showWeek:false, showElementDates:true }, data.cfg || {});
     for (const [k, lo, hi] of [['startY',1900,2200],['startM',1,12],['months',1,48],['weekPx',4,640],['laneH',28,72]]) finite(cfg[k], k, lo, hi);
     for (const k of ['startY','startM','months']) if (!Number.isInteger(cfg[k])) fail(k + '는 정수여야 합니다.');
     if (!['uniform','actual'].includes(cfg.weekMode) || !['shrink','moveOther','moveSelf'].includes(cfg.overlap)) fail('타임라인 설정이 올바르지 않습니다.');
@@ -53,6 +53,8 @@
       if (['chev','plain','flag'].includes(it.kind) && !rowIds.has(it.row)) fail('블록의 구분 행을 찾을 수 없습니다: '+it.row);
       if (it.kind === 'band' && (!rowIds.has(it.rowFrom) || !rowIds.has(it.rowTo))) fail('밴드의 시작·끝 행을 찾을 수 없습니다.');
       for (const k of ['y','w','h']) if (it[k] !== undefined) finite(it[k],k,0,20000);
+      if (it.trackY !== undefined) finite(it.trackY,'항목 위쪽 위치',-20000,20000);
+      if (it.trackH !== undefined) finite(it.trackH,'항목 높이',1,20000);
       if (it.kind === 'image' && (typeof it.src !== 'string' || !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(it.src) || it.src.length > 2800000)) fail('이미지는 2MB 이하 PNG/JPEG/WebP 데이터여야 합니다.');
       if (it.hideDuration !== undefined && typeof it.hideDuration !== 'boolean') fail('hideDuration은 true/false입니다.');
       if (it.targetId !== undefined) { text(it.targetId,'연결 대상',128); if (it.kind !== 'flag') fail('알림만 요소에 연결할 수 있습니다.'); }
