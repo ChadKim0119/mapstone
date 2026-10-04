@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mapstone · 일정 Maker</title>
+<title>Mapstone · 일정 Maker · Codex 수정</title>
 <script src="./mapstone-core.js"></script>
 <script src="./mapstone-ui.js"></script>
 <script src="./vendor/react.js"></script>
@@ -47,11 +47,25 @@
     [data-app] [data-resize]::after { content:""; position:absolute; inset:-5px; }
     [data-app] [data-resize]:hover { background:rgba(227,0,132,.75) !important; }
     [data-sticky]:hover, [data-sticky]:focus-within { z-index:90 !important; }
+    [data-app] [role="button"][data-id]:focus-visible { outline:3px solid #e30084; outline-offset:3px; z-index:95 !important; }
     [data-board] { isolation:isolate; }
     [data-app][data-focus="true"] > [data-toolbar], [data-app][data-focus="true"] [data-properties], [data-app][data-focus="true"] [data-noprint] { display:none !important; }
     [data-app][data-focus="true"] { position:fixed; inset:0; z-index:500; height:100dvh !important; }
     .ms-button { height:32px; padding:0 11px; border:1px solid #dce0e5; border-radius:4px; background:#fff; font-size:13px; font-weight:600; cursor:pointer; }
-    @media (max-width:700px) { [data-properties] { width:280px !important; } [data-toolbar] { padding:8px !important; } }
+    .ms-toolbar-row { display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1); }
+    .ms-toolbar-group { display:inline-flex;align-items:center;gap:6px; }
+    .ms-link-target { outline:3px solid #e30084;outline-offset:3px;z-index:25; }
+    .ms-toolbar-label { flex:none;padding:3px 8px;border:1px solid var(--color-border-neutral-2);border-radius:9999px;background:var(--color-magenta-50);font-size:11px;font-weight:700;color:var(--color-text-neutral-4);letter-spacing:.02em; }
+    .ms-toolbar-sep { flex:none;width:1px;height:22px;margin:0 2px;background:var(--color-border-neutral-2); }
+    .ms-tool-button { display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer;white-space:nowrap; }
+    .ms-tool-button:hover, .ms-tool-menu > summary:hover { background:var(--color-bg-neutral-1); }
+    .ms-tool-menu { position:relative; }
+    .ms-tool-menu > summary { display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer;list-style:none;white-space:nowrap; }
+    .ms-tool-menu > summary::-webkit-details-marker { display:none; }
+    .ms-tool-menu[open] > summary { border-color:#181a1b; }
+    .ms-tool-popover { position:absolute;right:0;top:calc(100% + 6px);z-index:220;display:flex;min-width:190px;flex-direction:column;gap:4px;padding:6px;border:1px solid var(--color-border-neutral-2);border-radius:8px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.16); }
+    .ms-tool-popover .ms-tool-button { width:100%;justify-content:flex-start;border-color:transparent; }
+    @media (max-width:700px) { [data-properties] { width:280px !important; } [data-toolbar] { padding:8px !important;max-height:48dvh;overflow-y:auto; } [data-toolbar] > div:first-child { flex-wrap:wrap; } [data-toolbar] > div:first-child > input { order:5;flex-basis:100% !important;margin-left:0 !important; } [data-toolbar] button, .ms-tool-menu > summary { min-height:44px; } .ms-toolbar-group { flex-wrap:wrap; } .ms-tool-menu[open] { flex-basis:100%; } .ms-tool-popover { position:static;margin-top:6px; } }
     @media print {
       [data-noprint] { display: none !important; }
       [data-board] { overflow: visible !important; height: auto !important; }
@@ -61,58 +75,74 @@
   </style>
 </helmet>
 
-<div data-app="" data-focus="{{ focusMode }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
+<div data-app="" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
+  <sc-if value="{{ linking }}"><svg data-noprint="" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"><line x1="{{ linkDrag.x0 }}" y1="{{ linkDrag.y0 }}" x2="{{ linkDrag.x }}" y2="{{ linkDrag.y }}" stroke="#e30084" stroke-width="2" stroke-dasharray="4 3"></line><circle cx="{{ linkDrag.x }}" cy="{{ linkDrag.y }}" r="5" fill="#e30084"></circle></svg></sc-if>
 
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
     <div style="display:flex;align-items:center;gap:10px">
       <button onClick="{{ openRel }}" title="{{ L.relTitle }}" style="flex:none;padding:4px 10px;border:none;border-radius:9999px;background:#181a1b;font-size:12px;font-weight:700;color:#fff;letter-spacing:.01em;cursor:pointer">Prototype {{ appVer }}</button>
-      <span style="flex:none;padding:3px 8px;border-radius:9999px;background:var(--color-bg-neutral-2);font-size:12px;font-weight:700;color:var(--color-text-neutral-4)">{{ verLabel }}</span><input value="{{ title }}" onChange="{{ onTitle }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:1px solid transparent;border-radius:6px;padding:4px 8px;margin-left:-8px;font-size:20px;font-weight:700;color:var(--color-text-neutral-6);background:transparent;outline:none" style-hover="border-color:var(--color-border-neutral-2)" style-focus="border-color:#000">
+      <span style="flex:none;padding:3px 8px;border-radius:9999px;background:var(--color-bg-neutral-2);font-size:12px;font-weight:700;color:var(--color-text-neutral-4)">{{ verLabel }}</span><input value="{{ title }}" onChange="{{ onTitle }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" aria-label="{{ L.titleF }}" style="flex:1;min-width:0;border:1px solid transparent;border-radius:6px;padding:4px 8px;margin-left:-8px;font-size:20px;font-weight:700;color:var(--color-text-neutral-6);background:transparent;outline:none" style-hover="border-color:var(--color-border-neutral-2)" style-focus="border-color:#000">
       
       <span style="flex:none;font-size:12px;font-weight:500;color:var(--color-text-neutral-3)">{{ savedLabel }}</span>
+      <button class="ms-tool-button" onClick="{{ openHelp }}" title="{{ L.helpTip }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.6 9.4a2.5 2.5 0 114.3 1.8c-1 .8-1.9 1.2-1.9 2.4M12 16.6h.01"></path></svg>{{ L.helpT }}</button>
       <button onClick="{{ toggleLang }}" style="flex: none; display:inline-flex; align-items:center; gap:6px; height: 32px; padding: 0 12px; border: 1px solid var(--color-border-neutral-2); border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--color-neutral-100); cursor: pointer; background-color: var(--color-neutral-700)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.6 2.8 2.6 14.2 0 17M12 3.5c-2.6 2.8-2.6 14.2 0 17"></path></svg>{{ langLabel }}</button>
     </div>
 
-    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1)">
-      <span style="padding: 3px 8px; border-radius: 9999px; border: 1px solid var(--color-border-neutral-2); font-size: 11px; font-weight: 700; color: var(--color-text-neutral-4); letter-spacing: .02em; background-color: var(--color-magenta-50)">{{ L.add }}</span>
-      <button onClick="{{ addChev }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
-      <button onClick="{{ addPlain }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
-      <button onClick="{{ addBand }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
-      <button onClick="{{ addMarker }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
-      <button onClick="{{ addFlag }}" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px; border: 1px solid var(--color-border-neutral-2); border-radius: 4px; background: #fff; font-size: 13px; font-weight: 600; color: var(--color-black); cursor: pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
-      <button onClick="{{ addSticky }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button>
-      <span style="width:1px;height:22px;background:var(--color-border-neutral-2);margin:0 2px"></span>
-      <button onClick="{{ openClear }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:#7c1712;cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 12.5h9L17.5 7"></path></svg>{{ L.clearAll }}</button>
+    <div class="ms-toolbar-row">
+      <span class="ms-toolbar-label">{{ L.add }}</span>
+      <button class="ms-tool-button" onClick="{{ addChev }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
+      <button class="ms-tool-button" onClick="{{ addPlain }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
+      <button class="ms-tool-button" onClick="{{ addBand }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
+      <button class="ms-tool-button" onClick="{{ addMarker }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
+      <button class="ms-tool-button" onClick="{{ addFlag }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
+      <button class="ms-tool-button" onClick="{{ addSticky }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button>
       <span style="flex:1"></span>
-      <button onClick="{{ openHelp }}" title="{{ L.helpTip }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border:1px solid #181a1b;border-radius:4px;background:#181a1b;font-size:13px;font-weight:700;color:#fff;cursor:pointer" style-hover="background:#33383c"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.6 9.4a2.5 2.5 0 114.3 1.8c-1 .8-1.9 1.2-1.9 2.4M12 16.6h.01"></path></svg>{{ L.helpT }}</button>
-      <button onClick="{{ togglePanel }}" title="{{ panelLabel }}" aria-pressed="{{ panel }}" style="display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid {{ panelBorder }};border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg>{{ L.panelF }}<span style="position:relative;flex:none;width:30px;height:16px;border-radius:9999px;background:{{ panelTrack }}"><span style="position:absolute;top:2px;left:{{ panelKnob }};width:12px;height:12px;border-radius:9999px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></span></button>
+      <button class="ms-tool-button" onClick="{{ togglePanel }}" title="{{ panelLabel }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg>{{ L.panelF }}</button>
     </div>
 
-    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1)">
-      <span style="padding: 3px 8px; border-radius: 9999px; border: 1px solid var(--color-border-neutral-2); font-size: 11px; font-weight: 700; color: var(--color-text-neutral-4); letter-spacing: .02em; background-color: var(--color-magenta-50)">{{ L.view }}</span>
-      <button onClick="{{ toggleInteract }}" title="{{ L.interactTip }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"></path><circle cx="12" cy="12" r="2.4"></circle></svg>{{ L.interact }} {{ interactState }}</button>
-      <button onClick="{{ toggleMagnet }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }} {{ magnetState }}</button>
-      <button onClick="{{ nowToday }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>{{ L.nowToday }}</button>
-      <span style="width:1px;height:22px;background:var(--color-border-neutral-2);margin:0 2px"></span>
-      <span style="padding: 3px 8px; border-radius: 9999px; border: 1px solid var(--color-border-neutral-2); font-size: 11px; font-weight: 700; color: var(--color-text-neutral-4); letter-spacing: .02em; background-color: var(--color-magenta-50)">{{ L.exp }}</span>
-      <button onClick="{{ exportPng }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M4 16l5-4.5 3.5 3L16 11l4 4"></path><circle cx="9" cy="9" r="1.4"></circle></svg>PNG</button>
-      <button onClick="{{ openText }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 3.5h9l3.5 3.5v13H6z"></path><path d="M9.5 11h6M9.5 14.5h6"></path></svg>{{ L.textTitle }}</button>
+    <div class="ms-toolbar-row">
+      <div class="ms-toolbar-group">
+        <span class="ms-toolbar-label">{{ L.editTools }}</span>
+        <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
+        <button onClick="{{ toggleInteract }}" title="{{ L.interactTip }}" class="ms-tool-button" style="border-color:{{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"></path><circle cx="12" cy="12" r="2.4"></circle></svg>{{ L.interact }}</button>
+      </div>
+      <span class="ms-toolbar-sep"></span>
+      <div class="ms-toolbar-group">
+        <span class="ms-toolbar-label">{{ L.viewG }}</span>
+        <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" title="{{ L.mmTip }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">MM</button>
+        <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
+        <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
+      </div>
+      <span class="ms-toolbar-sep"></span>
+      <div class="ms-toolbar-group">
+        <span class="ms-toolbar-label">{{ L.screenG }}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
+        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:110px;accent-color:#e30084">
+        <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
+        <button class="ms-tool-button" onClick="{{ fitWidth }}">{{ L.fit }}</button>
+        <button class="ms-tool-button" onClick="{{ toggleFocus }}" title="Esc 또는 F 키로 돌아오기">{{ L.full }}</button>
+      </div>
       <span style="flex:1"></span>
-      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5M8.5 11h5"></path></svg>{{ L.zoom }}</span>
-      <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:150px;accent-color:#e30084">
-      <span style="min-width:44px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
-      <button class="ms-button" onClick="{{ fitWidth }}">너비 맞춤</button>
-      <button class="ms-button" onClick="{{ toggleFocus }}" title="Esc 또는 F 키로 돌아오기">전체보기</button>
-    </div>
-
-    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1)">
-      <span style="padding: 3px 8px; border-radius: 9999px; border: 1px solid var(--color-border-neutral-2); font-size: 11px; font-weight: 700; color: var(--color-text-neutral-4); letter-spacing: .02em; background-color: var(--color-magenta-50)">{{ L.shareG }}</span>
-      <button onClick="{{ openImport }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 15.5V4M7.5 9.5L12 4l4.5 5.5M4.5 19.5h15"></path></svg>{{ L.importG }}</button>
-      <button onClick="{{ openWorkspace }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="6.5" cy="12" r="2.5"></circle><circle cx="17.5" cy="6" r="2.5"></circle><circle cx="17.5" cy="18" r="2.5"></circle><path d="M8.8 10.8l6.4-3.5M8.8 13.2l6.4 3.5"></path></svg>{{ L.shareBtn }}</button>
-      <button onClick="{{ exportJson }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4v11.5M7.5 11l4.5 4.5 4.5-4.5M4.5 19.5h15"></path></svg>{{ L.jsonBak }}</button>
-      <button onClick="{{ exportPptx }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><rect x="3" y="4.5" width="18" height="12" rx="2"></rect><path d="M12 16.5v3M8.5 19.5h7"></path></svg>{{ L.ppt }}</button>
-      <button onClick="{{ doPrint }}" style="display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M7 8.5V4h10v4.5M7 17H5.5a1.5 1.5 0 01-1.5-1.5v-4A1.5 1.5 0 015.5 10h13a1.5 1.5 0 011.5 1.5v4A1.5 1.5 0 0118.5 17H17"></path><rect x="7" y="14" width="10" height="6"></rect></svg>{{ L.print }}</button>
+      <details class="ms-tool-menu"><summary>{{ L.fileG }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
+        <button class="ms-tool-button" onClick="{{ openImport }}">{{ L.importG }}</button>
+        <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.jsonBak }}</button>
+      </div></details>
+      <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
+      <details class="ms-tool-menu"><summary>{{ L.exp }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
+        <button class="ms-tool-button" onClick="{{ exportPng }}">PNG</button>
+        <button class="ms-tool-button" onClick="{{ openText }}">{{ L.textTitle }}</button>
+        <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
+        <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
+      </div></details>
+      <details class="ms-tool-menu"><summary aria-label="{{ L.moreG }}">•••</summary><div class="ms-tool-popover">
+        <button class="ms-tool-button" onClick="{{ openClear }}" style="color:#7c1712">{{ L.clearAll }}</button>
+      </div></details>
     </div>
   </div>
+
+  <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="" role="status" style="flex:none;padding:8px 16px;background:#fff5d9;border-bottom:1px solid #e7c75f;text-align:center;font-size:13px;font-weight:700;color:#5b4300">{{ L.readOnlyMsg }}</div>
+  </sc-if>
 
   <div style="flex:1;display:flex;min-height:0">
     <div style="flex:1;display:flex;flex-direction:column;min-width:0">
@@ -123,12 +153,12 @@
 
           <div style="position:relative;margin-left:172px;min-width:200px;width:{{ boardW }};height:{{ markerStripH }}">
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
-              <div data-id="{{ k.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:9;left:{{ k.left }};top:{{ k.top }}">
+              <div data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:9;left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
-                  <input value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:150px;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:12px;font-weight:700;outline:none">
+                  <input value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:150px;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:12px;font-weight:700;outline:none">
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size:12px;font-weight:700;line-height:1.35;text-align:center;letter-spacing:-.01em;pointer-events:none;color:{{ k.ink }}">{{ k.label }}</div>
+                  <div style="font-size:12px;font-weight:700;line-height:1.35;text-align:center;letter-spacing:-.01em;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ showElementDates }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
                 </sc-if>
                 <div style="position:absolute;left:50%;top:100%;width:0;height:{{ k.stemH }};border-left:2px solid {{ k.color }};pointer-events:none"></div>
                 <div style="position:absolute;left:50%;top:100%;margin-left:-3px;margin-top:{{ k.stemH }};width:6px;height:6px;border-radius:9999px;background:{{ k.color }};pointer-events:none"></div>
@@ -147,7 +177,6 @@
                 <div style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }}">
                   <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.75);height:13px">{{ c.yearLabel }}</span>
                   <span style="font-size:13px;font-weight:700">{{ c.label }}</span>
-                  <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,.75)">{{ c.weeks }}</span>
                 </div>
               </sc-for>
             </div>
@@ -157,7 +186,7 @@
             <sc-for list="{{ rowsView }}" as="row" hint-placeholder-count="4">
               <div style="display:flex;align-items:stretch;border-bottom:1px solid var(--color-border-neutral-2)">
                 <div data-row="{{ row.id }}" onPointerDown="{{ onRowFocus }}" onMouseEnter="{{ onRowEnter }}" onMouseLeave="{{ onRowLeave }}" style="position:sticky;left:0;z-index:60;width:172px;flex:none;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:10px 10px 10px 13px;border-right:1px solid var(--color-border-neutral-2);cursor:pointer;background:{{ row.labelBg }};border-left:3px solid {{ row.focusBar }};transition:background .16s ease">
-                  <textarea value="{{ row.name }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ selectAll }}" rows="2" style="width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
+                  <textarea value="{{ row.name }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="2" style="width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
                   <sc-if value="{{ row.showHandles }}" hint-placeholder-val="{{ false }}">
                     <div data-noprint="" style="display:flex;gap:4px">
                       <button data-id="{{ row.id }}" onClick="{{ onRowUp }}" title="{{ L.moveUp }}" style="width:30px;height:26px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:700;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">↑</button>
@@ -175,10 +204,11 @@
                   </sc-for>
 
                   <sc-for list="{{ row.chevs }}" as="b" hint-placeholder-count="4">
-                    <div data-id="{{ b.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;cursor:grab;left:{{ b.left }};width:{{ b.width }};top:{{ b.top }};height:{{ b.height }};transition:{{ b.trans }}">
+                    <div data-id="{{ b.id }}" role="button" tabindex="0" aria-label="{{ b.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;cursor:grab;left:{{ b.left }};width:{{ b.width }};top:{{ b.top }};height:{{ b.height }};transition:{{ b.trans }}">
+                      <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ b.dateLabel }}</span></sc-if>
                       <div style="position:absolute;left:0;top:0;right:0;bottom:0;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);background:{{ b.bg }}"></div>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
-                        <input value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);width:180px;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;z-index:3">
+                        <input value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);width:180px;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;z-index:3">
                       </sc-if>
                       <sc-if value="{{ b.inside }}" hint-placeholder-val="{{ true }}">
                         <div style="position:absolute;left:8px;right:20px;top:50%;transform:translateY(-50%);font-size:12.5px;font-weight:600;line-height:1.3;text-align:center;letter-spacing:-.01em;word-break:keep-all;pointer-events:none;color:{{ b.fg }}">{{ b.label }}</div>
@@ -201,9 +231,6 @@
                       <sc-if value="{{ b.durOut }}" hint-placeholder-val="{{ false }}">
                         <div style="position:absolute;left:50%;transform:translateX(-50%);top:{{ b.durTop }};white-space:nowrap;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:9999px;background:#181a1b;color:#fff;pointer-events:none;z-index:12">{{ b.dur }}</div>
                       </sc-if>
-                      <sc-if value="{{ b.hasMemo }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;right:5px;top:3px;width:9px;height:9px;border-radius:9999px;border:1.5px solid #fff;background:#e30084;pointer-events:none;z-index:13"></div>
-                      </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
                         <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:6px;pointer-events:none"></div>
                       </sc-if>
@@ -217,17 +244,15 @@
                   </sc-for>
 
                   <sc-for list="{{ row.plains }}" as="p" hint-placeholder-count="1">
-                    <div data-id="{{ p.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
+                    <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
+                      <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ p.dateLabel }}</span></sc-if>
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:12.5px;line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
+                        <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:12.5px;line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
                         <div style="font-size:12.5px;font-weight:500;line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
                       </sc-if>
                       <div style="position:absolute;right:6px;bottom:2px;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ p.durFg }}">{{ p.dur }}</div>
-                      <sc-if value="{{ p.hasMemo }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;right:5px;top:4px;width:9px;height:9px;border-radius:9999px;border:1.5px solid #fff;background:#e30084;pointer-events:none;z-index:13"></div>
-                      </sc-if>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
                         <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:8px;pointer-events:none"></div>
                       </sc-if>
@@ -237,23 +262,16 @@
                     </div>
                   </sc-for>
                   <sc-for list="{{ row.flags }}" as="f" hint-placeholder-count="1">
-                    <div data-id="{{ f.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:8;left:{{ f.left }};top:{{ f.top }}">
-                      <div style="position:absolute;left:0;top:-18px;width:0;height:18px;border-left:1px dashed {{ f.color }};pointer-events:none"></div>
-                      <span style="flex:none;width:11px;height:11px;border-radius:9999px;border:2px solid #fff;margin-left:-5px;background:{{ f.color }}"></span>
+                    <div data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
+                      <span data-link-dot="" data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="flex:none;display:flex;align-items:center;justify-content:center;width:22px;height:22px;margin-left:-11px;cursor:crosshair;touch-action:none"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
-                        <input value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:160px;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:12px;font-weight:700;outline:none">
+                        <input value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:160px;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:12px;font-weight:700;outline:none">
                       </sc-if>
-                      <sc-if value="{{ f.inline }}" hint-placeholder-val="{{ true }}">
-                        <span style="font-size:12px;font-weight:700;padding:1px 5px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);pointer-events:none;color:{{ f.ink }}">{{ f.label }}</span>
+                      <sc-if value="{{ f.connected }}">
+                        <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                       </sc-if>
-                      <sc-if value="{{ f.strip }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:0;top:15px;width:0;border-left:1px dashed {{ f.color }};pointer-events:none;height:{{ f.connH }}"></div>
-                      </sc-if>
-                      <sc-if value="{{ f.strip }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:-6px;white-space:nowrap;font-size:12px;font-weight:700;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);pointer-events:none;color:{{ f.ink }};top:{{ f.stripTop }}">{{ f.label }}</div>
-                      </sc-if>
-                      <sc-if value="{{ f.sel }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:-9px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:8px;pointer-events:none"></div>
+                      <sc-if value="{{ f.show }}">
+                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}</div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -262,17 +280,15 @@
             </sc-for>
 
             <sc-for list="{{ bandsView }}" as="d" hint-placeholder-count="2">
-              <div data-id="{{ d.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:2;left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
+              <div data-id="{{ d.id }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:2;left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
+                <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ d.dateLabel }}</span></sc-if>
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
-                  <input value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:12px;font-weight:700;outline:none">
+                  <input value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:12px;font-weight:700;outline:none">
                 </sc-if>
                 <sc-if value="{{ d.show }}" hint-placeholder-val="{{ true }}">
                   <div style="font-size:13px;font-weight:700;line-height:1.4;text-align:center;letter-spacing:-.01em;word-break:keep-all;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div>
                 </sc-if>
                 <div style="position:absolute;left:0;right:0;bottom:3px;text-align:center;white-space:nowrap;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ d.durFg }}">{{ d.dur }}</div>
-                <sc-if value="{{ d.hasMemo }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:absolute;right:5px;top:5px;width:9px;height:9px;border-radius:9999px;border:1.5px solid #fff;background:#e30084;pointer-events:none;z-index:13"></div>
-                </sc-if>
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
                   <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:6px;pointer-events:none"></div>
                 </sc-if>
@@ -284,15 +300,15 @@
           </div>
 
           <sc-for list="{{ imagesView }}" as="im">
-            <div data-id="{{ im.id }}" data-sticky="" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:70;left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
+            <div data-id="{{ im.id }}" role="button" tabindex="0" aria-label="{{ im.label }}" onKeyDown="{{ onItemKey }}" data-sticky="" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:70;left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
               <img data-ms-src="{{ im.src }}" alt="{{ im.label }}" draggable="false" style="width:100%;height:100%;object-fit:contain;pointer-events:none">
               <sc-if value="{{ im.sel }}"><div data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(227,0,132,.45);cursor:nwse-resize"></div></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
-            <div data-id="{{ p.id }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:72;border-radius:2px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
+            <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:72;border-radius:2px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ selectAll }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:13px;line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
+                <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:13px;line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
               </sc-if>
               <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
                 <div style="font-size:13px;line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
@@ -350,12 +366,12 @@
                 </div>
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.labelF }}</span>
-                  <textarea value="{{ selLabel }}" data-field="label" onChange="{{ onField }}" onFocus="{{ selectAll }}" rows="2" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selLabel }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="2" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button onClick="{{ clearMemo }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">🗑</button></span>
-                  <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ selectAll }}" rows="3" placeholder="{{ L.phMemo }}" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="3" placeholder="{{ L.phMemo }}" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
                 </sc-if>
                 <sc-if value="{{ selIsSticky }}" hint-placeholder-val="{{ false }}">
@@ -383,6 +399,17 @@
                     <option value="flag">{{ L.kFlag }}</option>
                   </select>
                 </label>
+                <sc-if value="{{ selIsFlag }}">
+                  <label style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font-size:12px;font-weight:600">{{ L.linkedTo }}</span>
+                    <select aria-label="{{ L.linkedTo }}" value="{{ selTargetId }}" onChange="{{ onLinkTarget }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 8px;font-size:13px;background:#fff">
+                      <option value="">{{ L.noTarget }}</option>
+                      <sc-for list="{{ linkOptions }}" as="o"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+                    </select>
+                  </label>
+                  <span style="font-size:12px;line-height:1.6;color:var(--color-text-neutral-4)">{{ L.linkHint }}</span>
+                </sc-if>
+                <sc-if value="{{ selNotFlag }}">
                 <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startF }}</span>
@@ -413,6 +440,7 @@
                   <label style="display:flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" checked="{{ selHideDuration }}" onChange="{{ onHideDuration }}">기간 삭제 (표시 숨김)</label>
                   <span style="font-size:14px;font-weight:700">{{ selDur }}</span>
                 </div>
+                </sc-if>
                 <sc-if value="{{ selIsBand }}" hint-placeholder-val="{{ false }}">
                   <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
                     <label style="display:flex;flex-direction:column;gap:6px">
@@ -465,11 +493,13 @@
                   </div>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:8px">
+                  <sc-if value="{{ selNotFlag }}">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.fillF }}</span>
                   <div style="display:flex;gap:6px">
                     <button data-variant="solid" onClick="{{ onVariant }}" style="flex:1;height:34px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;cursor:pointer">{{ L.solid }}</button>
                     <button data-variant="tint" onClick="{{ onVariant }}" style="flex:1;height:34px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;cursor:pointer">{{ L.tint }}</button>
                   </div>
+                  </sc-if>
                 </div>
                 </sc-if>
               </div>
@@ -482,7 +512,7 @@
                 </div>
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowName }}</span>
-                  <input value="{{ rowPropName }}" data-id="{{ focusRowId }}" onChange="{{ onRowName }}" onFocus="{{ selectAll }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 10px;font-size:13px;font-weight:600;outline:none" style-focus="border-color:#000">
+                  <input value="{{ rowPropName }}" data-id="{{ focusRowId }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 10px;font-size:13px;font-weight:600;outline:none" style-focus="border-color:#000">
                 </label>
                 <div style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowLanesF }}</span>
@@ -632,7 +662,7 @@
 
   <sc-if value="{{ helpOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeHelp }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" style="width:100%;max-width:560px;max-height:80vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.helpT }}" style="width:100%;max-width:560px;max-height:80vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-size:18px;font-weight:700">{{ L.helpT }}</span>
           <button onClick="{{ closeHelp }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
@@ -647,7 +677,7 @@
 
   <sc-if value="{{ mouseTipOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeMouseTip }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.interact }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;align-items:center;gap:9px">
           <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:{{ mouseTipBg }};color:{{ mouseTipFg }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"></path><circle cx="12" cy="12" r="2.4"></circle></svg></span>
           <span style="font-size:17px;font-weight:700">{{ L.interact }} {{ interactState }}</span>
@@ -663,7 +693,7 @@
 
   <sc-if value="{{ relOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeRel }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" style="width:100%;max-width:620px;max-height:82vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.relTitle }}" style="width:100%;max-width:620px;max-height:82vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-size:18px;font-weight:700">{{ L.relTitle }}</span>
           <button onClick="{{ closeRel }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
@@ -672,6 +702,7 @@
           <div style="display:flex;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--color-border-neutral-1)">
             <span style="flex:none;width:56px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:9999px;background:#181a1b;color:#fff;font-size:12px;font-weight:700">{{ r.v }}</span>
             <div style="display:flex;flex-direction:column;gap:5px">
+              <sc-if value="{{ r.title }}" hint-placeholder-val="{{ false }}"><strong style="font-size:13px;color:#181a1b">{{ r.title }}</strong></sc-if>
               <sc-for list="{{ r.items }}" as="t" hint-placeholder-count="3">
                 <span style="font-size:13px;line-height:1.6;color:var(--color-text-neutral-5)">· {{ t }}</span>
               </sc-for>
@@ -684,7 +715,7 @@
 
   <sc-if value="{{ rowDelOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ cancelRowDelete }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" style="width:100%;max-width:420px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.rowDelTitle }}" style="width:100%;max-width:420px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <span style="font-size:18px;font-weight:700">{{ L.rowDelTitle }}</span>
         <span style="font-size:13px;line-height:1.8;color:var(--color-text-neutral-4)">{{ rowDelName }} — {{ L.rowDelMsg }}</span>
         <div style="display:flex;gap:8px;justify-content:flex-end">
@@ -697,7 +728,7 @@
 
   <sc-if value="{{ clearOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeClear }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.clearTitle }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <span style="font-size:18px;font-weight:700">{{ L.clearTitle }}</span>
         <span style="font-size:13px;line-height:1.8;white-space:pre-line;color:var(--color-text-neutral-4)">{{ L.clearMsg }}</span>
         <div style="display:flex;gap:8px;justify-content:flex-end">
@@ -710,7 +741,7 @@
 
   <sc-if value="{{ textOpen }}" hint-placeholder-val="{{ false }}">
     <div data-noprint="" onClick="{{ closeText }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" style="width:100%;max-width:720px;max-height:84vh;overflow:hidden;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.textTitle }}" style="width:100%;max-width:720px;max-height:84vh;overflow:hidden;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-size:18px;font-weight:700">{{ L.textTitle }}</span>
           <button onClick="{{ closeText }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
@@ -745,6 +776,16 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.24', title: 'Codex 요소일자·툴팁·알림 이동 개선', items: ['보기의 요소일자 토글로 시작·종료 날짜 표시', '알림의 중복 툴팁 제거와 주·일 기간 가독성 개선', '연결점 선택 후 Delete·Backspace로 연결만 해제', '알림 라벨을 자유롭게 이동해도 연결점과 연결선 유지'] },
+    { v: 'v9.23', title: 'Codex 알림 요소 연결 기능', items: ['알림 속성의 날짜·기간·행 높이 대신 연결 대상 선택 제공', '알림 점 드래그로 작업·참고 구간 연결과 대상 강조', '대상 이동·기간 변경 시 연결 위치 유지, 대상 삭제 시 연결 해제'] },
+    { v: 'v9.22', title: 'Codex 알림 구분·선택·연결선 개선', items: ['알림을 아이콘·컬러 테두리·둥근 배지로 작업 라벨과 구분', '선택 시 실제 알림 배지와 연결점에 포커스 테두리 표시', '같은 행·레인의 해당 시점 작업 또는 참고 구간 끝점에서 연결선 시작, 연결 대상 없는 짧은 선 제거'] },
+    { v: 'v9.21', title: 'Codex 메모 표시 점 제거', items: ['작업·참고 구간·공통 구간의 핑크 메모 표시 점 제거', '메모 데이터와 마우스 오버 툴팁 유지'] },
+    { v: 'v9.20', title: 'Codex 기간·설정 포커스·Week 보기 개선', items: ['기간 툴팁에 실제 날짜 기준 주·일 표시 추가', '요소 더블클릭 시 속성 패널 열기와 라벨 필드 포커스', '보기 섹션의 Week 토글로 월 아래 주차·일자 표시 전환'] },
+    { v: 'v9.19', title: 'Codex 보기·알림·가져오기 개선', items: ['보기 섹션에 MM 기간 표시 토글 추가', '이슈를 알림으로 변경하고 점·라벨 선택 영역 수정', '이미지·텍스트로 생성한 일정의 행 색상을 설정 팔레트에 맞춤'] },
+    { v: 'v9.18', title: 'Codex 툴바 상호작용 수정', items: ['열린 파일·내보내기·더보기 메뉴를 바깥 클릭 시 자동으로 닫기', '월 헤더 아래의 주 수 표기 제거', '첨부 시안에 맞춰 요소 추가·작업 방식·화면·설정 버튼 순서와 활성 상태 재정리'] },
+    { v: 'v9.17', title: 'Codex 이슈 연결선 수정', items: ['이슈 연결선을 점 중심까지 이어지는 실선으로 변경', '행 높이에 맞춰 연결선 길이를 자동 계산', '작업뿐 아니라 참고 구간 위의 이슈도 충돌 없는 라벨 영역에 배치'] },
+    { v: 'v9.16', title: 'Codex 메뉴 UX 정리', items: ['상단 도구를 일정 요소·작업 방식·화면·파일·내보내기로 재구성', '자주 쓰지 않는 파일·내보내기·전체 지우기를 메뉴로 정리', 'NOW → 오늘 단축 버튼 제거와 작업 중심 용어 적용'] },
+    { v: 'v9.15', title: 'Codex 수정사항', items: ['손상된 로컬 데이터 보호, 유형 전환·행 삭제 참조 오류 수정', '명시적 공유 링크 우선 처리와 보기 전용 편집 차단', '텍스트 편집 실행 취소, 타임라인 키보드 선택·편집, 모바일 툴바 개선', '익명 AI 분석 횟수를 DB에서 원자적으로 제한', 'Supabase 공유 컬럼·보안 마이그레이션 추가'] },
     { v: 'v9.14', items: ['접속 코드 없이 이미지 · 텍스트 AI 분석 사용 (코드 미연결 시 시간당 횟수 제한)', '가져오기 창 버튼 텍스트 세로 정렬 수정'] },
     { v: 'v9.13', items: ['이미지 · 텍스트 가져오기 영역을 끌어놓기 · 붙여넣기 · 파일 불러오기를 한곳에 모은 형태로 재구성', "안내 문구에 '여기에 붙여넣으세요' 추가"] },
     { v: 'v9.12', items: ['가져오기 분석 상태 · 오류 · 결과를 누른 버튼 바로 아래에 표시(창 맨 아래에 숨어 있던 문제 수정)', '분석 중 버튼에 진행 표시'] },
@@ -769,7 +810,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.14';
+  APP_VER = 'v9.24';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -780,19 +821,19 @@ class Component extends DCLogic {
   PAL = [['그레이','#66707a'],['다크','#3b4040'],['퍼플','#5b3fd1'],['네이비','#1e3a8a'],['틸','#17a2a2'],['블루','#0078d4'],['오렌지','#f86800'],['레드','#e22a21'],['크림','#a8792a']];
   DICT = {
     ko: {
-      lang: '日本語', add: '생성 · 추가', chev: '단계 블록', plain: '일반 블록', band: '구간 밴드', marker: '기준선', flag: '이슈 표시', note: '상단 공지 메모', row: '행',
+      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 요소', unlinked: '독립 알림 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간 위로 드래그하여 연결하세요. 연결된 요소를 이동하거나 기간을 바꾸면 알림도 함께 따라갑니다.', elementDates: '요소일자', linkPoint: '알림 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '요소 추가', chev: '작업', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '알림', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      view: '마우스 동작', interact: '마우스 컨트롤', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수', nowToday: 'NOW → 오늘',
+      editTools: '작업 방식', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
-      exp: '자료 만들기', png: 'PNG', ppt: 'PPT', print: '인쇄 / PDF', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
-      shareG: '가져오기 · 공유', importG: '가져오기', shareBtn: '공유', jsonBak: 'JSON 백업', panelF: '설정 패널', helpTip: '단축키와 조작 방법 보기',
-      dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하시려면 '마그네틱 스냅' 기능을 off 해주세요.",
+      exp: '내보내기', png: 'PNG', ppt: 'PPT', print: '인쇄 / PDF', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
+      importG: '일정 가져오기', shareBtn: '공유', jsonBak: 'JSON 백업', panelF: '설정', helpTip: '단축키와 조작 방법 보기',
+      dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
-      relTitle: '수정 이력 · 릴리스 노트', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·이슈 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
+      relTitle: 'Codex 수정사항 · 리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·알림 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '전체 설정', tabVer: '버전', category: '구분', verNone: '버전 미저장', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '블록 메모 (마우스 오버 시 표시)', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
-      kChev: '단계 블록', kPlain: '일반 블록 (행 메모)', kBand: '구간 밴드 (행 세로 확장)', kMarker: '기준선', kFlag: '이슈 표시',
+      kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간 (여러 행)', kMarker: '마일스톤', kFlag: '알림',
       rowF: '행', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이 (레인 수)',
       colorF: '색상 · 강조', fillF: '채우기', solid: '진하게', tint: '연하게', rowFromF: '시작 행', rowToF: '끝 행', del: '삭제',
       timeline: '타임라인 설정', startMonth: '시작 월', monthsF: '표시 개월 수', laneHF: '레인 높이',
@@ -811,27 +852,27 @@ class Component extends DCLogic {
       confRowDel: '이 행의 항목이 함께 삭제됩니다. 계속할까요?', needAuthor: '작성자와 날짜는 필수 입력입니다.',
       confRestore: ' 버전으로 복원할까요? 현재 상태는 되돌리기(Cmd+Z)로 복구할 수 있습니다.',
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
-      newChev: '새 단계', newPlain: '메모를 입력하세요', newBand: '새 구간', newMarker: '새 기준선', newFlag: '이슈', newRow: '새 구분', newNote: '공지 메모를 입력하세요',
-      zoom: '확대 / 축소', magnetF: '마그네틱 스냅', magnetHint: '5개월 미만은 0.125개월(월 8단계), 그 외에는 0.25개월 단위와 인접 블록 끝에 맞춥니다. 끄면 자유롭게 조정합니다.',
+      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 알림', newRow: '새 구분', newNote: '공지 메모를 입력하세요',
+      zoom: '배율', magnetF: '눈금 맞춤', magnetHint: '5개월 미만은 0.125개월(월 8단계), 그 외에는 0.25개월 단위와 인접 블록 끝에 맞춥니다. 끄면 자유롭게 조정합니다.',
       helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
-      clearAll: '전체 지우기', clearTitle: '전체 지우기', clearMsg: '현재 화면의 모든 바·밴드·기준선·이슈·메모가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
+      clearAll: '전체 지우기', clearTitle: '전체 지우기', clearMsg: '현재 화면의 모든 바·밴드·기준선·알림·메모가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
-      lang: '한국어', add: '追加', chev: 'フェーズブロック', plain: 'メモブロック', band: '期間バンド', marker: '基準線', flag: '● 課題マーク', note: '上部お知らせメモ', row: '行',
+      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立した通知 — 接続先なし', noTarget: '接続なし', linkHint: '点をタスク・参考期間へドラッグすると接続されます。通知は接続先の変更に追従します。', elementDates: '項目の日付', linkPoint: '通知の接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'タスク', plain: '参考期間', band: '共通期間', marker: 'マイルストーン', flag: '通知', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      view: 'マウス操作', interact: 'マウスコントロール', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数', nowToday: 'NOW → 今日',
+      editTools: '操作方法', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
-      exp: '資料を作る', png: 'PNG', ppt: 'PPT', print: '印刷 / PDF', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
-      shareG: '取り込み · 共有', importG: '取り込み', shareBtn: '共有', jsonBak: 'JSONバックアップ', panelF: '設定パネル', helpTip: 'ショートカットと操作方法を見る',
-      dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「マグネットスナップ」を OFF にしてください。',
+      exp: '書き出す', png: 'PNG', ppt: 'PPT', print: '印刷 / PDF', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
+      importG: '予定を取り込む', shareBtn: '共有', jsonBak: 'JSONバックアップ', panelF: '設定', helpTip: 'ショートカットと操作方法を見る',
+      dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
-      relTitle: '変更履歴・リリースノート', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・課題マークが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
+      relTitle: 'Codex 修正事項・リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・通知マークが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
       tabProp: 'プロパティ', tabSet: '全体設定', tabVer: 'バージョン', category: '区分', verNone: 'バージョン未保存', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ブロックメモ（ホバーで表示）', phMemo: '背景・リスク・担当など', kindF: '種類',
-      kChev: 'フェーズブロック', kPlain: 'メモブロック（行メモ）', kBand: '期間バンド（行をまたぐ）', kMarker: '基準線', kFlag: '課題マーク',
+      kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: '通知',
       rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ（レーン数）',
       colorF: '色・強調', fillF: '塗り', solid: '濃い', tint: '薄い', rowFromF: '開始行', rowToF: '終了行', del: '削除',
       timeline: 'タイムライン設定', startMonth: '開始月', monthsF: '表示月数', laneHF: 'レーン高さ',
@@ -850,18 +891,18 @@ class Component extends DCLogic {
       confRowDel: 'この行の項目も削除されます。続行しますか？', needAuthor: '作成者と日付は必須です。',
       confRestore: ' のバージョンに戻しますか？現在の状態は Cmd+Z で復元できます。',
       pptFail: 'PPT書き出しモジュールを読み込めませんでした。ネットワークを確認して再試行してください。',
-      newChev: '新しいフェーズ', newPlain: 'メモを入力', newBand: '新しい期間', newMarker: '新しい基準線', newFlag: '課題', newRow: '新しい区分', newNote: 'お知らせメモを入力',
-      zoom: '拡大・縮小', magnetF: 'マグノティックスナップ', magnetHint: 'ONにすると0.25ヶ月グリッドと隣接ブロックの端に吸着します。OFFなら自由に配置できます。',
+      newChev: '新しいタスク', newPlain: '参考内容を入力', newBand: '新しい共通期間', newMarker: '新しいマイルストーン', newFlag: '新しい通知', newRow: '新しい区分', newNote: 'お知らせメモを入力',
+      zoom: '倍率', magnetF: 'グリッドに合わせる', magnetHint: 'ONにすると0.25ヶ月グリッドと隣接ブロックの端に吸着します。OFFなら自由に配置できます。',
       helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除', rowAdd: '下に行を追加',
       rowHint: '行の境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
-      clearAll: '全て削除', clearTitle: '全て削除', clearMsg: '現在の画面のすべてのブロック・バンド・基準線・課題・メモが削除されます。\n行とタイムライン設定、バージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
+      clearAll: '全て削除', clearTitle: '全て削除', clearMsg: '現在の画面のすべてのブロック・バンド・基準線・通知・メモが削除されます。\n行とタイムライン設定、バージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
     }
   };
 
   state = Object.assign({
     sel: null, editing: null, editNote: null, hover: null, focusRow: 'gs',
-    panel: true, tab: 'prop', hist: [], future: [], clip: null, saved: '',
+    panel: true, tab: 'prop', hist: [], future: [], clip: null, saved: '', readOnly: false,
     interact: false, lang: 'ko', vAuthor: '', vDate: '', vNote: '',
     helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, relOpen: false, rowDelId: null, hoverRow: null, sx: 0, sw: 1, cw: 1,
     mouseTipOpen: false, mouseTipMuted: this.mouseTipMuted()
@@ -931,9 +972,15 @@ class Component extends DCLogic {
   }
 
   // ── lifecycle & persistence ───────────────────
+  closeToolMenus = (e) => {
+    const current = e.target && e.target.closest ? e.target.closest('.ms-tool-menu') : null;
+    if (!this.root) return;
+    this.root.querySelectorAll('.ms-tool-menu[open]').forEach((menu) => { if (menu !== current) menu.removeAttribute('open'); });
+  };
   componentDidMount() {
+    let raw = null;
     try {
-      const raw = window.localStorage.getItem(this.KEY) || window.localStorage.getItem('ucmp.dev-progress-timeline.v5');
+      raw = window.localStorage.getItem(this.KEY) || window.localStorage.getItem('ucmp.dev-progress-timeline.v5');
       if (raw) {
         const parsed = JSON.parse(raw);
         // Older versions are preserved in the old key for recovery.
@@ -941,7 +988,7 @@ class Component extends DCLogic {
         const d = MapstoneCore.validate(parsed);
         if (d && d.rows && d.items) this.setState({ title: d.title, cfg: d.cfg, rows: d.rows, items: d.items, notes: d.notes || [], versions: d.versions || [], now: d.now });
       }
-    } catch (err) { this.setState({ saved: '저장 데이터 복구 필요: ' + err.message }); }
+    } catch (err) { this._saveBlocked = true; this._recoveryData = raw; this.setState({ saved: '저장 데이터 복구 필요 · JSON 백업 후 가져오기: ' + err.message }); }
     this.setState((s) => {
       const c = Object.assign({}, s.cfg);
       if (!c.weekPx) c.weekPx = c.ppm ? Math.round((c.ppm / 4) * 10) / 10 : 19;
@@ -961,6 +1008,7 @@ class Component extends DCLogic {
     });
     this._key = (e) => this.onKey(e);
     document.addEventListener('keydown', this._key);
+    document.addEventListener('pointerdown', this.closeToolMenus);
     this._msCleanup = MapstoneUI.attach(this);
     this._flush = () => this.flushSave();
     window.addEventListener('pagehide', this._flush);
@@ -969,6 +1017,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     document.removeEventListener('keydown', this._key);
+    document.removeEventListener('pointerdown', this.closeToolMenus);
     if (this._board && this._wheel) this._board.removeEventListener('wheel', this._wheel);
     this.stopDrag();
     this.flushSave(); clearTimeout(this._t);
@@ -980,6 +1029,10 @@ class Component extends DCLogic {
   }
   componentDidUpdate() {
     this.save(); this.syncScrollMetrics();
+    if (this._focusProperties) {
+      this._focusProperties = false;
+      requestAnimationFrame(() => { const input = this.root && this.root.querySelector('[data-properties] [data-field="label"]'); if (input) { input.focus(); input.scrollIntoView({ block: 'nearest' }); } });
+    }
     if (this.root) this.root.querySelectorAll('img[data-ms-src]').forEach(img=>{if(img.getAttribute('src')!==img.dataset.msSrc)img.setAttribute('src',img.dataset.msSrc);});
     if (this._lastEditing !== this.state.editing) {
       this._lastEditing = this.state.editing;
@@ -1021,6 +1074,7 @@ class Component extends DCLogic {
   setRoot = (el) => { this.root = el; };
   dataDocument() { return MapstoneCore.documentOf(this.state); }
   save() {
+    if (this._saveBlocked) return;
     const json = JSON.stringify(this.dataDocument());
     if (json === this._savedData || json === this._queuedData) return;
     this._queuedData = json;
@@ -1029,6 +1083,7 @@ class Component extends DCLogic {
     if (this.sync) this.sync.schedule();
   }
   flushSave() {
+    if (this._saveBlocked) return;
     clearTimeout(this._t);
     const json = JSON.stringify(this.dataDocument());
     if (json === this._savedData) return;
@@ -1047,25 +1102,31 @@ class Component extends DCLogic {
   fitWidth = () => MapstoneUI.fitWidth(this);
   openImport = () => MapstoneUI.open(this, 'import');
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
-  exportJson = () => MapstoneUI.download(this.dataDocument(), 'mapstone-schedule.json');
+  exportJson = () => MapstoneUI.download(this._recoveryData || this.dataDocument(), this._recoveryData ? 'mapstone-recovery.json' : 'mapstone-schedule.json');
   importDocument(data) {
-    const d = MapstoneCore.validate(data); const before=this.snapshot();
+    if (this.state.readOnly) return;
+    const d = MapstoneCore.validate(data); const before=this.snapshot(); this._saveBlocked=false; this._recoveryData=null;
     this.setState({...d, sel:null,editing:null,hover:null,hist:this.state.hist.concat([before]).slice(-60),future:[]});
   }
 
   snapshot() { const s = this.state; return JSON.stringify({ title: s.title, cfg: s.cfg, rows: s.rows, items: s.items, notes: s.notes, now: s.now }); }
   applySnap(json) { const p = MapstoneCore.validate(JSON.parse(json)); this.setState({ title: p.title, cfg: p.cfg, rows: p.rows, items: p.items, notes: p.notes, now: p.now, sel: null, editing: null }); }
   mutate(fn, push) {
+    if (this.state.readOnly) { this.setState({ saved: this.L().readOnlyMsg }); return false; }
     const snap = push === false ? null : this.snapshot();
     this.setState((st) => {
       const d = JSON.parse(JSON.stringify({ title: st.title, cfg: st.cfg, rows: st.rows, items: st.items, notes: st.notes, now: st.now }));
       fn(d);
+      MapstoneCore.syncLinks(d.items);
       const out = { title: d.title, cfg: d.cfg, rows: d.rows, items: d.items, notes: d.notes, now: d.now };
       if (snap) { out.hist = st.hist.concat([snap]).slice(-60); out.future = []; }
       return out;
     });
+    return true;
   }
   undo = () => {
+    if (this.state.readOnly) return;
+    this._textPush = true;
     this.setState((st) => {
       if (!st.hist.length) return null;
       const prev = JSON.parse(st.hist[st.hist.length - 1]);
@@ -1073,13 +1134,15 @@ class Component extends DCLogic {
     });
   };
   redo = () => {
+    if (this.state.readOnly) return;
+    this._textPush = true;
     this.setState((st) => {
       if (!st.future.length) return null;
       const next = JSON.parse(st.future[st.future.length - 1]);
       return Object.assign({ future: st.future.slice(0, -1), hist: st.hist.concat([this.snapshot()]).slice(-60), sel: null, editing: null }, next);
     });
   };
-  reset = () => { if (window.confirm(this.L().confReset)) this.mutate((d) => { const s = this.seed(); d.title = s.title; d.cfg = s.cfg; d.rows = s.rows; d.items = s.items; d.notes = s.notes; d.now = s.now; }); };
+  reset = () => { if (!this.state.readOnly && window.confirm(this.L().confReset)) { this._saveBlocked=false; this._recoveryData=null; this.mutate((d) => { const s = this.seed(); d.title = s.title; d.cfg = s.cfg; d.rows = s.rows; d.items = s.items; d.notes = s.notes; d.now = s.now; }); } };
 
   // ── geometry (variable month widths) ──────────
   weeksIn(i) {
@@ -1134,7 +1197,7 @@ class Component extends DCLogic {
     const id = this.uid();
     const it = { id, kind: 'sticky', row: '', lane: 0, s: Math.max(0, Math.round(st.now * 2) / 2), e: 0, y: 60, w: 210, h: 120, label: this.L().stickyNew, color: '#fdf3d0', span: 1, variant: 'solid', memo: '' };
     this.mutate((d) => { d.items.push(it); });
-    this.setState({ sel: id, editing: id, tab: 'prop' });
+    this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   };
   onRowLanes = (e) => {
     const id = this.state.focusRow;
@@ -1180,6 +1243,10 @@ class Component extends DCLogic {
   onRowAuto = () => { const id = this.state.focusRow; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) delete r.h; }); };
   onRowColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.focusRow; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) { if (c === 'none') delete r.color; else r.color = c; } }); };
   toggleMagnet = () => { this.mutate((d) => { d.cfg.magnet = !d.cfg.magnet; }); };
+  toggleMM = () => { this.mutate((d) => { d.cfg.showMM = d.cfg.showMM === false; }); };
+  toggleWeek = () => { this.mutate((d) => { d.cfg.showWeek = d.cfg.showWeek === false; }); };
+  toggleElementDates = () => { this.mutate(d => { d.cfg.showElementDates = !d.cfg.showElementDates; }); };
+  durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
   stopClick = (e) => e.stopPropagation();
   openRel = () => this.setState({ relOpen: true });
   closeRel = () => this.setState({ relOpen: false });
@@ -1187,10 +1254,11 @@ class Component extends DCLogic {
   cancelRowDelete = () => this.setState({ rowDelId: null });
   confirmRowDelete = () => {
     const id = this.state.rowDelId;
-    this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.kind === 'marker' || i.kind === 'sticky' || i.row !== id); });
+    this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.row !== id && i.rowFrom !== id && i.rowTo !== id); });
     this.setState({ rowDelId: null, sel: null });
   };
   duplicateSel = () => {
+    if (this.state.readOnly) return;
     const it = this.selItem();
     if (!it) return;
     const id = this.uid();
@@ -1290,6 +1358,10 @@ class Component extends DCLogic {
     const v = Math.round((e - s) * 1000) / 1000;
     return String(parseFloat(v.toFixed(3))) + 'M';
   }
+  durationWD(s, e) {
+    const days = Math.max(0, Math.round((Date.parse(this.isoOf(e)) - Date.parse(this.isoOf(s))) / 86400000));
+    return Math.floor(days / 7) + ' w ' + (days % 7) + ' d';
+  }
   selItem() { return this.state.items.find((i) => i.id === this.state.sel); }
   measure(txt) {
     if (!this._ctx) {
@@ -1311,12 +1383,13 @@ class Component extends DCLogic {
       let lanes = 2;
       its.forEach((i) => { lanes = Math.max(lanes, i.lane + (i.span || 1)); });
       const chevs = its.filter((i) => i.kind === 'chev').slice().sort((a, b) => a.s - b.s);
+      const blocks = its.filter((i) => this.boxKind(i.kind));
       const strips = [];
       const modes = {};
       chevs.forEach((it) => {
         const h = (it.span || 1) * laneH - 12;
         const w = this.wOf(it.s, it.e);
-        const need = this.measure(it.label || '') + this.measure(it.hideDuration ? '' : this.durOf(it.s, it.e)) + 18;
+        const need = this.measure(it.label || '') + this.measure(this.durationHidden(it) ? '' : this.durOf(it.s, it.e)) + 18;
         const lines = Math.max(1, Math.floor((h - 2) / 17));
         if (need <= (w - 22) * lines) { modes[it.id] = { mode: 'in' }; return; }
         let rg = Math.max(0, this.xOf(st.cfg.months) - this.xOf(it.e)), lg = this.xOf(it.s);
@@ -1337,15 +1410,15 @@ class Component extends DCLogic {
         modes[it.id] = { mode: 'strip', strip: k };
       });
       its.filter((i) => i.kind === 'flag').forEach((f) => {
-        const onBlock = chevs.some((c) => c.lane <= f.lane && f.lane < c.lane + (c.span || 1) && c.s - 0.05 <= f.s && f.s <= c.e + 0.05);
-        if (!onBlock) { modes[f.id] = { mode: 'inline' }; return; }
-        const need = this.measure(f.label || '') + 26;
+        const target = f.targetId !== undefined ? blocks.find(c => c.id === f.targetId) : blocks.filter(c => c.lane <= f.lane && f.lane < c.lane + (c.span || 1) && c.s <= f.s && f.s <= c.e).sort((a, b) => b.lane - a.lane || (a.e - a.s) - (b.e - b.s))[0];
+        if (!target) { modes[f.id] = { mode: 'inline' }; return; }
+        const need = this.measure(f.label || '') + 50;
         const x0 = this.xOf(f.s), x1 = x0 + need;
         let k = 0;
         while (strips[k] && strips[k].some((g) => g[0] < x1 && g[1] > x0)) k++;
         strips[k] = strips[k] || [];
         strips[k].push([x0, x1]);
-        modes[f.id] = { mode: 'strip', strip: k };
+        modes[f.id] = { mode: 'strip', strip: k, targetId: target.id };
       });
       const contentH = lanes * laneH + 14;
       const baseH = r.h ? Math.max(laneH + 14, r.h) : contentH;
@@ -1470,18 +1543,22 @@ class Component extends DCLogic {
     const d = e.currentTarget.dataset;
     const it = this.state.items.find((i) => i.id === d.id);
     if (!it) return;
-    this.setState({ sel: d.id, editing: null, editNote: null, tab: 'prop', focusRow: it.row || this.state.focusRow });
-    this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), moved: false };
+    MapstoneUI.hideTip();
+    this.setState({ selLinkDot:null });
+    this.setState({ sel: d.id, editing: null, editNote: null, tab: 'prop', panel: it.kind === 'flag' ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
+    if (this.state.readOnly) return;
+    this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), moved: false };
     this.bind();
   };
   onNowDown = (e) => {
     e.stopPropagation();
+    if (this.state.readOnly) return;
     this.drag = { id: '__now', mode: 'now', x0: e.clientX, y0: e.clientY, s: this.state.now, e: 0, snap: this.snapshot(), moved: false };
     this.bind();
   };
   bind() {
     this._mv = (ev) => this.onMove(ev);
-    this._up = () => this.stopDrag();
+    this._up = (ev) => this.stopDrag(ev);
     window.addEventListener('pointermove', this._mv);
     window.addEventListener('pointerup', this._up);
   }
@@ -1508,9 +1585,21 @@ class Component extends DCLogic {
   onMove(ev) {
     const g = this.drag;
     if (!g) return;
+    if (g.mode === 'link') {
+      const hit = this.linkHit(ev);
+      if (this._linkEl) this._linkEl.classList.remove('ms-link-target');
+      this._linkEl = hit && hit.el;
+      if (this._linkEl) this._linkEl.classList.add('ms-link-target');
+      this.setState({ linkDrag: { x0:g.x0, y0:g.y0, x:ev.clientX, y:ev.clientY } });
+      return;
+    }
     const dx = ev.clientX - g.x0;
     if (Math.abs(dx) > 2 || Math.abs(ev.clientY - g.y0) > 2) g.moved = true;
     if (!g.moved) return;
+    if (g.kind === 'flag') {
+      this.mutate(d => { const it=d.items.find(i=>i.id===g.id); if (it) { it.labelDx=Math.max(-20000,Math.min(20000,g.labelDx+dx)); it.labelDy=Math.max(-20000,Math.min(20000,g.labelDy+ev.clientY-g.y0)); } }, false);
+      return;
+    }
     const dm = (base) => this.mOf(this.xOf(base) + dx) - base;
     if (g.kind === 'sticky' || g.kind === 'image') {
       const dy = ev.clientY - g.y0;
@@ -1560,7 +1649,13 @@ class Component extends DCLogic {
       this.resolve(d, g.id);
     }, false);
   }
-  stopDrag() {
+  stopDrag(ev) {
+    if (this.drag && this.drag.mode === 'link') {
+      const hit = ev && this.linkHit(ev);
+      if (hit) this.connectFlag(this.drag.id, hit.id, hit.offset);
+      if (this._linkEl) this._linkEl.classList.remove('ms-link-target');
+      this._linkEl = null; this.setState({ linkDrag:null });
+    }
     if (this._mv) { window.removeEventListener('pointermove', this._mv); window.removeEventListener('pointerup', this._up); this._mv = null; }
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
@@ -1574,6 +1669,9 @@ class Component extends DCLogic {
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
   toggleLang = () => this.setState((s) => ({ lang: s.lang === 'ko' ? 'ja' : 'ko' }));
   selectAll = (e) => { const el = e.currentTarget; if (el && el.select) { try { el.select(); } catch (err) { /* ignore */ } } };
+  beginTextEdit = (e) => { this._textPush = true; this.selectAll(e); };
+  endTextEdit = () => { this._textPush = null; };
+  editText(fn) { const push = this._textPush !== false; this._textPush = false; this.mutate(fn, push); }
   setOverlap = (e) => { const v = e.currentTarget.dataset.overlap; this.mutate((d) => { d.cfg.overlap = v; }); };
 
   /* geometry conflict policy: after any move/resize the row is re-flowed by the
@@ -1633,7 +1731,7 @@ class Component extends DCLogic {
     else this.setState({ focusRow: row });
   };
   onTrackDblClick = (e) => {
-    if (e.target !== e.currentTarget) return;
+    if (e.target !== e.currentTarget || this.state.readOnly) return;
     const row = e.currentTarget.getAttribute('data-track');
     const r = e.currentTarget.getBoundingClientRect();
     const s = Math.max(0, this.snapM(this.mOf(e.clientX - r.left), '', row));
@@ -1642,22 +1740,31 @@ class Component extends DCLogic {
     this.mutate((d) => { d.items.push({ id, kind: 'chev', row, lane, s, e: s + (this.state.cfg.months < 5 ? 0.5 : 2), label: this.L().newChev, color: '#66707a', span: 1, variant: 'solid', memo: '' }); this.resolve(d, id); });
     this.setState({ sel: id, editing: id, focusRow: row, tab: 'prop' });
   };
-  onItemDbl = (e) => { e.stopPropagation(); this.setState({ editing: e.currentTarget.dataset.id, sel: e.currentTarget.dataset.id }); };
+  onItemDbl = (e) => {
+    e.stopPropagation();
+    const id = e.currentTarget.dataset.id, it = this.state.items.find(i => i.id === id);
+    if (!it) return;
+    MapstoneUI.hideTip();
+    this._focusProperties = true;
+    this.setState({ editing: null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
+  };
+  onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return; this.setState({selLinkDot:null,sel:id,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
   onHover = (e) => { MapstoneUI.showTip(this, e); this.setState({ hover: e.currentTarget.dataset.id }); };
   offHover = () => { MapstoneUI.hideTip(); this.setState({ hover: null }); };
-  endEdit = () => this.setState({ editing: null, editNote: null });
-  onEditKey = (e) => { if (e.key === 'Enter' || e.key === 'Escape') this.setState({ editing: null }); };
-  onLabelInput = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.label = v; }, false); };
+  endEdit = () => { this.endTextEdit(); this.setState({ editing: null, editNote: null }); };
+  onEditKey = (e) => { if (e.key === 'Enter' || e.key === 'Escape') this.endEdit(); };
+  onLabelInput = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const it = d.items.find((i) => i.id === id); if (it) it.label = v; }); };
 
   onNoteDbl = (e) => this.setState({ editNote: e.currentTarget.dataset.id, sel: null });
-  onNoteInput = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.mutate((d) => { const n = d.notes.find((x) => x.id === id); if (n) n.text = v; }, false); };
+  onNoteInput = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const n = d.notes.find((x) => x.id === id); if (n) n.text = v; }); };
   onNoteDelete = (e) => { const id = e.currentTarget.dataset.id; this.mutate((d) => { d.notes = d.notes.filter((n) => n.id !== id); }); };
-  addNote = () => { const id = this.uid(); this.mutate((d) => { d.notes.push({ id, text: this.L().newNote }); }); this.setState({ editNote: id }); };
+  addNote = () => { if (this.state.readOnly) return; const id = this.uid(); this.mutate((d) => { d.notes.push({ id, text: this.L().newNote }); }); this.setState({ editNote: id }); };
 
   // ── clipboard & keys ──────────────────────────
   copySel = () => { const it = this.selItem(); if (it) this.setState({ clip: JSON.parse(JSON.stringify(it)) }); };
   cutSel = () => { const it = this.selItem(); if (!it) return; this.setState({ clip: JSON.parse(JSON.stringify(it)) }); this.deleteSel(); };
   pasteClip = () => {
+    if (this.state.readOnly) return;
     const c = this.state.clip;
     if (!c) return;
     const id = this.uid();
@@ -1672,6 +1779,7 @@ class Component extends DCLogic {
     const t = e.target.tagName;
     const typing = t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT';
     const mod = e.metaKey || e.ctrlKey;
+    if (e.key === 'Escape' && (this.state.helpOpen || this.state.textOpen || this.state.mouseTipOpen || this.state.relOpen || this.state.rowDelId || this.state.clearOpen)) { e.preventDefault(); this.setState({helpOpen:false,textOpen:false,mouseTipOpen:false,relOpen:false,rowDelId:null,clearOpen:false}); return; }
     if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); return; }
     if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); this.redo(); return; }
     if (typing) return;
@@ -1681,7 +1789,12 @@ class Component extends DCLogic {
     if (mod && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); this.duplicateSel(); return; }
     if (e.key === 'Escape') { this.setState({ sel: null, editing: null, editNote: null }); return; }
     if (!this.state.sel) return;
-    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); this.deleteSel(); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
+    if (this.selItem()?.kind === 'flag' && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+      this.mutate(d => { const it=d.items.find(i=>i.id===this.state.sel); const horizontal=e.key==='ArrowLeft'||e.key==='ArrowRight', field=horizontal?'labelDx':'labelDy'; it[field]=Math.max(-20000,Math.min(20000,(it[field]||0)+(['ArrowLeft','ArrowUp'].includes(e.key)?-10:10))); });
+      return;
+    }
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       e.preventDefault();
       const dx = e.key === 'ArrowLeft' ? -0.5 : 0.5;
@@ -1697,6 +1810,7 @@ class Component extends DCLogic {
   // ── add / delete ──────────────────────────────
   addAt(kind) {
     const st = this.state;
+    if (st.readOnly) return;
     const row = st.focusRow || st.rows[0].id;
     const s = Math.round(st.now * 2) / 2;
     const id = this.uid();
@@ -1709,9 +1823,9 @@ class Component extends DCLogic {
     if (kind === 'plain') { it.label = L.newPlain; it.color = '#66707a'; it.e = s + 3; }
     if (kind === 'band') { it.label = L.newBand; it.color = '#1e3a8a'; it.rowFrom = row; it.rowTo = st.rows[st.rows.length - 1].id; it.row = row; }
     if (kind === 'marker') { it.label = L.newMarker; it.color = '#66707a'; it.row = ''; }
-    if (kind === 'flag') { it.label = L.newFlag; it.color = '#e22a21'; }
+    if (kind === 'flag') { it.label = L.newFlag; it.color = '#e22a21'; it.targetId = ''; }
     this.mutate((d) => { d.items.push(it); this.resolve(d, id); });
-    this.setState({ sel: id, editing: id, tab: 'prop' });
+    this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   }
   addPlain = () => this.addAt('plain');
   addChev = () => this.addAt('chev');
@@ -1720,34 +1834,66 @@ class Component extends DCLogic {
   addFlag = () => this.addAt('flag');
   deleteSel = () => { const id = this.state.sel; this.mutate((d) => { d.items = d.items.filter((i) => i.id !== id); }); this.setState({ sel: null, editing: null }); };
 
-  addRow = (e) => { e.stopPropagation(); const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
-  onRowName = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) r.name = v; }, false); };
+  addRow = (e) => { e.stopPropagation(); if (this.state.readOnly) return; const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
+  onRowName = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const r = d.rows.find((x) => x.id === id); if (r) r.name = v; }); };
   onRowDelete = (e) => {
     const id = e.currentTarget.dataset.id;
     const n = this.state.items.filter((i) => i.row === id && i.kind !== 'marker').length;
     if (n && !window.confirm(this.L().confRowDel)) return;
-    this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.kind === 'marker' || i.row !== id); });
+    this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.row !== id && i.rowFrom !== id && i.rowTo !== id); });
   };
   moveRow(id, dir) { this.mutate((d) => { const i = d.rows.findIndex((r) => r.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= d.rows.length) return; const t = d.rows[i]; d.rows[i] = d.rows[j]; d.rows[j] = t; }); }
   onRowUp = (e) => this.moveRow(e.currentTarget.dataset.id, -1);
   onRowDown = (e) => this.moveRow(e.currentTarget.dataset.id, 1);
 
   // ── fields ────────────────────────────────────
+  connectFlag(id, targetId, offset = 1) {
+    if (targetId && !this.state.items.some(i => i.id === targetId && this.boxKind(i.kind))) return;
+    this.mutate(d => { const flag=d.items.find(i=>i.id===id && i.kind==='flag'); if (flag) { flag.targetId=targetId; flag.linkOffset=offset; } });
+  }
+  onLinkTarget = (e) => this.connectFlag(this.state.sel, e.currentTarget.value);
+  onLinkKey = (e) => {
+    if (!['Enter',' ','Delete','Backspace'].includes(e.key)) return;
+    e.preventDefault(); e.stopPropagation();
+    const id=e.currentTarget.dataset.id;
+    this.setState({ sel:id, selLinkDot:id, panel:true, tab:'prop' });
+    if (e.key === 'Delete' || e.key === 'Backspace') this.connectFlag(id, '');
+  };
+  linkHit(ev) {
+    for (const el of document.elementsFromPoint(ev.clientX, ev.clientY)) {
+      const node = el.closest('[data-id]');
+      const target = node && this.state.items.find(i => i.id === node.dataset.id && this.boxKind(i.kind));
+      if (!target) continue;
+      const rect = node.getBoundingClientRect();
+      return { id:target.id, el:node, offset:Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width)) };
+    }
+    return null;
+  }
+  onLinkDown = (e) => {
+    e.stopPropagation(); if (e.button !== 0 || this.state.readOnly) return;
+    e.preventDefault(); MapstoneUI.hideTip();
+    this.setState({ sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true, tab:'prop' });
+    if (e.currentTarget.focus) e.currentTarget.focus();
+    this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY };
+    this.bind();
+  };
   onField = (e) => {
     const f = e.currentTarget.dataset.field;
     const el = e.currentTarget;
     let v = el.value;
     if (el.type === 'number') { v = parseFloat(v); if (isNaN(v)) return; }
     const id = this.state.sel;
+    const text = f === 'label' || f === 'memo';
     this.mutate((d) => {
       const it = d.items.find((i) => i.id === id);
       if (!it) return;
       it[f] = v;
       if (f === 'rowFrom') it.row = v;
       if (f === 'kind') {
+        delete it.targetId; delete it.linkOffset;
         if (v === 'band') { if (!it.rowFrom) { it.rowFrom = d.rows[0].id; it.rowTo = d.rows[d.rows.length - 1].id; } it.row = it.rowFrom; }
-        if (v === 'marker' || v === 'flag') it.e = it.s;
-        if (v === 'chev' && it.e <= it.s) it.e = it.s + 2;
+        else if (v === 'marker' || v === 'sticky') { it.row = ''; if (v === 'marker') it.e = it.s; }
+        else { if (!d.rows.some((r) => r.id === it.row)) it.row = d.rows.some((r) => r.id === this.state.focusRow) ? this.state.focusRow : d.rows[0].id; if (v === 'flag') it.e = it.s; else if (it.e <= it.s) it.e = it.s + 2; }
       }
       if (f === 's' && (it.kind === 'marker' || it.kind === 'flag')) it.e = it.s;
       if (f === 's' && it.e < it.s + this.timeStep() && it.kind !== 'marker' && it.kind !== 'flag') it.e = it.s + this.timeStep();
@@ -1755,7 +1901,8 @@ class Component extends DCLogic {
       if (f === 'lane') it.lane = Math.max(0, Math.round(it.lane));
       if (f === 'span') it.span = Math.max(1, Math.round(it.span));
       if (f === 's' || f === 'e' || f === 'lane' || f === 'span' || f === 'row') this.resolve(d, id);
-    }, f === 'label' || f === 'memo' ? false : true);
+    }, text && this._textPush === false ? false : true);
+    if (text) this._textPush = false;
   };
   onDateField = (e) => {
     const f = e.currentTarget.dataset.field;
@@ -1835,7 +1982,7 @@ class Component extends DCLogic {
   };
   onColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.color = c; }); };
   onVariant = (e) => { const v = e.currentTarget.dataset.variant; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.variant = v; }); };
-  onTitle = (e) => { const v = e.currentTarget.value; this.mutate((d) => { d.title = v; }, false); };
+  onTitle = (e) => { const v = e.currentTarget.value; this.editText((d) => { d.title = v; }); };
   togglePanel = () => this.setState((s) => ({ panel: !s.panel }));
   onTab = (e) => this.setState({ tab: e.currentTarget.dataset.tab });
 
@@ -1843,6 +1990,7 @@ class Component extends DCLogic {
   onVField = (e) => { const k = e.currentTarget.dataset.v; const v = e.currentTarget.value; const p = {}; p['v' + k.charAt(0).toUpperCase() + k.slice(1)] = v; this.setState(p); };
   saveVersion = () => {
     const st = this.state;
+    if (st.readOnly) return;
     if (!st.vAuthor.trim() || !st.vDate) { window.alert(this.L().needAuthor); return; }
     if (st.versions.length >= 30) { window.alert('버전은 최대 30개입니다. JSON 백업 후 오래된 버전을 삭제하세요.'); return; }
     const snap = this.snapshot();
@@ -1850,6 +1998,7 @@ class Component extends DCLogic {
     this.setState((s) => ({ versions: s.versions.concat([entry]), vNote: '' }));
   };
   restoreVersion = (e) => {
+    if (this.state.readOnly) return;
     const id = e.currentTarget.dataset.id;
     const v = this.state.versions.find((x) => x.id === id);
     if (!v) return;
@@ -1858,7 +2007,7 @@ class Component extends DCLogic {
     this.applySnap(v.snap);
     this.setState((s) => ({ hist: s.hist.concat([cur]).slice(-60), future: [] }));
   };
-  deleteVersion = (e) => { const id = e.currentTarget.dataset.id; this.setState((s) => ({ versions: s.versions.filter((v) => v.id !== id) })); };
+  deleteVersion = (e) => { if (this.state.readOnly) return; const id = e.currentTarget.dataset.id; this.setState((s) => ({ versions: s.versions.filter((v) => v.id !== id) })); };
 
   // ── export ────────────────────────────────────
   capture() {
@@ -1885,7 +2034,7 @@ class Component extends DCLogic {
     const mrows = [];
     const mplace = {};
     markers.slice().sort((a, b) => a.s - b.s).forEach((it) => {
-      const w = this.measure(it.label || '') + 24;
+      const w = this.measure(it.label || '') + 24 + (st.cfg.showElementDates ? this.measure(this.isoOf(it.s)) + 6 : 0);
       const x0 = this.xOf(it.s) - w / 2, x1 = x0 + w;
       let k = 0;
       while (mrows[k] && mrows[k].some((g) => g[0] < x1 + 8 && g[1] > x0 - 8)) k++;
@@ -1966,7 +2115,7 @@ class Component extends DCLogic {
       const base = rowTopPx[it.row];
       if (base === undefined) return;
       const tint = it.variant === 'tint';
-      const txt = it.label + (it.hideDuration ? '' : '  (' + this.durOf(it.s, it.e) + ')') + ((it.memo || '').trim() ? ' ✎' : '');
+      const txt = it.label + (this.durationHidden(it) ? '' : '  (' + this.durOf(it.s, it.e) + ')') + ((it.memo || '').trim() ? ' ✎' : '');
       slide.addText(txt, {
         shape: it.kind === 'chev' ? S.chevron : S.rect,
         x: X(LB + this.xOf(it.s)), y: Y(base + 6 + it.lane * cfg.laneH),
@@ -2020,9 +2169,10 @@ class Component extends DCLogic {
       const m = ((t % 12) + 12) % 12;
       cols.push({
         key: i, label: (m + 1) + '월', yearLabel: i === 0 || m === 0 ? '`' + String(y).slice(2) : '',
-        weeks: (Math.round(this.weeksIn(i) * 10) / 10) + 'w', width: px(W[i])
+        width: px(W[i])
       });
       if(cfg.months<5) for(let j=1;j<8;j++) { gridCols.push({key:i+'-'+j,left:px(O[i]+W[i]*j/8),color:'rgba(127,138,148,.16)'}); subdivisions.push({id:i+'-'+j,left:px(O[i]+W[i]*j/8),label:String(1+Math.floor(new Date(y,m+1,0).getDate()*j/8))}); }
+      else for (let j = 0; j < Math.ceil(this.weeksIn(i)); j++) subdivisions.push({ id: i + '-w' + j, left: px(O[i] + W[i] * j / this.weeksIn(i) + 3), label: (j + 1) + 'w' });
       gridCols.push({ key: i, left: px(O[i]), color: m === 0 ? 'var(--color-border-neutral-2)' : 'var(--color-border-neutral-1)' });
     }
 
@@ -2043,18 +2193,17 @@ class Component extends DCLogic {
       const fillBg = solid ? it.color : this.rgba(it.color, 0.16);
       const durFg = solid ? (this.lum(it.color) < 0.55 ? '#ffffff' : '#181a1b') : this.dark(it.color);
       const durBadgeBg = solid ? (this.lum(it.color) < 0.55 ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.72)') : '#ffffff';
-      const durBadge = this.measure(it.label || '') + this.measure(it.hideDuration ? '' : this.durOf(it.s, it.e)) + 40 > w;
+      const durBadge = this.measure(it.label || '') + this.measure(this.durationHidden(it) ? '' : this.durOf(it.s, it.e)) + 40 > w;
       return {
-        id: it.id, label: it.label, memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
+        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
         bg: solid ? it.color : this.rgba(it.color, 0.16),
         fg: solid ? (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff') : this.dark(it.color),
         sel: sel, editing: editing,
         inside: !editing && m.mode === 'in', outRight: !editing && m.mode === 'right',
         outLeft: !editing && m.mode === 'left', outStrip: !editing && m.mode === 'strip',
         stripTop: px(stripTop), connTop: px(h), connH: px(Math.max(0, stripTop - h + 4)),
-        dur: it.hideDuration ? '' : this.durOf(it.s, it.e),
-        durTop: px(it.row === st.rows[0].id && it.lane === 0 ? -6 : -16), durIn: !it.hideDuration && !editing && m.mode === 'in', durOut: !it.hideDuration && !editing && m.mode !== 'in',
-        hasMemo: !!(it.memo || '').trim(),
+        dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
+        durTop: px(it.row === st.rows[0].id && it.lane === 0 ? -6 : -16), durIn: !this.durationHidden(it) && !editing && m.mode === 'in', durOut: !this.durationHidden(it) && !editing && m.mode !== 'in',
         tip: hov && !!(it.memo || '').trim() && !editing,
         trans: drag ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
         durFg: durFg, durBg: durBadge ? durBadgeBg : 'transparent', durPad: durBadge ? '0 5px' : '0'
@@ -2066,7 +2215,7 @@ class Component extends DCLogic {
       const h = (it.span || 1) * laneH - 12;
       const hov = st.hover === it.id;
       return {
-        id: it.id, label: it.label, memo: it.memo || '', dur: it.hideDuration ? '' : this.durOf(it.s, it.e),
+        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
         left: px(this.xOf(it.s)), width: px(this.wOf(it.s, it.e)), top: px(6 + it.lane * laneH), height: px(h),
         bg: tint ? this.rgba(it.color, 0.1) : it.color,
         border: tint ? this.rgba(it.color, 0.5) : it.color,
@@ -2074,21 +2223,27 @@ class Component extends DCLogic {
         durFg: tint ? this.dark(it.color) : (this.lum(it.color) < 0.55 ? '#ffffff' : '#181a1b'),
         trans: this.drag && this.drag.id === it.id ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
         sel: st.sel === it.id, editing: editing, show: !editing,
-        hasMemo: !!(it.memo || '').trim(),
         tip: hov && !!(it.memo || '').trim() && !editing
       };
     };
     const flag = (it, lay) => {
       const editing = st.editing === it.id;
-      const top = 6 + it.lane * laneH + laneH / 2 - 11;
       const m = (lay && lay.modes[it.id]) || { mode: 'inline' };
+      const target = st.items.find(i => i.id === m.targetId);
+      const top = target ? 6 + (target.lane + (target.span || 1)) * laneH - 12 - 11 : 6 + it.lane * laneH + laneH / 2 - 11;
       const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : 26;
+      const labelLeft=(m.mode === 'strip' ? -6 : 12)+(it.labelDx || 0), labelTop=(m.mode === 'strip' ? stripTop : 0)+(it.labelDy || 0);
       const hov = st.hover === it.id;
       return {
-        id: it.id, label: it.label, memo: it.memo || '', color: it.color, ink: this.dark(it.color),
+        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '', color: it.color, ink: this.dark(it.color),
+        targetId: target ? target.id : '', linkLabel: target ? this.L().linkedTo + ': ' + target.label : this.L().unlinked,
+        zIndex: st.sel === it.id ? 30 : 16,
+        badgeBg: st.sel === it.id ? '#fff' : this.rgba(it.color, 0.12),
+        badgeFocus: st.sel === it.id && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #e30084' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #e30084' : st.sel === it.id ? '0 0 0 2px #e30084' : 'none',
+        show:!editing, connected:!!target, labelLeft:px(labelLeft), labelTop:px(labelTop), connPath:'M 0 11 V '+(labelTop+11)+' H '+(labelLeft+6),
         left: px(this.xOf(it.s)), top: px(top), sel: st.sel === it.id, editing: editing,
         inline: !editing && m.mode === 'inline', strip: !editing && m.mode === 'strip',
-        stripTop: px(stripTop), connH: px(Math.max(0, stripTop - 15)),
+        stripTop: px(stripTop), connH: px(Math.max(0, stripTop - 11)),
         tip: hov && !!(it.memo || '').trim() && !editing
       };
     };
@@ -2118,7 +2273,7 @@ class Component extends DCLogic {
       const sel = st.sel === it.id;
       const hov = st.hover === it.id;
       return {
-        id: it.id, label: it.label, memo: it.memo || '',
+        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '',
         left: px(172 + this.xOf(it.s)), width: px(this.wOf(it.s, it.e)),
         top: px(t1 + 6), height: px(Math.max(40, t2 - t1 - 14)),
         bg: it.variant === 'tint' ? this.rgba(it.color, 0.16) : it.color,
@@ -2126,8 +2281,7 @@ class Component extends DCLogic {
         durFg: it.variant === 'tint' ? this.dark(it.color) : (this.lum(it.color) < 0.55 ? '#ffffff' : '#181a1b'),
         trans: this.drag && this.drag.id === it.id ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
         sel: sel, editing: editing, show: !editing,
-        dur: it.hideDuration ? '' : this.durOf(it.s, it.e),
-        hasMemo: !!(it.memo || '').trim(),
+        dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
         tip: hov && !!(it.memo || '').trim() && !editing
       };
     });
@@ -2136,7 +2290,7 @@ class Component extends DCLogic {
     const mrows = [];
     const mplace = {};
     markers.slice().sort((a, b) => a.s - b.s).forEach((it) => {
-      const w = this.measure(it.label || '') + 24;
+      const w = this.measure(it.label || '') + 24 + (st.cfg.showElementDates ? this.measure(this.isoOf(it.s)) + 6 : 0);
       const x0 = this.xOf(it.s) - w / 2, x1 = x0 + w;
       let k = 0;
       while (mrows[k] && mrows[k].some((g) => g[0] < x1 + 8 && g[1] > x0 - 8)) k++;
@@ -2150,7 +2304,7 @@ class Component extends DCLogic {
       const editing = st.editing === it.id;
       const k = mplace[it.id] || 0;
       return {
-        id: it.id, label: it.label, color: it.color, ink: this.dark(it.color),
+        dateLabel: this.isoOf(it.s), id: it.id, label: it.label, color: it.color, ink: this.dark(it.color),
         left: px(this.xOf(it.s)), top: px(k * 30), stemH: px(stripH - k * 30 - 26),
         sel: st.sel === it.id, editing: editing, show: !editing
       };
@@ -2162,7 +2316,7 @@ class Component extends DCLogic {
       const alpha = it.variant === 'tint' ? 0.55 : 1;
       const base = it.color || '#fdf3d0';
       return {
-        id: it.id, label: it.label, left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
+        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
         width: px(it.w || 210), height: px(it.h || 120),
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
@@ -2182,12 +2336,13 @@ class Component extends DCLogic {
     const ov = cfg.overlap || 'shrink';
     const ovBtn = (k) => ({ bg: ov === k ? '#181a1b' : '#fff', fg: ov === k ? '#fff' : 'var(--color-text-neutral-5)', border: ov === k ? '#181a1b' : 'var(--color-border-neutral-2)' });
     const focusRowObj = st.rows.find((r) => r.id === st.focusRow);
-    const rowColors = [['none', 'none'], ['파랑', '#eaf2fb'], ['보라', '#f0ebfb'], ['민트', '#e7f4f1'], ['노랑', '#fdf6e3'], ['살구', '#fdeee6'], ['분홍', '#fdeef4'], ['회색', '#f3f5f6']];
+    const rowColors = MapstoneCore.rowColors;
 
     return {
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
+      readOnly: !!st.readOnly,
       focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, exportJson:this.exportJson,
-      timeStep:this.timeStep(), colPad: subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), onHideDuration:this.onHideDuration, selHideDuration:!!(sel && sel.hideDuration), subdivisions,
+      timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), onHideDuration:this.onHideDuration, selHideDuration:!!(sel && sel.hideDuration), subdivisions: cfg.showWeek === false ? [] : subdivisions,
       imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:st.sel===it.id,border:st.sel===it.id?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
@@ -2195,6 +2350,12 @@ class Component extends DCLogic {
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
+      showMM: cfg.showMM !== false, toggleMM: this.toggleMM,
+      showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
+      datesBg:cfg.showElementDates ? '#181a1b' : '#f3f5f6', datesFg:cfg.showElementDates ? '#fff' : '#66707a', datesBorder:cfg.showElementDates ? '#181a1b' : 'var(--color-border-neutral-2)',
+      showWeek: cfg.showWeek !== false, toggleWeek: this.toggleWeek,
+      weekViewBg: cfg.showWeek !== false ? '#181a1b' : '#f3f5f6', weekViewFg: cfg.showWeek !== false ? '#fff' : '#66707a', weekViewBorder: cfg.showWeek !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
+      mmBg: cfg.showMM !== false ? '#181a1b' : '#f3f5f6', mmFg: cfg.showMM !== false ? '#fff' : '#66707a', mmBorder: cfg.showMM !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
       magnetBg: cfg.magnet ? '#181a1b' : '#fff', magnetFg: cfg.magnet ? '#fff' : 'var(--color-text-neutral-5)', magnetBorder: cfg.magnet ? '#181a1b' : 'var(--color-border-neutral-2)',
       helpOpen: st.helpOpen, openHelp: this.openHelp, closeHelp: this.closeHelp, stopClick: this.stopClick,
       textOpen: st.textOpen, openText: this.openText, closeText: this.closeText,
@@ -2213,12 +2374,12 @@ class Component extends DCLogic {
       indThumbW: Math.round(Math.min(100, (st.cw / st.sw) * 100) * 100) / 100 + '%',
       indThumbL: Math.round((st.sx / st.sw) * 100 * 100) / 100 + '%',
       onIndDown: this.onIndDown, onIndTrack: this.onIndTrack,
-      L: T, langLabel: T.lang, toggleLang: this.toggleLang, selectAll: this.selectAll, appVer: this.APP_VER,
+      L: T, langLabel: T.lang, toggleLang: this.toggleLang, selectAll: this.selectAll, beginTextEdit: this.beginTextEdit, endTextEdit: this.endTextEdit, appVer: this.APP_VER,
       ovShrink: ovBtn('shrink'), ovMoveOther: ovBtn('moveOther'), ovMoveSelf: ovBtn('moveSelf'), setOverlap: this.setOverlap,
       addPlain: this.addPlain, onHandleDbl: this.onHandleDbl,
       title: st.title, savedLabel: st.saved, panel: st.panel, panelLabel: st.panel ? T.panelClose : T.panelOpen,
       panelBorder: st.panel ? '#181a1b' : 'var(--color-border-neutral-2)',
-      panelTrack: st.panel ? '#e30084' : '#c3cad1', panelKnob: st.panel ? '16px' : '2px',
+      panelBg: st.panel ? '#181a1b' : '#fff', panelFg: st.panel ? '#fff' : 'var(--color-text-neutral-5)',
       cols: cols, gridCols: gridCols, rowsView: rowsView, bandsView: bandsView,
       markersView: markersView, markerLines: markerLines, markerStripH: px(stripH),
       notesView: st.notes.map((n) => ({ id: n.id, text: n.text, editing: st.editNote === n.id, show: st.editNote !== n.id })),
@@ -2251,7 +2412,11 @@ class Component extends DCLogic {
       selKind: sel ? sel.kind : 'chev', selKindLabel: sel ? kindNames[sel.kind] || '항목' : '',
       selLabel: sel ? sel.label : '', selMemo: sel ? sel.memo || '' : '',
       selRow: sel ? sel.row : '', selRowFrom: sel ? sel.rowFrom || '' : '', selRowTo: sel ? sel.rowTo || '' : '',
-      selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && (sel.kind === 'chev' || sel.kind === 'flag'),
+      selIsFlag: !!sel && sel.kind === 'flag', selNotFlag: !!sel && sel.kind !== 'flag',
+      selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
+      linkOptions: st.items.filter(i=>this.boxKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===i.row)?.name || '')+' · '+i.label})),
+      linkDrag: st.linkDrag, linking:!!st.linkDrag,
+      selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
       selS: sel ? sel.s : 0, selE: sel ? sel.e : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? sel.span || 1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
       selSISO: sel ? this.isoOf(sel.s) : '', selEISO: sel ? this.isoOf(sel.e) : '', onDateField: this.onDateField,
@@ -2281,7 +2446,7 @@ class Component extends DCLogic {
       rowPropLanes: focusRowObj ? Math.max(1, Math.round((this.rowHeight(focusRowObj.id) - 14) / cfg.laneH)) : 1,
       selIsSticky: !!sel && sel.kind === 'sticky',
       onRowName: this.onRowName, onRowDelete: this.onRowDelete, onRowUp: this.onRowUp, onRowDown: this.onRowDown, onRowFocus: this.onRowFocus,
-      onItemDown: this.onItemDown, onItemDbl: this.onItemDbl, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
+      onItemDown: this.onItemDown, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
       onHover: this.onHover, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,

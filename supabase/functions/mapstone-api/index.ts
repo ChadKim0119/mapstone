@@ -38,7 +38,7 @@ const scheduleSchema={type:'object',additionalProperties:false,required:['title'
 }};
 const analysisPrompt=`첨부한 자료(이미지 또는 텍스트)에 담긴 프로젝트 일정·마일스톤·로드맵을 Mapstone 일정 데이터로 변환하세요. 간트 차트, 로드맵, 표, 슬라이드, 손그림, 회의록, 메일, PRD, 엑셀 복사본 등 형식은 무엇이든 될 수 있습니다.
 읽을 수 있는 정보는 빠짐없이 옮기세요. 요약하거나 생략하지 말고, 원문 언어와 표기를 그대로 보존하세요.
-- rows: 구분 행(팀, 트랙, 시스템, 단계 그룹 등). 행 이름은 원문 그대로. 행 배경색이 있으면 #RRGGBB, 없으면 "".
+- rows: 구분 행(팀, 트랙, 시스템, 단계 그룹 등). 행 이름은 원문 그대로. 행 배경색이 있으면 설정 팔레트(#eaf2fb 파랑, #f0ebfb 보라, #e7f4f1 민트, #fdf6e3 노랑, #fdeee6 살구, #fdeef4 분홍, #f3f5f6 회색) 중 가장 가까운 색, 없으면 "".
 - chev: 기간이 있는 일반 작업·단계·스프린트.
 - plain: 설명성·참고성 기간(예: 협의 기간, 준비 기간, 옅게 표시된 구간).
 - band: 여러 행에 걸친 공통 구간(프리즈, 안정화, 휴가, 감사 기간 등). row는 시작 행, rowTo는 끝 행.
@@ -77,13 +77,10 @@ async function analyze(body:any){
   let parsed;try{parsed=JSON.parse(out);}catch{throw new Error('ai_output_missing');}
   return Core.fromAnalysis(parsed,new Date().toISOString().slice(0,10));
 }
-// ponytail: per-isolate memory, so the cap is per instance and resets on cold start. Set a daily quota on the
-// Gemini/OpenAI key as the real spending ceiling; move this to a DB counter if anonymous abuse shows up.
-const ANON_PER_HOUR=20,anonHits=new Map<string,number[]>();
-function allowAnonymous(req:Request){
-  const ip=(req.headers.get('x-forwarded-for')||'').split(',')[0].trim()||'unknown',now=Date.now();
-  const hits=(anonHits.get(ip)||[]).filter(t=>now-t<3600000);if(hits.length>=ANON_PER_HOUR)return false;
-  hits.push(now);anonHits.set(ip,hits);if(anonHits.size>5000)anonHits.clear();return true;
+const ANON_PER_HOUR=20;
+async function allowAnonymous(req:Request){
+  const ip=(req.headers.get('x-forwarded-for')||req.headers.get('cf-connecting-ip')||'unknown').split(',')[0].trim();
+  return await db('rpc/mapstone_take_rate_limit','POST',{p_key_hash:await hash(ip),p_limit:ANON_PER_HOUR})===true;
 }
 Deno.serve(async (req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
@@ -142,7 +139,7 @@ Deno.serve(async (req:Request)=>{
     if(path.length===1&&['analyze','analyze-image'].includes(path[0])&&req.method==='POST'){
       const code=req.headers.get('X-Mapstone-Code')||'';
       const member=/^[A-Za-z0-9_-]{24,128}$/.test(code)&&(await db('mapstone_rooms?select=id&code_hash=eq.'+await hash(code)+'&archived=eq.false')).length>0;
-      if(!member&&!allowAnonymous(req))return json({error:'분석 요청이 많습니다. 1시간 뒤 다시 시도하거나 접속 코드로 연결해 사용하세요.'},429);
+      if(!member&&!await allowAnonymous(req))return json({error:'분석 요청이 많습니다. 1시간 뒤 다시 시도하거나 접속 코드로 연결해 사용하세요.'},429);
       const body=await readBody(req);return json({document:await analyze(body)});
     }
     const code=req.headers.get('X-Mapstone-Code')||'';

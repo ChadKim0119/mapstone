@@ -8,7 +8,22 @@
   const clone = x => JSON.parse(JSON.stringify(x));
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const keys = ['title', 'cfg', 'rows', 'items', 'notes', 'now', 'versions'];
+  const rowColors = [['none', 'none'], ['파랑', '#eaf2fb'], ['보라', '#f0ebfb'], ['민트', '#e7f4f1'], ['노랑', '#fdf6e3'], ['살구', '#fdeee6'], ['분홍', '#fdeef4'], ['회색', '#f3f5f6']];
+  function rowColor(value) {
+    if (!/^#[0-9a-f]{6}$/i.test(value || '')) return undefined;
+    const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+    const source = rgb(value), distance = hex => rgb(hex).reduce((sum, n, i) => sum + (n - source[i]) ** 2, 0);
+    return rowColors.slice(1).reduce((best, c) => distance(c[1]) < distance(best) ? c[1] : best, rowColors[1][1]);
+  }
   const uid = () => 'i' + (globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
+  function syncLinks(items) {
+    for (const flag of items.filter(i => i.kind === 'flag' && i.targetId)) {
+      const target = items.find(i => i.id === flag.targetId && ['chev','plain'].includes(i.kind));
+      if (!target) { flag.targetId = ''; delete flag.linkOffset; continue; }
+      flag.row = target.row; flag.lane = target.lane;
+      flag.s = flag.e = target.s + (target.e - target.s) * (flag.linkOffset ?? 1);
+    }
+  }
   const fail = message => { throw new Error(message); };
   const finite = (v, name, lo, hi) => typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi ? v : fail(name + ' 값이 올바르지 않습니다.');
   function validate(data) {
@@ -40,8 +55,12 @@
       for (const k of ['y','w','h']) if (it[k] !== undefined) finite(it[k],k,0,20000);
       if (it.kind === 'image' && (typeof it.src !== 'string' || !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(it.src) || it.src.length > 2800000)) fail('이미지는 2MB 이하 PNG/JPEG/WebP 데이터여야 합니다.');
       if (it.hideDuration !== undefined && typeof it.hideDuration !== 'boolean') fail('hideDuration은 true/false입니다.');
+      if (it.targetId !== undefined) { text(it.targetId,'연결 대상',128); if (it.kind !== 'flag') fail('알림만 요소에 연결할 수 있습니다.'); }
+      if (it.linkOffset !== undefined) finite(it.linkOffset,'연결 위치',0,1);
+      for (const k of ['labelDx','labelDy']) if (it[k] !== undefined) finite(it[k],k,-20000,20000);
       return it;
     });
+    syncLinks(items);
     const notes = data.notes || [];
     if (!Array.isArray(notes) || notes.length > 500) fail('메모 형식 오류');
     notes.forEach(n => { if (!n || typeof n.id !== 'string') fail('메모 id가 필요합니다.'); text(n.text, '메모'); });
@@ -63,7 +82,7 @@
     const hex = v => /^#[0-9a-f]{6}$/i.test(v || '') ? v : null;
     const str = (v, max) => String(v ?? '').slice(0, max);
     const rows = [], rowOf = new Map();
-    (Array.isArray(p.rows) ? p.rows : []).slice(0, 200).forEach(r => { if (!r) return; const id = 'r' + (rows.length + 1), row = {id, name: str(r.name || r.id || id, 500)}; if (hex(r.color)) row.color = r.color; rows.push(row); for (const k of [r.id, r.name]) if (k && !rowOf.has(String(k))) rowOf.set(String(k), id); });
+    (Array.isArray(p.rows) ? p.rows : []).slice(0, 200).forEach(r => { if (!r) return; const id = 'r' + (rows.length + 1), row = {id, name: str(r.name || r.id || id, 500)}; const color = rowColor(r.color); if (color) row.color = color; rows.push(row); for (const k of [r.id, r.name]) if (k && !rowOf.has(String(k))) rowOf.set(String(k), id); });
     if (!rows.length) rows.push({id: 'r1', name: str(p.title || '일정', 500)});
     const rowId = v => rowOf.get(String(v ?? '')) || rows[0].id;
     const palette = ['#5b3fd1', '#0078d4', '#17a2a2', '#f86800', '#1e3a8a', '#66707a'];
@@ -128,5 +147,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,fromAnalysis,documentOf,merge,clone,equal,uid};
+  return {validate,parseImport,fromAnalysis,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });

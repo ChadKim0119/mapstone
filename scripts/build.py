@@ -32,6 +32,6 @@ shell=(ROOT/'scripts/bundle-base.html').read_text()
 for kind,data in [('manifest',manifest),('template',template),('ext_resources',[]),('page_order',[])]:
     body=json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('</','<\\/')
     shell=re.sub(r'(<script type="__bundler/'+kind+r'">).*?(</script>)',lambda m:m.group(1)+'\n'+body+'\n'+m.group(2),shell,flags=re.S)
-shell=shell.replace('<title>Bundled Page</title>','<title>Mapstone · 일정 Maker</title>')
+shell=shell.replace('<title>Bundled Page</title>','<title>Mapstone · 일정 Maker · Codex 수정</title>')
 (ROOT/'index.html').write_text(shell)
 print('Built index.html and 3 entry points from src/timeline.dc.html')

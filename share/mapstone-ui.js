@@ -13,7 +13,31 @@
   function fitWidth(app){if(!app._board)return;const weeks=Array.from({length:app.state.cfg.months},(_,i)=>app.weeksIn(i)).reduce((a,b)=>a+b,0);const value=Math.max(app.ZMIN||4,Math.min(app.ZMAX||640,(app._board.clientWidth-218)/weeks));app.mutate(d=>{d.cfg.weekPx=value;},false);app._board.scrollLeft=0;}
   function toggleFocus(app){hideTip();const focus=!app.state.focusMode;app.setState({focusMode:focus,sel:null,editing:null});requestAnimationFrame(()=>fitWidth(app));if(focus){const notice=el('div','전체보기 · Esc 또는 F 키로 돌아오기',{className:'ms-focus-hint'});app.root.append(notice);setTimeout(()=>notice.remove(),2500);}}
   function hideTip(){tip?.remove();tip=null;}
-  function showTip(app,event){hideTip();if(app.drag)return;const it=app.state.items.find(i=>i.id===event.currentTarget.dataset.id);if(!it)return;const range=['chev','plain'].includes(it.kind)?app.isoOf(it.s)+' ~ '+app.isoOf(it.e):'';const text=it.kind==='sticky'?it.label:[range,it.memo].filter(Boolean).join('\n\n');if(!text||app.state.editing===it.id)return;tip=el('div',text,{className:'ms-tooltip'});tip.setAttribute('role','tooltip');document.body.append(tip);const r=event.currentTarget.getBoundingClientRect();const b=tip.getBoundingClientRect();tip.style.left=Math.max(8,Math.min(r.left,innerWidth-b.width-8))+'px';const below=r.bottom+8;tip.style.top=Math.max(8,below+b.height>innerHeight-8?r.top-b.height-8:below)+'px';}
+  function showTip(app,event){
+    hideTip(); if(app.drag)return;
+    const it=app.state.items.find(i=>i.id===event.currentTarget.dataset.id);
+    if(!it||app.state.editing===it.id)return;
+    const range=['chev','plain','band'].includes(it.kind);
+    const targetId=it.kind==='flag' ? (it.targetId ?? app.rowLayout()[it.row]?.modes[it.id]?.targetId) : '';
+    const target=it.kind==='flag'&&app.state.items.find(i=>i.id===targetId);
+    const text=it.kind==='sticky'?it.label:it.memo;
+    if(!range&&!text&&it.kind!=='flag')return;
+    tip=el('div',null,{className:'ms-tooltip'});tip.setAttribute('role','tooltip');
+    if(range){
+      tip.append(el('div',app.isoOf(it.s)+' → '+app.isoOf(it.e)));
+      const duration=el('div',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'));
+      duration.style.cssText='display:inline-block;margin:6px 0;padding:3px 9px;border-radius:6px;background:#f3f5f6;font-size:16px;font-weight:750;letter-spacing:.03em;font-variant-numeric:tabular-nums;color:#181a1b';
+      tip.append(duration);
+    }
+    if(it.kind==='flag')tip.append(el('div',target?app.L().linkedTo+': '+target.label:app.L().noTarget));
+    if(text)tip.append(el('div',text));
+    document.body.append(tip);
+    const anchor=event.currentTarget.querySelector('[data-alert-label]')||event.currentTarget;
+    const r=anchor.getBoundingClientRect(),b=tip.getBoundingClientRect();
+    tip.style.left=Math.max(8,Math.min(r.left,innerWidth-b.width-8))+'px';
+    const below=r.bottom+10;
+    tip.style.top=Math.max(8,below+b.height>innerHeight-8?r.top-b.height-10:below)+'px';
+  }
   function closeModal(){if(!modal)return;const old=modal;modal=null;old.close();old.remove();}
   function createModal(title){closeModal();hideTip();const d=el('dialog',null,{className:'ms-dialog'});const head=el('header');head.append(el('h2',title),button('닫기',closeModal));d.append(head);const body=el('div',null,{className:'ms-dialog-body'});d.append(body);d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});d.addEventListener('close',()=>{if(modal===d)modal=null;d.remove();});document.body.append(d);modal=d;d.showModal();return body;}
   async function request(endpoint,path,credential,method='GET',body,auth='code',timeout=20000){
@@ -29,8 +53,8 @@
     schedule(){if(this.base && !C.equal(this.base,this.app.dataDocument()))status(this.app,'공동 편집 · 변경 사항 전송 대기');}
     async join(code){this.path='/room';this.auth='code';this.readOnly=false;if(this.busy)throw new Error('저장 완료 후 다시 시도하세요.');if(!/^[A-Za-z0-9_-]{24,128}$/.test(code))throw new Error('발급된 접속 코드를 입력하세요.');const remote=await request(this.endpoint,this.path,code);if(!this.alive)return;this.app.flushSave();this.code=code;this.id=remote.id;this.revision=remote.revision;this.base=C.validate(remote.document);this.conflict=null;this.app.KEY='mapstone.room.'+remote.id;let value=this.base;
       try{const raw=localStorage.getItem(this.app.KEY),base=localStorage.getItem(this.app.KEY+'.base');if(raw && base){const local=C.validate(JSON.parse(raw)),oldBase=C.validate(JSON.parse(base));const merged=C.merge(oldBase,local,this.base);value=merged.document;if(merged.conflicts.length){this.conflict={remote,paths:merged.conflicts};value=local;}}}catch(e){status(this.app,'로컬 복구본 확인 필요: '+e.message);}
-      this.app._savedData=null;this.app._queuedData=null;clearTimeout(this.app._t);this.app.setState({...value,sel:null,editing:null,hist:[],future:[]});this.persistBase();sessionStorage.setItem('mapstone.connection',code);status(this.app,this.conflict?'충돌 발견 · 접속 코드 메뉴에서 해결':'공동 편집 연결 · r'+this.revision);this.tick();}
-    async joinShare(id,password){if(!/^[0-9a-f-]{36}$/i.test(id))throw new Error('공유 링크가 올바르지 않습니다.');const remote=await request(this.endpoint,'/share/'+id,password,'GET',undefined,'share');this.app.flushSave();this.path='/share/'+id;this.auth='share';this.readOnly=remote.permission==='view';this.code=password;this.id=id;this.revision=remote.revision;this.base=C.validate(remote.document);this.conflict=null;this.app.KEY='mapstone.share.'+id;this.app._savedData=null;this.app._queuedData=null;clearTimeout(this.app._t);this.app.setState({...this.base,sel:null,editing:null,hist:[],future:[]});this.persistBase();sessionStorage.setItem('mapstone.share',JSON.stringify({id,password}));status(this.app,(this.readOnly?'보기 전용 공유':'공동 편집 공유')+' · r'+this.revision);}
+      this.app._savedData=null;this.app._queuedData=null;clearTimeout(this.app._t);this.app.setState({...value,readOnly:false,sel:null,editing:null,hist:[],future:[]});this.persistBase();sessionStorage.setItem('mapstone.connection',code);status(this.app,this.conflict?'충돌 발견 · 접속 코드 메뉴에서 해결':'공동 편집 연결 · r'+this.revision);this.tick();}
+    async joinShare(id,password){if(!/^[0-9a-f-]{36}$/i.test(id))throw new Error('공유 링크가 올바르지 않습니다.');const remote=await request(this.endpoint,'/share/'+id,password,'GET',undefined,'share');this.app.flushSave();this.path='/share/'+id;this.auth='share';this.readOnly=remote.permission==='view';this.code=password;this.id=id;this.revision=remote.revision;this.base=C.validate(remote.document);this.conflict=null;this.app.KEY='mapstone.share.'+id;this.app._savedData=null;this.app._queuedData=null;clearTimeout(this.app._t);this.app.setState({...this.base,readOnly:this.readOnly,sel:null,editing:null,hist:[],future:[]});this.persistBase();sessionStorage.setItem('mapstone.share',JSON.stringify({id,password}));status(this.app,(this.readOnly?'보기 전용 공유':'공동 편집 공유')+' · r'+this.revision);}
     persistBase(){try{localStorage.setItem(this.app.KEY+'.base',JSON.stringify(this.base));}catch(e){status(this.app,'복구 정보 저장 실패 · JSON 백업 필요');}}
     async tick(){if(!this.alive||this.busy||!this.code||!this.base||this.conflict||Date.now()<(this.retryAt||0))return;const app=this.app;if(app.drag||app.state.editing||modal||['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;this.busy=true;const current=app.dataDocument(),base=C.clone(this.base);try{
         const changed=!C.equal(current,base);if(this.readOnly&&changed){app.setState({...base,sel:null,editing:null,hist:[],future:[]});status(app,'보기 전용 공유 · 변경할 수 없습니다.');return;}const remote=changed?await request(this.endpoint,this.path,this.code,'PUT',{revision:this.revision,document:C.validate(current)},this.auth):await request(this.endpoint,this.path+'?after='+this.revision,this.code,'GET',undefined,this.auth);
@@ -41,7 +65,7 @@
       }catch(e){if(!this.alive)return;if(e.status===409&&e.data.room){const remote=e.data.room,merged=C.merge(base,app.dataDocument(),remote.document);if(merged.conflicts.length){this.conflict={remote,paths:merged.conflicts};status(app,'편집 충돌 · 접속 코드 메뉴에서 해결');}else{this.base=C.validate(remote.document);this.revision=remote.revision;this.persistBase();app.setState({...merged.document,hist:[],future:[]});status(app,'다른 사용자 수정 자동 병합 · 전송 대기');}}else{status(app,'공동 저장 실패 · '+e.message);this.retryAt=Date.now()+10000;}}
       finally{this.busy=false;}}
     resolve(useLocal){const c=this.conflict;if(!c)return;if(!useLocal){download(this.app.dataDocument(),'mapstone-conflict-local-backup.json');this.app.setState({...C.validate(c.remote.document),sel:null,editing:null,hist:[],future:[]});}this.base=C.validate(c.remote.document);this.revision=c.remote.revision;this.conflict=null;this.persistBase();status(this.app,'충돌 해결 · 동기화 대기');}
-    leave(){if(this.busy)throw new Error('저장 진행 중입니다. 잠시 후 다시 시도하세요.');if(this.base&&!C.equal(this.base,this.app.dataDocument())&&!window.confirm('서버에 보내지 못한 변경이 있습니다. 로컬 복구본을 남기고 연결을 종료할까요?'))return;this.app.flushSave();this.code='';this.base=null;this.conflict=null;this.path='/room';this.auth='code';this.readOnly=false;sessionStorage.removeItem('mapstone.connection');sessionStorage.removeItem('mapstone.share');this.app.KEY='mapstone.timeline.v1';this.app._savedData=null;status(this.app,'로컬 모드 · 공유 연결 종료');}
+    leave(){if(this.busy)throw new Error('저장 진행 중입니다. 잠시 후 다시 시도하세요.');if(this.base&&!C.equal(this.base,this.app.dataDocument())&&!window.confirm('서버에 보내지 못한 변경이 있습니다. 로컬 복구본을 남기고 연결을 종료할까요?'))return;this.app.flushSave();this.code='';this.base=null;this.conflict=null;this.path='/room';this.auth='code';this.readOnly=false;sessionStorage.removeItem('mapstone.connection');sessionStorage.removeItem('mapstone.share');this.app.KEY='mapstone.timeline.v1';this.app._savedData=null;this.app.setState({readOnly:false});status(this.app,'로컬 모드 · 공유 연결 종료');}
     dispose(){this.alive=false;clearInterval(this.timer);}
   }
   const example={schemaVersion:1,title:'2개월 프로젝트',cfg:{startY:2026,startM:9,months:2,weekPx:100,weekMode:'actual',laneH:44,magnet:true,overlap:'moveOther'},rows:[{id:'product',name:'기획 · 개발'}],items:[{id:'design',kind:'chev',row:'product',lane:0,s:0,e:0.5,label:'요구사항 분석',color:'#5b3fd1',span:1,variant:'solid',memo:'PRD 요구사항 검토',hideDuration:false},{id:'build',kind:'chev',row:'product',lane:0,s:0.5,e:1.75,label:'구현 및 검증',color:'#0078d4',span:1,variant:'solid',memo:''}],notes:[],now:0,versions:[]};
@@ -53,7 +77,7 @@
       let scale=Math.min(1,3000/max);for(let n=0;n<8;n++,scale*=.8){const c=el('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));const g=c.getContext('2d');g.drawImage(img,0,0,c.width,c.height);let src=c.toDataURL('image/png');if(src.length>2700000){g.globalCompositeOperation='destination-over';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);src=c.toDataURL('image/jpeg',.9);}if(src.length<=2700000)return {src,width:c.width,height:c.height};}
       throw new Error('이미지가 너무 커서 줄일 수 없습니다.');}finally{URL.revokeObjectURL(url);}
   }
-  function summary(d){const n=k=>d.items.filter(i=>i.kind===k).length;return [d.cfg.startY+'.'+String(d.cfg.startM).padStart(2,'0')+'부터 '+d.cfg.months+'개월',d.rows.length+'개 구분',n('chev')+n('plain')+'개 블록',n('marker')+n('flag')+'개 마일스톤·이슈',n('band')+'개 구간',n('sticky')+'개 메모'].join(' · ');}
+  function summary(d){const n=k=>d.items.filter(i=>i.kind===k).length;return [d.cfg.startY+'.'+String(d.cfg.startM).padStart(2,'0')+'부터 '+d.cfg.months+'개월',d.rows.length+'개 구분',n('chev')+n('plain')+'개 블록',n('marker')+n('flag')+'개 마일스톤·알림',n('band')+'개 구간',n('sticky')+'개 메모'].join(' · ');}
   function dropZone(parent,label,hint,accept,onFile){const zone=el('div',null,{className:'ms-drop',tabIndex:0});const input=el('input',null,{type:'file',accept,hidden:true});zone.btns=el('div',null,{className:'ms-drop-btns'});zone.btns.append(button('파일 불러오기…',()=>input.click()));zone.append(el('strong',label),el('span',hint),zone.btns,input);input.addEventListener('change',()=>{if(input.files[0])onFile(input.files[0]);input.value='';});
     zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('on');});zone.addEventListener('dragleave',()=>zone.classList.remove('on'));zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('on');const f=e.dataTransfer.files[0];if(f)onFile(f);});parent.append(zone);return zone;}
   function actions(parent,...buttons){const row=el('div',null,{className:'ms-actions'});row.append(...buttons);parent.append(row);return row;}
@@ -70,7 +94,7 @@
     const busy=async(btn,fn)=>{const label=btn.textContent;btn.disabled=true;btn.textContent='분석 중…';try{await fn();}catch(e){reset(e.message);}finally{btn.disabled=false;btn.textContent=label;}};
     const ai=async(payload,what)=>{reset(what+'에서 일정·마일스톤을 분석하고 있습니다… 자료가 크면 1~2분 걸릴 수 있습니다.');const r=await request(app.sync.endpoint,'/analyze',app.sync.code||'','POST',payload,'code',180000);return C.validate(r.document);};
 
-    body.append(el('h3','1. 이미지 가져오기'),el('p','간트 차트, 로드맵, 표, 슬라이드·화면 캡처, 손그림 등 마일스톤이 담긴 이미지를 분석해 구분 행, 블록, 마일스톤, 이슈, 공통 구간, 메모와 색상까지 Mapstone 일정으로 변환합니다.'));
+    body.append(el('h3','1. 이미지 가져오기'),el('p','간트 차트, 로드맵, 표, 슬라이드·화면 캡처, 손그림 등 마일스톤이 담긴 이미지를 분석해 구분 행, 블록, 마일스톤, 알림, 공통 구간, 메모와 색상까지 Mapstone 일정으로 변환합니다.'));
     let picked=null;const thumb=el('img',null,{alt:''});thumb.hidden=true;
     const imgTools=[];const syncImage=()=>{thumb.hidden=!picked;if(picked)thumb.src=picked.src;else thumb.removeAttribute('src');imgTools.forEach(b=>b.disabled=!picked);};
     const setImage=async f=>{try{if(!f.type.startsWith('image/'))throw new Error('이미지 파일을 선택하세요.');reset('이미지를 준비하고 있습니다…');picked={name:f.name||'붙여넣은 이미지.png',...await imageData(f)};syncImage();reset(picked.name+' · '+picked.width+'×'+picked.height+' 준비 완료');}catch(e){picked=null;syncImage();reset(e.message);}};
@@ -136,9 +160,9 @@
     const onKey=e=>{if(modal)return;if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='Escape'&&app.state.focusMode){e.preventDefault();toggleFocus(app);}else if(e.key.toLowerCase()==='f'){e.preventDefault();toggleFocus(app);}};
     const warn=e=>{if(app.sync.base&&!C.equal(app.sync.base,app.dataDocument())){e.preventDefault();e.returnValue='';}};
     document.addEventListener('keydown',onKey);window.addEventListener('beforeunload',warn);document.addEventListener('scroll',hideTip,true);
-    let code=null;try{code=sessionStorage.getItem('mapstone.connection');}catch{}if(code)app.sync.join(code).catch(e=>status(app,'재접속 실패 · '+e.message));const shareId=new URLSearchParams(location.search).get('share');if(shareId&&!code)setTimeout(()=>open(app,'workspace'),100);
+    let code=null;try{code=sessionStorage.getItem('mapstone.connection');}catch{}const shareId=new URLSearchParams(location.search).get('share');if(shareId)setTimeout(()=>open(app,'workspace'),100);else if(code)app.sync.join(code).catch(e=>status(app,'재접속 실패 · '+e.message));
     // Public local automation interface, uses the same validator as imports and the server.
-    window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision})};
+    window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision,readOnly:app.sync.readOnly})};
     return ()=>{app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
   }
   window.MapstoneUI={attach,open,download,toggleFocus,fitWidth,showTip,hideTip};
