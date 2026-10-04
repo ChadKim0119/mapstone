@@ -1,1 +1,1 @@
-{"name":"mapstone","version":"9.39.0","private":true,"scripts":{"build":"python3 scripts/build.py","test":"node --test tests/*.test.cjs","start":"python3 -m http.server 4173 --bind 127.0.0.1"}}
+{"name":"mapstone","version":"9.40.0","private":true,"scripts":{"build":"python3 scripts/build.py","test":"node --test tests/*.test.cjs","start":"python3 -m http.server 4173 --bind 127.0.0.1"}}

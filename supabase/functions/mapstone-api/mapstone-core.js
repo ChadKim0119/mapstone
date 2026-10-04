@@ -31,7 +31,7 @@
     if (JSON.stringify(data).length > 8 * 1024 * 1024) fail('일정은 8MB 이하여야 합니다.');
     if (!Array.isArray(data.rows) || !data.rows.length || data.rows.length > 200) fail('구분 행은 1~200개가 필요합니다.');
     if (!Array.isArray(data.items) || data.items.length > 5000) fail('블록은 최대 5,000개입니다.');
-    const cfg = Object.assign({ startY: 2026, startM: 1, months: 12, weekPx: 19, weekMode: 'uniform', laneH: 44, magnet: true, overlap: 'shrink', showWeek:false, showElementDates:true }, data.cfg || {});
+    const cfg = Object.assign({ startY: 2026, startM: 1, months: 12, weekPx: 19, weekMode: 'uniform', laneH: 44, magnet: true, overlap: 'shrink', showWeek:false, showElementDates:false, durUnit:'MD' }, data.cfg || {});
     for (const [k, lo, hi] of [['startY',1900,2200],['startM',1,12],['months',1,48],['weekPx',4,640],['laneH',28,72]]) finite(cfg[k], k, lo, hi);
     for (const k of ['startY','startM','months']) if (!Number.isInteger(cfg[k])) fail(k + '는 정수여야 합니다.');
     if (!['uniform','actual'].includes(cfg.weekMode) || !['shrink','moveOther','moveSelf'].includes(cfg.overlap)) fail('타임라인 설정이 올바르지 않습니다.');
