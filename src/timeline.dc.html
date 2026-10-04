@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mapstone · 일정 Maker · Codex 수정</title>
+<script data-entry-guard="">
+if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
+  const entry = new URL(/\/(?:src|share)\/[^/]+$/.test(location.pathname) ? '../index.html' : './index.html', location.href);
+  entry.search = location.search; entry.hash = location.hash;
+  document.documentElement.style.visibility = 'hidden';
+  location.replace(entry.href);
+}
+</script>
 <script src="./mapstone-core.js"></script>
 <script src="./mapstone-ui.js"></script>
 <script src="./vendor/react.js"></script>
@@ -126,11 +134,11 @@
       <span style="flex:1"></span>
       <details class="ms-tool-menu"><summary>{{ L.fileG }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
         <button class="ms-tool-button" onClick="{{ openImport }}">{{ L.importG }}</button>
-        <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.jsonBak }}</button>
+        <button class="ms-tool-button" onClick="{{ openFile }}">{{ L.jsonBak }}</button>
       </div></details>
       <details class="ms-tool-menu"><summary>{{ L.exp }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
-        <button class="ms-tool-button" onClick="{{ exportPng }}">PNG</button>
-        <button class="ms-tool-button" onClick="{{ openText }}">{{ L.textTitle }}</button>
+        <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.saveFile }}</button>
+        <button class="ms-tool-button" onClick="{{ exportPng }}">{{ L.png }}</button>
         <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
         <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
       </div></details>
@@ -331,10 +339,10 @@
             <div style="position:absolute;bottom:0;width:2px;background:#e30084;pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ nowToday }}" title="{{ L.nowTip }}" style="position:absolute;top:0;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:12px;font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW</div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ nowToday }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:0;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:12px;font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW</div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ nowToday }}" title="{{ L.nowTip }}" style="position:absolute;top:100%;margin-top:-2px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:12px;font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW</div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ nowToday }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:-2px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:12px;font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW</div>
           </sc-if>
         </div>
 
@@ -367,12 +375,12 @@
                 </div>
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.labelF }}</span>
-                  <textarea value="{{ selLabel }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="2" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selLabel }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button onClick="{{ clearMemo }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">🗑</button></span>
-                  <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="3" placeholder="{{ L.phMemo }}" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" placeholder="{{ L.phMemo }}" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
                 </sc-if>
                 <sc-if value="{{ selIsSticky }}" hint-placeholder-val="{{ false }}">
@@ -389,17 +397,6 @@
                     </div>
                   </div>
                 </sc-if>
-                <label style="display:flex;flex-direction:column;gap:6px">
-                  <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.kindF }}</span>
-                  <select value="{{ selKind }}" data-field="kind" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 8px;font-size:13px;background:#fff;outline:none">
-                    <option value="chev">{{ L.kChev }}</option>
-                    <option value="plain">{{ L.kPlain }}</option>
-                    <option value="sticky">{{ L.sticky }}</option>
-                    <option value="band">{{ L.kBand }}</option>
-                    <option value="marker">{{ L.kMarker }}</option>
-                    <option value="flag">{{ L.kFlag }}</option>
-                  </select>
-                </label>
                 <sc-if value="{{ selIsFlag }}">
                   <label style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600">{{ L.linkedTo }}</span>
@@ -414,20 +411,20 @@
                 <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startF }}</span>
-                    <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
-                      <button data-field="s" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
+                    <div class="ms-date-step" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
+                      <button data-field="s" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
                       <input type="number" step="{{ timeStep }}" value="{{ selS }}" data-field="s" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
-                      <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
+                      <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
                     <input type="date" value="{{ selSISO }}" data-field="s" onChange="{{ onDateField }}" title="{{ L.dateSet }}" style="width:100%;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);background:#fff;outline:none" style-focus="border-color:#000">
                     <span style="font-size:11px;color:var(--color-text-neutral-3)">{{ selSDate }}</span>
                   </div>
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.endF }}</span>
-                    <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
-                      <button data-field="e" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
+                    <div class="ms-date-step" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
+                      <button data-field="e" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
                       <input type="number" step="{{ timeStep }}" value="{{ selE }}" data-field="e" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
-                      <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
+                      <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
                     <input type="date" value="{{ selEISO }}" data-field="e" onChange="{{ onDateField }}" title="{{ L.dateSet }}" style="width:100%;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);background:#fff;outline:none" style-focus="border-color:#000">
                     <span style="font-size:11px;color:var(--color-text-neutral-3)">{{ selEDate }}</span>
@@ -436,10 +433,6 @@
                 <div style="display:flex;gap:7px;padding:9px 11px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1)">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;color:var(--color-text-neutral-3)"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5.5M12 7.8h.01"></path></svg>
                   <span style="font-size:11.5px;line-height:1.65;color:var(--color-text-neutral-4)">{{ L.dateHint }}</span>
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1)">
-                  <label style="display:flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" checked="{{ selHideDuration }}" onChange="{{ onHideDuration }}">기간 삭제 (표시 숨김)</label>
-                  <span style="font-size:14px;font-weight:700">{{ selDur }}</span>
                 </div>
                 </sc-if>
                 <sc-if value="{{ selIsBand }}" hint-placeholder-val="{{ false }}">
@@ -464,14 +457,6 @@
                 </sc-if>
                 <sc-if value="{{ selIsTrack }}" hint-placeholder-val="{{ true }}">
                   <div style="display:flex;flex-direction:column;gap:10px">
-                    <label style="display:flex;flex-direction:column;gap:6px">
-                      <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowF }}</span>
-                      <select value="{{ selRow }}" data-field="row" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 8px;font-size:13px;background:#fff;outline:none">
-                        <sc-for list="{{ rowOptions }}" as="o" hint-placeholder-count="4">
-                          <option value="{{ o.id }}">{{ o.name }}</option>
-                        </sc-for>
-                      </select>
-                    </label>
                     <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
                       <div style="display:flex;flex-direction:column;gap:6px">
                         <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.spanF }}</span>
@@ -555,7 +540,7 @@
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startMonth }}</span>
                 <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                   <button data-cfg="startM" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
-                  <input type="number" step="1" min="1" max="12" value="{{ startM }}" data-cfg="startM" onChange="{{ onCfg }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
+                  <input type="month" value="{{ startMonthValue }}" min="1900-01" max="2200-12" aria-label="{{ L.startMonth }}" onChange="{{ onStartMonth }}" style="flex:1;min-width:0;border:none;padding:0 8px;font-size:13px;font-weight:600;outline:none;background:#fff">
                   <button data-cfg="startM" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
                 </div>
               </div>
@@ -588,11 +573,6 @@
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.weekHint }}</span>
             </div>
             <div style="display:flex;flex-direction:column;gap:8px">
-              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.magnetF }}</span>
-              <button onClick="{{ toggleMagnet }}" style="height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}">{{ L.magnetF }} {{ magnetState }}</button>
-              <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.magnetHint }}</span>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:8px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.overlapF }}</span>
               <div style="display:flex;flex-direction:column;gap:6px">
                 <button data-overlap="shrink" onClick="{{ setOverlap }}" style="height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ ovShrink.border }};background:{{ ovShrink.bg }};color:{{ ovShrink.fg }}">{{ L.opShrink }}</button>
@@ -600,16 +580,6 @@
                 <button data-overlap="moveSelf" onClick="{{ setOverlap }}" style="height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ ovMoveSelf.border }};background:{{ ovMoveSelf.bg }};color:{{ ovMoveSelf.fg }}">{{ L.opMoveSelf }}</button>
               </div>
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.overlapHint }}</span>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:6px">
-              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.nowPos }}</span>
-              <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
-                <button data-cfg="now" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
-                <input type="number" step="{{ timeStep }}" value="{{ nowVal }}" data-cfg="now" onChange="{{ onCfg }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
-                <button data-cfg="now" data-delta="{{ timeStep }}" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
-              </div>
-              <span style="font-size:11px;color:var(--color-text-neutral-3)">{{ nowDate }}</span>
-              <button onClick="{{ nowToday }}" style="height:36px;border:1px solid #000;border-radius:4px;background:#000;color:#fff;font-size:13px;font-weight:600;cursor:pointer">{{ L.todayBtn }}</button>
             </div>
             <div style="height:1px;background:var(--color-border-neutral-2)"></div>
             <button onClick="{{ reset }}" style="height:36px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-3);cursor:pointer">{{ L.restore }}</button>
@@ -777,6 +747,12 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.33', title: 'Codex 텍스트 분석 UX 정리', items: ['텍스트 분석하기 제목·안내·분석 버튼을 이미지 분석과 통일', '붙여넣기 안내 및 복사·붙여넣기 버튼 간소화', '입력칸 우상단에 텍스트 지우기 아이콘 제공', '파일·직접 붙여넣기·결과 검토·백업 흐름 유지'] },
+    { v: 'v9.32', title: 'Codex 메모 연결 위치·PPT 경계·이미지 분석 개선', items: ['닷을 놓은 가로·세로 위치를 항목 내부에 유지', 'PPT 실제 슬라이드 크기와 자동 맞춤 기준 일치', '이미지 분석 메뉴 간소화 및 미리보기 삭제 아이콘', '검토내용 적용 버튼 명칭·가독성 개선'] },
+    { v: 'v9.31', title: 'Codex 파일 저장·메뉴·PPT 내보내기 개선', items: ['항목·메모로 명칭 정리 및 내보내기 첫 항목에 파일 저장 배치', '맵스톤 전용 파일과 기존 JSON 불러오기 지원', '날짜 기반 기본 파일명과 PPT 한 장 자동 맞춤', 'PPT에 포스트잇·이미지·연결선·일자·주차 포함'] },
+    { v: 'v9.30', title: 'Codex NOW 툴팁·전체 설정 간소화', items: ['NOW 태그의 날짜·조작 안내 툴팁을 즉시 표시', '시작 월을 연·월 선택 입력과 ± 버튼으로 변경', '전체 설정의 눈금 맞춤 및 NOW 기준선 설정 제거'] },
+    { v: 'v9.29', title: 'Codex 실행 화면 진입 오류 방지', items: ['편집용 HTML을 직접 열면 index.html로 자동 이동', '공유 링크의 쿼리·해시를 유지하고 실행용 화면 안내 명시'] },
+    { v: 'v9.28', title: 'Codex 요소 속성 설정 간소화', items: ['라벨·블록 메모는 한 줄 높이로 시작하고 세로 확장 유지', '속성의 종류 변경·기간 숨김·행 변경 제거', '공통 시작·종료 숫자 조작부를 날짜 입력과 같은 32px 높이로 축소'] },
     { v: 'v9.27', title: 'Codex 알림 연결 해제 위치 개선', items: ['연결 해제 시 닷을 알림 태그 앞으로 이동', '연결을 해제해도 태그 위치 유지하며 닷으로 다시 연결 가능'] },
     { v: 'v9.26', title: 'Codex 독립 알림 연결점 유지', items: ['연결 대상이 없어도 알림 닷 표시', '연결 해제는 연결선만 제거하고 닷을 드래그해 다시 연결 가능'] },
     { v: 'v9.25', title: 'Codex 알림 연결 UX·보기 메뉴 개선', items: ['연결 해제 시 연결점 제거와 드래그 중 실시간 재연결', '알림 배경 불투명 처리와 라벨 가장자리 연결선으로 겹침 개선', '요소일자를 일자로 변경하고 툴팁 토글·상태 토스트 추가', '공유 버튼을 내보내기 오른쪽으로 이동'] },
@@ -814,7 +790,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.27';
+  APP_VER = 'v9.33';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -825,19 +801,19 @@ class Component extends DCLogic {
   PAL = [['그레이','#66707a'],['다크','#3b4040'],['퍼플','#5b3fd1'],['네이비','#1e3a8a'],['틸','#17a2a2'],['블루','#0078d4'],['오렌지','#f86800'],['레드','#e22a21'],['크림','#a8792a']];
   DICT = {
     ko: {
-      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 요소', unlinked: '독립 알림 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 요소를 이동하거나 기간을 바꾸면 알림도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '알림 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '요소 추가', chev: '작업', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '알림', note: '상단 공지 메모', row: '행',
+      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '작업', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
       editTools: '작업 방식', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
-      exp: '내보내기', png: 'PNG', ppt: 'PPT', print: '인쇄 / PDF', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
-      importG: '일정 가져오기', shareBtn: '공유', jsonBak: 'JSON 백업', panelF: '설정', helpTip: '단축키와 조작 방법 보기',
+      exp: '내보내기', png: '이미지 저장[PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
+      importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장', panelF: '설정', helpTip: '단축키와 조작 방법 보기',
       dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
-      relTitle: 'Codex 수정사항 · 리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·알림 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
+      relTitle: 'Codex 수정사항 · 리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '전체 설정', tabVer: '버전', category: '구분', verNone: '버전 미저장', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '블록 메모 (마우스 오버 시 표시)', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
-      kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간 (여러 행)', kMarker: '마일스톤', kFlag: '알림',
+      kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간 (여러 행)', kMarker: '마일스톤', kFlag: '메모',
       rowF: '행', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이 (레인 수)',
       colorF: '색상 · 강조', fillF: '채우기', solid: '진하게', tint: '연하게', rowFromF: '시작 행', rowToF: '끝 행', del: '삭제',
       timeline: '타임라인 설정', startMonth: '시작 월', monthsF: '표시 개월 수', laneHF: '레인 높이',
@@ -856,27 +832,27 @@ class Component extends DCLogic {
       confRowDel: '이 행의 항목이 함께 삭제됩니다. 계속할까요?', needAuthor: '작성자와 날짜는 필수 입력입니다.',
       confRestore: ' 버전으로 복원할까요? 현재 상태는 되돌리기(Cmd+Z)로 복구할 수 있습니다.',
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
-      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 알림', newRow: '새 구분', newNote: '공지 메모를 입력하세요',
+      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 메모', newRow: '새 구분', newNote: '공지 메모를 입력하세요',
       zoom: '배율', magnetF: '눈금 맞춤', magnetHint: '5개월 미만은 0.125개월(월 8단계), 그 외에는 0.25개월 단위와 인접 블록 끝에 맞춥니다. 끄면 자유롭게 조정합니다.',
       helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
-      clearAll: '전체 지우기', clearTitle: '전체 지우기', clearMsg: '현재 화면의 모든 바·밴드·기준선·알림·메모가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
+      clearAll: '전체 지우기', clearTitle: '전체 지우기', clearMsg: '현재 화면의 모든 바·밴드·기준선·연결 메모·포스트잇가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
-      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立した通知 — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。通知は接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: '通知の接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'タスク', plain: '参考期間', band: '共通期間', marker: 'マイルストーン', flag: '通知', note: '上部お知らせメモ', row: '行',
+      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'タスク', plain: '参考期間', band: '共通期間', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
       editTools: '操作方法', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
-      exp: '書き出す', png: 'PNG', ppt: 'PPT', print: '印刷 / PDF', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
-      importG: '予定を取り込む', shareBtn: '共有', jsonBak: 'JSONバックアップ', panelF: '設定', helpTip: 'ショートカットと操作方法を見る',
+      exp: '書き出す', png: '画像保存[PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
+      importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存', panelF: '設定', helpTip: 'ショートカットと操作方法を見る',
       dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
-      relTitle: 'Codex 修正事項・リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・通知マークが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
+      relTitle: 'Codex 修正事項・リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
       tabProp: 'プロパティ', tabSet: '全体設定', tabVer: 'バージョン', category: '区分', verNone: 'バージョン未保存', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ブロックメモ（ホバーで表示）', phMemo: '背景・リスク・担当など', kindF: '種類',
-      kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: '通知',
+      kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: 'メモ',
       rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ（レーン数）',
       colorF: '色・強調', fillF: '塗り', solid: '濃い', tint: '薄い', rowFromF: '開始行', rowToF: '終了行', del: '削除',
       timeline: 'タイムライン設定', startMonth: '開始月', monthsF: '表示月数', laneHF: 'レーン高さ',
@@ -895,12 +871,12 @@ class Component extends DCLogic {
       confRowDel: 'この行の項目も削除されます。続行しますか？', needAuthor: '作成者と日付は必須です。',
       confRestore: ' のバージョンに戻しますか？現在の状態は Cmd+Z で復元できます。',
       pptFail: 'PPT書き出しモジュールを読み込めませんでした。ネットワークを確認して再試行してください。',
-      newChev: '新しいタスク', newPlain: '参考内容を入力', newBand: '新しい共通期間', newMarker: '新しいマイルストーン', newFlag: '新しい通知', newRow: '新しい区分', newNote: 'お知らせメモを入力',
+      newChev: '新しいタスク', newPlain: '参考内容を入力', newBand: '新しい共通期間', newMarker: '新しいマイルストーン', newFlag: '新しいメモ', newRow: '新しい区分', newNote: 'お知らせメモを入力',
       zoom: '倍率', magnetF: 'グリッドに合わせる', magnetHint: 'ONにすると0.25ヶ月グリッドと隣接ブロックの端に吸着します。OFFなら自由に配置できます。',
       helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除', rowAdd: '下に行を追加',
       rowHint: '行の境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
-      clearAll: '全て削除', clearTitle: '全て削除', clearMsg: '現在の画面のすべてのブロック・バンド・基準線・通知・メモが削除されます。\n行とタイムライン設定、バージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
+      clearAll: '全て削除', clearTitle: '全て削除', clearMsg: '現在の画面のすべてのブロック・バンド・基準線・接続メモ・付箋が削除されます。\n行とタイムライン設定、バージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
     }
   };
 
@@ -1101,12 +1077,13 @@ class Component extends DCLogic {
     }
   }
   timeStep() { return this.state.cfg.months < 5 ? 0.125 : 0.25; }
-  onHideDuration = (e) => { const checked=e.currentTarget.checked; this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it)it.hideDuration=checked;}); };
   toggleFocus = () => MapstoneUI.toggleFocus(this);
   fitWidth = () => MapstoneUI.fitWidth(this);
   openImport = () => MapstoneUI.open(this, 'import');
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
-  exportJson = () => MapstoneUI.download(this._recoveryData || this.dataDocument(), this._recoveryData ? 'mapstone-recovery.json' : 'mapstone-schedule.json');
+  fileName(ext) { const d=new Date();return 'mapstone_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.'+ext; }
+  openFile = () => MapstoneUI.open(this,'file');
+  exportJson = () => MapstoneUI.download(this._recoveryData ? this._recoveryData : MapstoneCore.serializeFile(this.dataDocument()), this.fileName(this._recoveryData ? 'json' : 'mapstone'));
   importDocument(data) {
     if (this.state.readOnly) return;
     const d = MapstoneCore.validate(data); const before=this.snapshot(); this._saveBlocked=false; this._recoveryData=null;
@@ -1561,6 +1538,7 @@ class Component extends DCLogic {
   };
   onNowDown = (e) => {
     e.stopPropagation();
+    MapstoneUI.hideTip();
     if (this.state.readOnly) return;
     this.drag = { id: '__now', mode: 'now', x0: e.clientX, y0: e.clientY, s: this.state.now, e: 0, snap: this.snapshot(), moved: false };
     this.bind();
@@ -1601,7 +1579,7 @@ class Component extends DCLogic {
       if (this._linkEl) this._linkEl.classList.remove('ms-link-target');
       this._linkEl = hit && hit.el;
       if (this._linkEl) this._linkEl.classList.add('ms-link-target');
-      if (hit) { this.connectFlag(g.id, hit.id, hit.offset, false); g.moved = true; }
+      if (hit) { this.connectFlag(g.id, hit.id, hit.offset, false, hit.y); g.moved = true; }
       this.setState({ linkDrag: hit ? null : { x0:g.x0, y0:g.y0, x:ev.clientX, y:ev.clientY } });
       return;
     }
@@ -1664,7 +1642,7 @@ class Component extends DCLogic {
   stopDrag(ev) {
     if (this.drag && this.drag.mode === 'link') {
       const hit = ev && (this.drag.moved || !this.drag.snap) && this.linkHit(ev);
-      if (hit) { this.connectFlag(this.drag.id, hit.id, hit.offset, !this.drag.snap); this.drag.moved = true; }
+      if (hit) { this.connectFlag(this.drag.id, hit.id, hit.offset, !this.drag.snap, hit.y); this.drag.moved = true; }
       if (this._linkEl) this._linkEl.classList.remove('ms-link-target');
       this._linkEl = null; this.setState({ linkDrag:null });
     }
@@ -1762,6 +1740,8 @@ class Component extends DCLogic {
   };
   onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return; this.setState({selLinkDot:null,sel:id,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
   onHover = (e) => { MapstoneUI.showTip(this, e); this.setState({ hover: e.currentTarget.dataset.id }); };
+  onNowHover = (e) => MapstoneUI.showTip(this, e);
+  onNowKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.nowToday(); MapstoneUI.hideTip(); } };
   offHover = () => { MapstoneUI.hideTip(); this.setState({ hover: null }); };
   endEdit = () => { this.endTextEdit(); this.setState({ editing: null, editNote: null }); };
   onEditKey = (e) => { if (e.key === 'Enter' || e.key === 'Escape') this.endEdit(); };
@@ -1859,10 +1839,10 @@ class Component extends DCLogic {
   onRowDown = (e) => this.moveRow(e.currentTarget.dataset.id, 1);
 
   // ── fields ────────────────────────────────────
-  connectFlag(id, targetId, offset = 1, push = true) {
+  connectFlag(id, targetId, offset = 1, push = true, y = 1) {
     if (targetId && !this.state.items.some(i => i.id === targetId && this.boxKind(i.kind))) return;
     const before = !targetId && this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id && f.connected);
-    this.mutate(d => { const flag=d.items.find(i=>i.id===id && i.kind==='flag'); if (flag) { flag.targetId=targetId; if (targetId) flag.linkOffset=offset; else delete flag.linkOffset; } }, push);
+    this.mutate(d => { const flag=d.items.find(i=>i.id===id && i.kind==='flag'); if (flag) { flag.targetId=targetId; if (targetId) { flag.linkOffset=offset; flag.linkY=y; } else { delete flag.linkOffset; delete flag.linkY; } } }, push);
     if (before) {
       const after=this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id);
       this.mutate(d=>{const flag=d.items.find(i=>i.id===id);flag.labelDx=(flag.labelDx||0)+parseFloat(before.left)+parseFloat(before.labelLeft)-parseFloat(after.left)-parseFloat(after.labelLeft);flag.labelDy=(flag.labelDy||0)+parseFloat(before.top)+parseFloat(before.labelTop)-parseFloat(after.top)-parseFloat(after.labelTop);},false);
@@ -1882,7 +1862,8 @@ class Component extends DCLogic {
       const target = node && this.state.items.find(i => i.id === node.dataset.id && this.boxKind(i.kind));
       if (!target) continue;
       const rect = node.getBoundingClientRect();
-      return { id:target.id, el:node, offset:Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width)) };
+      if (!rect.width || !rect.height || ev.clientX < rect.left || ev.clientX > rect.left+rect.width || ev.clientY < rect.top || ev.clientY > rect.top+rect.height) continue;
+      return { id:target.id, el:node, offset:(ev.clientX-rect.left)/rect.width, y:(ev.clientY-rect.top)/rect.height };
     }
     return null;
   }
@@ -1896,6 +1877,7 @@ class Component extends DCLogic {
   };
   onField = (e) => {
     const f = e.currentTarget.dataset.field;
+    if (['kind','row','hideDuration'].includes(f)) return;
     const el = e.currentTarget;
     let v = el.value;
     if (el.type === 'number') { v = parseFloat(v); if (isNaN(v)) return; }
@@ -1906,12 +1888,6 @@ class Component extends DCLogic {
       if (!it) return;
       it[f] = v;
       if (f === 'rowFrom') it.row = v;
-      if (f === 'kind') {
-        delete it.targetId; delete it.linkOffset;
-        if (v === 'band') { if (!it.rowFrom) { it.rowFrom = d.rows[0].id; it.rowTo = d.rows[d.rows.length - 1].id; } it.row = it.rowFrom; }
-        else if (v === 'marker' || v === 'sticky') { it.row = ''; if (v === 'marker') it.e = it.s; }
-        else { if (!d.rows.some((r) => r.id === it.row)) it.row = d.rows.some((r) => r.id === this.state.focusRow) ? this.state.focusRow : d.rows[0].id; if (v === 'flag') it.e = it.s; else if (it.e <= it.s) it.e = it.s + 2; }
-      }
       if (f === 's' && (it.kind === 'marker' || it.kind === 'flag')) it.e = it.s;
       if (f === 's' && it.e < it.s + this.timeStep() && it.kind !== 'marker' && it.kind !== 'flag') it.e = it.s + this.timeStep();
       if (f === 'e' && it.e < it.s + this.timeStep()) it.e = it.s + this.timeStep();
@@ -1958,24 +1934,20 @@ class Component extends DCLogic {
       this.resolve(d, id);
     });
   };
+  setStartMonth(year, month) {
+    const absolute=year*12+month-1, y=Math.floor(absolute/12), m=absolute%12+1;
+    if (!Number.isInteger(absolute) || y<1900 || y>2200) return;
+    this.mutate(d=>{const shift=absolute-(d.cfg.startY*12+d.cfg.startM-1);d.cfg.startY=y;d.cfg.startM=m;d.items.forEach(it=>{it.s-=shift;it.e-=shift;});d.now-=shift;});
+  }
+  onStartMonth = (e) => { const match=/^(\d{4})-(0[1-9]|1[0-2])$/.exec(e.currentTarget.value);if(match)this.setStartMonth(Number(match[1]),Number(match[2])); };
   applyCfg(f, value, delta) {
+    if (f === 'startM' || f === 'startY') { const cfg=this.state.cfg;this.setStartMonth(f==='startY'?(value===null?cfg.startY+delta:value):cfg.startY,f==='startM'?(value===null?cfg.startM+delta:value):cfg.startM);return; }
     this.mutate((d) => {
       if (f === 'now') { d.now = Math.max(0, value === null ? d.now + delta : value); return; }
       const cur = d.cfg[f];
       let next = value === null ? cur + delta : value;
-      if (f === 'startM') next = Math.min(12, Math.max(1, Math.round(next)));
       if (f === 'months') next = Math.min(48, Math.max(1, Math.round(next)));
       if (f === 'laneH') next = Math.min(72, Math.max(28, Math.round(next)));
-      if (f === 'startY') next = Math.round(next);
-      if (f === 'startY' || f === 'startM') {
-        const shift = (f === 'startY' ? (next - cur) * 12 : next - cur);
-        d.cfg[f] = next;
-        if (shift) {
-          d.items.forEach((it) => { it.s -= shift; it.e -= shift; });
-          d.now -= shift;
-        }
-        return;
-      }
       d.cfg[f] = next;
     });
   }
@@ -2036,7 +2008,7 @@ class Component extends DCLogic {
   exportPng = () => {
     const p = this.capture();
     if (!p) { window.print(); return; }
-    p.then((r) => { const a = document.createElement('a'); a.href = r.url; a.download = 'dev-progress-timeline.png'; a.click(); }).catch(err=>window.alert('이미지 내보내기 실패: '+err.message));
+    p.then((r) => { const a = document.createElement('a'); a.href = r.url; a.download = this.fileName('png'); a.click(); }).catch(err=>window.alert('이미지 내보내기 실패: '+err.message));
   };
   /* Editable PPTX: every element is emitted as a native PowerPoint shape with
      live text (no flattened screenshot), scaled so the whole board fits one slide. */
@@ -2067,9 +2039,10 @@ class Component extends DCLogic {
     const totalW = LB + (O[cfg.months] || 0);
 
     const deck = new P();
-    deck.layout = 'LAYOUT_16x9';
+    deck.layout = 'LAYOUT_WIDE';
     const S = deck.ShapeType || { rect: 'rect', chevron: 'chevron', ellipse: 'ellipse', line: 'line', roundRect: 'roundRect' };
-    const slide = deck.addSlide();
+    const nativeSlide = deck.addSlide(), objects=[];
+    const slide={addText:(text,opts)=>objects.push(['addText',text,opts]),addShape:(shape,opts)=>objects.push(['addShape',shape,opts]),addImage:opts=>objects.push(['addImage',null,opts])};
     slide.addText(st.title, { x: 0.35, y: 0.18, w: 9.5, h: 0.36, fontSize: 18, bold: true, color: '181A1B', fontFace: 'Pretendard' });
     const v = st.versions[st.versions.length - 1];
     if (v) slide.addText(v.date + ' · ' + v.author, { x: 10.0, y: 0.22, w: 2.98, h: 0.28, fontSize: 10, align: 'right', color: '66707A', fontFace: 'Pretendard' });
@@ -2088,7 +2061,7 @@ class Component extends DCLogic {
 
     const top0 = 0.62 + noteRows * (noteH + 0.06) + (noteRows ? 0.1 : 0);
     const availW = 13.333 - 0.7, availH = 7.5 - top0 - 0.3;
-    const sc = Math.min(availW / totalW, availH / totalH);
+    const sc = Math.min(availW / totalW, Math.max(0.5,availH) / totalH);
     const X = (px) => 0.35 + px * sc;
     const Y = (px) => top0 + px * sc;
     const Sz = (px) => Math.max(0.02, px * sc);
@@ -2107,7 +2080,7 @@ class Component extends DCLogic {
     st.rows.forEach((r) => {
       const h = this.rowHeight(r.id);
       slide.addText(r.name, { shape: S.rect, x: X(0), y: Y(acc), w: Sz(LB), h: Sz(h), fill: { color: 'F9FAFB' }, line: { color: 'DCE0E5', width: 0.75 }, color: '181A1B', fontSize: fs(12), bold: true, align: 'left', valign: 'middle', margin: 3, fontFace: 'Pretendard' });
-      slide.addShape(S.rect, { x: X(LB), y: Y(acc), w: Sz(O[cfg.months] || 0), h: Sz(h), fill: { color: 'FFFFFF' }, line: { color: 'E7EBEE', width: 0.5 } });
+      slide.addShape(S.rect, { x: X(LB), y: Y(acc), w: Sz(O[cfg.months] || 0), h: Sz(h), fill: { color: hex(r.color || '#ffffff') }, line: { color: 'E7EBEE', width: 0.5 } });
       acc += h + 1;
     });
 
@@ -2120,7 +2093,7 @@ class Component extends DCLogic {
       const rTo = st.rows.find((r) => r.id === it.rowTo) || st.rows[st.rows.length - 1];
       const t2 = rowTopPx[rTo.id] + this.rowHeight(rTo.id);
       const tint = it.variant === 'tint';
-      slide.addText(it.label, {
+      slide.addText(it.label+(this.durationHidden(it)?'':' ('+this.durOf(it.s,it.e)+')'), {
         shape: S.rect, x: X(LB + this.xOf(it.s)), y: Y(t1 + 6), w: Sz(this.wOf(it.s, it.e)), h: Sz(Math.max(40, t2 - t1 - 14)),
         fill: { color: tint ? 'FFFFFF' : hex(it.color) }, line: { color: hex(it.color), width: 1 },
         color: tint ? hex(this.dark(it.color)) : (this.lum(it.color) > 0.62 ? '181A1B' : 'FFFFFF'),
@@ -2143,12 +2116,20 @@ class Component extends DCLogic {
       });
     });
 
-    st.items.filter((i) => i.kind === 'flag').forEach((it) => {
-      const base = rowTopPx[it.row];
-      if (base === undefined) return;
-      const cy = base + 6 + it.lane * cfg.laneH + cfg.laneH / 2;
-      slide.addShape(S.ellipse, { x: X(LB + this.xOf(it.s)) - Sz(5), y: Y(cy) - Sz(5), w: Sz(10), h: Sz(10), fill: { color: hex(it.color) }, line: { color: 'FFFFFF', width: 0.75 } });
-      slide.addText(it.label, { x: X(LB + this.xOf(it.s)) + Sz(8), y: Y(cy) - Sz(11), w: 1.6, h: Sz(22), fontSize: fs(11), bold: true, color: hex(this.dark(it.color)), align: 'left', valign: 'middle', margin: 0, fontFace: 'Pretendard' });
+    const view=this.renderVals();
+    const line=(x1,y1,x2,y2,color)=>slide.addShape(S.line,{x:X(Math.min(x1,x2)),y:Y(Math.min(y1,y2)),w:Math.abs(x2-x1)*sc,h:Math.abs(y2-y1)*sc,line:{color:hex(color),width:1},flipV:(x2-x1)*(y2-y1)<0});
+    view.rowsView.forEach(row=>row.flags.forEach(f=>{
+      const x=LB+parseFloat(f.left),y=rowTopPx[row.id]+parseFloat(f.top),lx=x+parseFloat(f.labelLeft),ly=y+parseFloat(f.labelTop);
+      if(f.connected){const coords=f.connPath.match(/-?[\d.]+/g).map(Number);line(x,y+11,x,y+coords[2],f.color);line(x,y+coords[2],x+coords[3],y+coords[2],f.color);}
+      slide.addShape(S.ellipse,{x:X(x+parseFloat(f.dotLeft)+5.5),y:Y(y+parseFloat(f.dotTop)+5.5),w:Sz(11),h:Sz(11),fill:{color:hex(f.color)},line:{color:'FFFFFF',width:.75}});
+      slide.addText(f.label,{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label)+32),h:Sz(24),fontSize:fs(12),bold:true,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
+    }));
+    st.items.filter(i=>i.kind==='sticky').forEach(it=>slide.addText(it.label,{shape:S.rect,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||220),h:Sz(it.h||120),fontSize:fs(13),color:'181A1B',fill:{color:hex(it.color)},margin:3,breakLine:false}));
+    st.items.filter(i=>i.kind==='image').forEach(it=>slide.addImage({data:it.src,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||320),h:Sz(it.h||200)}));
+    if(cfg.showWeek!==false)view.subdivisions.forEach(q=>slide.addText(q.label,{x:X(LB+parseFloat(q.left)),y:Y(stripH+HDR-14),w:Sz(this.measure(q.label)+4),h:Sz(12),fontSize:fs(9),color:'FFFFFF',align:'left',margin:0}));
+    if(cfg.showElementDates)st.items.filter(i=>['chev','plain','band','marker'].includes(i.kind)).forEach(it=>{
+      const x=LB+this.xOf(it.s),y=it.kind==='marker'?(mplace[it.id]||0)*30+24:it.kind==='band'?rowTopPx[it.rowFrom]+6+Math.max(40,rowTopPx[it.rowTo]+this.rowHeight(it.rowTo)-rowTopPx[it.rowFrom]-14):rowTopPx[it.row]+6+(it.lane+(it.span||1))*cfg.laneH-12;
+      const text=this.isoOf(it.s)+(it.kind==='marker'?'':' → '+this.isoOf(it.e));slide.addText(text,{x:X(x),y:Y(y),w:Sz(this.measure(text)+10),h:Sz(14),fontSize:fs(10),color:'3B4044',fill:{color:'FFFFFF'},margin:0});
     });
 
     markers.forEach((it) => {
@@ -2156,7 +2137,7 @@ class Component extends DCLogic {
       const x = X(LB + this.xOf(it.s));
       slide.addShape(S.line, { x: x, y: Y(stripH - 8), w: 0, h: Y(totalH) - Y(stripH - 8), line: { color: hex(it.color), width: 1, dashType: 'dash' } });
       slide.addText(it.label, {
-        shape: S.roundRect, rectRadius: 0.02, x: x - 0.85, y: Y(k * 30), w: 1.7, h: Sz(24),
+        shape: S.roundRect, rectRadius: 0.02, x: x-Sz(this.measure(it.label)+24)/2, y: Y(k * 30), w: Sz(this.measure(it.label)+24), h: Sz(24),
         fill: { color: 'FFFFFF' }, line: { color: hex(it.color), width: 0.75 },
         color: hex(this.dark(it.color)), fontSize: fs(11.5), bold: true, align: 'center', valign: 'middle', margin: 1, fontFace: 'Pretendard'
       });
@@ -2166,7 +2147,10 @@ class Component extends DCLogic {
     slide.addShape(S.line, { x: nx, y: Y(stripH - 8), w: 0, h: Y(totalH) - Y(stripH - 8), line: { color: 'E30084', width: 1.5 } });
     slide.addText('NOW', { shape: S.roundRect, rectRadius: 0.06, x: nx - 0.3, y: Y(totalH) + 0.04, w: 0.6, h: 0.22, fill: { color: 'E30084' }, color: 'FFFFFF', fontSize: 9, bold: true, align: 'center', valign: 'middle', margin: 0, fontFace: 'Pretendard' });
 
-    deck.writeFile({ fileName: 'dev-progress-timeline.pptx' }).catch(err=>window.alert('PPT 내보내기 실패: '+err.message));
+    const minX=Math.min(...objects.map(o=>o[2].x)),minY=Math.min(...objects.map(o=>o[2].y)),maxX=Math.max(...objects.map(o=>o[2].x+o[2].w)),maxY=Math.max(...objects.map(o=>o[2].y+o[2].h));
+    const fit=Math.min(12.633/(maxX-minX),6.8/(maxY-minY));
+    objects.forEach(([method,value,opts])=>{const p={...opts,x:.35+(opts.x-minX)*fit,y:.35+(opts.y-minY)*fit,w:opts.w*fit,h:opts.h*fit};if(p.fontSize)p.fontSize*=fit;if(p.margin!==undefined)p.margin*=fit;if(p.line)p.line={...p.line,width:(p.line.width||1)*fit};if(method==='addText')p.fit='shrink';if(method==='addImage')nativeSlide.addImage(p);else nativeSlide[method](value,p);});
+    return deck.writeFile({ fileName: this.fileName('pptx') }).catch(err=>window.alert('PPT 내보내기 실패: '+err.message));
   };
   doPrint = () => window.print();
 
@@ -2247,7 +2231,7 @@ class Component extends DCLogic {
       const editing = st.editing === it.id;
       const m = (lay && lay.modes[it.id]) || { mode: 'inline' };
       const target = st.items.find(i => i.id === m.targetId);
-      const top = target ? 6 + (target.lane + (target.span || 1)) * laneH - 12 - 11 : 6 + it.lane * laneH + laneH / 2 - 11;
+      const top = target ? 6 + target.lane * laneH + ((target.span || 1) * laneH - 12) * (it.linkY ?? 1) - 11 : 6 + it.lane * laneH + laneH / 2 - 11;
       const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : 26;
       const labelLeft=(m.mode === 'strip' ? -6 : 12)+(it.labelDx || 0), labelTop=(m.mode === 'strip' ? stripTop : 0)+(it.labelDy || 0);
       const badgeWidth=this.measure(it.label || '')+32;
@@ -2262,7 +2246,7 @@ class Component extends DCLogic {
         dotLeft:px(target ? -11 : labelLeft-23), dotTop:px(target ? 0 : labelTop+1),
         badgeFocus: st.sel === it.id && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #e30084' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #e30084' : st.sel === it.id ? '0 0 0 2px #e30084' : 'none',
         show:!editing, connected:!!target, labelLeft:px(labelLeft), labelTop:px(labelTop), connPath:'M 0 11 V '+edgeY+' H '+edgeX,
-        left: px(this.xOf(it.s)), top: px(top), sel: st.sel === it.id, editing: editing,
+        left: px(target && it.linkOffset !== undefined ? this.xOf(target.s)+this.wOf(target.s,target.e)*it.linkOffset : this.xOf(it.s)), top: px(top), sel: st.sel === it.id, editing: editing,
         inline: !editing && m.mode === 'inline', strip: !editing && m.mode === 'strip',
         stripTop: px(stripTop), connH: px(Math.max(0, stripTop - 11)),
         tip: hov && !!(it.memo || '').trim() && !editing
@@ -2362,8 +2346,8 @@ class Component extends DCLogic {
     return {
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
       readOnly: !!st.readOnly,
-      focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, exportJson:this.exportJson,
-      timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), onHideDuration:this.onHideDuration, selHideDuration:!!(sel && sel.hideDuration), subdivisions: cfg.showWeek === false ? [] : subdivisions,
+      focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, exportJson:this.exportJson, openFile:this.openFile,
+      timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
       imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:st.sel===it.id,border:st.sel===it.id?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
@@ -2408,6 +2392,7 @@ class Component extends DCLogic {
       notesView: st.notes.map((n) => ({ id: n.id, text: n.text, editing: st.editNote === n.id, show: st.editNote !== n.id })),
       boardW: px(O[cfg.months] || 0),
       weekPx: cfg.weekPx, startY: cfg.startY, startM: cfg.startM, months: cfg.months, laneH: laneH,
+      startMonthValue:cfg.startY+'-'+String(cfg.startM).padStart(2,'0'), onStartMonth:this.onStartMonth, onNowHover:this.onNowHover, onNowKey:this.onNowKey,
       weekPxSlider: this.zoomToSlider(this.weekPxVal()),
       zoomPct: Math.round((this.weekPxVal() / 19) * 100) + '%',
       zoomTip: T.weekPx + ' ' + (Math.round(this.weekPxVal() * 10) / 10) + 'px',
@@ -2432,9 +2417,9 @@ class Component extends DCLogic {
       rowOptions: st.rows.map((r) => ({ id: r.id, name: r.name })),
       focusName: focusRow ? focusRow.name : '없음',
       hasSel: !!sel, noSel: !sel,
-      selKind: sel ? sel.kind : 'chev', selKindLabel: sel ? kindNames[sel.kind] || '항목' : '',
+      selKindLabel: sel ? kindNames[sel.kind] || '항목' : '',
       selLabel: sel ? sel.label : '', selMemo: sel ? sel.memo || '' : '',
-      selRow: sel ? sel.row : '', selRowFrom: sel ? sel.rowFrom || '' : '', selRowTo: sel ? sel.rowTo || '' : '',
+      selRowFrom: sel ? sel.rowFrom || '' : '', selRowTo: sel ? sel.rowTo || '' : '',
       selIsFlag: !!sel && sel.kind === 'flag', selNotFlag: !!sel && sel.kind !== 'flag',
       selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
       linkOptions: st.items.filter(i=>this.boxKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===i.row)?.name || '')+' · '+i.label})),
@@ -2443,7 +2428,6 @@ class Component extends DCLogic {
       selS: sel ? sel.s : 0, selE: sel ? sel.e : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? sel.span || 1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
       selSISO: sel ? this.isoOf(sel.s) : '', selEISO: sel ? this.isoOf(sel.e) : '', onDateField: this.onDateField,
-      selDur: sel ? this.durOf(sel.s, sel.e) + ' (' + Math.round((sel.e - sel.s) * 4) + '주)' : '',
       showProp: st.tab === 'prop', showSet: st.tab === 'set', showVer: st.tab === 'ver',
       tabPropFg: tabC('prop'), tabSetFg: tabC('set'), tabVerFg: tabC('ver'),
       tabPropBar: tabB('prop'), tabSetBar: tabB('set'), tabVerBar: tabB('ver'),

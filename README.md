@@ -19,6 +19,7 @@
 ## 개발
 
 편집 원본은 `src/timeline.dc.html`입니다. 다음 명령은 단일 파일과 공유용 HTML을 같은 원본에서 다시 만듭니다.
+화면 확인·사용자 안내 링크는 반드시 루트의 `index.html`을 사용합니다. `.dc.html`과 `share/schedule-maker.html`은 실행용 파일이 아니며, 직접 열면 `index.html`로 자동 이동합니다. 수정 후에는 빌드와 테스트를 완료한 뒤 실행 화면을 확인합니다.
 
 ```bash
 npm run build

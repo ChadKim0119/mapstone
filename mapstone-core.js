@@ -19,7 +19,7 @@
   function syncLinks(items) {
     for (const flag of items.filter(i => i.kind === 'flag' && i.targetId)) {
       const target = items.find(i => i.id === flag.targetId && ['chev','plain'].includes(i.kind));
-      if (!target) { flag.targetId = ''; delete flag.linkOffset; continue; }
+      if (!target) { flag.targetId = ''; delete flag.linkOffset; delete flag.linkY; continue; }
       flag.row = target.row; flag.lane = target.lane;
       flag.s = flag.e = target.s + (target.e - target.s) * (flag.linkOffset ?? 1);
     }
@@ -57,6 +57,7 @@
       if (it.hideDuration !== undefined && typeof it.hideDuration !== 'boolean') fail('hideDuration은 true/false입니다.');
       if (it.targetId !== undefined) { text(it.targetId,'연결 대상',128); if (it.kind !== 'flag') fail('알림만 요소에 연결할 수 있습니다.'); }
       if (it.linkOffset !== undefined) finite(it.linkOffset,'연결 위치',0,1);
+      if (it.linkY !== undefined) finite(it.linkY,'연결 높이',0,1);
       for (const k of ['labelDx','labelDy']) if (it[k] !== undefined) finite(it[k],k,-20000,20000);
       return it;
     });
@@ -109,6 +110,13 @@
   }
   function documentOf(s) { const d={schemaVersion:1}; for (const k of keys) d[k]=clone(s[k] ?? (['rows','items','notes','versions'].includes(k)?[]:null)); return d; }
   // Parses only data literals, never evaluates JavaScript (no functions, calls, getters, imports).
+  function serializeFile(data) { return JSON.stringify({format:'mapstone',formatVersion:1,document:validate(data)}); }
+  function parseFile(input) {
+    if (typeof input !== 'string' || input.length > 8*1024*1024+100) fail('맵스톤 파일은 8MB 이하여야 합니다.');
+    const file=JSON.parse(input);
+    if (file.format === 'mapstone') { if (file.formatVersion !== 1) fail('지원하지 않는 맵스톤 파일 버전입니다.');return validate(file.document); }
+    return validate(file);
+  }
   function parseImport(input) {
     let s=String(input).trim().replace(/^```(?:javascript|js|json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
     s=s.replace(/^\s*(?:export\s+default\s+|(?:export\s+)?(?:const|let|var)\s+schedule\s*=\s*)/, '');
@@ -147,5 +155,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,fromAnalysis,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });
