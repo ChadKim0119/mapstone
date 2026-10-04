@@ -55,6 +55,20 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-app] [data-resize]::after { content:""; position:absolute; inset:-5px; }
     [data-app] [data-resize]:hover { background:rgba(227,0,132,.75) !important; }
     [data-sticky]:hover, [data-sticky]:focus-within { z-index:90 !important; }
+    /* motion: short and quiet; off via 설정 › 애니메이션 or the OS reduced-motion setting */
+    @keyframes ms-panel-in { from { opacity:0; transform:translateX(16px); } }
+    @keyframes ms-pop { from { opacity:0; transform:translateY(6px) scale(.98); } }
+    [data-app][data-anim="on"] [data-properties] { animation:ms-panel-in .22s cubic-bezier(.2,.8,.2,1); }
+    [data-app] [data-properties].ms-panel-out { opacity:0; transform:translateX(16px); transition:opacity .16s ease, transform .16s ease; }
+    [data-app][data-anim="on"] [role="dialog"] { animation:ms-pop .18s cubic-bezier(.2,.8,.2,1); }
+    [data-app][data-anim="on"] .ms-tool-button, [data-app][data-anim="on"] .ms-tool-menu > summary { transition:background-color .15s ease, border-color .15s ease, color .15s ease; }
+    [data-app][data-anim="off"] *, [data-app][data-anim="off"] *::before, [data-app][data-anim="off"] *::after { animation:none !important; transition:none !important; }
+    @media (prefers-reduced-motion: reduce) { [data-app] *, [data-app] *::before, [data-app] *::after { animation:none !important; transition:none !important; } }
+    /* 설정창 controls: one compact size (~80% of the old 36–40px) */
+    [data-properties] button:not([data-tab]):not([data-color]), [data-properties] select, [data-properties] input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]) { height:30px !important; min-height:30px; font-size:12px !important; border-radius:6px !important; }
+    [data-properties] button[data-delta] { width:30px !important; padding:0 !important; flex:none; font-size:14px !important; }
+    [data-properties] button[data-color] { width:26px !important; height:26px !important; border-radius:6px !important; }
+    [data-properties] textarea { font-size:12px !important; }
     [data-app] [role="button"][data-id]:focus-visible { outline:3px solid #e30084; outline-offset:3px; z-index:95 !important; }
     [data-board] { isolation:isolate; }
     [data-app][data-focus="true"] > [data-toolbar], [data-app][data-focus="true"] [data-properties], [data-app][data-focus="true"] [data-noprint] { display:none !important; }
@@ -84,7 +98,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   </style>
 </helmet>
 
-<div data-app="" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
+<div data-app="" data-anim="{{ animAttr }}" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
   <sc-if value="{{ linking }}"><svg data-noprint="" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"><circle cx="{{ linkDrag.x }}" cy="{{ linkDrag.y }}" r="5" fill="#e30084"></circle></svg></sc-if>
 
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
@@ -126,7 +140,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       <span class="ms-toolbar-sep"></span>
       <div class="ms-toolbar-group">
         <span class="ms-toolbar-label">{{ L.viewG }}</span>
-        <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" title="{{ L.mmTip }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">MM</button>
+        <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durUnit }}</button>
         <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
         <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
         <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
@@ -135,7 +149,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       <div class="ms-toolbar-group">
         <span class="ms-toolbar-label">{{ L.screenG }}</span>
         <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
-        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:110px;accent-color:#e30084">
+        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:110px;accent-color:#e30084">
         <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
         <button class="ms-tool-button" onClick="{{ fitWidth }}">{{ L.fit }}</button>
         <button class="ms-tool-button" onClick="{{ toggleFocus }}" title="Esc 또는 F 키로 돌아오기">{{ L.full }}</button>
@@ -572,6 +586,22 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               </div>
             </div>
             <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.durUnitF }}</span>
+              <div style="display:flex;gap:6px">
+                <button data-unit="MM" onClick="{{ onDurUnit }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ duMMBg }};color:{{ duMMFg }}">MM</button>
+                <button data-unit="MD" onClick="{{ onDurUnit }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ duMDBg }};color:{{ duMDFg }}">MD</button>
+              </div>
+              <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.durUnitHint }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.animF }}</span>
+              <div style="display:flex;gap:6px">
+                <button data-anim="on" onClick="{{ onAnim }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ animOnBg }};color:{{ animOnFg }}">{{ L.animOn }}</button>
+                <button data-anim="off" onClick="{{ onAnim }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ animOffBg }};color:{{ animOffFg }}">{{ L.animOff }}</button>
+              </div>
+              <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.animHint }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.weekModeF }}</span>
               <div style="display:flex;gap:6px">
                 <button data-week="uniform" onClick="{{ onWeekMode }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ wmUniformBorder }};background:{{ wmUniformBg }};color:{{ wmUniformFg }}">{{ L.uniform4 }}</button>
@@ -767,6 +797,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.37', title: '용어 정리·MM/MD·애니메이션·설정창 크기 통일', items: ["메뉴 용어 정리: 작업→일정, 작업 방식→동작, '구간' 삭제(참고·공통), 겹침 정책 '위치변경', 전체 설정→설정", 'Week 표시에서 공간이 부족한 주차·일자 라벨을 숨겨 헤더 글자 겹침 해결(실제 주 수 포함)', '배율 핸들 더블클릭 시 너비 맞춤', '설정에서 기간 단위 MM / MD 선택(1MM = 22MD, KOSA 기준), 메뉴 버튼과 툴팁 연동', '설정창 열기·닫기, 항목 생성·삭제, 팝업에 짧은 애니메이션 · 설정에서 켜기/끄기', '설정창 버튼·입력 높이를 30px로 통일(기존의 약 80%)'] },
     { v: 'v9.36', title: '높이 눈금 맞춤·행 맞춤·메뉴 IA 정리', items: ['눈금 맞춤 ON이면 항목 높이 조절이 레인 눈금에 맞춰지고, 행 경계에서는 항상 살짝 걸리는 효과', '행 구분선 더블클릭으로 행 높이를 항목에 맞춤(빈 행은 기본 높이)', '메모 연결점 드래그 시 생기던 점선 제거', "'설정'을 '설정창 보기'로 바꾸고 두 번째 줄로 이동, 전체 지우기는 오른쪽 새로고침 아이콘", '이미지/텍스트 분석과 불러오기를 첫 번째 줄 버튼으로 노출', '불러오기 창에서 맵스톤 파일 가져오기와 JSON 붙여넣기 안내', "내보내기 '파일 저장[JSON]'", 'AI 분석 시 연도가 없으면 2026년 기준', 'NOW 더블클릭 시 오늘이 기간 밖이면 기간 확장 확인 팝업'] },
     { v: 'v9.35', title: 'Codex 행간 높이 조절 경계 개선', items: ['빈 공간에서 개별 행을 넘어 항목 높이 조절', '전체 행의 위·아래 경계 및 다른 작업과의 겹침 제한', '높이 저장·실행 취소·메모 연결·PPT 일관성'] },
     { v: 'v9.34', title: 'Codex 핀치·항목 조작·날짜·메모 연결 개선', items: ['트랙패드 핀치 확대·축소와 Week OFF·일자 ON 기본값', '행 경계 내 작업 높이 조절 및 좌우 드래그 날짜 안내선', '메모·NOW 일자와 마일스톤 단일 날짜 속성', '긴 라벨 이음선 및 공통 구간 메모 연결'] },
@@ -813,7 +844,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.36';
+  APP_VER = 'v9.37';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -824,9 +855,9 @@ class Component extends DCLogic {
   PAL = [['그레이','#66707a'],['다크','#3b4040'],['퍼플','#5b3fd1'],['네이비','#1e3a8a'],['틸','#17a2a2'],['블루','#0078d4'],['오렌지','#f86800'],['레드','#e22a21'],['크림','#a8792a']];
   DICT = {
     ko: {
-      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간·공통 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '작업', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
+      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간·공통 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '일정', plain: '참고', band: '공통', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      editTools: '작업 방식', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수',
+      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', animOn: '켜기', animOff: '끄기', animHint: '설정창 열기, 항목 생성 · 삭제 · 이동 등에 짧은 움직임 효과를 줍니다.', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장[PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
@@ -834,7 +865,7 @@ class Component extends DCLogic {
       dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: 'Codex 수정사항 · 리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
-      tabProp: '속성', tabSet: '전체 설정', tabVer: '버전', category: '구분', verNone: '버전 미저장', savedAuto: '자동 저장',
+      tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '구분', verNone: '버전 미저장', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '블록 메모 (마우스 오버 시 표시)', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
       kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간 (여러 행)', kMarker: '마일스톤', kFlag: '메모',
       rowF: '행', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이 (레인 수)',
@@ -843,7 +874,7 @@ class Component extends DCLogic {
       shiftHint: '시작 월을 바꾸면 모든 항목이 같은 실제 날짜를 유지하도록 자동으로 시프트됩니다.',
       weekHint: '실제 주 수 기준일 때 각 월의 폭은 그 해 해당 월의 일수 ÷ 7 로 계산됩니다 (예: 31일 = 4.4주).',
       weekModeF: '월 간격 기준', nowPos: 'NOW 기준선 위치 (개월)', todayBtn: '오늘 날짜로 맞추기',
-      overlapF: '같은 행에서 겹칠 때', opShrink: '다른 블록 줄이기', opMoveOther: '다른 블록 아래로', opMoveSelf: '선택 블록 아래로',
+      overlapF: '같은 행에서 겹칠 때', opShrink: '다른 블록 줄이기', opMoveOther: '다른 블록을 위치변경', opMoveSelf: '선택된 블록이 위치변경',
       overlapHint: '블록을 옮기거나 길이를 바꿔 겹치면 이 규칙으로 자동 정리됩니다. 핸들을 더블클릭하면 옆 블록에 딱 맞게 조정됩니다.',
       verSave: '버전 저장', author: '작성자', date: '날짜', changes: '변경 내용', phAuthor: '예: 김지훈', phChanges: '예: DCM 지연 반영, Pre-Prod E2E 3M 조정',
       saveBtn: '현재 상태를 버전으로 저장', history: '버전 히스토리', restoreBtn: '이 버전으로 복원',
@@ -863,9 +894,9 @@ class Component extends DCLogic {
       clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '현재 화면의 모든 바·밴드·기준선·연결 메모·포스트잇가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
-      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'タスク', plain: '参考期間', band: '共通期間', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
+      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考', band: '共通', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      editTools: '操作方法', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数',
+      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', animOn: 'ON', animOff: 'OFF', animHint: '設定パネルの開閉、項目の作成・削除・移動に短い動きを付けます。', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存[PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
@@ -873,7 +904,7 @@ class Component extends DCLogic {
       dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'Codex 修正事項・リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
-      tabProp: 'プロパティ', tabSet: '全体設定', tabVer: 'バージョン', category: '区分', verNone: 'バージョン未保存', savedAuto: '自動保存',
+      tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: '区分', verNone: 'バージョン未保存', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ブロックメモ（ホバーで表示）', phMemo: '背景・リスク・担当など', kindF: '種類',
       kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: 'メモ',
       rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ（レーン数）',
@@ -882,7 +913,7 @@ class Component extends DCLogic {
       shiftHint: '開始月を変更すると、すべての項目が同じ実日付を保つよう自動でシフトします。',
       weekHint: '実際の週数モードでは、各月の幅はその年の月の日数 ÷ 7 で計算されます（例：31日 = 4.4週）。',
       weekModeF: '月間隔の基準', nowPos: 'NOW基準線の位置（月）', todayBtn: '今日の日付に合わせる',
-      overlapF: '同じ行で重なった時', opShrink: '他のブロックを縮小', opMoveOther: '他のブロックを下へ', opMoveSelf: '選択ブロックを下へ',
+      overlapF: '同じ行で重なった時', opShrink: '他のブロックを縮小', opMoveOther: '他のブロックの位置を変更', opMoveSelf: '選択ブロックの位置を変更',
       overlapHint: 'ブロックを移動・伸縮して重なった場合、このルールで自動整列します。ハンドルをダブルクリックすると隣のブロックにぴったり合わせます。',
       verSave: 'バージョン保存', author: '作成者', date: '日付', changes: '変更内容', phAuthor: '例：山田太郎', phChanges: '例：DCM遅延の反映、Pre-Prod E2E 3M調整',
       saveBtn: '現在の状態をバージョンとして保存', history: 'バージョン履歴', restoreBtn: 'このバージョンに戻す',
@@ -908,7 +939,7 @@ class Component extends DCLogic {
     panel: true, tab: 'prop', hist: [], future: [], clip: null, saved: '', readOnly: false,
     interact: false, lang: 'ko', vAuthor: '', vDate: '', vNote: '',
     helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, nowOutOpen: false, relOpen: false, rowDelId: null, hoverRow: null, sx: 0, sw: 1, cw: 1,
-    mouseTipOpen: false, mouseTipMuted: this.mouseTipMuted()
+    mouseTipOpen: false, mouseTipMuted: this.mouseTipMuted(), animate: this.animPref()
   }, this.seed());
 
   uid() { return 'i' + Math.random().toString(36).slice(2, 9); }
@@ -1032,6 +1063,12 @@ class Component extends DCLogic {
   }
   componentDidUpdate() {
     this.save(); this.syncScrollMetrics();
+    const ids = new Set(this.state.items.map((i) => i.id));
+    if (this._ids && this.animOn()) {
+      const fresh = [...ids].filter((id) => !this._ids.has(id));
+      if (fresh.length && fresh.length <= 3) this.itemEls(fresh).forEach((el) => el.animate([{ opacity: 0, scale: '.92' }, { opacity: 1, scale: '1' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }));
+    }
+    this._ids = ids;
     if (this._focusProperties) {
       this._focusProperties = false;
       requestAnimationFrame(() => { const input = this.root && this.root.querySelector('[data-properties] [data-field="label"]'); if (input) { input.focus(); input.scrollIntoView({ block: 'nearest' }); } });
@@ -1271,8 +1308,12 @@ class Component extends DCLogic {
   cancelRowDelete = () => this.setState({ rowDelId: null });
   confirmRowDelete = () => {
     const id = this.state.rowDelId;
-    this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.row !== id && i.rowFrom !== id && i.rowTo !== id); });
-    this.setState({ rowDelId: null, sel: null });
+    this.setState({ rowDelId: null });
+    const rowEls = this.animOn() ? Array.from(this.root.querySelectorAll('[data-track="' + CSS.escape(id) + '"], [data-row="' + CSS.escape(id) + '"]')) : [];
+    this.animateOut(this.state.items.filter((i) => i.row === id).map((i) => i.id), () => {
+      this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.row !== id && i.rowFrom !== id && i.rowTo !== id); });
+      this.setState({ sel: null });
+    }, rowEls);
   };
   duplicateSel = () => {
     if (this.state.readOnly) return;
@@ -1371,10 +1412,14 @@ class Component extends DCLogic {
   mouseTipMuted() {
     try { return window.localStorage.getItem(this.TIP_KEY) === '1'; } catch (err) { return false; }
   }
+  /* 1MM = 22MD (KOSA) */
   durOf(s, e) {
+    if (this.state.cfg.durUnit === 'MD') return String(Math.round((e - s) * 22 * 10) / 10) + 'MD';
     const v = Math.round((e - s) * 1000) / 1000;
     return String(parseFloat(v.toFixed(3))) + 'M';
   }
+  onDurUnit = (e) => { const u = e.currentTarget.dataset.unit; this.mutate((d) => { d.cfg.durUnit = u; }); };
+  onTipHover = (e) => MapstoneUI.showTip(this, e);
   durationWD(s, e) {
     const days = Math.max(0, Math.round((Date.parse(this.isoOf(e)) - Date.parse(this.isoOf(s))) / 86400000));
     return Math.floor(days / 7) + ' w ' + (days % 7) + ' d';
@@ -1922,7 +1967,7 @@ class Component extends DCLogic {
   addBand = () => this.addAt('band');
   addMarker = () => this.addAt('marker');
   addFlag = () => this.addAt('flag');
-  deleteSel = () => { const id = this.state.sel; this.mutate((d) => { d.items = d.items.filter((i) => i.id !== id); }); this.setState({ sel: null, editing: null }); };
+  deleteSel = () => { const id = this.state.sel; this.animateOut([id], () => { this.mutate((d) => { d.items = d.items.filter((i) => i.id !== id); }); this.setState({ sel: null, editing: null }); }); };
 
   addRow = (e) => { e.stopPropagation(); if (this.state.readOnly) return; const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
   onRowName = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const r = d.rows.find((x) => x.id === id); if (r) r.name = v; }); };
@@ -2089,7 +2134,27 @@ class Component extends DCLogic {
   onColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.color = c; }); };
   onVariant = (e) => { const v = e.currentTarget.dataset.variant; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.variant = v; }); };
   onTitle = (e) => { const v = e.currentTarget.value; this.editText((d) => { d.title = v; }); };
-  togglePanel = () => this.setState((s) => ({ panel: !s.panel }));
+  togglePanel = () => {
+    const el = this.state.panel && this.animOn() && this.root.querySelector('[data-properties]');
+    if (!el) { this.setState((s) => ({ panel: !s.panel })); return; }
+    el.classList.add('ms-panel-out'); setTimeout(() => { el.classList.remove('ms-panel-out'); this.setState({ panel: false }); }, 160);
+  };
+  animPref() { try { return window.localStorage.getItem('mapstone.anim') !== '0'; } catch (err) { return true; } }
+  /* prefOnly: the user's switch alone (for the settings UI); otherwise also needs a live DOM and no reduced-motion request */
+  animOn(prefOnly) {
+    if (this.state && this.state.animate === false) return false;
+    if (prefOnly) return true;
+    return !!(this.root && this.root.animate && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches));
+  }
+  onAnim = (e) => { const on = e.currentTarget.dataset.anim === 'on'; try { window.localStorage.setItem('mapstone.anim', on ? '1' : '0'); } catch (err) { /* private mode — session only */ } this.setState({ animate: on }); };
+  itemEls(ids) { return ids.flatMap((id) => Array.from(this.root.querySelectorAll('[data-id="' + CSS.escape(id) + '"]'))); }
+  /* fade the leaving elements, then commit; cancel afterwards so recycled DOM nodes come back visible */
+  animateOut(ids, done, extra = []) {
+    const els = this.animOn() ? this.itemEls(ids).concat(extra) : [];
+    if (!els.length) { done(); return; }
+    const runs = els.map((el) => el.animate([{ opacity: 1 }, { opacity: 0, scale: '.94' }], { duration: 150, easing: 'ease-in', fill: 'forwards' }));
+    setTimeout(() => { done(); runs.forEach((a) => a.cancel()); }, 150);
+  }
   onTab = (e) => this.setState({ tab: e.currentTarget.dataset.tab });
 
   // ── versions ──────────────────────────────────
@@ -2294,6 +2359,7 @@ class Component extends DCLogic {
       gridCols.push({ key: i, left: px(O[i]), color: m === 0 ? 'var(--color-border-neutral-2)' : 'var(--color-border-neutral-1)' });
     }
 
+    for (let k = subdivisions.length - 1, next = Infinity; k >= 0; k--) { const x = parseFloat(subdivisions[k].left); if (x + subdivisions[k].label.length * 5.5 + 3 > next) subdivisions.splice(k, 1); else next = x; }
     const L = this.rowLayout();
     this._L = L;
 
@@ -2474,7 +2540,7 @@ class Component extends DCLogic {
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
-      showMM: cfg.showMM !== false, toggleMM: this.toggleMM,
+      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM'), onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, duMMBg: cfg.durUnit !== 'MD' ? '#181a1b' : '#fff', duMMFg: cfg.durUnit !== 'MD' ? '#fff' : 'var(--color-text-neutral-5)', duMDBg: cfg.durUnit === 'MD' ? '#181a1b' : '#fff', duMDFg: cfg.durUnit === 'MD' ? '#fff' : 'var(--color-text-neutral-5)', animOnBg: this.animOn(true) ? '#181a1b' : '#fff', animOnFg: this.animOn(true) ? '#fff' : 'var(--color-text-neutral-5)', animOffBg: this.animOn(true) ? '#fff' : '#181a1b', animOffFg: this.animOn(true) ? 'var(--color-text-neutral-5)' : '#fff', onAnim: this.onAnim, animAttr: this.animOn(true) ? 'on' : 'off',
       showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
       showTooltip:cfg.showTooltip !== false, toggleTooltip:this.toggleTooltip,
       tooltipBg:cfg.showTooltip !== false ? '#181a1b' : '#f3f5f6', tooltipFg:cfg.showTooltip !== false ? '#fff' : '#66707a', tooltipBorder:cfg.showTooltip !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
