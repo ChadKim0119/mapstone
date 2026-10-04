@@ -13,8 +13,9 @@
   function fitWidth(app){if(!app._board)return;const weeks=Array.from({length:app.state.cfg.months},(_,i)=>app.weeksIn(i)).reduce((a,b)=>a+b,0);const value=Math.max(app.ZMIN||4,Math.min(app.ZMAX||640,(app._board.clientWidth-218)/weeks));app.mutate(d=>{d.cfg.weekPx=value;},false);app._board.scrollLeft=0;}
   function toggleFocus(app){hideTip();const focus=!app.state.focusMode;app.setState({focusMode:focus,sel:null,editing:null});requestAnimationFrame(()=>fitWidth(app));if(focus){const notice=el('div','전체보기 · Esc 또는 F 키로 돌아오기',{className:'ms-focus-hint'});app.root.append(notice);setTimeout(()=>notice.remove(),2500);}}
   function hideTip(){tip?.remove();tip=null;}
+  function toast(app,text){app._toast?.remove();clearTimeout(app._toastTimer);const notice=el('div',text,{className:'ms-focus-hint'});notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');app.root.append(notice);app._toast=notice;app._toastTimer=setTimeout(()=>notice.remove(),2500);}
   function showTip(app,event){
-    hideTip(); if(app.drag)return;
+    hideTip(); if(app.drag||app.state.cfg.showTooltip===false)return;
     const it=app.state.items.find(i=>i.id===event.currentTarget.dataset.id);
     if(!it||app.state.editing===it.id)return;
     const range=['chev','plain','band'].includes(it.kind);
@@ -165,5 +166,5 @@
     window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision,readOnly:app.sync.readOnly})};
     return ()=>{app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
   }
-  window.MapstoneUI={attach,open,download,toggleFocus,fitWidth,showTip,hideTip};
+  window.MapstoneUI={attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
 })();

@@ -112,6 +112,7 @@
         <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" title="{{ L.mmTip }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">MM</button>
         <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
         <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
+        <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
       </div>
       <span class="ms-toolbar-sep"></span>
       <div class="ms-toolbar-group">
@@ -127,13 +128,13 @@
         <button class="ms-tool-button" onClick="{{ openImport }}">{{ L.importG }}</button>
         <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.jsonBak }}</button>
       </div></details>
-      <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
       <details class="ms-tool-menu"><summary>{{ L.exp }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
         <button class="ms-tool-button" onClick="{{ exportPng }}">PNG</button>
         <button class="ms-tool-button" onClick="{{ openText }}">{{ L.textTitle }}</button>
         <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
         <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
       </div></details>
+      <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
       <details class="ms-tool-menu"><summary aria-label="{{ L.moreG }}">•••</summary><div class="ms-tool-popover">
         <button class="ms-tool-button" onClick="{{ openClear }}" style="color:#7c1712">{{ L.clearAll }}</button>
       </div></details>
@@ -263,7 +264,7 @@
                   </sc-for>
                   <sc-for list="{{ row.flags }}" as="f" hint-placeholder-count="1">
                     <div data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
-                      <span data-link-dot="" data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="flex:none;display:flex;align-items:center;justify-content:center;width:22px;height:22px;margin-left:-11px;cursor:crosshair;touch-action:none"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
+                      <span data-link-dot="" data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
                         <input value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:160px;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:12px;font-weight:700;outline:none">
                       </sc-if>
@@ -776,6 +777,9 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.27', title: 'Codex 알림 연결 해제 위치 개선', items: ['연결 해제 시 닷을 알림 태그 앞으로 이동', '연결을 해제해도 태그 위치 유지하며 닷으로 다시 연결 가능'] },
+    { v: 'v9.26', title: 'Codex 독립 알림 연결점 유지', items: ['연결 대상이 없어도 알림 닷 표시', '연결 해제는 연결선만 제거하고 닷을 드래그해 다시 연결 가능'] },
+    { v: 'v9.25', title: 'Codex 알림 연결 UX·보기 메뉴 개선', items: ['연결 해제 시 연결점 제거와 드래그 중 실시간 재연결', '알림 배경 불투명 처리와 라벨 가장자리 연결선으로 겹침 개선', '요소일자를 일자로 변경하고 툴팁 토글·상태 토스트 추가', '공유 버튼을 내보내기 오른쪽으로 이동'] },
     { v: 'v9.24', title: 'Codex 요소일자·툴팁·알림 이동 개선', items: ['보기의 요소일자 토글로 시작·종료 날짜 표시', '알림의 중복 툴팁 제거와 주·일 기간 가독성 개선', '연결점 선택 후 Delete·Backspace로 연결만 해제', '알림 라벨을 자유롭게 이동해도 연결점과 연결선 유지'] },
     { v: 'v9.23', title: 'Codex 알림 요소 연결 기능', items: ['알림 속성의 날짜·기간·행 높이 대신 연결 대상 선택 제공', '알림 점 드래그로 작업·참고 구간 연결과 대상 강조', '대상 이동·기간 변경 시 연결 위치 유지, 대상 삭제 시 연결 해제'] },
     { v: 'v9.22', title: 'Codex 알림 구분·선택·연결선 개선', items: ['알림을 아이콘·컬러 테두리·둥근 배지로 작업 라벨과 구분', '선택 시 실제 알림 배지와 연결점에 포커스 테두리 표시', '같은 행·레인의 해당 시점 작업 또는 참고 구간 끝점에서 연결선 시작, 연결 대상 없는 짧은 선 제거'] },
@@ -810,7 +814,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.24';
+  APP_VER = 'v9.27';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -821,7 +825,7 @@ class Component extends DCLogic {
   PAL = [['그레이','#66707a'],['다크','#3b4040'],['퍼플','#5b3fd1'],['네이비','#1e3a8a'],['틸','#17a2a2'],['블루','#0078d4'],['오렌지','#f86800'],['레드','#e22a21'],['크림','#a8792a']];
   DICT = {
     ko: {
-      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 요소', unlinked: '독립 알림 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간 위로 드래그하여 연결하세요. 연결된 요소를 이동하거나 기간을 바꾸면 알림도 함께 따라갑니다.', elementDates: '요소일자', linkPoint: '알림 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '요소 추가', chev: '작업', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '알림', note: '상단 공지 메모', row: '행',
+      weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 요소', unlinked: '독립 알림 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 요소를 이동하거나 기간을 바꾸면 알림도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '알림 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '요소 추가', chev: '작업', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '알림', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
       editTools: '작업 방식', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
@@ -860,7 +864,7 @@ class Component extends DCLogic {
       clearAll: '전체 지우기', clearTitle: '전체 지우기', clearMsg: '현재 화면의 모든 바·밴드·기준선·알림·메모가 삭제됩니다.\n행과 타임라인 설정, 버전 히스토리는 그대로 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
-      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立した通知 — 接続先なし', noTarget: '接続なし', linkHint: '点をタスク・参考期間へドラッグすると接続されます。通知は接続先の変更に追従します。', elementDates: '項目の日付', linkPoint: '通知の接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'タスク', plain: '参考期間', band: '共通期間', marker: 'マイルストーン', flag: '通知', note: '上部お知らせメモ', row: '行',
+      weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立した通知 — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。通知は接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: '通知の接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'タスク', plain: '参考期間', band: '共通期間', marker: 'マイルストーン', flag: '通知', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
       editTools: '操作方法', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
@@ -1246,6 +1250,11 @@ class Component extends DCLogic {
   toggleMM = () => { this.mutate((d) => { d.cfg.showMM = d.cfg.showMM === false; }); };
   toggleWeek = () => { this.mutate((d) => { d.cfg.showWeek = d.cfg.showWeek === false; }); };
   toggleElementDates = () => { this.mutate(d => { d.cfg.showElementDates = !d.cfg.showElementDates; }); };
+  toggleTooltip = () => {
+    this.mutate(d => { d.cfg.showTooltip = d.cfg.showTooltip === false; });
+    MapstoneUI.hideTip();
+    MapstoneUI.toast(this, this.state.cfg.showTooltip ? this.L().tooltipOn : this.L().tooltipOff);
+  };
   durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
   stopClick = (e) => e.stopPropagation();
   openRel = () => this.setState({ relOpen: true });
@@ -1586,11 +1595,14 @@ class Component extends DCLogic {
     const g = this.drag;
     if (!g) return;
     if (g.mode === 'link') {
+      if (!g.moved && Math.hypot(ev.clientX-g.x0,ev.clientY-g.y0) <= 2) return;
+      g.moved = true;
       const hit = this.linkHit(ev);
       if (this._linkEl) this._linkEl.classList.remove('ms-link-target');
       this._linkEl = hit && hit.el;
       if (this._linkEl) this._linkEl.classList.add('ms-link-target');
-      this.setState({ linkDrag: { x0:g.x0, y0:g.y0, x:ev.clientX, y:ev.clientY } });
+      if (hit) { this.connectFlag(g.id, hit.id, hit.offset, false); g.moved = true; }
+      this.setState({ linkDrag: hit ? null : { x0:g.x0, y0:g.y0, x:ev.clientX, y:ev.clientY } });
       return;
     }
     const dx = ev.clientX - g.x0;
@@ -1651,8 +1663,8 @@ class Component extends DCLogic {
   }
   stopDrag(ev) {
     if (this.drag && this.drag.mode === 'link') {
-      const hit = ev && this.linkHit(ev);
-      if (hit) this.connectFlag(this.drag.id, hit.id, hit.offset);
+      const hit = ev && (this.drag.moved || !this.drag.snap) && this.linkHit(ev);
+      if (hit) { this.connectFlag(this.drag.id, hit.id, hit.offset, !this.drag.snap); this.drag.moved = true; }
       if (this._linkEl) this._linkEl.classList.remove('ms-link-target');
       this._linkEl = null; this.setState({ linkDrag:null });
     }
@@ -1660,7 +1672,7 @@ class Component extends DCLogic {
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
-      this.mutate((d) => { this.resolve(d, id); }, false);
+      if (this.drag.mode !== 'link') this.mutate((d) => { this.resolve(d, id); }, false);
       this.setState((st) => ({ hist: st.hist.concat([snap]).slice(-60), future: [] }));
     }
     this.drag = null;
@@ -1847,9 +1859,14 @@ class Component extends DCLogic {
   onRowDown = (e) => this.moveRow(e.currentTarget.dataset.id, 1);
 
   // ── fields ────────────────────────────────────
-  connectFlag(id, targetId, offset = 1) {
+  connectFlag(id, targetId, offset = 1, push = true) {
     if (targetId && !this.state.items.some(i => i.id === targetId && this.boxKind(i.kind))) return;
-    this.mutate(d => { const flag=d.items.find(i=>i.id===id && i.kind==='flag'); if (flag) { flag.targetId=targetId; flag.linkOffset=offset; } });
+    const before = !targetId && this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id && f.connected);
+    this.mutate(d => { const flag=d.items.find(i=>i.id===id && i.kind==='flag'); if (flag) { flag.targetId=targetId; if (targetId) flag.linkOffset=offset; else delete flag.linkOffset; } }, push);
+    if (before) {
+      const after=this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id);
+      this.mutate(d=>{const flag=d.items.find(i=>i.id===id);flag.labelDx=(flag.labelDx||0)+parseFloat(before.left)+parseFloat(before.labelLeft)-parseFloat(after.left)-parseFloat(after.labelLeft);flag.labelDy=(flag.labelDy||0)+parseFloat(before.top)+parseFloat(before.labelTop)-parseFloat(after.top)-parseFloat(after.labelTop);},false);
+    }
   }
   onLinkTarget = (e) => this.connectFlag(this.state.sel, e.currentTarget.value);
   onLinkKey = (e) => {
@@ -1874,7 +1891,7 @@ class Component extends DCLogic {
     e.preventDefault(); MapstoneUI.hideTip();
     this.setState({ sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true, tab:'prop' });
     if (e.currentTarget.focus) e.currentTarget.focus();
-    this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY };
+    this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY, snap:this.snapshot(), moved:false };
     this.bind();
   };
   onField = (e) => {
@@ -2233,14 +2250,18 @@ class Component extends DCLogic {
       const top = target ? 6 + (target.lane + (target.span || 1)) * laneH - 12 - 11 : 6 + it.lane * laneH + laneH / 2 - 11;
       const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : 26;
       const labelLeft=(m.mode === 'strip' ? -6 : 12)+(it.labelDx || 0), labelTop=(m.mode === 'strip' ? stripTop : 0)+(it.labelDy || 0);
+      const badgeWidth=this.measure(it.label || '')+32;
+      const edgeX=labelLeft >= 0 ? labelLeft : labelLeft+badgeWidth <= 0 ? labelLeft+badgeWidth : 0;
+      const edgeY=labelTop > 11 ? labelTop : labelTop+24 < 11 ? labelTop+24 : labelTop+12;
       const hov = st.hover === it.id;
       return {
         dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '', color: it.color, ink: this.dark(it.color),
         targetId: target ? target.id : '', linkLabel: target ? this.L().linkedTo + ': ' + target.label : this.L().unlinked,
-        zIndex: st.sel === it.id ? 30 : 16,
-        badgeBg: st.sel === it.id ? '#fff' : this.rgba(it.color, 0.12),
+        zIndex: st.sel === it.id ? 110 : 100,
+        badgeBg: '#fff',
+        dotLeft:px(target ? -11 : labelLeft-23), dotTop:px(target ? 0 : labelTop+1),
         badgeFocus: st.sel === it.id && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #e30084' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #e30084' : st.sel === it.id ? '0 0 0 2px #e30084' : 'none',
-        show:!editing, connected:!!target, labelLeft:px(labelLeft), labelTop:px(labelTop), connPath:'M 0 11 V '+(labelTop+11)+' H '+(labelLeft+6),
+        show:!editing, connected:!!target, labelLeft:px(labelLeft), labelTop:px(labelTop), connPath:'M 0 11 V '+edgeY+' H '+edgeX,
         left: px(this.xOf(it.s)), top: px(top), sel: st.sel === it.id, editing: editing,
         inline: !editing && m.mode === 'inline', strip: !editing && m.mode === 'strip',
         stripTop: px(stripTop), connH: px(Math.max(0, stripTop - 11)),
@@ -2352,6 +2373,8 @@ class Component extends DCLogic {
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
       showMM: cfg.showMM !== false, toggleMM: this.toggleMM,
       showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
+      showTooltip:cfg.showTooltip !== false, toggleTooltip:this.toggleTooltip,
+      tooltipBg:cfg.showTooltip !== false ? '#181a1b' : '#f3f5f6', tooltipFg:cfg.showTooltip !== false ? '#fff' : '#66707a', tooltipBorder:cfg.showTooltip !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
       datesBg:cfg.showElementDates ? '#181a1b' : '#f3f5f6', datesFg:cfg.showElementDates ? '#fff' : '#66707a', datesBorder:cfg.showElementDates ? '#181a1b' : 'var(--color-border-neutral-2)',
       showWeek: cfg.showWeek !== false, toggleWeek: this.toggleWeek,
       weekViewBg: cfg.showWeek !== false ? '#181a1b' : '#f3f5f6', weekViewFg: cfg.showWeek !== false ? '#fff' : '#66707a', weekViewBorder: cfg.showWeek !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
