@@ -69,6 +69,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-properties] button[data-delta] { width:30px !important; padding:0 !important; flex:none; font-size:14px !important; }
     [data-properties] button[data-color] { width:26px !important; height:26px !important; border-radius:6px !important; }
     [data-properties] textarea { font-size:12px !important; }
+    [data-properties] .ms-stepper { height:30px !important; }
+    [data-properties] .ms-stepper > :is(button,input,select):not(#_) { height:auto !important; min-height:0 !important; border-radius:0 !important; }
+    [data-properties] button[role="switch"]:not(#_) { height:24px !important; min-height:0 !important; border-radius:9999px !important; }
+    [data-properties] button[data-tab] { height:36px !important; font-size:12px !important; }
     [data-app] [role="button"][data-id]:focus-visible { outline:3px solid #e30084; outline-offset:3px; z-index:95 !important; }
     [data-board] { isolation:isolate; }
     [data-app][data-focus="true"] > [data-toolbar], [data-app][data-focus="true"] [data-properties], [data-app][data-focus="true"] [data-noprint] { display:none !important; }
@@ -194,7 +198,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
 <sc-for list="{{ subdivisions }}" as="q"><span style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
               <sc-for list="{{ cols }}" as="c" hint-placeholder-count="22">
-                <div style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }}">
+                <div data-col="{{ c.key }}" style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }}">
                   <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.75);height:13px">{{ c.yearLabel }}</span>
                   <span style="font-size:13px;font-weight:700">{{ c.label }}</span>
                 </div>
@@ -434,7 +438,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <div style="display:grid;grid-template-columns:{{ selDateColumns }};gap:10px">
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ selStartLabel }}</span>
-                    <div class="ms-date-step" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
+                    <div class="ms-date-step ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
                       <button data-field="s" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
                       <input type="number" step="{{ timeStep }}" value="{{ selS }}" data-field="s" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                       <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
@@ -443,7 +447,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </div>
                   <sc-if value="{{ selRange }}"><div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.endF }}</span>
-                    <div class="ms-date-step" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
+                    <div class="ms-date-step ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
                       <button data-field="e" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
                       <input type="number" step="{{ timeStep }}" value="{{ selE }}" data-field="e" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                       <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
@@ -481,7 +485,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
                       <div style="display:flex;flex-direction:column;gap:6px">
                         <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.spanF }}</span>
-                        <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                        <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                           <button data-field="span" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                           <input type="number" step="1" min="1" value="{{ selSpan }}" data-field="span" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                           <button data-field="span" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
@@ -523,14 +527,14 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </label>
                 <div style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowLanesF }}</span>
-                  <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                  <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                     <button data-delta="-1" onClick="{{ onRowLanes }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                     <input type="number" step="1" min="1" value="{{ rowPropLanes }}" onChange="{{ onRowLanes }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                     <button data-delta="1" onClick="{{ onRowLanes }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
                   </div>
                   <div style="display:flex;align-items:center;gap:6px">
                     <span style="font-size:11px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowHF }}</span>
-                    <div style="display:flex;align-items:stretch;flex:1;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
+                    <div class="ms-stepper" style="display:flex;align-items:stretch;flex:1;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
                       <button data-delta="-8" onClick="{{ onRowH }}" style="width:34px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                       <input type="number" step="4" min="44" value="{{ rowPropH }}" onChange="{{ onRowH }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:12px;font-weight:600;outline:none">
                       <button data-delta="8" onClick="{{ onRowH }}" style="width:34px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
@@ -559,7 +563,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startMonth }}</span>
-                <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                   <button data-cfg="startM" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                   <input type="month" value="{{ startMonthValue }}" min="1900-01" max="2200-12" aria-label="{{ L.startMonth }}" onChange="{{ onStartMonth }}" style="flex:1;min-width:0;border:none;padding:0 8px;font-size:13px;font-weight:600;outline:none;background:#fff">
                   <button data-cfg="startM" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
@@ -570,7 +574,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.monthsF }}</span>
-                <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                   <button data-cfg="months" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                   <input type="number" step="1" min="3" max="48" value="{{ months }}" data-cfg="months" onChange="{{ onCfg }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                   <button data-cfg="months" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
@@ -578,7 +582,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               </div>
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.laneHF }}</span>
-                <div style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                   <button data-cfg="laneH" data-delta="-2" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                   <input type="number" step="2" min="28" max="72" value="{{ laneH }}" data-cfg="laneH" onChange="{{ onCfg }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                   <button data-cfg="laneH" data-delta="2" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
@@ -586,20 +590,15 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               </div>
             </div>
             <div style="display:flex;flex-direction:column;gap:8px">
-              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.durUnitF }}</span>
-              <div style="display:flex;gap:6px">
-                <button data-unit="MM" onClick="{{ onDurUnit }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ duMMBg }};color:{{ duMMFg }}">MM</button>
-                <button data-unit="MD" onClick="{{ onDurUnit }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ duMDBg }};color:{{ duMDFg }}">MD</button>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.durUnitF }}</span>
+                <button onClick="{{ toggleDurUnit }}" aria-label="{{ L.durUnitF }}" style="min-width:76px;height:30px;padding:0 12px;border:1px solid #181a1b;border-radius:6px;background:#181a1b;color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">{{ durUnit }}<span aria-hidden="true" style="opacity:.6">⇄</span></button>
               </div>
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.durUnitHint }}</span>
             </div>
-            <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.animF }}</span>
-              <div style="display:flex;gap:6px">
-                <button data-anim="on" onClick="{{ onAnim }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ animOnBg }};color:{{ animOnFg }}">{{ L.animOn }}</button>
-                <button data-anim="off" onClick="{{ onAnim }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #181a1b;background:{{ animOffBg }};color:{{ animOffFg }}">{{ L.animOff }}</button>
-              </div>
-              <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.animHint }}</span>
+              <button onClick="{{ toggleAnim }}" role="switch" aria-checked="{{ animChecked }}" aria-label="{{ L.animF }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ animTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ animKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
             <div style="display:flex;flex-direction:column;gap:8px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.weekModeF }}</span>
@@ -797,6 +796,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.38', title: '설정창 래퍼 크기·주차 말줄임·토글·애니메이션 확대', items: ['설정창 숫자 입력(−/+) 래퍼를 버튼과 같은 30px로 맞추고 이중 테두리 제거, 탭 높이 36px', "헤더 주차는 최대한 모두 표시하고 공간이 부족하면 뒤쪽(5w 등)부터 숨기며 마지막 라벨에 '…' 표시", '설정의 기간 단위·애니메이션을 버튼 하나로 토글, 애니메이션 부연설명 삭제', '표시 개월 수 증감, 행 추가·이동, 설정 탭 전환에도 애니메이션'] },
     { v: 'v9.37', title: '용어 정리·MM/MD·애니메이션·설정창 크기 통일', items: ["메뉴 용어 정리: 작업→일정, 작업 방식→동작, '구간' 삭제(참고·공통), 겹침 정책 '위치변경', 전체 설정→설정", 'Week 표시에서 공간이 부족한 주차·일자 라벨을 숨겨 헤더 글자 겹침 해결(실제 주 수 포함)', '배율 핸들 더블클릭 시 너비 맞춤', '설정에서 기간 단위 MM / MD 선택(1MM = 22MD, KOSA 기준), 메뉴 버튼과 툴팁 연동', '설정창 열기·닫기, 항목 생성·삭제, 팝업에 짧은 애니메이션 · 설정에서 켜기/끄기', '설정창 버튼·입력 높이를 30px로 통일(기존의 약 80%)'] },
     { v: 'v9.36', title: '높이 눈금 맞춤·행 맞춤·메뉴 IA 정리', items: ['눈금 맞춤 ON이면 항목 높이 조절이 레인 눈금에 맞춰지고, 행 경계에서는 항상 살짝 걸리는 효과', '행 구분선 더블클릭으로 행 높이를 항목에 맞춤(빈 행은 기본 높이)', '메모 연결점 드래그 시 생기던 점선 제거', "'설정'을 '설정창 보기'로 바꾸고 두 번째 줄로 이동, 전체 지우기는 오른쪽 새로고침 아이콘", '이미지/텍스트 분석과 불러오기를 첫 번째 줄 버튼으로 노출', '불러오기 창에서 맵스톤 파일 가져오기와 JSON 붙여넣기 안내', "내보내기 '파일 저장[JSON]'", 'AI 분석 시 연도가 없으면 2026년 기준', 'NOW 더블클릭 시 오늘이 기간 밖이면 기간 확장 확인 팝업'] },
     { v: 'v9.35', title: 'Codex 행간 높이 조절 경계 개선', items: ['빈 공간에서 개별 행을 넘어 항목 높이 조절', '전체 행의 위·아래 경계 및 다른 작업과의 겹침 제한', '높이 저장·실행 취소·메모 연결·PPT 일관성'] },
@@ -844,7 +844,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.37';
+  APP_VER = 'v9.38';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -857,7 +857,7 @@ class Component extends DCLogic {
     ko: {
       weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간·공통 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '일정', plain: '참고', band: '공통', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', animOn: '켜기', animOff: '끄기', animHint: '설정창 열기, 항목 생성 · 삭제 · 이동 등에 짧은 움직임 효과를 줍니다.', actualW: '실제 주 수',
+      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장[PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
@@ -896,7 +896,7 @@ class Component extends DCLogic {
     ja: {
       weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考', band: '共通', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', animOn: 'ON', animOff: 'OFF', animHint: '設定パネルの開閉、項目の作成・削除・移動に短い動きを付けます。', actualW: '実際の週数',
+      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存[PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
@@ -1069,6 +1069,15 @@ class Component extends DCLogic {
       if (fresh.length && fresh.length <= 3) this.itemEls(fresh).forEach((el) => el.animate([{ opacity: 0, scale: '.92' }, { opacity: 1, scale: '1' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }));
     }
     this._ids = ids;
+    const anim = this.animOn(), ease = 'cubic-bezier(.2,.8,.2,1)';
+    if (anim && this._months !== undefined && this.state.cfg.months > this._months) this.root.querySelectorAll('[data-col]').forEach((el) => { if (+el.dataset.col >= this._months) el.animate([{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: ease }); });
+    this._months = this.state.cfg.months;
+    const rowIds = this.state.rows.map((r) => r.id);
+    if (anim && this._rowIds) { const fresh = rowIds.filter((id) => !this._rowIds.includes(id)); if (fresh.length && fresh.length <= 3) fresh.forEach((id) => { const t = this.root.querySelector('[data-track="' + CSS.escape(id) + '"]'); if (t) t.parentElement.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: ease }); }); }
+    this._rowIds = rowIds;
+    if (this._flip) { const before = this._flip; this._flip = null; if (anim) Object.keys(before).forEach((id) => { const t = this.root.querySelector('[data-track="' + CSS.escape(id) + '"]'); if (!t) return; const dy = before[id] - t.getBoundingClientRect().top; if (Math.abs(dy) > 1) t.parentElement.animate([{ transform: 'translateY(' + dy + 'px)' }, { transform: 'none' }], { duration: 260, easing: ease }); }); }
+    if (anim && this._tab !== undefined && this._tab !== this.state.tab) { const body = this.root.querySelector('[data-properties] > div:nth-child(2)'); if (body) body.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 180, easing: ease }); }
+    this._tab = this.state.tab;
     if (this._focusProperties) {
       this._focusProperties = false;
       requestAnimationFrame(() => { const input = this.root && this.root.querySelector('[data-properties] [data-field="label"]'); if (input) { input.focus(); input.scrollIntoView({ block: 'nearest' }); } });
@@ -1419,6 +1428,8 @@ class Component extends DCLogic {
     return String(parseFloat(v.toFixed(3))) + 'M';
   }
   onDurUnit = (e) => { const u = e.currentTarget.dataset.unit; this.mutate((d) => { d.cfg.durUnit = u; }); };
+  toggleDurUnit = () => this.mutate((d) => { d.cfg.durUnit = d.cfg.durUnit === 'MD' ? 'MM' : 'MD'; });
+  toggleAnim = () => this.onAnim({ currentTarget: { dataset: { anim: this.animOn(true) ? 'off' : 'on' } } });
   onTipHover = (e) => MapstoneUI.showTip(this, e);
   durationWD(s, e) {
     const days = Math.max(0, Math.round((Date.parse(this.isoOf(e)) - Date.parse(this.isoOf(s))) / 86400000));
@@ -1977,7 +1988,7 @@ class Component extends DCLogic {
     if (n && !window.confirm(this.L().confRowDel)) return;
     this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.row !== id && i.rowFrom !== id && i.rowTo !== id); });
   };
-  moveRow(id, dir) { this.mutate((d) => { const i = d.rows.findIndex((r) => r.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= d.rows.length) return; const t = d.rows[i]; d.rows[i] = d.rows[j]; d.rows[j] = t; }); }
+  moveRow(id, dir) { if (this.animOn()) { this._flip = {}; this.root.querySelectorAll('[data-track]').forEach((t) => { this._flip[t.dataset.track] = t.getBoundingClientRect().top; }); } this.mutate((d) => { const i = d.rows.findIndex((r) => r.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= d.rows.length) return; const t = d.rows[i]; d.rows[i] = d.rows[j]; d.rows[j] = t; }); }
   onRowUp = (e) => this.moveRow(e.currentTarget.dataset.id, -1);
   onRowDown = (e) => this.moveRow(e.currentTarget.dataset.id, 1);
 
@@ -2086,6 +2097,11 @@ class Component extends DCLogic {
   }
   onStartMonth = (e) => { const match=/^(\d{4})-(0[1-9]|1[0-2])$/.exec(e.currentTarget.value);if(match)this.setStartMonth(Number(match[1]),Number(match[2])); };
   applyCfg(f, value, delta) {
+    if (f === 'months' && this.animOn()) {
+      const next = Math.min(48, Math.max(1, Math.round(value === null ? this.state.cfg.months + delta : value)));
+      const gone = next < this.state.cfg.months ? Array.from(this.root.querySelectorAll('[data-col]')).filter((el) => +el.dataset.col >= next) : [];
+      if (gone.length && !this._monthsOut) { this._monthsOut = true; const runs = gone.map((el) => el.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 150, easing: 'ease-in', fill: 'forwards' })); setTimeout(() => { this._monthsOut = false; this.mutate((d) => { d.cfg.months = next; }); runs.forEach((a) => a.cancel()); }, 150); return; }
+    }
     if (f === 'startM' || f === 'startY') { const cfg=this.state.cfg;this.setStartMonth(f==='startY'?(value===null?cfg.startY+delta:value):cfg.startY,f==='startM'?(value===null?cfg.startM+delta:value):cfg.startM);return; }
     this.mutate((d) => {
       if (f === 'now') { d.now = Math.max(0, value === null ? d.now + delta : value); return; }
@@ -2354,12 +2370,26 @@ class Component extends DCLogic {
         key: i, label: (m + 1) + '월', yearLabel: i === 0 || m === 0 ? '`' + String(y).slice(2) : '',
         width: px(W[i])
       });
-      if(cfg.months<5) for(let j=1;j<8;j++) { gridCols.push({key:i+'-'+j,left:px(O[i]+W[i]*j/8),color:'rgba(127,138,148,.16)'}); subdivisions.push({id:i+'-'+j,left:px(O[i]+W[i]*j/8),label:String(1+Math.floor(new Date(y,m+1,0).getDate()*j/8))}); }
-      else for (let j = 0; j < Math.ceil(this.weeksIn(i)); j++) subdivisions.push({ id: i + '-w' + j, left: px(O[i] + W[i] * j / this.weeksIn(i) + 3), label: (j + 1) + 'w' });
+      if(cfg.months<5) for(let j=1;j<8;j++) { gridCols.push({key:i+'-'+j,left:px(O[i]+W[i]*j/8),color:'rgba(127,138,148,.16)'}); subdivisions.push({id:i+'-'+j,m:i,end:O[i]+W[i],left:px(O[i]+W[i]*j/8),label:String(1+Math.floor(new Date(y,m+1,0).getDate()*j/8))}); }
+      else for (let j = 0; j < Math.ceil(this.weeksIn(i)); j++) subdivisions.push({ id: i + '-w' + j, m: i, end: O[i] + W[i], left: px(O[i] + W[i] * j / this.weeksIn(i) + 3), label: (j + 1) + 'w' });
       gridCols.push({ key: i, left: px(O[i]), color: m === 0 ? 'var(--color-border-neutral-2)' : 'var(--color-border-neutral-1)' });
     }
 
-    for (let k = subdivisions.length - 1, next = Infinity; k >= 0; k--) { const x = parseFloat(subdivisions[k].left); if (x + subdivisions[k].label.length * 5.5 + 3 > next) subdivisions.splice(k, 1); else next = x; }
+    /* week/day labels: keep each month's labels from the front while they fit before the next one;
+       when the tail no longer fits, drop it (5w first) and end the last kept label with '…' */
+    const subW = (t) => t.length * 5.5 + 3;
+    for (let k = 0; k < subdivisions.length;) {
+      const m = subdivisions[k].m; let e = k; while (e < subdivisions.length && subdivisions[e].m === m) e++;
+      const limit = (j) => j + 1 < e ? parseFloat(subdivisions[j + 1].left) : subdivisions[j].end;
+      let keep = k; while (keep < e && parseFloat(subdivisions[keep].left) + subW(subdivisions[keep].label) <= limit(keep)) keep++;
+      if (keep < e) {
+        if (keep === k && parseFloat(subdivisions[k].left) + subW(subdivisions[k].label + '…') <= subdivisions[k].end) keep = k + 1;
+        const last = subdivisions[keep - 1];
+        if (keep > k && parseFloat(last.left) + subW(last.label + '…') <= last.end) subdivisions[keep - 1] = { ...last, label: last.label + '…' };
+        subdivisions.splice(keep, e - keep); e = keep;
+      }
+      k = e;
+    }
     const L = this.rowLayout();
     this._L = L;
 
@@ -2540,7 +2570,7 @@ class Component extends DCLogic {
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
-      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM'), onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, duMMBg: cfg.durUnit !== 'MD' ? '#181a1b' : '#fff', duMMFg: cfg.durUnit !== 'MD' ? '#fff' : 'var(--color-text-neutral-5)', duMDBg: cfg.durUnit === 'MD' ? '#181a1b' : '#fff', duMDFg: cfg.durUnit === 'MD' ? '#fff' : 'var(--color-text-neutral-5)', animOnBg: this.animOn(true) ? '#181a1b' : '#fff', animOnFg: this.animOn(true) ? '#fff' : 'var(--color-text-neutral-5)', animOffBg: this.animOn(true) ? '#fff' : '#181a1b', animOffFg: this.animOn(true) ? 'var(--color-text-neutral-5)' : '#fff', onAnim: this.onAnim, animAttr: this.animOn(true) ? 'on' : 'off',
+      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM'), onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? '#181a1b' : '#c5cdd6', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
       showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
       showTooltip:cfg.showTooltip !== false, toggleTooltip:this.toggleTooltip,
       tooltipBg:cfg.showTooltip !== false ? '#181a1b' : '#f3f5f6', tooltipFg:cfg.showTooltip !== false ? '#fff' : '#66707a', tooltipBorder:cfg.showTooltip !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
