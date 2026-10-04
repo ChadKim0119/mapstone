@@ -138,10 +138,13 @@
     body.append(el('details'));const api=body.lastChild;api.append(el('summary','외부 앱 · LLM 연동'),el('p','JSON 데이터 계약과 REST API를 제공합니다. GET /room으로 문서·revision을 읽고 PUT /room에 revision과 수정 문서를 전달합니다. 인증 헤더는 X-Mapstone-Code입니다. 409 응답은 최신 문서를 다시 읽고 병합해야 함을 뜻합니다.'),el('code',DEFAULT_ENDPOINT),button('현재 일정 JavaScript 다운로드',()=>download('const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';','mapstone-schedule.js')));
   }
   function loadFile(app,body){
-    body.append(el('p','맵스톤 파일(.mapstone) 또는 기존 JSON을 선택하세요. 적용 전에 현재 일정이 자동 백업됩니다.'));
+    body.append(el('p','저장해 둔 맵스톤 파일(.mapstone) 또는 JSON 일정 데이터를 불러옵니다. 아래 두 가지 방법 중 하나를 사용하세요. 적용 전에 현재 일정은 자동으로 백업됩니다.'));
+    const how=el('ul');for(const t of ['파일 가져오기: [파일 불러오기…]를 눌러 .mapstone / .json 파일을 고르거나, 파일을 아래 영역에 끌어다 놓으세요.','JSON 붙여넣기: [내보내기 → 파일 저장[JSON]]으로 저장한 내용이나 JSON 텍스트를 복사해 아래 입력칸에 붙여넣으세요 (⌘/Ctrl+V).','일정 · 메모 · 이미지 · 설정 · 버전 이력이 그대로 복원됩니다.'])how.append(el('li',t));body.append(how);
     const message=el('p','',{className:'ms-message'});message.setAttribute('role','status');let pending=null;
-    const apply=button('이 일정 불러오기',()=>{if(!pending||app.state.readOnly)return;download(C.serializeFile(app.dataDocument()),app.fileName('mapstone'));app.importDocument(pending);closeModal();});apply.disabled=true;
-    dropZone(body,'맵스톤 파일을 여기에 놓으세요','일정·메모·이미지·설정·버전 이력을 그대로 복원합니다.','.mapstone,.json,application/json',async file=>{pending=null;apply.disabled=true;try{if(file.size>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');pending=C.parseFile(await file.text());message.textContent=pending.title+' · '+summary(pending);apply.disabled=!!app.state.readOnly;}catch(e){message.textContent=e.message;}});
+    const apply=button('이 일정 불러오기',()=>{if(!pending||app.state.readOnly)return;download(C.serializeFile(app.dataDocument()),app.fileName('mapstone'));app.importDocument(pending);closeModal();});apply.disabled=true;apply.classList.add('ms-primary');
+    const read=text=>{pending=null;apply.disabled=true;if(!text.trim()){message.textContent='';return;}try{if(text.length>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');try{pending=C.parseFile(text);}catch(e){pending=C.parseImport(text);}message.textContent=pending.title+' · '+summary(pending);apply.disabled=!!app.state.readOnly;}catch(e){message.textContent='맵스톤 데이터를 읽을 수 없습니다: '+e.message;}};
+    dropZone(body,'맵스톤 파일을 여기에 끌어다 놓으세요','.mapstone 또는 .json 파일','.mapstone,.json,application/json',async file=>{input.value=await file.text();read(input.value);});
+    const input=field(body,'JSON 붙여넣기','textarea');input.rows=6;input.placeholder='{"format":"mapstone","formatVersion":1,"document":{...}}';input.addEventListener('input',()=>read(input.value));
     body.append(message,apply);
   }
   function open(app,page){const body=createModal(page==='import'?'이미지/텍스트 분석':page==='file'?'맵스톤 파일':'공유');if(page==='import')imports(app,body);else if(page==='file')loadFile(app,body);else workspace(app,body);}
