@@ -146,6 +146,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 </helmet>
 
 <div data-app="" data-anim="{{ animAttr }}" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
+  <sc-if value="{{ marquee }}"><div data-noprint="" style="position:fixed;left:{{ marquee.left }};top:{{ marquee.top }};width:{{ marquee.width }};height:{{ marquee.height }};border:1px solid #e30084;background:rgba(227,0,132,.08);pointer-events:none;z-index:1400"></div></sc-if>
   <sc-if value="{{ focusMode }}" hint-placeholder-val="{{ false }}"><button class="ms-focus-exit" onClick="{{ toggleFocus }}" aria-label="{{ L.focusExit }} : ESC">{{ L.focusExit }} :<kbd>ESC</kbd></button></sc-if>
   <sc-if value="{{ reviewShown }}" hint-placeholder-val="{{ false }}">
     <aside data-noprint="" class="ms-review-panel" role="complementary" aria-label="{{ L_reviewTitle }}">
@@ -204,14 +205,14 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
           <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
           <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
-          <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
+          <button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetF }} · S" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
         </span>
         <details class="ms-tool-menu ms-view-more"><summary>{{ L.viewG }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
           <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durUnit }}</button>
           <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
           <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
           <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
-          <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
+          <button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetF }} · S" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
         </div></details>
       </div>
       <span class="ms-toolbar-sep"></span>
@@ -232,11 +233,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <button class="ms-tool-button" onClick="{{ exportPng }}">{{ L.png }}</button>
         <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
         <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
+        <button class="ms-tool-button" onClick="{{ openViewLink }}">{{ L.createLink }}</button>
         <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
       </div></details>
       <span class="ms-toolbar-sep"></span>
       <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg></button>
-      <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }} · S / ," onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
+      <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }} · ," onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
     </div>
   </div>
 
@@ -366,6 +368,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:8px;pointer-events:none"></div>
                       </sc-if>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" aria-label="참고 시작 조절" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
                         <div data-id="{{ p.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
                         <div data-id="{{ p.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:#e30084;cursor:ns-resize;z-index:14"></div>
                         <div data-id="{{ p.id }}" data-resize="" data-mode="bottom" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 아래쪽 높이 조절" role="button" style="position:absolute;bottom:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:#e30084;cursor:ns-resize;z-index:14"></div>
@@ -382,7 +385,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ f.show }}">
-                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ showElementDates }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
+                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -476,6 +479,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
         <sc-if value="{{ showProp }}" hint-placeholder-val="{{ true }}">
           <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
+            <sc-if value="{{ multiSelected }}"><div style="display:flex;flex-direction:column;gap:10px"><strong>{{ selectionCount }}{{ L.selectedCount }}</strong><span style="font-size:12px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.multiHint }}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" onClick="{{ copySel }}">{{ L.copyItems }}</button><button type="button" onClick="{{ cutSel }}">{{ L.cutItems }}</button><button type="button" onClick="{{ deleteSel }}">{{ L.del }}</button></div></div></sc-if>
             <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;flex-direction:column;gap:14px">
                 <div style="display:flex;align-items:center;justify-content:space-between">
@@ -515,6 +519,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </div>
                 </sc-if>
                 <sc-if value="{{ selIsFlag }}">
+                  <label style="display:flex;align-items:center;gap:8px;font-size:12px"><input type="checkbox" checked="{{ selHideDate }}" onChange="{{ onHideDate }}">{{ L.hideMemoDate }}</label>
                   <label style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600">{{ L.linkedTo }}</span>
                     <select aria-label="{{ L.linkedTo }}" value="{{ selTargetId }}" onChange="{{ onLinkTarget }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 8px;font-size:13px;background:#fff">
@@ -525,29 +530,29 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <span style="font-size:12px;line-height:1.6;color:var(--color-text-neutral-4)">{{ L.linkHint }}</span>
                 </sc-if>
                 <sc-if value="{{ selNotFlag }}">
+                <button type="button" role="switch" aria-checked="{{ propertyDates }}" aria-label="{{ L.timeMode }}" onClick="{{ togglePropertyDates }}" title="{{ L.timeModeHint }}" style="align-self:flex-start;border:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer"><span style="color:{{ propertyNumberColor }}">{{ L.timeNumber }}</span><span style="padding:0 8px;color:var(--color-text-neutral-3)">/</span><span style="color:{{ propertyDateColor }}">{{ L.timeDate }}</span></button>
+                <span style="font-size:11px;line-height:1.5;color:var(--color-text-neutral-3)">{{ L.timeModeHint }}</span>
                 <div style="display:grid;grid-template-columns:{{ selDateColumns }};gap:10px">
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ selStartLabel }}</span>
                     <div class="ms-date-step ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
                       <button data-field="s" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
-                      <input type="number" step="{{ timeStep }}" value="{{ selS }}" data-field="s" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
+                      <input type="{{ propertyTimeType }}" step="{{ propertyTimeStep }}" value="{{ propertySValue }}" aria-label="{{ L.startF }}" data-field="s" onChange="{{ onPropertyTimeField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                       <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
-                    <input type="date" value="{{ selSISO }}" data-field="s" onChange="{{ onDateField }}" title="{{ L.dateSet }}" style="width:100%;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);background:#fff;outline:none" style-focus="border-color:#000">
                   </div>
                   <sc-if value="{{ selRange }}"><div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.endF }}</span>
                     <div class="ms-date-step ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
                       <button data-field="e" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
-                      <input type="number" step="{{ timeStep }}" value="{{ selE }}" data-field="e" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
+                      <input type="{{ propertyTimeType }}" step="{{ propertyTimeStep }}" value="{{ propertyEValue }}" aria-label="{{ L.endF }}" data-field="e" onChange="{{ onPropertyTimeField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                       <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
-                    <input type="date" value="{{ selEISO }}" data-field="e" onChange="{{ onDateField }}" title="{{ L.dateSet }}" style="width:100%;height:32px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);background:#fff;outline:none" style-focus="border-color:#000">
                   </div></sc-if>
                 </div>
                 <div style="display:flex;gap:7px;padding:9px 11px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1)">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;color:var(--color-text-neutral-3)"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5.5M12 7.8h.01"></path></svg>
-                  <span style="font-size:11.5px;line-height:1.65;color:var(--color-text-neutral-4)">{{ L.dateHint }}</span>
+                  <span style="font-size:11.5px;line-height:1.65;color:var(--color-text-neutral-4)">{{ propertyDateHint }}</span>
                 </div>
                 </sc-if>
                 <sc-if value="{{ selIsBand }}" hint-placeholder-val="{{ false }}">
@@ -586,10 +591,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </sc-if>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <div style="display:flex;flex-direction:column;gap:8px">
-                  <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.colorF }}</span>
-                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.colorF }}<button type="button" onClick="{{ togglePalette }}" aria-expanded="{{ paletteExpanded }}" style="margin-left:8px;padding:0 8px;border:1px solid var(--color-border-neutral-2);background:#fff;font-size:11px;cursor:pointer">{{ paletteToggleLabel }}</button></span>
+                  <div style="display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px">
                     <sc-for list="{{ palette }}" as="c" hint-placeholder-count="9">
-                      <button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:34px;height:34px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }}"></button>
+                      <button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:100%;height:26px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }}"></button>
                     </sc-for>
                   </div>
                 </div>
@@ -644,6 +649,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <button data-id="{{ focusRowId }}" onClick="{{ askRowDelete }}" style="height:36px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:#7c1712;cursor:pointer">{{ L.rowDel }}</button>
               </div>
             </sc-if>
+            <sc-if value="{{ noSelection }}"><span style="font-size:13px;color:var(--color-text-neutral-3)">{{ L.noSel }}</span></sc-if>
           </div>
         </sc-if>
 
@@ -882,6 +888,9 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.56', agent: 'Codex', title: '다중 선택·간결한 날짜 표시·보기 링크 생성', items: ['보기 > 일자 표시를 MM.DD로 통일하고 메모 속성에 날짜 미표기 옵션 추가 — 저장·가져오기·내보내기에 유지', '참고 항목 시작점에 마우스 조절 핸들 추가 — 숫자·일자 입력 및 Ctrl 하루 단위 조정과 함께 사용', '⌘ 클릭으로 개별 선택·해제, Shift 클릭으로 범위 선택, 빈 영역 드래그로 사각형 선택 및 추가 선택 제공', '선택한 항목의 방향키·마우스 이동, 삭제·복사·잘라내기·붙여넣기·복제 및 실행 취소 지원 — 함께 복사한 메모 연결 관계 유지', '내보내기 > 링크 생성으로 현재 일정의 보기 전용 사본을 서버에 저장하고 링크 복사·열기 제공 — 링크에서 자동 접속, 이후 변경은 새 링크 생성 시 반영'] },
+    { v: 'v9.55', agent: 'Codex', title: '하루 단위 정밀 드래그·날짜 기준선·색상 팔레트 확장', items: ['S 단축키를 눈금 맞춤 켜기·끄기로 변경, 설정창 보기·닫기는 쉼표로 유지하고 사용법·툴팁에 반영', 'Ctrl을 누른 드래그는 눈금 맞춤과 관계없이 마우스 24px 이동당 하루씩 정밀 조정 — 배율에 영향받지 않고 시작·종료 조절과 전체 이동에 적용', '항목 전체 이동 시 시작·종료 날짜 기준선 표시, Ctrl 이동은 두 날짜를 같은 일수만큼 이동하며 드래그 중 Ctrl 전환 시 위치 튐 방지', '시작·종료 입력을 기본 일자 모드로 변경하고 숫자·일자 토글에 조정 단위 설명 추가', '색상 확장·접기 버튼 추가 — 기존 9개 색상의 색조·채도를 유지하며 어두운 톤 2개와 밝은 톤 2개씩 제공'] },
+    { v: 'v9.54', agent: 'Codex', title: '행 선택 해제·제목 기반 파일명·날짜 입력 전환', items: ['외부 빈 영역 클릭 시 행·항목 선택 해제, 초기 화면에서도 특정 행을 강제로 선택하지 않음', '파일 저장·이미지·PPT 내보내기의 기본 파일명을 일정 제목으로 지정, 사용할 수 없는 문자는 밑줄로 바꾸고 빈 제목은 mapstone으로 저장', '항목 속성의 시작·종료에 숫자·일자 입력 전환 토글 추가, 일자 모드 화살표는 하루씩 조정', '월말·윤년·연말에도 달력 날짜 기준으로 이동하며 기간은 최소 하루 유지, 실행 취소와 보기 전용 보호 적용'] },
     { v: 'v9.53', agent: 'Claude Code', title: '비교 검토 내용 간결화·비교 표시 토글·비교 상태 표시', items: ['변경 내용을 종류 · 기간 · 이름 · 세션 · 메모만 한 줄씩 표시 — 종류가 바뀔 때 딸려 오는 시작·끝 세션 같은 부수 값은 숨기고, 시작·종료는 한 줄 기간으로 합침', '비교 검토 패널에 [비교 표시 숨기기/보이기] 스위치 — 꺼도 패널 · 이동 · 강조는 유지되고 색과 삭제 항목만 숨김(저장 데이터는 그대로)', '비교 화면은 제목을 보라색으로, [비교 중] 배지와 [비교 끝내기] 버튼 표시', '검토 패널은 접어도 [비교 검토 내용] 버튼으로 다시 열 수 있음, 비교 끝내기 후 Cmd/Ctrl+Z로 복귀 가능'] },
     { v: 'v9.52', agent: 'Claude Code', title: '돌출 라벨 툴팁·연결선 정리', items: ['툴팁은 도형에만 표시 — 도형 밖으로 나간 라벨 위에서는 뜨지 않고, 도형에서 라벨로 옮기면 닫힘', '돌출 라벨을 옮기면 도형 옆에 남던 짧은 선 제거', '돌출 라벨 연결선을 일자 연결선처럼 직각으로 꺾이는 선으로 변경(가로·세로 방향에 따라 경로 선택), 옅은 도형에서는 회색으로 보정'] },
     { v: 'v9.51', agent: 'Claude Code', title: '돌출 라벨 연결선·버전 비교 정리', items: ['도형 밖으로 나간 일정 라벨을 옮기면 블록과 라벨을 잇는 점선 연결선이 나타남', '버전 비교: 구두점·괄호·슬래시·공백만 다른 텍스트(e-Care (DMS) → e-Care / DMS)는 변경으로 보지 않음', '버전 비교: 색상·채우기 변경과 NOW 위치 변경은 무시', '버전 비교: 변경 · 추가 · 삭제 그룹 카드, 항목별 필드 이전 → 이후 표시, 칩과 그룹 건수 일치(제목·기간은 따로 표시)', '버전 비교 창 버튼 크기·패딩 통일(높이 32px, 패딩 12px, 글자 13px / 주 버튼 34px)'] },
@@ -945,7 +954,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.53';
+  APP_VER = 'v9.56';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -963,7 +972,7 @@ class Component extends DCLogic {
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장[PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
       importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장[JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '이 메모 날짜 숨기기', createLink: '링크 생성', timeModeHint: '일자: 하루씩 · 숫자: 개월 단위로 조정', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', timeMode: '시작·종료 입력 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
@@ -1002,7 +1011,7 @@ class Component extends DCLogic {
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存[PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
       importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存[JSON]', panelF: '設定パネル表示', helpTip: 'ショートカットと操作方法を見る',
-      dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
+      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: 'このメモの日付を非表示', createLink: 'リンク作成', timeModeHint: '日付：1日ずつ · 数値：月単位で調整', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', timeMode: '開始・終了の入力方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
       tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
@@ -1036,7 +1045,7 @@ class Component extends DCLogic {
   };
 
   state = Object.assign({
-    sel: null, editing: null, editNote: null, hover: null, focusRow: 'gs',
+    sel: null, selection: [], selectionAnchor: null, marquee: null, editing: null, editNote: null, hover: null, focusRow: null, propertyDates: true, paletteExpanded: false,
     panel: true, tab: 'prop', hist: [], future: [], clip: null, saved: '', readOnly: false,
     interact: false, lang: 'ko', vAuthor: '', vDate: '', vNote: '',
     helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, nowOutOpen: false, relOpen: false, rowDelId: null, hoverRow: null, reviewOpen: true, sx: 0, sw: 1, cw: 1,
@@ -1155,6 +1164,7 @@ class Component extends DCLogic {
     this._key = (e) => this.onKey(e);
     document.addEventListener('keydown', this._key);
     document.addEventListener('pointerdown', this.closeToolMenus);
+    document.addEventListener('pointerdown', this.onOutsideDown);
     document.addEventListener('click', this.closePickedMenu);
     window.addEventListener('resize', this.fitToolbar);
     requestAnimationFrame(this.fitToolbar); setTimeout(this.fitToolbar, 300);
@@ -1167,6 +1177,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     document.removeEventListener('keydown', this._key);
     document.removeEventListener('pointerdown', this.closeToolMenus);
+    document.removeEventListener('pointerdown', this.onOutsideDown);
     document.removeEventListener('click', this.closePickedMenu);
     window.removeEventListener('resize', this.fitToolbar);
     if (this._board && this._wheel) this._board.removeEventListener('wheel', this._wheel);
@@ -1269,6 +1280,7 @@ class Component extends DCLogic {
   toggleFocus = () => MapstoneUI.toggleFocus(this);
   fitWidth = () => MapstoneUI.fitWidth(this);
   openImport = () => MapstoneUI.open(this, 'import');
+  openViewLink = () => MapstoneUI.open(this,'link');
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
   openCompare = () => MapstoneUI.open(this, 'compare');
   onReviewPick = (e) => this.focusItem(e.currentTarget.dataset.id);
@@ -1294,7 +1306,7 @@ class Component extends DCLogic {
     const order = { changed: 0, added: 1, removed: 2 };
     return out.sort((a, b) => order[a.type] - order[b.type]);
   }
-  fileName(ext) { const d=new Date();return 'mapstone_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.'+ext; }
+  fileName(ext) { const title = String(this.state.title || '').trim().replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').replace(/[. ]+$/, ''); return (title || 'mapstone') + '.' + ext; }
   openFile = () => MapstoneUI.open(this,'file');
   exportJson = () => (MapstoneUI.saveFile ? (d, n) => MapstoneUI.saveFile(this, d, n) : MapstoneUI.download)(this._recoveryData ? this._recoveryData : MapstoneCore.serializeFile(this.dataDocument()), this.fileName(this._recoveryData ? 'json' : 'mapstone'));
   /* 검토 내용 → 화면: bring an item (or session) into view, select it and pulse it */
@@ -1359,7 +1371,7 @@ class Component extends DCLogic {
     this.setState((st) => {
       if (!st.hist.length) return null;
       const prev = JSON.parse(st.hist[st.hist.length - 1]);
-      return Object.assign({ hist: st.hist.slice(0, -1), future: st.future.concat([this.snapshot()]).slice(-60), sel: null, editing: null }, prev);
+      return Object.assign({ hist: st.hist.slice(0, -1), future: st.future.concat([this.snapshot()]).slice(-60), sel: null, selection:[], selectionAnchor:null, editing: null }, prev);
     });
   };
   redo = () => {
@@ -1368,7 +1380,7 @@ class Component extends DCLogic {
     this.setState((st) => {
       if (!st.future.length) return null;
       const next = JSON.parse(st.future[st.future.length - 1]);
-      return Object.assign({ future: st.future.slice(0, -1), hist: st.hist.concat([this.snapshot()]).slice(-60), sel: null, editing: null }, next);
+      return Object.assign({ future: st.future.slice(0, -1), hist: st.hist.concat([this.snapshot()]).slice(-60), sel: null, selection:[], selectionAnchor:null, editing: null }, next);
     });
   };
   reset = () => { if (!this.state.readOnly && window.confirm(this.L().confReset)) { this._saveBlocked=false; this._recoveryData=null; this.mutate((d) => { const s = this.seed(); d.title = s.title; d.cfg = s.cfg; d.rows = s.rows; d.items = s.items; d.notes = s.notes; d.now = s.now; }); } };
@@ -1502,18 +1514,7 @@ class Component extends DCLogic {
       this.setState({ sel: null });
     }, rowEls);
   };
-  duplicateSel = () => {
-    if (this.state.readOnly) return;
-    const it = this.selItem();
-    if (!it) return;
-    const id = this.uid();
-    const copy = Object.assign({}, JSON.parse(JSON.stringify(it)), { id: id });
-    if (copy.kind === 'sticky') { copy.y = (copy.y || 0) + 24; copy.s = copy.s + 0.25; }
-    else { copy.s = copy.s + 0.5; copy.e = copy.e + 0.5; }
-    this.mutate((d) => { d.items.push(copy); if (copy.kind === 'chev' || copy.kind === 'plain') this.resolve(d, id); });
-    this.setState({ sel: id, tab: 'prop' });
-  };
-  openClear = () => this.setState({ clearOpen: true });
+  duplicateSel = () => {const ids=new Set(this.selectedIds());this.cloneItems(this.state.items.filter(i=>ids.has(i.id)),true);};  openClear = () => this.setState({ clearOpen: true });
   closeClear = () => this.setState({ clearOpen: false });
   doClearAll = () => {
     const id = this.state.rows[0].id;
@@ -1567,6 +1568,7 @@ class Component extends DCLogic {
     return y + '년 ' + (mm + 1) + '월' + (m - idx >= 0.5 ? ' 중순' : ' 초');
   }
   /* month offset → yyyy-mm-dd, matching dateOf()'s day resolution */
+  shortDate(m) { return this.isoOf(m).slice(5).replace('-', '.'); }
   isoOf(m) {
     const c = this.state.cfg;
     const idx = Math.floor(m);
@@ -1613,6 +1615,32 @@ class Component extends DCLogic {
   durationWD(s, e) {
     const days = Math.max(0, Math.round((Date.parse(this.isoOf(e)) - Date.parse(this.isoOf(s))) / 86400000));
     return Math.floor(days / 7) + ' w ' + (days % 7) + ' d';
+  }
+  selectedIds() {
+    const st=this.state,c=this._selectionCache;
+    if(c && c.items===st.items && c.selection===st.selection && c.sel===st.sel)return c.ids;
+    const valid=new Set(st.items.map(i=>i.id)),chosen=st.sel ? (st.selection?.includes(st.sel) ? st.selection : [st.sel]) : [];
+    const ids=chosen.filter(id=>valid.has(id));this._selectionCache={items:st.items,selection:st.selection,sel:st.sel,ids,set:new Set(ids)};return ids;
+  }
+  isSelected(id) { this.selectedIds();return this._selectionCache.set.has(id); }
+  selectItems(ids, primary=ids[ids.length-1], anchor=this.state.selectionAnchor) {
+    this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null,tab:'prop'});
+  }
+  pickItem(id, e={}) {
+    const current=this.selectedIds();
+    if (e.metaKey) {
+      const next=current.includes(id) ? current.filter(x=>x!==id) : [...current,id];
+      this.selectItems(next,next.includes(id)?id:next[next.length-1],id);return false;
+    }
+    if (e.shiftKey) {
+      const anchor=this.state.selectionAnchor || this.state.sel || id;
+      const ordered=this.state.items.filter(i=>this.visibleItem(i)).slice().sort((a,b)=>this.state.rows.findIndex(r=>r.id===a.row)-this.state.rows.findIndex(r=>r.id===b.row)||a.s-b.s);
+      const a=ordered.findIndex(i=>i.id===anchor),b=ordered.findIndex(i=>i.id===id);
+      this.selectItems(ordered.slice(Math.min(a<0?b:a,b),Math.max(a<0?b:a,b)+1).map(i=>i.id),id,anchor);return false;
+    }
+    if (!current.includes(id)) this.selectItems([id],id,id);
+    else this.selectItems(current,id,current.length===1 ? id : this.state.selectionAnchor || id);
+    return true;
   }
   selItem() { return this.state.items.find((i) => i.id === this.state.sel); }
   measure(txt) {
@@ -1698,9 +1726,15 @@ class Component extends DCLogic {
   }
 
   // ── pointer interaction ───────────────────────
+  clearSelection = () => this.setState({ selection: [], selectionAnchor:null, sel: null, focusRow: null, editing: null, editNote: null, selLinkDot: null });
+  onOutsideDown = (e) => {
+    if (this.drag?.mode==='marquee' || e.button !== 0 || e.target.closest('[data-row], [data-track], [data-id], [data-properties], button, input, textarea, select, summary, dialog, [role=dialog]')) return;
+    this.clearSelection();
+  };
   onCtx = (e) => { if (this.state.interact) e.preventDefault(); };
   /* right-drag panning with ease-out deceleration (inertia) after release */
   onBoardDown = (e) => {
+    if (e.button===0 && !e.target.closest('[data-id], [data-row], button, input, textarea, select, [data-now-tag]')) { this.startMarquee(e); return; }
     if (!this.state.interact || e.button !== 2) return;
     e.preventDefault();
     const el = this._board;
@@ -1811,10 +1845,12 @@ class Component extends DCLogic {
     const it = this.state.items.find((i) => i.id === d.id);
     if (!it) return;
     MapstoneUI.hideTip();
+    if (!this.pickItem(d.id,e)) return;
     this.setState({ selLinkDot:null });
     this.setState({ sel: d.id, editing: null, editNote: null, tab: 'prop', panel: it.kind === 'flag' ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
     if (this.state.readOnly) return;
     this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), moved: false };
+    if (!d.mode && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
     if (d.mode==='top' || d.mode==='bottom') Object.assign(this.drag,this.heightBounds(it));
     this.bind();
   };
@@ -1892,14 +1928,87 @@ class Component extends DCLogic {
     });
     return bd <= TH ? r2(best) : r2(v);
   }
+  dragDateGuides() {
+    const g = this.drag;
+    if (!g?.moved || !['move','l','r'].includes(g.mode)) return [];
+    const it = this.state.items.find(i=>i.id===g.id);
+    if (!it || !['chev','plain','band','marker'].includes(it.kind)) return [];
+    const values = g.mode === 'move' ? (it.kind === 'marker' ? [it.s] : [it.s,it.e]) : [g.mode === 'l' ? it.s : it.e];
+    return values.map((value,index)=>({left:(172+this.xOf(value))+'px',top:((it.kind==='marker' ? 24 : this.rowTop(it.row||it.rowFrom))-24-(index && Math.abs(this.xOf(it.e)-this.xOf(it.s))<100 ? 26 : 0))+'px',date:this.isoOf(value)}));
+  }
   laneCapOf(rowId, span) {
     const lay = this._L && this._L[rowId];
     const cap = lay ? lay.laneCap : 4;
     return Math.max(0, cap - (span || 1));
   }
+  dragTime(g, ev) {
+    const fine = !!ev.ctrlKey;
+    if (!g.time) g.time = { fine, x: g.x0, s: g.s, e: g.e };
+    if (g.time.fine !== fine) {
+      const it = g.mode === 'now' ? {s:this.state.now,e:this.state.now} : this.state.items.find(i=>i.id===g.id);
+      g.time = { fine, x: g.lastTimeX ?? ev.clientX, s: it.s, e: it.e };
+    }
+    g.lastTimeX = ev.clientX;
+    const t = g.time, dx = ev.clientX - t.x, days = Math.trunc(dx / 24);
+    // Ctrl: a full 24px of pointer travel per calendar day, independent of zoom.
+    const at = (base, row) => fine ? (days ? this.shiftDay(base, days) : base) : (dx ? this.snapM(this.mOf(this.xOf(base) + dx), g.id, row) : base);
+    return { fine, days, s:t.s, e:t.e, at };
+  }
+  startMarquee(e) {
+    e.preventDefault();
+    const base=e.metaKey || e.shiftKey ? this.selectedIds() : [];
+    const rects=Array.from(this.root?.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])') || []).map(node=>({id:node.dataset.id,box:node.getBoundingClientRect()})).filter(r=>r.box.width>0 && r.box.height>0 && this.state.items.some(i=>i.id===r.id && this.visibleItem(i)));
+    this.drag={mode:'marquee',x0:e.clientX,y0:e.clientY,base,rects,moved:false};
+    if (!base.length) this.clearSelection();
+    this.bind();
+  }
+  moveMarquee(ev) {
+    const g=this.drag,left=Math.min(g.x0,ev.clientX),top=Math.min(g.y0,ev.clientY),right=Math.max(g.x0,ev.clientX),bottom=Math.max(g.y0,ev.clientY);
+    if (right-left<3 && bottom-top<3 && !g.moved) return;
+    g.moved=true;
+    const hit=g.rects.filter(r=>r.box.left<right && r.box.right>left && r.box.top<bottom && r.box.bottom>top).map(r=>r.id);
+    this.selectItems([...new Set([...g.base,...hit])]);
+    this.setState({marquee:{left:left+'px',top:top+'px',width:right-left+'px',height:bottom-top+'px'}});
+  }
+  translateGroup(d, ids, dm, dy=0, days=null) {
+    const chosen=new Set(ids), items=d.items.filter(i=>chosen.has(i.id));
+    const temporal=items.filter(i=>i.kind!=='flag');
+    if (days===null && temporal.length) dm=Math.max(dm,-Math.min(...temporal.map(i=>i.s)));
+    if (days!==null && temporal.length) days=Math.max(days,...temporal.map(i=>Math.ceil((Date.parse(this.isoOf(0))-Date.parse(this.isoOf(i.s)))/86400000)));
+    const boxes=items.filter(i=>this.boxKind(i.kind)).map(i=>this.trackBox(i));
+    if (boxes.length) dy=Math.max(Math.max(...boxes.map(b=>6-b.top)),Math.min(dy,...boxes.map(b=>b.total-6-b.bottom)));
+    const floating=items.filter(i=>['sticky','image'].includes(i.kind));if(floating.length)dy=Math.max(dy,-Math.min(...floating.map(i=>i.y||0)));
+    for(const it of items){
+      if(it.kind==='flag'){
+        if(chosen.has(it.targetId))continue;
+        const dx=days===null?this.xOf(it.s+dm)-this.xOf(it.s):this.xOf(this.shiftDay(it.s,days))-this.xOf(it.s);
+        it.labelDx=Math.max(-20000,Math.min(20000,(it.labelDx||0)+dx));it.labelDy=Math.max(-20000,Math.min(20000,(it.labelDy||0)+dy));continue;
+      }
+      if(days!==null && days!==0){it.s=this.shiftDay(it.s,days);it.e=this.shiftDay(it.e,days);}else if(days===null){it.s+=dm;it.e+=dm;}
+      if(this.boxKind(it.kind)){it.trackY=(it.trackY ?? 6+it.lane*this.laneH())+dy;}
+      else if(['sticky','image'].includes(it.kind))it.y=(it.y||0)+dy;
+      else if(it.kind==='band' && dy){
+        const rows=d.rows.map(r=>r.id),a=rows.indexOf(it.rowFrom),b=rows.indexOf(it.rowTo),shift=Math.max(-a,Math.min(rows.length-1-b,Math.round(dy/this.laneH())));
+        it.rowFrom=rows[a+shift];it.rowTo=rows[b+shift];it.row=it.rowFrom;
+      }
+    }
+    for(const it of items) this.resolve(d,it.id,chosen);
+  }
+  moveGroup(ev) {
+    const g=this.drag;
+    // Re-anchor from the current document when Ctrl is pressed/released mid-drag.
+    const fine=!!ev.ctrlKey;
+    if(g.groupFine===undefined){g.groupFine=fine;g.groupX=g.x0;g.groupY=g.y0;}
+    if(g.groupFine!==fine){g.groupBase=JSON.parse(JSON.stringify(this.state.items));g.groupX=g.lastGroupX ?? ev.clientX;g.groupY=g.lastGroupY ?? ev.clientY;g.groupFine=fine;}
+    g.lastGroupX=ev.clientX;g.lastGroupY=ev.clientY;
+    const dx=ev.clientX-g.groupX,dy=ev.clientY-g.groupY,primary=g.groupBase.find(i=>g.ids.includes(i.id) && i.kind!=='flag') || g.groupBase.find(i=>i.id===g.id),days=fine?Math.trunc(dx/24):null;
+    const dm=fine?0:dx ? this.snapM(this.mOf(this.xOf(primary.s)+dx),primary.id,primary.row)-primary.s : 0;
+    this.mutate(d=>{d.items=JSON.parse(JSON.stringify(g.groupBase));this.translateGroup(d,g.ids,dm,dy,days);},false);
+  }
   onMove(ev) {
     const g = this.drag;
     if (!g) return;
+    if (g.mode==='marquee') {this.moveMarquee(ev);return;}
     if (g.mode === 'link') {
       if (!g.moved && Math.hypot(ev.clientX-g.x0,ev.clientY-g.y0) <= 2) return;
       g.moved = true;
@@ -1914,6 +2023,7 @@ class Component extends DCLogic {
     const dx = ev.clientX - g.x0;
     if (Math.abs(dx) > 2 || Math.abs(ev.clientY - g.y0) > 2) g.moved = true;
     if (!g.moved) return;
+    if (g.ids) {this.moveGroup(ev);return;}
     if (g.mode==='top' || g.mode==='bottom') {
       const delta=ev.clientY-g.y0;
       this.mutate(d=>this.resizeHeight(d,g,delta,true),false);
@@ -1927,14 +2037,14 @@ class Component extends DCLogic {
       this.mutate(d => { const it=d.items.find(i=>i.id===g.id); if (it) { it.labelDx=Math.max(-20000,Math.min(20000,g.labelDx+dx)); it.labelDy=Math.max(-20000,Math.min(20000,g.labelDy+ev.clientY-g.y0)); } }, false);
       return;
     }
-    const dm = (base) => this.mOf(this.xOf(base) + dx) - base;
+    const time = this.dragTime(g, ev);
     if (g.kind === 'sticky' || g.kind === 'image') {
       const dy = ev.clientY - g.y0;
       this.mutate((d) => {
         const it = d.items.find((i) => i.id === g.id);
         if (!it) return;
         if (g.mode === 'rz') { it.w = Math.max(120, Math.round(g.w + dx)); it.h = Math.max(70, Math.round(g.h + dy)); }
-        else { it.s = Math.max(0, this.snapM(g.s + dm(g.s), g.id, null)); it.y = Math.max(0, Math.round(g.y + dy)); }
+        else { it.s = Math.max(0, time.at(time.s, null)); it.y = Math.max(0, Math.round(g.y + dy)); }
       }, false);
       return;
     }
@@ -1948,7 +2058,7 @@ class Component extends DCLogic {
       }
       if (g.mode === 'move') g.bShift = Math.max(-g.bFrom, Math.min(ids.length - 1 - g.bTo, at(ev.clientY) - g.bRow0));
     }
-    if (g.mode === 'now') { const v = g.s + dm(g.s); this.mutate((d) => { d.now = Math.max(0, this.snapM(v, '__now', null)); }, false); return; }
+    if (g.mode === 'now') { this.mutate((d) => { d.now = Math.max(0, time.at(time.s, null)); }, false); return; }
     let target = null;
     if (g.mode === 'move' && (g.kind === 'chev' || g.kind === 'plain' || g.kind === 'flag')) {
       const tracks = this.root ? this.root.querySelectorAll('[data-track]') : [];
@@ -1977,13 +2087,17 @@ class Component extends DCLogic {
       }
       const rowFor = target ? target.row : it.row;
       if (g.mode === 'move') {
-        const len = g.e - g.s;
-        it.s = Math.max(0, this.snapM(g.s + dm(g.s), it.id, rowFor));
-        it.e = it.kind === 'flag' || it.kind === 'marker' ? it.s : it.s + len;
+        const len = time.e - time.s;
+        it.s = Math.max(0, time.at(time.s, rowFor));
+        if (it.kind === 'flag' || it.kind === 'marker') it.e = it.s;
+        else if (time.fine) {
+          const days = Math.round((Date.parse(this.isoOf(it.s)) - Date.parse(this.isoOf(time.s))) / 86400000);
+          it.e = days ? this.shiftDay(time.e, days) : time.e;
+        } else it.e = it.s + len;
         if (target) { it.row = target.row; it.lane = target.lane; if(it.trackH!==undefined)it.trackY=6+it.lane*this.laneH(); }
         if (it.kind === 'band' && g.bShift !== undefined) { const ids = d.rows.map((r) => r.id); it.rowFrom = ids[g.bFrom + g.bShift]; it.rowTo = ids[g.bTo + g.bShift]; it.row = it.rowFrom; }
-      } else if (g.mode === 'l') { it.s = Math.min(this.snapM(g.s + dm(g.s), it.id, it.row), g.e - this.timeStep()); }
-      else { it.e = Math.max(this.snapM(g.e + dm(g.e), it.id, it.row), g.s + this.timeStep()); }
+      } else if (g.mode === 'l') { it.s = Math.min(time.at(time.s, it.row), time.fine ? this.shiftDay(time.e, -1) : time.e - this.timeStep()); }
+      else { it.e = Math.max(time.at(time.e, it.row), time.fine ? this.shiftDay(time.s, 1) : time.s + this.timeStep()); }
       this.resolve(d, g.id);
     }, false);
   }
@@ -1998,11 +2112,11 @@ class Component extends DCLogic {
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
-      if (!['link','top','bottom'].includes(this.drag.mode)) this.mutate((d) => { this.resolve(d, id); }, false);
+      if (!['link','top','bottom'].includes(this.drag.mode) && !this.drag.ids) this.mutate((d) => { this.resolve(d, id); }, false);
       this.setState((st) => ({ hist: st.hist.concat([snap]).slice(-60), future: [] }));
     }
     this.drag = null;
-    this.setState({});
+    this.setState({marquee:null});
   }
 
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
@@ -2026,13 +2140,13 @@ class Component extends DCLogic {
     }
     return item.lane + 1;
   }
-  resolve(d, id) {
+  resolve(d, id, protectedIds=new Set()) {
     const mode = d.cfg.overlap || 'shrink';
     const a = d.items.find((i) => i.id === id);
     if (!a || !this.boxKind(a.kind)) return;
     const laneOv = (x, y) => x.lane < y.lane + (y.span || 1) && x.lane + (x.span || 1) > y.lane;
     const xOv = (x, y) => x.s < y.e - 0.001 && y.s < x.e - 0.001;
-    d.items.filter((o) => o.id !== id && o.row === a.row && this.boxKind(o.kind)).forEach((o) => {
+    d.items.filter((o) => o.id !== id && !protectedIds.has(o.id) && o.row === a.row && this.boxKind(o.kind)).forEach((o) => {
       if (!(laneOv(a, o) && xOv(a, o))) return;
       if (mode === 'moveSelf') { a.lane = this.freeLane(d, a); return; }
       if (mode === 'moveOther') { o.lane = this.freeLane(d, o); return; }
@@ -2049,7 +2163,7 @@ class Component extends DCLogic {
     this.mutate((d) => {
       const a = d.items.find((i) => i.id === id);
       if (!a) return;
-      const peers = d.items.filter((o) => o.id !== id && o.row === a.row && this.boxKind(o.kind)
+      const peers = d.items.filter((o) => o.id !== id && !protectedIds.has(o.id) && o.row === a.row && this.boxKind(o.kind)
         && o.lane < a.lane + (a.span || 1) && o.lane + (o.span || 1) > a.lane);
       if (mode === 'l') {
         let edge = 0;
@@ -2063,11 +2177,11 @@ class Component extends DCLogic {
     });
   };
 
-  onRowFocus = (e) => { this.setState({ focusRow: e.currentTarget.dataset.row }); };
+  onRowFocus = (e) => { this.setState({ selection: [], sel: null, editing: null, editNote: null, focusRow: e.currentTarget.dataset.row }); };
   onTrackDown = (e) => {
     if (e.button === 2) return;
     const row = e.currentTarget.getAttribute('data-track');
-    if (e.target === e.currentTarget) this.setState({ sel: null, editing: null, editNote: null, focusRow: row });
+    if (e.target === e.currentTarget && !e.metaKey && !e.shiftKey) this.clearSelection();
     else this.setState({ focusRow: row });
   };
   onTrackDblClick = (e) => {
@@ -2086,9 +2200,9 @@ class Component extends DCLogic {
     if (!it) return;
     MapstoneUI.hideTip();
     this._focusProperties = true;
-    this.setState({ editing: null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
+    this.setState({ selection:[id], selectionAnchor:id, editing: null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
   };
-  onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return; this.setState({selLinkDot:null,sel:id,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
+  onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return;if(e.metaKey||e.shiftKey){this.pickItem(id,e);return;} this.setState({selection:[id],selectionAnchor:id,selLinkDot:null,sel:id,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
   /* tooltips belong to the shape: entering its detached/outside label closes the tooltip and keeps it from re-opening */
   onOutLabelEnter = (e) => { e.stopPropagation(); MapstoneUI.hideTip(); this.setState({ hover: null }); };
   /* tooltips belong to the shape itself: entering its outside label closes the tooltip */
@@ -2107,19 +2221,21 @@ class Component extends DCLogic {
   addNote = () => { if (this.state.readOnly) return; const id = this.uid(); this.mutate((d) => { d.notes.push({ id, text: this.L().newNote }); }); this.setState({ editNote: id }); };
 
   // ── clipboard & keys ──────────────────────────
-  copySel = () => { const it = this.selItem(); if (it) this.setState({ clip: JSON.parse(JSON.stringify(it)) }); };
-  cutSel = () => { const it = this.selItem(); if (!it) return; this.setState({ clip: JSON.parse(JSON.stringify(it)) }); this.deleteSel(); };
-  pasteClip = () => {
-    if (this.state.readOnly) return;
-    const c = this.state.clip;
-    if (!c) return;
-    const id = this.uid();
-    const row = c.kind === 'marker' ? '' : (this.state.focusRow || c.row);
-    const it = Object.assign({}, c, { id: id, row: row, s: c.s + 0.5, e: c.e + 0.5 });
-    if (it.kind === 'band') { it.rowFrom = c.rowFrom; it.rowTo = c.rowTo; it.row = c.rowFrom; }
-    this.mutate((d) => { d.items.push(it); });
-    this.setState({ sel: id, tab: 'prop' });
-  };
+  copySel = () => { const ids=new Set(this.selectedIds());if(ids.size)this.setState({clip:JSON.parse(JSON.stringify(this.state.items.filter(i=>ids.has(i.id))))}); };
+  cutSel = () => { if(this.state.readOnly)return;this.copySel();this.deleteSel(); };
+  cloneItems(copies, duplicate=false) {
+    if(this.state.readOnly || !copies.length)return;
+    const mapping=new Map(copies.map(i=>[i.id,this.uid()])), single=copies.length===1;
+    const pasted=copies.map(c=>{
+      const it=JSON.parse(JSON.stringify(c));it.id=mapping.get(c.id);it.s+=.5;it.e+=.5;
+      if(single && !duplicate && ['chev','plain','flag'].includes(it.kind))it.row=this.state.focusRow || it.row;
+      if(['sticky','image'].includes(it.kind))it.y=(it.y||0)+24;
+      if(it.targetId){if(mapping.has(it.targetId))it.targetId=mapping.get(it.targetId);else {it.targetId='';delete it.linkOffset;delete it.linkY;}}
+      return it;
+    });
+    this.mutate(d=>{d.items.push(...pasted);});this.selectItems(pasted.map(i=>i.id));
+  }
+  pasteClip = () => { const c=this.state.clip;if(c)this.cloneItems(Array.isArray(c)?c:[c]); };
   onKey = (e) => {
     if (document.querySelector && document.querySelector("dialog[open]")) return;
     const t = e.target.tagName;
@@ -2133,8 +2249,9 @@ class Component extends DCLogic {
     if (mod && (e.key === 'x' || e.key === 'X')) { e.preventDefault(); this.cutSel(); return; }
     if (mod && (e.key === 'v' || e.key === 'V')) { e.preventDefault(); this.pasteClip(); return; }
     if (mod && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); this.duplicateSel(); return; }
-    if (e.key === 'Escape') { this.setState({ sel: null, editing: null, editNote: null }); return; }
+    if (e.key === 'Escape') { this.clearSelection(); return; }
     if (!this.state.sel) return;
+    if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {e.preventDefault();const ids=this.selectedIds(),dx=e.key==='ArrowLeft'?-.5:e.key==='ArrowRight'?.5:0,dy=e.key==='ArrowUp'?-this.laneH():e.key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
     if (this.selItem()?.kind === 'flag' && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
       e.preventDefault();
@@ -2178,7 +2295,7 @@ class Component extends DCLogic {
   addBand = () => this.addAt('band');
   addMarker = () => this.addAt('marker');
   addFlag = () => this.addAt('flag');
-  deleteSel = () => { const id = this.state.sel; this.animateOut([id], () => { this.mutate((d) => { d.items = d.items.filter((i) => i.id !== id); }); this.setState({ sel: null, editing: null }); }); };
+  deleteSel = () => { if(this.state.readOnly)return;const ids=this.selectedIds(),chosen=new Set(ids);if(!ids.length)return;this.animateOut(ids,()=>{this.mutate(d=>{d.items=d.items.filter(i=>!chosen.has(i.id));});this.clearSelection();}); };
 
   addRow = (e) => { e.stopPropagation(); if (this.state.readOnly) return; const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
   onRowName = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const r = d.rows.find((x) => x.id === id); if (r) r.name = v; }); };
@@ -2210,7 +2327,7 @@ class Component extends DCLogic {
     if (!['Enter',' ','Delete','Backspace'].includes(e.key)) return;
     e.preventDefault(); e.stopPropagation();
     const id=e.currentTarget.dataset.id;
-    this.setState({ sel:id, selLinkDot:id, panel:true, tab:'prop' });
+    this.setState({ selection:[id],selectionAnchor:id,sel:id, selLinkDot:id, panel:true, tab:'prop' });
     if (e.key === 'Delete' || e.key === 'Backspace') this.connectFlag(id, '');
   };
   linkHit(ev) {
@@ -2227,7 +2344,7 @@ class Component extends DCLogic {
   onLinkDown = (e) => {
     e.stopPropagation(); if (e.button !== 0 || this.state.readOnly) return;
     e.preventDefault(); MapstoneUI.hideTip();
-    this.setState({ sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true, tab:'prop' });
+    this.setState({selection:[e.currentTarget.dataset.id],selectionAnchor:e.currentTarget.dataset.id,sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true, tab:'prop' });
     if (e.currentTarget.focus) e.currentTarget.focus();
     this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY, snap:this.snapshot(), moved:false };
     this.bind();
@@ -2255,6 +2372,13 @@ class Component extends DCLogic {
     }, text && this._textPush === false ? false : true);
     if (text) this._textPush = false;
   };
+  togglePropertyDates = () => this.setState({ propertyDates: !this.state.propertyDates });
+  onPropertyTimeField = (e) => this.state.propertyDates ? this.onDateField(e) : this.onField(e);
+  shiftDay(m, delta) {
+    const date = new Date(this.isoOf(m) + 'T00:00:00Z');
+    date.setUTCDate(date.getUTCDate() + delta);
+    return this.monthOfISO(date.toISOString().slice(0, 10));
+  }
   onDateField = (e) => {
     const f = e.currentTarget.dataset.field;
     const m = this.monthOfISO(e.currentTarget.value);
@@ -2267,11 +2391,11 @@ class Component extends DCLogic {
       if (f === 's') {
         it.s = m;
         if (pin) it.e = m;
-        else if (it.e < it.s + this.timeStep()) it.e = it.s + this.timeStep();
+        else if (it.e < this.shiftDay(it.s, 1)) it.e = this.shiftDay(it.s, 1);
       } else if (pin) {
         it.s = m; it.e = m;
       } else {
-        it.e = Math.max(m, it.s + this.timeStep());
+        it.e = Math.max(m, this.shiftDay(it.s, 1));
       }
       this.resolve(d, id);
     });
@@ -2286,6 +2410,11 @@ class Component extends DCLogic {
     const delta = parseFloat(d0.delta);
     if (d0.cfg) { this.applyCfg(d0.cfg, null, delta); return; }
     const id = this.state.sel;
+    if (this.state.propertyDates && ['s','e'].includes(d0.field)) {
+      const it = this.selItem(); if (!it) return;
+      const m = this.shiftDay(it[d0.field], Math.sign(delta));
+      this.onDateField({currentTarget:{dataset:{field:d0.field},value:this.isoOf(m)}}); return;
+    }
     if(d0.field==='span'){const it=this.state.items.find(i=>i.id===id);if(it&&this.boxKind(it.kind)){const g={id,mode:'bottom',...this.heightBounds(it)};this.mutate(d=>this.resizeHeight(d,g,delta*this.laneH()));return;}}
     this.mutate((d) => {
       const it = d.items.find((i) => i.id === id);
@@ -2361,6 +2490,14 @@ class Component extends DCLogic {
     });
     this.setState({ nowOutOpen: false });
   };
+  togglePalette = () => this.setState({ paletteExpanded: !this.state.paletteExpanded });
+  paletteTone(hex, tone) {
+    const rgb = [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255), l=(Math.max(...rgb)+Math.min(...rgb))/2;
+    const next = tone < 0 ? l*(1+tone) : l+(1-l)*tone;
+    const scale = (1-Math.abs(2*next-1))/(1-Math.abs(2*l-1)||1);
+    return '#'+rgb.map(v=>Math.round(Math.max(0,Math.min(1,(v-l)*scale+next))*255).toString(16).padStart(2,'0')).join('');
+  }
+  onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{const it=d.items.find(i=>i.id===id);if(it && it.kind==='flag')it.hideDate=!!e.currentTarget.checked;});};
   onColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.color = c; }); };
   onVariant = (e) => { const v = e.currentTarget.dataset.variant; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.variant = v; }); };
   onTitle = (e) => { const v = e.currentTarget.value; this.editText((d) => { d.title = v; }); };
@@ -2536,14 +2673,14 @@ class Component extends DCLogic {
       const x=LB+parseFloat(f.left),y=rowTopPx[row.id]+parseFloat(f.top),lx=x+parseFloat(f.labelLeft),ly=y+parseFloat(f.labelTop);
       if(f.connected){const coords=f.connPath.match(/-?[\d.]+/g).map(Number);line(x,y+11,x,y+coords[2],f.color);line(x,y+coords[2],x+coords[3],y+coords[2],f.color);}
       slide.addShape(S.ellipse,{x:X(x+parseFloat(f.dotLeft)+5.5),y:Y(y+parseFloat(f.dotTop)+5.5),w:Sz(11),h:Sz(11),fill:{color:hex(f.color)},line:{color:'FFFFFF',width:.75}});
-      slide.addText(f.label,{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label)+32),h:Sz(24),fontSize:fs(12),bold:true,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
+      slide.addText(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''),{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''))+32),h:Sz(24),fontSize:fs(12),bold:true,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
     }));
     st.items.filter(i=>i.kind==='sticky').forEach(it=>slide.addText(it.label,{shape:S.rect,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||220),h:Sz(it.h||120),fontSize:fs(13),color:'181A1B',fill:{color:hex(it.color)},margin:3,breakLine:false}));
     st.items.filter(i=>i.kind==='image').forEach(it=>slide.addImage({data:it.src,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||320),h:Sz(it.h||200)}));
     if(cfg.showWeek!==false)view.subdivisions.forEach(q=>slide.addText(q.label,{x:X(LB+parseFloat(q.left)),y:Y(stripH+HDR-14),w:Sz(this.measure(q.label)+4),h:Sz(12),fontSize:fs(9),color:'FFFFFF',align:'left',margin:0}));
     if(cfg.showElementDates)st.items.filter(i=>['chev','plain','band','marker'].includes(i.kind)).forEach(it=>{
       const x=LB+this.xOf(it.s),y=it.kind==='marker'?(mplace[it.id]||0)*30+24:it.kind==='band'?rowTopPx[it.rowFrom]+6+Math.max(40,rowTopPx[it.rowTo]+this.rowHeight(it.rowTo)-rowTopPx[it.rowFrom]-14):rowTopPx[it.row]+this.trackBox(it).localTop+this.trackBox(it).height;
-      const text=this.isoOf(it.s)+(it.kind==='marker'?'':' → '+this.isoOf(it.e));slide.addText(text,{x:X(x),y:Y(y),w:Sz(this.measure(text)+10),h:Sz(14),fontSize:fs(10),color:'3B4044',fill:{color:'FFFFFF'},margin:0});
+      const text=this.shortDate(it.s)+(it.kind==='marker'?'':' → '+this.shortDate(it.e));slide.addText(text,{x:X(x),y:Y(y),w:Sz(this.measure(text)+10),h:Sz(14),fontSize:fs(10),color:'3B4044',fill:{color:'FFFFFF'},margin:0});
     });
 
     markers.forEach((it) => {
@@ -2620,15 +2757,15 @@ class Component extends DCLogic {
       const w = this.wOf(it.s, it.e);
       const m = (lay && lay.modes[it.id]) || { mode: 'in' };
       const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : h + 6;
-      const sel = st.sel === it.id;
+      const sel = this.isSelected(it.id);
       const hov = st.hover === it.id;
-      const drag = !!(this.drag && this.drag.id === it.id);
+      const drag = !!(this.drag && (this.drag.id === it.id || this.drag.ids?.includes(it.id)));
       const fillBg = solid ? it.color : this.rgba(it.color, 0.16);
       const durFg = solid ? (this.lum(it.color) < 0.55 ? '#ffffff' : '#181a1b') : this.dark(it.color);
       const durBadgeBg = solid ? (this.lum(it.color) < 0.55 ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.72)') : '#ffffff';
       const durBadge = this.measure(it.label || '') + this.measure(this.durationHidden(it) ? '' : this.durOf(it.s, it.e)) + 40 > w;
       return {
-        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
+        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
         bg: solid ? it.color : this.rgba(it.color, 0.16),
         fg: solid ? (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff') : this.dark(it.color),
         labelSize: px(it.labelSize || 12.5), outDx: px(it.labelDx || 0), outDy: px(it.labelDy || 0),
@@ -2667,14 +2804,14 @@ class Component extends DCLogic {
       const box=this.trackBox(it,L),h=box.height;
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
+        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
         left: px(this.xOf(it.s)), width: px(this.wOf(it.s, it.e)), top: px(box.localTop), height: px(h),
         bg: tint ? this.rgba(it.color, 0.1) : it.color,
         border: tint ? this.rgba(it.color, 0.5) : it.color,
         fg: tint ? this.dark(it.color) : (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff'),
         durFg: tint ? this.dark(it.color) : (this.lum(it.color) < 0.55 ? '#ffffff' : '#181a1b'),
-        trans: this.drag && this.drag.id === it.id ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
-        sel: st.sel === it.id, editing: editing, show: !editing,
+        trans: this.drag && (this.drag.id === it.id || this.drag.ids?.includes(it.id)) ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
+        sel: this.isSelected(it.id), editing: editing, show: !editing,
         tip: hov && !!(it.memo || '').trim() && !editing
       };
     };
@@ -2687,19 +2824,19 @@ class Component extends DCLogic {
       const top = target?.kind==='band' ? 6+Math.max(40,bandBottom-this.rowTop(target.rowFrom)-14)*(it.linkY ?? 1)-11 : target ? this.trackBox(target,L).localTop+this.trackBox(target,L).height*(it.linkY ?? 1)-11 : 6 + it.lane * laneH + laneH / 2 - 11;
       const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : 26;
       const labelLeft=(m.mode === 'strip' ? -6 : 12)+(it.labelDx || 0), labelTop=(m.mode === 'strip' ? stripTop : 0)+(it.labelDy || 0);
-      const badgeWidth=this.measure(it.label || '')+32+(cfg.showElementDates ? this.measure(this.isoOf(it.s))+6 : 0);
+      const badgeWidth=this.measure(it.label || '')+32+(cfg.showElementDates && !it.hideDate ? this.measure(this.shortDate(it.s))+6 : 0);
       const edgeX=labelLeft >= 0 ? labelLeft : labelLeft+badgeWidth <= 0 ? labelLeft+badgeWidth : 0;
       const edgeY=labelTop > 11 ? labelTop : labelTop+24 < 11 ? labelTop+24 : labelTop+12;
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.isoOf(it.s), id: it.id, label: it.label, memo: it.memo || '', color: it.color, ink: this.dark(it.color),
+        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, label: it.label, memo: it.memo || '', color: it.color, ink: this.dark(it.color),
         targetId: target ? target.id : '', linkLabel: target ? this.L().linkedTo + ': ' + target.label : this.L().unlinked,
-        /* stacking: blocks < memo labels (100/110) < session column (115) · month header (116) < drag guide (119) < sticky memos · images (120+) */ zIndex: st.sel === it.id ? 110 : 100,
+        /* stacking: blocks < memo labels (100/110) < session column (115) · month header (116) < drag guide (119) < sticky memos · images (120+) */ zIndex: this.isSelected(it.id) ? 110 : 100,
         badgeBg: '#fff',
         dotLeft:px(target ? -11 : labelLeft-23), dotTop:px(target ? 0 : labelTop+1),
-        badgeFocus: st.sel === it.id && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #e30084' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #e30084' : st.sel === it.id ? '0 0 0 2px #e30084' : 'none',
+        badgeFocus: this.isSelected(it.id) && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #e30084' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #e30084' : this.isSelected(it.id) ? '0 0 0 2px #e30084' : 'none',
         show:!editing, connected:!!target, labelLeft:px(labelLeft), labelTop:px(labelTop), connPath:'M 0 11 V '+edgeY+' H '+edgeX,
-        left: px(target && it.linkOffset !== undefined ? this.xOf(target.s)+this.wOf(target.s,target.e)*it.linkOffset : this.xOf(it.s)), top: px(top), sel: st.sel === it.id, editing: editing,
+        left: px(target && it.linkOffset !== undefined ? this.xOf(target.s)+this.wOf(target.s,target.e)*it.linkOffset : this.xOf(it.s)), top: px(top), sel: this.isSelected(it.id), editing: editing,
         inline: !editing && m.mode === 'inline', strip: !editing && m.mode === 'strip',
         stripTop: px(stripTop), connH: px(Math.max(0, stripTop - 11)),
         tip: hov && !!(it.memo || '').trim() && !editing
@@ -2729,16 +2866,16 @@ class Component extends DCLogic {
       const idxTo = st.rows.findIndex((r) => r.id === (it.rowTo || st.rows[st.rows.length - 1].id));
       const rTo = st.rows[idxTo < 0 ? st.rows.length - 1 : idxTo];
       const t2 = this.rowTop(rTo.id) + this.rowHeight(rTo.id);
-      const sel = st.sel === it.id;
+      const sel = this.isSelected(it.id);
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, memo: it.memo || '',
+        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, memo: it.memo || '',
         left: px(172 + this.xOf(it.s)), width: px(this.wOf(it.s, it.e)),
         top: px(t1 + 6), height: px(Math.max(40, t2 - t1 - 14)),
         bg: it.variant === 'tint' ? this.rgba(it.color, 0.16) : it.color,
         fg: it.variant === 'tint' ? this.dark(it.color) : (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff'),
         durFg: it.variant === 'tint' ? this.dark(it.color) : (this.lum(it.color) < 0.55 ? '#ffffff' : '#181a1b'),
-        trans: this.drag && this.drag.id === it.id ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
+        trans: this.drag && (this.drag.id === it.id || this.drag.ids?.includes(it.id)) ? 'none' : 'left .18s cubic-bezier(.2,.8,.2,1), width .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1)',
         sel: sel, editing: editing, show: !editing,
         dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
         tip: hov && !!(it.memo || '').trim() && !editing
@@ -2764,9 +2901,9 @@ class Component extends DCLogic {
       const editing = st.editing === it.id;
       const k = mplace[it.id] || 0;
       return {
-        dateLabel: this.isoOf(it.s), id: it.id, label: it.label, color: it.color, ink: this.dark(it.color),
+        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, label: it.label, color: it.color, ink: this.dark(it.color),
         left: px(this.xOf(it.s)), top: px(k * 30), stemH: px(stripH - k * 30 - 26),
-        sel: st.sel === it.id, editing: editing, show: !editing
+        sel: this.isSelected(it.id), editing: editing, show: !editing
       };
     });
     const markerLines = markers.map((it) => ({ id: it.id, color: it.color, left: px(172 + this.xOf(it.s)), top: px(stripH - 8) }));
@@ -2776,15 +2913,15 @@ class Component extends DCLogic {
       const alpha = it.variant === 'tint' ? 0.55 : 1;
       const base = it.color || '#fdf3d0';
       return {
-        dateLabel: this.isoOf(it.s).slice(2).replaceAll('-','.')+' → '+this.isoOf(it.e).slice(2).replaceAll('-','.'), id: it.id, label: it.label, left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
+        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
         width: px(it.w || 210), height: px(it.h || 120),
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
-        sel: st.sel === it.id, editing: editing, show: !editing
+        sel: this.isSelected(it.id), editing: editing, show: !editing
       };
     });
 
-    const sel = this.selItem();
+    const sel = this.selItem(), selectionCount=this.selectedIds().length;
     const TT = this.L();
     const kindNames = { image:'이미지', sticky:TT.sticky, chev: TT.chev, plain: TT.plain, band: TT.band, marker: TT.marker, flag: TT.kFlag };
     const focusRow = st.rows.find((r) => r.id === st.focusRow);
@@ -2799,15 +2936,15 @@ class Component extends DCLogic {
     const rowColors = MapstoneCore.rowColors;
 
     return {
-      dragGuides:this.drag?.moved && ['l','r'].includes(this.drag.mode) ? [(()=>{const it=st.items.find(i=>i.id===this.drag.id),value=this.drag.mode==='l'?it.s:it.e;return {left:px(172+this.xOf(value)),top:px(this.rowTop(it.row||it.rowFrom)-24),date:this.isoOf(value)};})()] : [],
-      nowISO:this.isoOf(st.now),
+      dragGuides:this.dragDateGuides(),
+      nowISO:this.shortDate(st.now),
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
       readOnly: !!st.readOnly,
-      focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, exportJson:this.exportJson, openFile:this.openFile,
+      focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openViewLink:this.openViewLink, openWorkspace:this.openWorkspace, exportJson:this.exportJson, openFile:this.openFile,
       timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
-      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:st.sel===it.id,border:st.sel===it.id?'2px solid #e30084':'none'})),
+      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
-      showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
+      noSelection: !sel && !focusRowObj, showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
       rowPropH: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id)) : 0,
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
@@ -2820,7 +2957,7 @@ class Component extends DCLogic {
       showWeek: cfg.showWeek !== false, toggleWeek: this.toggleWeek,
       weekViewBg: cfg.showWeek !== false ? '#181a1b' : '#f3f5f6', weekViewFg: cfg.showWeek !== false ? '#fff' : '#66707a', weekViewBorder: cfg.showWeek !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
       mmBg: cfg.showMM !== false ? '#181a1b' : '#f3f5f6', mmFg: cfg.showMM !== false ? '#fff' : '#66707a', mmBorder: cfg.showMM !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
-      magnetBg: cfg.magnet ? '#181a1b' : '#fff', magnetFg: cfg.magnet ? '#fff' : 'var(--color-text-neutral-5)', magnetBorder: cfg.magnet ? '#181a1b' : 'var(--color-border-neutral-2)',
+      magnetOn: !!cfg.magnet, magnetBg: cfg.magnet ? '#181a1b' : '#fff', magnetFg: cfg.magnet ? '#fff' : 'var(--color-text-neutral-5)', magnetBorder: cfg.magnet ? '#181a1b' : 'var(--color-border-neutral-2)',
       helpOpen: st.helpOpen, openHelp: this.openHelp, closeHelp: this.closeHelp, stopClick: this.stopClick,
       textOpen: st.textOpen, openText: this.openText, closeText: this.closeText,
       setTextFmt: this.setTextFmt, downloadText: this.downloadText, copyText: this.copyText,
@@ -2870,21 +3007,27 @@ class Component extends DCLogic {
       wmActualBg: cfg.weekMode === 'actual' ? '#181a1b' : '#fff', wmActualFg: cfg.weekMode === 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
       wmActualBorder: cfg.weekMode === 'actual' ? '#181a1b' : 'var(--color-border-neutral-2)',
       clipLabel: st.clip ? '(1)' : '',
-      palette: this.PAL.map((p) => ({ name: p[0], hex: p[1], border: sel && sel.color === p[1] ? '#000' : 'rgba(0,0,0,.12)' })),
+      paletteExpanded: st.paletteExpanded, togglePalette: this.togglePalette, paletteToggleLabel: st.paletteExpanded ? T.paletteCollapse : T.paletteExpand,
+      palette: (st.paletteExpanded ? [0,-.55,-.3,.3,.55] : [0]).flatMap(tone=>this.PAL.map(([name,base])=>{const hex=tone ? this.paletteTone(base,tone) : base;return {name:name+(tone ? ' · '+(tone<0 ? T.shadeDark : T.shadeLight)+' '+(Math.abs(tone)>.4 ? 2 : 1) : ''),hex,border:sel && sel.color===hex ? '#000' : 'rgba(0,0,0,.12)'};})),
       rowOptions: st.rows.map((r) => ({ id: r.id, name: r.name })),
       focusName: focusRow ? focusRow.name : '없음',
-      hasSel: !!sel, noSel: !sel,
+      hasSel: !!sel && selectionCount===1, multiSelected: selectionCount>1, selectionCount, noSel: !sel,
       selKindLabel: sel ? kindNames[sel.kind] || '항목' : '',
       selLabel: sel ? sel.label : '', selMemo: sel ? sel.memo || '' : '',
       selRowFrom: sel ? sel.rowFrom || '' : '', selRowTo: sel ? sel.rowTo || '' : '',
       onHeightKey:this.onHeightKey,
-      selIsFlag: !!sel && sel.kind === 'flag', selNotFlag: !!sel && sel.kind !== 'flag', selRange:!!sel && !['flag','marker'].includes(sel.kind), selStartLabel:sel?.kind==='marker' ? T.elementDates : T.startF, selDateColumns:sel?.kind==='marker'?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)',
+      selHideDate: !!sel?.hideDate, onHideDate: this.onHideDate, selIsFlag: !!sel && sel.kind === 'flag', selNotFlag: !!sel && sel.kind !== 'flag', selRange:!!sel && !['flag','marker'].includes(sel.kind), selStartLabel:sel?.kind==='marker' ? T.elementDates : T.startF, selDateColumns:sel?.kind==='marker'||st.propertyDates?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)',
       selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
       linkOptions: st.items.filter(i=>this.linkKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===(i.rowFrom||i.row))?.name || '')+' · '+i.label})),
-      linkDrag: st.linkDrag, linking:!!st.linkDrag,
+      marquee:st.marquee, linkDrag: st.linkDrag, linking:!!st.linkDrag,
       selLabelSize: sel ? (sel.labelSize || 12.5) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
       selS: sel ? sel.s : 0, selE: sel ? sel.e : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? this.boxKind(sel.kind)?Math.round((this.trackBox(sel,L).height+12)/laneH*100)/100:sel.span||1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
+      propertyDates: !!st.propertyDates, togglePropertyDates: this.togglePropertyDates, onPropertyTimeField: this.onPropertyTimeField,
+      propertyTimeType: st.propertyDates ? 'date' : 'number', propertyTimeStep: st.propertyDates ? 1 : this.timeStep(),
+      propertyNumberColor: st.propertyDates ? 'var(--color-text-neutral-3)' : '#e30084', propertyDateColor: st.propertyDates ? '#e30084' : 'var(--color-text-neutral-3)',
+      propertySValue: sel ? (st.propertyDates ? this.isoOf(sel.s) : sel.s) : '', propertyEValue: sel ? (st.propertyDates ? this.isoOf(sel.e) : sel.e) : '',
+      propertyDateHint: st.propertyDates ? T.dayHint : T.dateHint,
       selSISO: sel ? this.isoOf(sel.s) : '', selEISO: sel ? this.isoOf(sel.e) : '', onDateField: this.onDateField,
       showProp: st.tab === 'prop', showSet: st.tab === 'set', showVer: st.tab === 'ver',
       tabPropFg: tabC('prop'), tabSetFg: tabC('set'), tabVerFg: tabC('ver'),

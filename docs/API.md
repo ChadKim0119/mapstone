@@ -12,6 +12,12 @@ https://mffysunppwqscbljooda.supabase.co/functions/v1/mapstone-api
 
 `POST /analyze`에 (선택) `X-Mapstone-Code` 헤더와 `{"image":"data:image/png;base64,..."}` 또는 `{"text":"..."}` 본문을 전송합니다. 이미지는 2MB 이하 PNG/JPEG/WebP data URL, 텍스트는 200,000자 이하입니다. 성공하면 브라우저와 동일한 데이터 계약의 `{"document":{...}}`를 반환합니다. 결과에는 구분 행, 블록(`chev`/`plain`), 공통 구간(`band`), 마일스톤(`marker`), 행 마일스톤·이슈(`flag`), 메모(`sticky`)와 색상·레인·메모가 포함됩니다. 이전 경로 `POST /analyze-image`도 같은 동작을 합니다.
 
+## 보기 링크 생성
+
+`POST /share`에 `{"password":"<6자 이상의 보기 암호>","permission":"view","document":{...}}`를 전송하면 `id`, 편집용 `code`, `permission`을 반환합니다. 현재 일정의 독립적인 사본을 저장합니다.
+
+내보내기 화면은 무작위 보기 암호를 생성하고 `?share=<id>#viewKey=<보기 암호>` 링크를 제공합니다. 링크를 가진 사람이 `GET /share/<id>`에 `X-Mapstone-Password` 헤더로 접속하면 보기 전용 문서를 받습니다. 보기 권한의 수정 요청은 거부됩니다. 편집용 코드는 링크에 포함하지 않습니다.
+
 ## 일정 읽기
 
 ```http
@@ -71,6 +77,8 @@ const schedule = {
 ```
 
 `s`와 `e`는 시작 월부터의 개월 수입니다. 5개월 미만 프로젝트는 `0.125`개월 단위를 권장합니다. `kind`는 `chev`, `plain`, `band`, `marker`, `flag`, `sticky`, `image` 중 하나입니다.
+
+`flag` 항목의 선택적 `hideDate: true`는 메모의 날짜를 숨깁니다. 날짜 표시 형식은 `MM.DD`이며, 속성 입력에는 전체 날짜를 사용합니다.
 
 페이지 안에서 자동화할 때는 `window.mapstone.getDocument()`, `window.mapstone.replaceDocument(data)`, `window.mapstone.exportJavaScript()`, `window.mapstone.getConnection()`을 사용할 수 있습니다. `replaceDocument`는 서버와 가져오기 화면과 동일한 검증을 수행합니다.
 

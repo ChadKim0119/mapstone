@@ -56,6 +56,7 @@
       if (it.trackY !== undefined) finite(it.trackY,'항목 위쪽 위치',-20000,20000);
       if (it.trackH !== undefined) finite(it.trackH,'항목 높이',1,20000);
       if (it.kind === 'image' && (typeof it.src !== 'string' || !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(it.src) || it.src.length > 2800000)) fail('이미지는 2MB 이하 PNG/JPEG/WebP 데이터여야 합니다.');
+      if (it.hideDate !== undefined && typeof it.hideDate !== 'boolean') fail('hideDate은 true/false입니다.');
       if (it.hideDuration !== undefined && typeof it.hideDuration !== 'boolean') fail('hideDuration은 true/false입니다.');
       if (it.targetId !== undefined) { text(it.targetId,'연결 대상',128); if (it.kind !== 'flag') fail('알림만 요소에 연결할 수 있습니다.'); }
       if (it.linkOffset !== undefined) finite(it.linkOffset,'연결 위치',0,1);
@@ -117,7 +118,7 @@
   /* 버전 비교: pair rows and items by id, report added / removed / changed with per-field detail.
      Pure data → data, so the UI only has to render the result. */
   const KIND_NAME = {chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
-  const FIELD_NAME = {label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
+  const FIELD_NAME = {label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDate:'메모 날짜 숨김',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
   /* Two texts count as the same when only separators/brackets/spacing/case differ:
      "e-Care (DMS)" == "e-Care / DMS" == "e-care · dms". Real wording changes still differ. */
   const plainText = (t) => String(t == null ? '' : t).normalize('NFKC').toLowerCase().replace(/[\s()\[\]{}<>\/\\|·・•,;:~\-–—_.]+/g, ' ').trim();
