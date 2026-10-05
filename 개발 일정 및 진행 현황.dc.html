@@ -100,6 +100,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-rv-head { display:flex;align-items:center;gap:7px;flex-wrap:wrap; } .ms-rv-head strong { font-size:13px;font-weight:750;color:#181a1b;overflow-wrap:anywhere; }
     .ms-review-panel li em { font-style:normal; }
     .ms-rv-lines { display:grid;grid-template-columns:max-content 1fr;gap:3px 10px;margin:6px 0 0;font-size:12px;line-height:1.5; } .ms-rv-lines dt { font-weight:700;color:#8a95a1; } .ms-rv-lines dd { margin:0;overflow-wrap:anywhere;color:#3b4044; } .ms-rv-lines s { color:#98a2ad;text-decoration-color:#c5cdd6; } .ms-rv-lines i { color:#c5cdd6;font-style:normal; } .ms-rv-lines strong { color:#181a1b; }
+    .ms-readonly-bar { flex:none;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#fff5d9;border-bottom:1px solid #e7c75f;text-align:center;font-size:13px;font-weight:700;color:#5b4300; }
+    .ms-readonly-edit { height:28px;padding:0 12px;border:1px solid #5b4300;border-radius:7px;background:#fff;color:#5b4300;font-size:12.5px;font-weight:700;cursor:pointer; } .ms-readonly-edit:hover { background:#5b4300;color:#fff; }
     .ms-review-count { padding:1px 8px;border-radius:9999px;background:#f3f5f6;font-size:12px;font-weight:700; }
     .ms-review-x { margin-left:auto;width:26px;height:26px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#66707a; } .ms-review-x:hover { background:#f3f5f6; }
     .ms-review-panel ol { list-style:none;margin:0;padding:6px;overflow:auto;display:flex;flex-direction:column;gap:2px; }
@@ -233,9 +235,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <button class="ms-tool-button" onClick="{{ exportPng }}">{{ L.png }}</button>
         <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
         <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
-        <button class="ms-tool-button" onClick="{{ openViewLink }}">{{ L.createLink }}</button>
-        <button class="ms-tool-button" onClick="{{ openWorkspace }}">{{ L.shareBtn }}</button>
       </div></details>
+      <button class="ms-tool-button" onClick="{{ openWorkspace }}" aria-label="{{ L.shareBtn }} (⌘/Ctrl+L)" data-tip="{{ L.shareBtn }} · ⌘/Ctrl+L" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.4"></circle><circle cx="18" cy="6" r="2.4"></circle><circle cx="18" cy="18" r="2.4"></circle><path d="M8.2 11l7.6-4M8.2 13l7.6 4"></path></svg>{{ L.shareBtn }}</button>
       <span class="ms-toolbar-sep"></span>
       <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg></button>
       <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }} · ," onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
@@ -243,7 +244,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   </div>
 
   <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" role="status" style="flex:none;padding:8px 16px;background:#fff5d9;border-bottom:1px solid #e7c75f;text-align:center;font-size:13px;font-weight:700;color:#5b4300">{{ L.readOnlyMsg }}</div>
+    <div data-noprint="" role="status" class="ms-readonly-bar"><span>{{ L.readOnlyMsg }}</span><sc-if value="{{ canUnlockEdit }}" hint-placeholder-val="{{ false }}"><button type="button" class="ms-readonly-edit" onClick="{{ openEditGate }}">{{ L.unlockEdit }}</button></sc-if></div>
   </sc-if>
 
   <div style="flex:1;display:flex;min-height:0">
@@ -888,6 +889,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.57', agent: 'Claude Code', title: '공유 통합 — 권한·비밀번호·편집 전환', items: ['[내보내기]의 링크 생성과 공유를 하나의 [공유] 버튼과 모달로 통합(내보내기 메뉴에서 분리)', '권한 선택: 보기만 가능(기본) / 함께 편집 — 함께 편집은 링크만 있으면 누구나 편집하고 2초 동기화로 마지막 수정이 항상 최신 유지', '열람 비밀번호(기본 없음, 4자 이상, 설정 화면에서는 그대로 표시)와 보기 링크의 편집 전환 비밀번호를 따로 설정', '받는 사람: 비밀번호 없는 링크는 바로 열리고, 있으면 입력 창, 틀리면 거절 — 보기 화면의 [편집 모드 전환]에서 편집 비밀번호를 입력하면 편집 가능', '⌘/Ctrl+L: 기본값(보기만 가능, 비밀번호 없음)으로 링크를 즉시 만들고 복사', '서버: 열람·편집 접근 규칙을 한 함수(shareAccess)로 통일, 틀린 비밀번호 시도 횟수 제한(시간당 8회), 타이밍 안전 비교, 접속 코드 방은 공유 링크로 열리지 않음', '기능명의 [ ] 앞 띄어쓰기: 파일 저장 [JSON], 이미지 저장 [PNG]', 'DB 변경: edit_password_hash 컬럼 추가(마이그레이션 필요)'] },
     { v: 'v9.56', agent: 'Codex', title: '다중 선택·간결한 날짜 표시·보기 링크 생성', items: ['보기 > 일자 표시를 MM.DD로 통일하고 메모 속성에 날짜 미표기 옵션 추가 — 저장·가져오기·내보내기에 유지', '참고 항목 시작점에 마우스 조절 핸들 추가 — 숫자·일자 입력 및 Ctrl 하루 단위 조정과 함께 사용', '⌘ 클릭으로 개별 선택·해제, Shift 클릭으로 범위 선택, 빈 영역 드래그로 사각형 선택 및 추가 선택 제공', '선택한 항목의 방향키·마우스 이동, 삭제·복사·잘라내기·붙여넣기·복제 및 실행 취소 지원 — 함께 복사한 메모 연결 관계 유지', '내보내기 > 링크 생성으로 현재 일정의 보기 전용 사본을 서버에 저장하고 링크 복사·열기 제공 — 링크에서 자동 접속, 이후 변경은 새 링크 생성 시 반영'] },
     { v: 'v9.55', agent: 'Codex', title: '하루 단위 정밀 드래그·날짜 기준선·색상 팔레트 확장', items: ['S 단축키를 눈금 맞춤 켜기·끄기로 변경, 설정창 보기·닫기는 쉼표로 유지하고 사용법·툴팁에 반영', 'Ctrl을 누른 드래그는 눈금 맞춤과 관계없이 마우스 24px 이동당 하루씩 정밀 조정 — 배율에 영향받지 않고 시작·종료 조절과 전체 이동에 적용', '항목 전체 이동 시 시작·종료 날짜 기준선 표시, Ctrl 이동은 두 날짜를 같은 일수만큼 이동하며 드래그 중 Ctrl 전환 시 위치 튐 방지', '시작·종료 입력을 기본 일자 모드로 변경하고 숫자·일자 토글에 조정 단위 설명 추가', '색상 확장·접기 버튼 추가 — 기존 9개 색상의 색조·채도를 유지하며 어두운 톤 2개와 밝은 톤 2개씩 제공'] },
     { v: 'v9.54', agent: 'Codex', title: '행 선택 해제·제목 기반 파일명·날짜 입력 전환', items: ['외부 빈 영역 클릭 시 행·항목 선택 해제, 초기 화면에서도 특정 행을 강제로 선택하지 않음', '파일 저장·이미지·PPT 내보내기의 기본 파일명을 일정 제목으로 지정, 사용할 수 없는 문자는 밑줄로 바꾸고 빈 제목은 mapstone으로 저장', '항목 속성의 시작·종료에 숫자·일자 입력 전환 토글 추가, 일자 모드 화살표는 하루씩 조정', '월말·윤년·연말에도 달력 날짜 기준으로 이동하며 기간은 최소 하루 유지, 실행 취소와 보기 전용 보호 적용'] },
@@ -954,7 +956,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.56';
+  APP_VER = 'v9.57';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -970,9 +972,9 @@ class Component extends DCLogic {
       editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
-      exp: '내보내기', png: '이미지 저장[PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
-      importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장[JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '이 메모 날짜 숨기기', createLink: '링크 생성', timeModeHint: '일자: 하루씩 · 숫자: 개월 단위로 조정', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', timeMode: '시작·종료 입력 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
+      importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장 [JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
+      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '이 메모 날짜 숨기기', timeModeHint: '일자: 하루씩 · 숫자: 개월 단위로 조정', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', timeMode: '시작·종료 입력 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
@@ -1001,7 +1003,7 @@ class Component extends DCLogic {
       helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
-      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '모든 항목(일정·참고·공통·마일스톤·메모·포스트잇)과 구분 행이 삭제되고, 빈 행 하나만 남습니다.\n타임라인 설정과 버전 히스토리는 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', titlePrompt: '일정 제목을 입력해주세요', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '전체보기 종료', rowNamePh: '세션 이름을 입력해주세요', importShort: '이미지 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipMemo: '메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
+      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '모든 항목(일정·참고·공통·마일스톤·메모·포스트잇)과 구분 행이 삭제되고, 빈 행 하나만 남습니다.\n타임라인 설정과 버전 히스토리는 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '전체보기 종료', rowNamePh: '세션 이름을 입력해주세요', importShort: '이미지 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipMemo: '메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
       weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考', band: '共通', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
@@ -1009,9 +1011,9 @@ class Component extends DCLogic {
       editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
-      exp: '書き出す', png: '画像保存[PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
-      importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存[JSON]', panelF: '設定パネル表示', helpTip: 'ショートカットと操作方法を見る',
-      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: 'このメモの日付を非表示', createLink: 'リンク作成', timeModeHint: '日付：1日ずつ · 数値：月単位で調整', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', timeMode: '開始・終了の入力方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
+      exp: '書き出す', png: '画像保存 [PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
+      importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存 [JSON]', panelF: '設定パネル表示', helpTip: 'ショートカットと操作方法を見る',
+      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: 'このメモの日付を非表示', timeModeHint: '日付：1日ずつ · 数値：月単位で調整', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', timeMode: '開始・終了の入力方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
       tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
@@ -1040,7 +1042,7 @@ class Component extends DCLogic {
       helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除', rowAdd: '下に行を追加',
       rowHint: '行の境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
-      clearAll: '全て削除', clearTitle: '全て削除', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべての項目（スケジュール・参考・共通・マイルストーン・メモ・付箋）と区分行が削除され、空の行が1つだけ残ります。\nタイムライン設定とバージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', titlePrompt: 'スケジュールのタイトルを入力してください', compareBtn: 'バージョン比較', labelSmaller: '文字を小さく', labelBigger: '文字を大きく', weekdays: '日月火水木金土', credit: '制作 : 커넥티드카 사업팀 김창목', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipMemo: 'メモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
+      clearAll: '全て削除', clearTitle: '全て削除', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべての項目（スケジュール・参考・共通・マイルストーン・メモ・付箋）と区分行が削除され、空の行が1つだけ残ります。\nタイムライン設定とバージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', titlePrompt: 'スケジュールのタイトルを入力してください', unlockEdit: '編集モードに切り替え', compareBtn: 'バージョン比較', labelSmaller: '文字を小さく', labelBigger: '文字を大きく', weekdays: '日月火水木金土', credit: '制作 : 커넥티드카 사업팀 김창목', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipMemo: 'メモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
     }
   };
 
@@ -1280,8 +1282,8 @@ class Component extends DCLogic {
   toggleFocus = () => MapstoneUI.toggleFocus(this);
   fitWidth = () => MapstoneUI.fitWidth(this);
   openImport = () => MapstoneUI.open(this, 'import');
-  openViewLink = () => MapstoneUI.open(this,'link');
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
+  openEditGate = () => MapstoneUI.open(this, 'edit-gate');
   openCompare = () => MapstoneUI.open(this, 'compare');
   onReviewPick = (e) => this.focusItem(e.currentTarget.dataset.id);
   closeReview = () => this.setState({ reviewOpen: false });
@@ -2940,7 +2942,7 @@ class Component extends DCLogic {
       nowISO:this.shortDate(st.now),
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
       readOnly: !!st.readOnly,
-      focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openViewLink:this.openViewLink, openWorkspace:this.openWorkspace, exportJson:this.exportJson, openFile:this.openFile,
+      focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, openEditGate:this.openEditGate, canUnlockEdit: !!st.canUnlockEdit && !!st.readOnly, exportJson:this.exportJson, openFile:this.openFile,
       timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
       imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,

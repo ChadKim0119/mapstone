@@ -239,6 +239,20 @@
     doc.cmpSummary = cmp.summary;
     return validate(doc);
   }
+  /* 공유 접근 규칙 (서버와 테스트가 같은 함수를 쓴다)
+     room: {permission:'view'|'edit', viewHash:null|hex, editHash:null|hex}
+     given: {viewHash, editHash} hashes of what the client sent ('' hashes are passed as null)
+     - 열람 비밀번호가 없으면 링크만으로 열람, 있으면 일치해야 열람
+     - permission 'edit'(함께 편집): 열람할 수 있으면 누구나 편집
+     - permission 'view'(보기만): 편집 비밀번호가 설정돼 있고 일치할 때만 편집, 설정이 없으면 편집 불가 */
+  function shareAccess(room, given, same) {
+    same = same || ((a, b) => a === b);
+    const has = (h) => typeof h === 'string' && h.length > 0;
+    const out = {locked: has(room.viewHash), canUnlockEdit: room.permission === 'view' && has(room.editHash)};
+    if (out.locked && !(has(given.viewHash) && same(room.viewHash, given.viewHash))) return {...out, allowed: false, canEdit: false, reason: 'view-password'};
+    const editOk = has(room.editHash) && has(given.editHash) && same(room.editHash, given.editHash);
+    return {...out, allowed: true, canEdit: room.permission === 'edit' || editOk, reason: ''};
+  }
   function documentOf(s) { const d={schemaVersion:1}; for (const k of keys) d[k]=clone(s[k] ?? (['rows','items','notes','versions'].includes(k)?[]:null)); return d; }
   // Parses only data literals, never evaluates JavaScript (no functions, calls, getters, imports).
   function serializeFile(data) { return JSON.stringify({format:'mapstone',formatVersion:1,document:validate(data)}); }
@@ -286,5 +300,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,compareDocuments,comparisonDocument,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });

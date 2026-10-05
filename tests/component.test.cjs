@@ -85,8 +85,7 @@ test('Share columns exist in the checked-in schema',()=>{const schema=fs.readFil
 test('Text editing creates one undo step per focus session',()=>{const h=make(),it=h.app.state.items[0],before=it.label,focus={currentTarget:{select(){}}};h.app.state.sel=it.id;h.app.beginTextEdit(focus);h.app.onLabelInput({currentTarget:{dataset:{id:it.id},value:'첫 변경'}});h.app.onLabelInput({currentTarget:{dataset:{id:it.id},value:'최종 변경'}});assert.equal(h.app.state.hist.length,1);h.app.undo();assert.equal(h.app.state.items.find(i=>i.id===it.id).label,before);});
 test('View-only mode blocks document mutations immediately',()=>{const h=make(),before=h.app.snapshot();h.app.state.readOnly=true;h.app.onTitle({currentTarget:{value:'바뀌면 안 됨'}});h.app.addAt('chev');assert.equal(h.app.snapshot(),before);assert.match(h.app.state.saved,/보기 전용/);});
 test('Timeline items expose keyboard selection and editing',()=>{const h=make(),it=h.app.state.items[0],event=key=>{const currentTarget={dataset:{id:it.id}};return {key,target:currentTarget,currentTarget,preventDefault(){this.prevented=true;}};};h.app.onItemKey(event(' '));assert.equal(h.app.state.sel,it.id);h.app.onItemKey(event('Enter'));assert.equal(h.app.state.editing,it.id);assert.match(html,/role="button" tabindex="0" aria-label="\{\{ b\.label \}\}" onKeyDown="\{\{ onItemKey \}\}"/);});
-test('Explicit share links win over stored room sessions',()=>{const ui=fs.readFileSync('mapstone-ui.js','utf8');assert.match(ui,/if\(shareId\)setTimeout\(\(\)=>open\(app,'workspace'\),100\);else if\(code\)/);assert.match(ui,/readOnly:this\.readOnly/);});
-test('Codex revisions and durable anonymous rate limit are checked in',()=>{const api=fs.readFileSync('supabase/functions/mapstone-api/index.ts','utf8'),schema=fs.readFileSync('supabase/schema.sql','utf8'),migration=fs.readFileSync('supabase/migrations/20261003160230_harden_share_and_rate_limit.sql','utf8'),built=fs.readFileSync('index.html','utf8').slice(0,500);assert.match(html,/APP_VER = 'v9\.56'/);assert.match(html,/v: 'v9\.35', agent: 'Codex', title: '행간 높이 조절 경계 개선'/);assert.match(built,/<title>MapStone · 일정 Maker<\/title>/);for(const sql of [schema,migration]){assert.match(sql,/guest_password_hash text/);assert.match(sql,/mapstone_take_rate_limit/);}assert.match(api,/await allowAnonymous\(req\)/);assert.doesNotMatch(api,/new Map<string,number\[\]>/);});
+test('Codex revisions and durable anonymous rate limit are checked in',()=>{const api=fs.readFileSync('supabase/functions/mapstone-api/index.ts','utf8'),schema=fs.readFileSync('supabase/schema.sql','utf8'),migration=fs.readFileSync('supabase/migrations/20261003160230_harden_share_and_rate_limit.sql','utf8'),built=fs.readFileSync('index.html','utf8').slice(0,500);assert.match(html,/APP_VER = 'v9.57'/);assert.match(html,/v: 'v9\.35', agent: 'Codex', title: '행간 높이 조절 경계 개선'/);assert.match(built,/<title>MapStone · 일정 Maker<\/title>/);for(const sql of [schema,migration]){assert.match(sql,/guest_password_hash text/);assert.match(sql,/mapstone_take_rate_limit/);}assert.match(api,/await allowAnonymous\(req\)/);assert.doesNotMatch(api,/new Map<string,number\[\]>/);});
 test('Toolbar is one row without the NOW shortcut',()=>{assert.equal((html.match(/class="ms-toolbar-row"/g)||[]).length,1);assert.match(html,/L\.viewG/);assert.match(html,/L\.screenG/);assert.match(html,/class="ms-tool-menu"/);assert.equal((html.match(/onClick="\{\{ nowToday \}\}"/g)||[]).length,0);});
 test('Toolbar menus close outside, controls follow the annotated order, and week counts stay hidden',()=>{const h=make(),open=new Set(),a={removeAttribute(){open.delete(a);}},b={removeAttribute(){open.delete(b);}};open.add(a);open.add(b);h.app.root={querySelectorAll:()=>[...open]};h.app.closeToolMenus({target:{closest:()=>b}});assert.deepEqual([...open],[b]);h.app.closeToolMenus({target:{closest:()=>null}});assert.equal(open.size,0);assert.ok(html.indexOf('toggleMagnet')<html.indexOf('togglePanel'));assert.ok(html.indexOf('openClear }}')<html.indexOf('togglePanel'));assert.ok(html.indexOf('toggleMagnet')<html.indexOf('openImport }}'));assert.doesNotMatch(html,/\{\{ c\.weeks \}\}/);assert.equal((html.match(/\{\{ L\.magnetF \}\} \{\{ magnetState \}\}/g)||[]).length,0);});
 test('Issue connectors stay continuous over work and reference ranges',()=>{const h=make(),base={row:'gs',span:1,variant:'solid',memo:'',color:'#e22a21'};h.app.state.items=[{...base,id:'work',kind:'chev',lane:0,s:0,e:2,label:'작업'},{...base,id:'reference',kind:'plain',lane:1,s:0,e:2,label:'참고 구간'},{...base,id:'work-issue',kind:'flag',lane:0,s:1,e:1,label:'작업 이슈'},{...base,id:'reference-issue',kind:'flag',lane:1,s:1,e:1,label:'참고 이슈'}];const layout=h.app.rowLayout().gs;assert.equal(layout.modes['work-issue'].mode,'strip');assert.equal(layout.modes['reference-issue'].mode,'strip');const flags=h.app.renderVals().rowsView.find(r=>r.id==='gs').flags;for(const f of flags){assert.ok(['work','reference'].includes(f.targetId));assert.equal(f.top,f.targetId==='work'?'27px':'71px');assert.equal(parseFloat(f.connH),parseFloat(f.stripTop)-11);}assert.match(html,/stroke="\{\{ f\.color \}\}" stroke-width="1\.5"/);});
@@ -101,7 +100,7 @@ test('Week labels never overlap and animation can be switched off without delayi
 
 test('Week labels drop from the tail of each month and mark the cut with an ellipsis',()=>{const h=make();h.app.state.cfg.showWeek=true;h.app.state.cfg.weekMode='actual';h.app.state.cfg.weekPx=11;const labels=h.app.renderVals().subdivisions.map(q=>q.label);assert.ok(labels.some(l=>l.endsWith('…')),'expected a truncated label');assert.ok(labels.includes('1w')||labels.includes('1w…'));for(const l of labels.filter(l=>l.endsWith('…')))assert.match(l,/^\d+w…$/);h.app.state.cfg.weekPx=200;assert.ok(!h.app.renderVals().subdivisions.some(q=>q.label.endsWith('…')));h.app.toggleDurUnit();assert.equal(h.app.state.cfg.durUnit,'MM');h.app.toggleDurUnit();assert.equal(h.app.state.cfg.durUnit,'MD');});
 
-test('Toolbar matches the one-row layout: extras under 더보기, share under 내보내기, accented analysis, rich help',()=>{const more=html.split('<summary>{{ L.moreG }}')[1].split('</details>')[0];for(const k of ['addPlain','addBand','addSticky'])assert.match(more,new RegExp(k));const exp=html.split('<summary>{{ L.exp }}')[1].split('</details>')[0];assert.match(exp,/openWorkspace/);assert.match(html,/ms-accent" onClick="\{\{ openImport \}\}"/);assert.match(html,/role="switch" aria-checked="\{\{ interactChecked \}\}"/);const ui=fs.readFileSync('mapstone-ui.js','utf8');assert.match(ui,/page==='help'\?'사용법'/);const help=fs.readFileSync('mapstone-help.js','utf8');for(const k of ['toolbar','analyze','edit','now','rows','props','settings'])assert.match(help,new RegExp(k+":'data:image/jpeg;base64,"));});
+test('Toolbar matches the one-row layout: extras under 더보기, share under 내보내기, accented analysis, rich help',()=>{const more=html.split('<summary>{{ L.moreG }}')[1].split('</details>')[0];for(const k of ['addPlain','addBand','addSticky'])assert.match(more,new RegExp(k));const exp=html.split('<summary>{{ L.exp }}')[1].split('</details>')[0];assert.doesNotMatch(exp,/openWorkspace|openViewLink/,'공유 is its own button, not an export entry');assert.match(html,/onClick="\{\{ openWorkspace \}\}" aria-label="\{\{ L\.shareBtn \}\} \(⌘\/Ctrl\+L\)"/);assert.doesNotMatch(html,/createLink/);assert.match(html,/ms-accent" onClick="\{\{ openImport \}\}"/);assert.match(html,/role="switch" aria-checked="\{\{ interactChecked \}\}"/);const ui=fs.readFileSync('mapstone-ui.js','utf8');assert.match(ui,/page==='help'\?'사용법'/);const help=fs.readFileSync('mapstone-help.js','utf8');for(const k of ['toolbar','analyze','edit','now','rows','props','settings'])assert.match(help,new RegExp(k+":'data:image/jpeg;base64,"));});
 
 test('Clear all leaves one untitled row, bands start inside their row, and bands move/stretch across rows',()=>{const h=make();h.app.doClearAll();assert.equal(h.app.state.items.length,0);assert.equal(h.app.state.rows.length,1);assert.equal(h.app.state.rows[0].name,'');assert.equal(h.app.state.title,'일정 제목을 입력해주세요');
   const h2=make();const rows=h2.app.state.rows;h2.app.state.focusRow=rows[1].id;h2.app.addBand();const band=h2.app.state.items.find(i=>i.id===h2.app.state.sel);assert.equal(band.rowFrom,rows[1].id);assert.equal(band.rowTo,rows[1].id);
@@ -263,28 +262,69 @@ test('All displayed element dates use MM.DD and memo date hiding survives save, 
   const bad=h.app.dataDocument();bad.items.find(i=>i.id===flag.id).hideDate='yes';assert.throws(()=>C.validate(bad));
 });
 
-test('View link saves a snapshot with a distinct viewer secret, then loads it read-only with preserved dates and memo options',async()=>{
-  const creator=make(),viewer=make(),source=fs.readFileSync('mapstone-ui.js','utf8').replace('window.MapstoneUI={','window.MapstoneUI={Sync,'),memory=new Map(),calls=[];
-  const id='11111111-1111-4111-8111-111111111111',owner='owner-code-for-the-test-only';let stored,password;
-  creator.app.state.title='링크 검증 일정';creator.app.state.items.find(i=>i.kind==='flag').hideDate=true;
-  const ctx={MapstoneCore:C,window:{},URL,URLSearchParams,Uint8Array,crypto:require('node:crypto').webcrypto,AbortSignal,location:{href:'https://schedule.example/index.html?old=1#old'},sessionStorage:{setItem:(k,v)=>memory.set(k,v)},localStorage:{setItem:(k,v)=>memory.set(k,v)},clearTimeout(){},setInterval:()=>1,clearInterval(){},fetch:async(url,opts)=>{
-    calls.push({url,...opts});
-    if(opts.method==='POST'){const body=JSON.parse(opts.body);assert.equal(body.permission,'view');stored=body.document;password=body.password;return {ok:true,status:201,json:async()=>({id,code:owner,permission:'view'})};}
-    assert.equal(opts.headers['X-Mapstone-Password'],password);return {ok:true,status:200,json:async()=>({id,revision:1,document:stored,permission:'view'})};
-  }};
-  vm.createContext(ctx);vm.runInContext(source,ctx);creator.app.sync={endpoint:'https://api.example/mapstone-api'};
-  const link=new URL(await ctx.window.MapstoneUI.createViewLink(creator.app));assert.equal(link.searchParams.get('share'),id);assert.equal(link.searchParams.get('old'),null);assert.equal(link.search.includes(password),false);assert.equal(link.href.includes(owner),false);assert.equal(new URLSearchParams(link.hash.slice(1)).get('viewKey'),password);assert.equal(password.length,48);assert.equal(memory.get('mapstone.owner.'+id),owner);
-  creator.app.state.title='作業中';assert.equal(stored.title,'링크 검증 일정');
-  const sync=new ctx.window.MapstoneUI.Sync(viewer.app);viewer.app.sync=sync;await sync.joinShare(id,password);assert.equal(viewer.app.state.readOnly,true);assert.equal(viewer.app.state.title,stored.title);assert.deepEqual(C.validate(viewer.app.dataDocument()),C.validate(stored));
-  viewer.app.selectItems([viewer.app.state.items[0].id]);const before=viewer.app.snapshot();viewer.app.deleteSel();viewer.app.onStep({currentTarget:{dataset:{field:'e',delta:1}}});assert.equal(viewer.app.snapshot(),before);sync.dispose();
-});
-test('View link surfaces server errors without creating a success URL',async()=>{
-  const h=make(),ctx={MapstoneCore:C,window:{},crypto:require('node:crypto').webcrypto,Uint8Array,AbortSignal,fetch:async()=>({ok:false,status:503,json:async()=>({error:'저장 서버 연결 실패'})})};h.app.sync={endpoint:'https://api.example'};vm.createContext(ctx);vm.runInContext(fs.readFileSync('mapstone-ui.js','utf8'),ctx);await assert.rejects(ctx.window.MapstoneUI.createViewLink(h.app),/저장 서버 연결 실패/);
-});
-
 test('Reference start handle adjusts only the start by calendar days and supports undo',()=>{
   const h=make(),it={...h.app.state.items.find(i=>i.kind==='chev'),kind:'plain',s:1,e:3};h.app.state.items=[it];const before=h.app.snapshot();
   h.app.onItemDown({button:0,clientX:0,clientY:0,currentTarget:{dataset:{id:it.id,mode:'l'}},target:{tagName:'DIV'},stopPropagation(){}});
   h.app.onMove({clientX:24,clientY:0,ctrlKey:true});assert.equal(h.app.isoOf(h.app.state.items[0].s),'2026-02-02');assert.equal(h.app.state.items[0].e,3);assert.equal(h.app.renderVals().dragGuides[0].date,'2026-02-02');
   h.app.stopDrag();assert.equal(h.app.state.hist.length,1);h.app.undo();assert.equal(h.app.snapshot(),before);
+});
+
+test('공유 접근 규칙: every permission × password combination is decided in one place',()=>{
+  const R=(permission,viewHash,editHash)=>({permission,viewHash,editHash}),G=(viewHash,editHash)=>({viewHash:viewHash||null,editHash:editHash||null});
+  const rule=C.shareAccess;
+  // 보기만 + 비밀번호 없음: 링크만으로 열람, 편집 불가, 전환도 불가
+  let a=rule(R('view',null,null),G());assert.deepEqual([a.allowed,a.canEdit,a.locked,a.canUnlockEdit],[true,false,false,false]);
+  // 보기만 + 열람 비밀번호: 없거나 틀리면 거절, 맞으면 열람만
+  assert.equal(rule(R('view','vv',null),G()).allowed,false);assert.equal(rule(R('view','vv',null),G('xx')).allowed,false);assert.equal(rule(R('view','vv',null),G()).reason,'view-password');
+  a=rule(R('view','vv',null),G('vv'));assert.deepEqual([a.allowed,a.canEdit,a.locked],[true,false,true]);
+  // 보기만 + 편집 전환 비밀번호: 맞아야만 편집, 틀리거나 비면 보기만
+  a=rule(R('view',null,'ee'),G());assert.deepEqual([a.allowed,a.canEdit,a.canUnlockEdit],[true,false,true]);
+  assert.equal(rule(R('view',null,'ee'),G(null,'zz')).canEdit,false);assert.equal(rule(R('view',null,'ee'),G(null,'ee')).canEdit,true);
+  // 열람 비밀번호와 편집 비밀번호는 서로 대신할 수 없다
+  assert.equal(rule(R('view','vv','ee'),G('ee')).allowed,false,'the edit password does not open a locked view');assert.equal(rule(R('view','vv','ee'),G('vv','vv')).canEdit,false,'the view password does not unlock editing');
+  a=rule(R('view','vv','ee'),G('vv','ee'));assert.deepEqual([a.allowed,a.canEdit],[true,true]);
+  // 함께 편집: 비밀번호가 없으면 링크만으로 누구나 편집, 열람 비밀번호가 있으면 그것만 맞으면 편집
+  a=rule(R('edit',null,null),G());assert.deepEqual([a.allowed,a.canEdit,a.canUnlockEdit],[true,true,false]);
+  assert.equal(rule(R('edit','vv',null),G()).allowed,false);assert.equal(rule(R('edit','vv',null),G('vv')).canEdit,true);
+  // 편집 전환 비밀번호는 보기만 링크에서만 의미가 있다
+  assert.equal(rule(R('edit',null,'ee'),G()).canUnlockEdit,false);
+  // 빈 문자열 해시를 '맞는 비밀번호'로 취급하지 않는다 (비밀번호 없음 ≠ 빈 비밀번호가 일치)
+  assert.equal(rule(R('view','vv',null),G('')).allowed,false);assert.equal(rule(R('view',null,'ee'),G(null,'')).canEdit,false);
+});
+test('공유 서버: 접근 규칙 공유, 틀린 비밀번호 횟수 제한, 타이밍 안전 비교, 코드 방은 링크로 열리지 않는다',()=>{
+  const api=fs.readFileSync('supabase/functions/mapstone-api/index.ts','utf8');
+  assert.match(api,/Core\.shareAccess\(/,'server uses the shared rule');assert.match(api,/guest_permission=not\.is\.null/,'room-code rooms are never reachable through a share link');
+  assert.match(api,/tooManyWrong\(req,path\[1\],'view'\)/);assert.match(api,/tooManyWrong\(req,path\[1\],'edit'\)/);assert.match(api,/WRONG_PASSWORD_PER_HOUR=8/);assert.match(api,/d\|=a\.charCodeAt\(i\)\^b\.charCodeAt\(i\)/,'constant-time comparison');
+  assert.match(api,/function pwOk|const pwOk/);assert.match(api,/v\.length>=4&&v\.length<=128/,'4+ characters, or empty for no password');
+  assert.match(api,/x-mapstone-edit-password/);const sql=fs.readFileSync('supabase/migrations/20261006090000_share_open_and_edit_password.sql','utf8');assert.match(sql,/edit_password_hash/);assert.match(sql,/length\(edit_password_hash\)=64/);assert.match(fs.readFileSync('supabase/schema.sql','utf8'),/edit_password_hash/);
+  // the same file must be what the server actually bundles
+  assert.equal(fs.readFileSync('mapstone-core.js','utf8'),fs.readFileSync('supabase/functions/mapstone-api/mapstone-core.js','utf8'));
+});
+test('공유 링크 만들기: 일정 스냅샷 저장, 비밀번호 · 관리자 코드는 링크에 넣지 않고 서버 오류는 성공 URL을 만들지 않는다',async()=>{
+  const creator=make(),memory=new Map(),calls=[],source=fs.readFileSync('mapstone-ui.js','utf8');
+  const id='11111111-1111-4111-8111-111111111111',owner='owner-code-for-the-test-only';
+  creator.app.state.title='링크 검증 일정';creator.app.state.items.find(i=>i.kind==='flag').hideDate=true;
+  const mkctx=(fetch)=>{const ctx={MapstoneCore:C,window:{},URL,URLSearchParams,Uint8Array,crypto:require('node:crypto').webcrypto,AbortSignal,location:{href:'https://schedule.example/index.html?old=1#old'},sessionStorage:{setItem:(k,v)=>memory.set(k,v)},localStorage:{setItem:(k,v)=>memory.set(k,v)},clearTimeout(){},setInterval:()=>1,clearInterval(){},fetch};vm.createContext(ctx);vm.runInContext(source,ctx);return ctx;};
+  let posted;const ctx=mkctx(async(url,opts)=>{calls.push({url,...opts});posted=JSON.parse(opts.body);return {ok:true,status:201,json:async()=>({id,code:owner,permission:posted.permission})};});
+  creator.app.sync={endpoint:'https://api.example/mapstone-api'};
+  // default: 보기만 가능, 비밀번호 없음
+  let made=await ctx.window.MapstoneUI.createShare(creator.app,{permission:'view',password:'',editPassword:''});
+  assert.equal(posted.permission,'view');assert.equal(posted.password,'');assert.equal(posted.editPassword,'');assert.equal(posted.document.title,'링크 검증 일정');assert.equal(posted.document.items.find(i=>i.kind==='flag').hideDate,true,'date/memo options survive the snapshot');
+  const link=new URL(made.link);assert.equal(link.searchParams.get('share'),id);assert.equal(link.searchParams.get('old'),null,'other query params are dropped');assert.equal(link.hash,'');assert.equal(made.link.includes(owner),false);assert.equal(memory.get('mapstone.owner.'+id),owner,'owner code stays in this browser session only');
+  // passwords travel to the server but never into the link
+  made=await ctx.window.MapstoneUI.createShare(creator.app,{permission:'view',password:'open1234',editPassword:'edit5678'});
+  assert.equal(posted.password,'open1234');assert.equal(posted.editPassword,'edit5678');assert.equal(made.link.includes('open1234')||made.link.includes('edit5678'),false);
+  // 함께 편집: an edit password makes no sense, so it is not sent
+  await ctx.window.MapstoneUI.createShare(creator.app,{permission:'edit',password:'',editPassword:'ignored'});assert.equal(posted.permission,'edit');assert.equal(posted.editPassword,'');
+  // server errors never produce a link
+  const bad=mkctx(async()=>({ok:false,status:503,json:async()=>({error:'저장 서버 연결 실패'})}));bad.window&&0;await assert.rejects(bad.window.MapstoneUI.createShare(creator.app,{permission:'view',password:'',editPassword:''}),/저장 서버 연결 실패/);
+});
+test('공유 화면: 단일 공유 메뉴, 권한 기본값, 4자 이상 비밀번호, ⌘L, 보기 화면의 편집 전환',()=>{
+  const ui=fs.readFileSync('mapstone-ui.js','utf8');
+  assert.match(ui,/permission:'view',usePw:false,useEditPw:false/,'default: 보기만 가능, no passwords');assert.match(ui,/const PW_MIN=4/);assert.match(ui,/\['view','보기만 가능'/);assert.match(ui,/\['edit','함께 편집'/);
+  assert.match(ui,/type:'text',placeholder:PW_MIN\+'자 이상'/,'passwords are visible in the share dialog');
+  assert.match(ui,/e\.code!=='KeyL'/);assert.match(ui,/open\(app,'share-quick'\)/);assert.match(ui,/make\(true\)/,'quick link');assert.match(ui,/const o=quick\?\{permission:'view',password:'',editPassword:''\}/,'⌘L always uses the defaults');
+  assert.match(ui,/edit\.row\.hidden=state\.permission==='edit'/,'edit-unlock password only applies to 보기만 가능');
+  assert.match(ui,/async unlockEdit\(editPassword\)/);assert.match(ui,/'\/unlock'/);assert.match(ui,/function editGate/);assert.match(ui,/page==='edit-gate'\?'편집 모드 전환'/);assert.match(ui,/\|\|this\.isShare\)/,'open shares sync without a stored password');
+  assert.match(html,/class="ms-readonly-edit" onClick="\{\{ openEditGate \}\}">\{\{ L\.unlockEdit \}\}/);assert.equal(h2().app.DICT.ko.saveFile,'파일 저장 [JSON]');assert.equal(h2().app.DICT.ko.shareBtn,'공유');function h2(){return make();}
 });

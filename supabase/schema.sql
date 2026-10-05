@@ -12,6 +12,7 @@ create table public.mapstone_rooms (
   code_hash text not null unique check (length(code_hash) = 64),
   guest_password_hash text check (guest_password_hash is null or length(guest_password_hash) = 64),
   guest_permission text check (guest_permission is null or guest_permission in ('view','edit')),
+  edit_password_hash text check (edit_password_hash is null or length(edit_password_hash) = 64),
   title text not null,
   document jsonb not null check (jsonb_typeof(document) = 'object'),
   revision bigint not null default 1 check (revision > 0),

@@ -4,7 +4,7 @@ import './mapstone-core.js';
 const Core = (globalThis as any).MapstoneCore;
 const url = Deno.env.get('SUPABASE_URL')!;
 const secret = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type,x-mapstone-code,x-mapstone-admin,x-mapstone-password', 'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,OPTIONS', 'Cache-Control': 'no-store', 'Vary':'Origin' };
+const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type,x-mapstone-code,x-mapstone-admin,x-mapstone-password,x-mapstone-edit-password', 'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,OPTIONS', 'Cache-Control': 'no-store', 'Vary':'Origin' };
 const hash = async (s: string) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))).map(v=>v.toString(16).padStart(2,'0')).join('');
 const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(24))).map(v=>v.toString(16).padStart(2,'0')).join('');
 const json = (body: unknown, status=200) => new Response(JSON.stringify(body), {status,headers:{...cors,'Content-Type':'application/json'}});
@@ -78,6 +78,13 @@ async function analyze(body:any){
   return Core.fromAnalysis(parsed,new Date().toISOString().slice(0,10));
 }
 const ANON_PER_HOUR=20;
+/* wrong share/edit passwords are counted per (room, client); 4-digit passwords must not be guessable by brute force */
+const WRONG_PASSWORD_PER_HOUR=8;
+const sameHash=(a:string,b:string)=>{if(a.length!==b.length)return false;let d=0;for(let i=0;i<a.length;i++)d|=a.charCodeAt(i)^b.charCodeAt(i);return d===0;};
+async function tooManyWrong(req:Request,roomId:string,kind:string){
+  const ip=(req.headers.get('x-forwarded-for')||req.headers.get('cf-connecting-ip')||'unknown').split(',')[0].trim();
+  return (await db('rpc/mapstone_take_rate_limit','POST',{p_key_hash:await hash(kind+':'+roomId+':'+ip),p_limit:WRONG_PASSWORD_PER_HOUR}))!==true;
+}
 async function allowAnonymous(req:Request){
   const ip=(req.headers.get('x-forwarded-for')||req.headers.get('cf-connecting-ip')||'unknown').split(',')[0].trim();
   return await db('rpc/mapstone_take_rate_limit','POST',{p_key_hash:await hash(ip),p_limit:ANON_PER_HOUR})===true;
@@ -86,27 +93,55 @@ Deno.serve(async (req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   try{
     const u=new URL(req.url),parts=u.pathname.split('/').filter(Boolean);const start=parts.indexOf('mapstone-api');const path=parts.slice(start+1);
+    /* 공유 모델: 열람 비밀번호는 선택(null = 링크만으로 열람). 권한이 'edit'이면 열람 가능한 누구나 저장(함께 편집),
+       'view'이면 별도 편집 비밀번호를 아는 사람만 저장. 비밀번호 검증은 모두 서버에서 한다. */
+    const pwd=(v:unknown)=>String(v??'');
+    const pwOk=(v:string)=>v===''||(v.length>=4&&v.length<=128);
     if(path[0]==='share'&&path.length===1&&req.method==='POST'){
-      const body=await readBody(req),password=String(body.password||'');
-      if(password.length<6||password.length>128)return json({error:'접속 암호는 6~128자로 설정하세요.'},400);
+      const body=await readBody(req),view=pwd(body.password),edit=pwd(body.editPassword);
+      if(!pwOk(view))return json({error:'공유 비밀번호는 4~128자로 설정하거나 비워 두세요.'},400);
+      if(!pwOk(edit))return json({error:'편집 전환 비밀번호는 4~128자로 설정하거나 비워 두세요.'},400);
       if(!['view','edit'].includes(body.permission))return json({error:'공유 권한은 보기 또는 편집이어야 합니다.'},400);
       const document=Core.validate(body.document),code=newCode();
-      const rows=await db('mapstone_rooms','POST',{code_hash:await hash(code),guest_password_hash:await hash(password),guest_permission:body.permission,title:document.title,document});
-      return json({id:rows[0].id,code,permission:body.permission},201);
+      const row:any={code_hash:await hash(code),guest_password_hash:view?await hash(view):null,guest_permission:body.permission,title:document.title,document};
+      if(edit&&body.permission==='view')row.edit_password_hash=await hash(edit);
+      const rows=await db('mapstone_rooms','POST',row);
+      return json({id:rows[0].id,code,permission:body.permission,locked:!!view,canUnlockEdit:!!row.edit_password_hash},201);
     }
     if(path[0]==='share'&&validId(path[1]||'')){
       if(path[2]==='settings'&&req.method==='PATCH'){
-        const code=req.headers.get('X-Mapstone-Code')||'',body=await readBody(req),password=String(body.password||'');
+        const code=req.headers.get('X-Mapstone-Code')||'',body=await readBody(req),view=pwd(body.password),edit=pwd(body.editPassword);
         if(!/^[A-Za-z0-9_-]{24,128}$/.test(code))return json({error:'공유 관리자 코드가 필요합니다.'},401);
         const owners=await db('mapstone_rooms?id=eq.'+path[1]+'&code_hash=eq.'+await hash(code)+'&archived=eq.false');if(!owners.length)return json({error:'공유 관리자 코드가 올바르지 않습니다.'},401);
-        if(password.length<6||password.length>128||!['view','edit'].includes(body.permission))return json({error:'암호와 공유 권한을 확인하세요.'},400);
-        await db('mapstone_rooms?id=eq.'+path[1],'PATCH',{guest_password_hash:await hash(password),guest_permission:body.permission});return json({id:path[1],permission:body.permission});
+        if(!pwOk(view)||!pwOk(edit)||!['view','edit'].includes(body.permission))return json({error:'비밀번호(4자 이상)와 공유 권한을 확인하세요.'},400);
+        const patch:any={guest_password_hash:view?await hash(view):null,guest_permission:body.permission};
+        patch.edit_password_hash=edit&&body.permission==='view'?await hash(edit):null;
+        await db('mapstone_rooms?id=eq.'+path[1],'PATCH',patch);return json({id:path[1],permission:body.permission});
       }
-      const password=req.headers.get('X-Mapstone-Password')||'';
-      const guests=await db('mapstone_rooms?id=eq.'+path[1]+'&guest_password_hash=eq.'+await hash(password)+'&archived=eq.false');
-      const guest=guests[0];if(!guest)return json({error:'접속 암호가 올바르지 않습니다.'},401);
-      if(req.method==='GET'){if(u.searchParams.get('after')===String(guest.revision))return new Response(null,{status:304,headers:cors});return json({...publicRoom(guest),permission:guest.guest_permission});}
-      if(req.method==='PUT'){if(guest.guest_permission!=='edit')return json({error:'보기 전용 공유입니다.'},403);const body=await readBody(req);return await saveRoom(guest,body.document,body.revision);}
+      /* open (no view password) rooms are readable by link alone; locked ones need the matching X-Mapstone-Password */
+      const given=req.headers.get('X-Mapstone-Password')||'',givenEdit=req.headers.get('X-Mapstone-Edit-Password')||'';
+      const rooms=await db('mapstone_rooms?id=eq.'+path[1]+'&guest_permission=not.is.null&archived=eq.false');
+      const guest=rooms[0];
+      if(!guest)return json({error:'공유 링크를 찾을 수 없습니다.'},404);
+      /* one rule for read/write access, shared with the tests (Core.shareAccess) */
+      const access=Core.shareAccess({permission:guest.guest_permission,viewHash:guest.guest_password_hash,editHash:guest.edit_password_hash},{viewHash:given?await hash(given):null,editHash:givenEdit?await hash(givenEdit):null},sameHash);
+      if(!access.allowed){
+        if(given!==''&&await tooManyWrong(req,path[1],'view'))return json({error:'암호를 여러 번 틀렸습니다. 1시간 뒤 다시 시도하세요.',locked:true},429);
+        return json({error:'접속 암호가 올바르지 않습니다.',locked:true},401);
+      }
+      const canEdit=access.canEdit;
+      const info={permission:guest.guest_permission,locked:access.locked,canUnlockEdit:access.canUnlockEdit};
+      if(path[2]==='unlock'&&req.method==='POST'){
+        if(!info.canUnlockEdit)return json({error:'이 링크는 편집 모드로 전환할 수 없습니다.'},403);
+        const body=await readBody(req),tried=pwd(body.editPassword);
+        if(!guest.edit_password_hash||!sameHash(guest.edit_password_hash,await hash(tried))){
+          if(await tooManyWrong(req,path[1],'edit'))return json({error:'편집 비밀번호를 여러 번 틀렸습니다. 1시간 뒤 다시 시도하세요.'},429);
+          return json({error:'편집 비밀번호가 올바르지 않습니다.'},401);
+        }
+        return json({ok:true});
+      }
+      if(req.method==='GET'){if(u.searchParams.get('after')===String(guest.revision))return new Response(null,{status:304,headers:cors});return json({...publicRoom(guest),...info,permission:canEdit?'edit':'view',readOnlyBase:guest.guest_permission});}
+      if(req.method==='PUT'){if(!canEdit)return json({error:'보기 전용 공유입니다. 편집 모드로 전환하려면 편집 비밀번호가 필요합니다.'},403);const body=await readBody(req);return await saveRoom(guest,body.document,body.revision);}
       return json({error:'지원하지 않는 공유 요청입니다.'},405);
     }
     const adminToken=req.headers.get('X-Mapstone-Admin')||'';
