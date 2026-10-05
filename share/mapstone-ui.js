@@ -228,7 +228,7 @@
       const ul=el('ul');steps.forEach(t=>ul.append(el('li',t)));sec.append(ul);main.append(sec);});
     const k=el('section',null,{id:'ms-help-keys'});k.append(el('h3','단축키'));const tb=el('table');KEYS.forEach(([key,what])=>{if(key==='__'){const tr=el('tr',null,{className:'ms-help-kgroup'});const th=el('td',what);th.colSpan=2;tr.append(th);tb.append(tr);return;}const tr=el('tr');const td=el('td');key.split(' · ').forEach((x,j)=>{if(j)td.append(' · ');td.append(el('kbd',x));});tr.append(td,el('td',what));tb.append(tr);});k.append(tb);main.append(k);
     const a=el('a','단축키',{href:'#ms-help-keys'});a.addEventListener('click',e=>{e.preventDefault();k.scrollIntoView({behavior:'smooth'});});nav.append(a);
-    const credit=el('div','Mapstone '+(app.APP_VER||'')+'\n'+app.L().credit,{className:'ms-help-credit'});nav.append(credit);
+    const credit=el('div','MapStone '+(app.APP_VER||'')+'\n'+app.L().credit,{className:'ms-help-credit'});nav.append(credit);
     body.append(nav,main);
     const links=[...nav.querySelectorAll('a')],secs=[...main.querySelectorAll('section')];
     const spy=()=>{const top=main.getBoundingClientRect().top+90;let k=0;secs.forEach((x,i)=>{if(x.getBoundingClientRect().top<=top)k=i;});if(main.scrollTop+main.clientHeight>=main.scrollHeight-4)k=secs.length-1;links.forEach((a,i)=>a.classList.toggle('on',i===k));};
