@@ -12,6 +12,9 @@
   function status(app,message){if(app._syncLabel)app._syncLabel.textContent=message;}
   function fitWidth(app){if(!app._board)return;const weeks=Array.from({length:app.state.cfg.months},(_,i)=>app.weeksIn(i)).reduce((a,b)=>a+b,0);const value=Math.max(app.ZMIN||4,Math.min(app.ZMAX||640,(app._board.clientWidth-218)/weeks));app.mutate(d=>{d.cfg.weekPx=value;},false);app._board.scrollLeft=0;}
   function toggleFocus(app){hideTip();const focus=!app.state.focusMode;app.setState({focusMode:focus,sel:null,editing:null});requestAnimationFrame(()=>fitWidth(app));}
+  // 설정창 text areas: start at one line, grow with each line, cap at 5 lines and scroll beyond
+  function grow(t){if(!t||t.tagName!=='TEXTAREA'||!t.closest('[data-properties]'))return;const cs=getComputedStyle(t),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.5,frame=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom)+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth),max=Math.ceil(lh*5+frame);t.style.height='auto';const want=t.scrollHeight+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth);t.style.height=Math.min(Math.max(want,Math.ceil(lh+frame)),max)+'px';t.style.overflowY=want>max?'auto':'hidden';}
+  function growAll(root){(root||document).querySelectorAll('[data-properties] textarea').forEach(grow);}
   function hideTip(){clearTimeout(tipTimer);tip?.remove();tip=null;}
   function toast(app,text){app._toast?.remove();clearTimeout(app._toastTimer);const notice=el('div',text,{className:'ms-focus-hint'});notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');app.root.append(notice);app._toast=notice;app._toastTimer=setTimeout(()=>notice.remove(),2500);}
   let tipTimer=0;
@@ -229,6 +232,7 @@
     // Enter finishes a field (Shift+Enter = new line in text areas); IME composition is left alone. Dialog text areas keep plain Enter for pasted notes.
     const onEnterKey=e=>{if(e.key!=='Enter'||e.isComposing||e.keyCode===229||e.metaKey||e.ctrlKey||e.altKey)return;const t=e.target;if(!t||!t.closest||t.closest('.ms-dialog'))return;if(t.tagName==='TEXTAREA'){if(e.shiftKey)return;e.preventDefault();t.blur();}else if(t.tagName==='INPUT'&&!['checkbox','radio','file','range','button','submit'].includes(t.type)){e.preventDefault();t.blur();}};
     document.addEventListener('keydown',onEnterKey,true);
+    const onGrow=e=>grow(e.target);document.addEventListener('input',onGrow,true);
     const onSubmitKey=e=>{if(e.key!=='Enter'||!(e.metaKey||e.ctrlKey))return;const t=e.target;if(!t||!['INPUT','TEXTAREA','SELECT'].includes(t.tagName))return;e.preventDefault();e.stopPropagation();const scope=t.closest('.ms-dialog, [data-properties]');const fields=scope?[...scope.querySelectorAll('input:not([type=hidden]):not([type=file]):not([type=checkbox]):not([type=radio]):not([type=range]):not([disabled]),textarea:not([disabled]),select:not([disabled])')].filter(f=>f.offsetParent!==null):[];const next=fields[fields.indexOf(t)+1];if(next){next.focus();if(next.select)next.select();}else t.blur();};
     document.addEventListener('keydown',onSubmitKey,true);
     const onKey=e=>{if(modal)return;if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='Escape'&&app.state.focusMode){e.preventDefault();toggleFocus(app);}else if(e.key.toLowerCase()==='f'){e.preventDefault();toggleFocus(app);}};
@@ -237,7 +241,7 @@
     let code=null;try{code=sessionStorage.getItem('mapstone.connection');}catch{}const shareId=new URLSearchParams(location.search).get('share');if(shareId)setTimeout(()=>open(app,'workspace'),100);else if(code)app.sync.join(code).catch(e=>status(app,'재접속 실패 · '+e.message));
     // Public local automation interface, uses the same validator as imports and the server.
     window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision,readOnly:app.sync.readOnly})};
-    return ()=>{app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);document.removeEventListener('keydown',onSubmitKey,true);document.removeEventListener('keydown',onEnterKey,true);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
+    return ()=>{app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);document.removeEventListener('keydown',onSubmitKey,true);document.removeEventListener('keydown',onEnterKey,true);document.removeEventListener('input',onGrow,true);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
   }
-  window.MapstoneUI={attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
+  window.MapstoneUI={growAll,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
 })();

@@ -205,7 +205,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
               <div data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:9;left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
-                  <input value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:150px;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:12px;font-weight:700;outline:none">
+                  <input value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:12px;font-weight:700;outline:none">
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
                   <div style="font-size:12px;font-weight:700;line-height:1.35;text-align:center;letter-spacing:-.01em;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ showElementDates }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
@@ -258,7 +258,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ b.dateLabel }}</span></sc-if>
                       <div style="position:absolute;left:0;top:0;right:0;bottom:0;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);background:{{ b.bg }}"></div>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
-                        <input value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);width:180px;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;z-index:3">
+                        <input value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);min-width:60px;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;z-index:3">
                       </sc-if>
                       <sc-if value="{{ b.inside }}" hint-placeholder-val="{{ true }}">
                         <div style="position:absolute;left:8px;right:20px;top:50%;transform:translateY(-50%);font-size:12.5px;font-weight:600;line-height:1.3;text-align:center;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}</div>
@@ -323,7 +323,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
                       <span data-link-dot="" data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
-                        <input value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:160px;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:12px;font-weight:700;outline:none">
+                        <input value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:12px;font-weight:700;outline:none">
                       </sc-if>
                       <sc-if value="{{ f.connected }}">
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
@@ -626,7 +626,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.durUnitHint }}</span>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-              <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.interact }}</span><span style="font-size:11px;color:var(--color-text-neutral-3)">{{ L.interactTip }}</span></span>
+              <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.interact }}</span><span style="font-size:11px;line-height:1.6;white-space:pre-line;color:var(--color-text-neutral-3)">{{ L.interactTip }}</span></span>
               <button onClick="{{ toggleInteract }}" role="switch" aria-checked="{{ interactChecked }}" aria-label="{{ L.interact }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ interactTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ interactKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
@@ -647,11 +647,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </div>
             <div style="display:flex;flex-direction:column;gap:8px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.overlapF }}</span>
-              <div style="display:flex;flex-direction:column;gap:6px">
-                <button data-overlap="shrink" onClick="{{ setOverlap }}" style="height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ ovShrink.border }};background:{{ ovShrink.bg }};color:{{ ovShrink.fg }}">{{ L.opShrink }}</button>
-                <button data-overlap="moveOther" onClick="{{ setOverlap }}" style="height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ ovMoveOther.border }};background:{{ ovMoveOther.bg }};color:{{ ovMoveOther.fg }}">{{ L.opMoveOther }}</button>
-                <button data-overlap="moveSelf" onClick="{{ setOverlap }}" style="height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ ovMoveSelf.border }};background:{{ ovMoveSelf.bg }};color:{{ ovMoveSelf.fg }}">{{ L.opMoveSelf }}</button>
+              <div style="display:flex;gap:6px">
+                <button data-overlap="shrink" onClick="{{ setOverlap }}" aria-label="{{ L.opShrink }}" data-tip="{{ L.opShrink }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="flex:1;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border:1px solid {{ ovShrink.border }};background:{{ ovShrink.bg }};color:{{ ovShrink.fg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="8" height="8" rx="1.5"></rect><path d="M21 12h-7M17 9l-3 3 3 3"></path></svg></button>
+                <button data-overlap="moveOther" onClick="{{ setOverlap }}" aria-label="{{ L.opMoveOther }}" data-tip="{{ L.opMoveOther }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="flex:1;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border:1px solid {{ ovMoveOther.border }};background:{{ ovMoveOther.bg }};color:{{ ovMoveOther.fg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="10" height="6" rx="1.5"></rect><rect x="11" y="14" width="10" height="6" rx="1.5" stroke-dasharray="2 2"></rect><path d="M17 7v4M15 9.5l2 2 2-2"></path></svg></button>
+                <button data-overlap="moveSelf" onClick="{{ setOverlap }}" aria-label="{{ L.opMoveSelf }}" data-tip="{{ L.opMoveSelf }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="flex:1;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border:1px solid {{ ovMoveSelf.border }};background:{{ ovMoveSelf.bg }};color:{{ ovMoveSelf.fg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="10" height="6" rx="1.5" stroke-dasharray="2 2"></rect><rect x="3" y="14" width="10" height="6" rx="1.5"></rect><path d="M18 5v8M15.5 10.5 18 13l2.5-2.5"></path></svg></button>
               </div>
+              <div style="padding:8px 10px;border-radius:6px;background:var(--color-bg-neutral-1);font-size:12px;line-height:1.6;color:var(--color-text-neutral-5)"><strong style="font-weight:700">{{ overlapName }}</strong> — {{ overlapDesc }}</div>
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.overlapHint }}</span>
             </div>
             <div style="height:1px;background:var(--color-border-neutral-2)"></div>
@@ -819,6 +820,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.42', title: '입력칸 크기·겹침 설정 정리', items: ["새 세션 기본 이름 '신규 세션'", '항목 생성 시 이름 입력칸이 블록보다 길던 문제 수정(글자 길이에 맞춤)', '설정창 메모·라벨 입력칸은 한 줄로 시작해 줄바꿈마다 늘어나고 5줄부터 스크롤', '마우스 조작 안내를 두 줄 설명으로 정리', "겹침 설정 제목 '항목들이 겹쳐지는 경우', 블록→항목 명칭, 세 가지 규칙을 한 줄 아이콘 버튼과 설명으로"] },
     { v: 'v9.41', title: '한 줄 메뉴바·툴팁 개편·Enter 입력 완료·세션', items: ['메뉴바는 항상 한 줄: 공간이 부족하면 아이콘 숨김 → 보기 항목을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 너비 맞춤·전체 화면 아이콘만', '아이콘만 있는 버튼(↻, 행 ↑↓+✕, 아이콘 상태의 너비 맞춤·전체 화면)에 이름 툴팁', '툴팁을 이름 · 기간 · 메모(· 연결) 구간으로 나누고, W·D 태그 30% 축소', '툴팁은 3초 뒤 자동으로 닫힘, 설정에서 3초 ⇄ 계속 표시 선택', '텍스트 칸: Enter 입력 완료, Shift+Enter 줄바꿈', "헤더 '구분' → '세션'", '가로 스크롤 시 세션 열 왼쪽 틈으로 항목이 보이던 문제 수정'] },
     { v: 'v9.40', title: '전체보기 종료 버튼·전체 지우기·공통 구간 조작·기본 보기', items: ['마우스 조작 안내 팝업 삭제', "전체보기 중 오른쪽 위에 '전체보기 종료 : ESC' 버튼 상시 표시", "전체 지우기 시 구분 행도 지우고 빈 행 하나만 남기며 제목은 '일정 제목을 입력해주세요'", '텍스트 입력 중 ⌘/Ctrl+Enter로 다음 칸 이동 또는 입력 끝내기', '더보기·내보내기 메뉴는 항목을 고르면 닫힘(참고 생성 시 메뉴가 가리던 문제)', '공통 구간은 선택한 행 안에 생성, 끌어서 좌우·위아래 이동, 위·아래 손잡이로 행 범위 조절, 왼쪽 손잡이 추가', '기본 보기: MD · 툴팁 · 눈금 맞춤만 켜짐', '사용법 가독성 향상, 보고 있는 섹션을 왼쪽 목차에 표시(처음은 이미지 분석)'] },
     { v: 'v9.39', title: '메뉴바 한 줄 재배치·사용법 개편', items: ['메뉴바를 한 줄로 재배치: 항목 추가(일정·마일스톤·메모·더보기) · 보기(MM·일자·툴팁·Week·눈금 맞춤) · 화면 · 분석 · 불러오기 · 내보내기 · ↻ · 설정창 보기', '참고·공통·포스트잇은 [더보기], 공유는 [내보내기] 안으로 이동', '이미지/텍스트 분석 버튼 강조', '마우스 조작은 설정의 스위치로 이동', '사용법을 큰 화면 · 섹션별 안내와 화면 캡처로 새로 구성(분석 → 일정 조작 → 눈금 맞춤 → 메모 → 마일스톤·NOW → 행 → 보기 → 설정창 → 파일, 단축키)'] },
@@ -870,7 +872,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.41';
+  APP_VER = 'v9.42';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -883,7 +885,7 @@ class Component extends DCLogic {
     ko: {
       weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간·공통 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '일정', plain: '참고', band: '공통', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '켜지면 — 마우스 휠: 확대 · 축소 / 오른버튼 드래그: 화면 이동(패닝), 손을 떼면 부드럽게 감속되어 이동', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', actualW: '실제 주 수',
+      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장[PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
@@ -900,8 +902,8 @@ class Component extends DCLogic {
       shiftHint: '시작 월을 바꾸면 모든 항목이 같은 실제 날짜를 유지하도록 자동으로 시프트됩니다.',
       weekHint: '실제 주 수 기준일 때 각 월의 폭은 그 해 해당 월의 일수 ÷ 7 로 계산됩니다 (예: 31일 = 4.4주).',
       weekModeF: '월 간격 기준', nowPos: 'NOW 기준선 위치 (개월)', todayBtn: '오늘 날짜로 맞추기',
-      overlapF: '같은 행에서 겹칠 때', opShrink: '다른 블록 줄이기', opMoveOther: '다른 블록을 위치변경', opMoveSelf: '선택된 블록이 위치변경',
-      overlapHint: '블록을 옮기거나 길이를 바꿔 겹치면 이 규칙으로 자동 정리됩니다. 핸들을 더블클릭하면 옆 블록에 딱 맞게 조정됩니다.',
+      overlapF: '항목들이 겹쳐지는 경우', opShrink: '다른 항목 줄이기', opDesc_shrink: '옮기거나 늘린 항목은 그대로 두고, 겹친 다른 항목의 기간을 줄입니다.', opDesc_moveOther: '겹친 다른 항목을 비어 있는 아래 줄로 옮깁니다.', opDesc_moveSelf: '옮기거나 늘린 항목이 비어 있는 아래 줄로 이동합니다.', opMoveOther: '다른 항목을 위치변경', opMoveSelf: '선택된 항목이 위치변경',
+      overlapHint: '항목을 옮기거나 길이를 바꿔 겹치면 이 규칙으로 자동 정리됩니다. 핸들을 더블클릭하면 옆 항목에 딱 맞게 조정됩니다.',
       verSave: '버전 저장', author: '작성자', date: '날짜', changes: '변경 내용', phAuthor: '예: 김지훈', phChanges: '예: DCM 지연 반영, Pre-Prod E2E 3M 조정',
       saveBtn: '현재 상태를 버전으로 저장', history: '버전 히스토리', restoreBtn: '이 버전으로 복원',
       noVer: '저장된 버전이 없습니다.\n작성자와 날짜를 입력하고 현재 상태를 저장하세요.',
@@ -912,7 +914,7 @@ class Component extends DCLogic {
       confRowDel: '이 행의 항목이 함께 삭제됩니다. 계속할까요?', needAuthor: '작성자와 날짜는 필수 입력입니다.',
       confRestore: ' 버전으로 복원할까요? 현재 상태는 되돌리기(Cmd+Z)로 복구할 수 있습니다.',
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
-      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 메모', newRow: '새 구분', newNote: '공지 메모를 입력하세요',
+      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 메모', newRow: '신규 세션', newNote: '공지 메모를 입력하세요',
       zoom: '배율', magnetF: '눈금 맞춤', magnetHint: '5개월 미만은 0.125개월(월 8단계), 그 외에는 0.25개월 단위와 인접 블록 끝에 맞춥니다. 끄면 자유롭게 조정합니다.',
       helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
@@ -922,7 +924,7 @@ class Component extends DCLogic {
     ja: {
       weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考', band: '共通', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: 'ON のとき — ホイール：拡大・縮小 / 右ドラッグ：画面移動（パン）、離すと減速して流れる', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', actualW: '実際の週数',
+      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存[PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
@@ -939,8 +941,8 @@ class Component extends DCLogic {
       shiftHint: '開始月を変更すると、すべての項目が同じ実日付を保つよう自動でシフトします。',
       weekHint: '実際の週数モードでは、各月の幅はその年の月の日数 ÷ 7 で計算されます（例：31日 = 4.4週）。',
       weekModeF: '月間隔の基準', nowPos: 'NOW基準線の位置（月）', todayBtn: '今日の日付に合わせる',
-      overlapF: '同じ行で重なった時', opShrink: '他のブロックを縮小', opMoveOther: '他のブロックの位置を変更', opMoveSelf: '選択ブロックの位置を変更',
-      overlapHint: 'ブロックを移動・伸縮して重なった場合、このルールで自動整列します。ハンドルをダブルクリックすると隣のブロックにぴったり合わせます。',
+      overlapF: '項目が重なる場合', opShrink: '他の項目を縮小', opDesc_shrink: '動かした項目はそのままにして、重なった他の項目の期間を縮めます。', opDesc_moveOther: '重なった他の項目を空いている下の段へ移動します。', opDesc_moveSelf: '動かした項目が空いている下の段へ移動します。', opMoveOther: '他の項目の位置を変更', opMoveSelf: '選択項目の位置を変更',
+      overlapHint: '項目を移動・伸縮して重なった場合、このルールで自動整列します。ハンドルをダブルクリックすると隣の項目にぴったり合わせます。',
       verSave: 'バージョン保存', author: '作成者', date: '日付', changes: '変更内容', phAuthor: '例：山田太郎', phChanges: '例：DCM遅延の反映、Pre-Prod E2E 3M調整',
       saveBtn: '現在の状態をバージョンとして保存', history: 'バージョン履歴', restoreBtn: 'このバージョンに戻す',
       noVer: '保存されたバージョンがありません。\n作成者と日付を入力して保存してください。',
@@ -951,7 +953,7 @@ class Component extends DCLogic {
       confRowDel: 'この行の項目も削除されます。続行しますか？', needAuthor: '作成者と日付は必須です。',
       confRestore: ' のバージョンに戻しますか？現在の状態は Cmd+Z で復元できます。',
       pptFail: 'PPT書き出しモジュールを読み込めませんでした。ネットワークを確認して再試行してください。',
-      newChev: '新しいタスク', newPlain: '参考内容を入力', newBand: '新しい共通期間', newMarker: '新しいマイルストーン', newFlag: '新しいメモ', newRow: '新しい区分', newNote: 'お知らせメモを入力',
+      newChev: '新しいタスク', newPlain: '参考内容を入力', newBand: '新しい共通期間', newMarker: '新しいマイルストーン', newFlag: '新しいメモ', newRow: '新規セッション', newNote: 'お知らせメモを入力',
       zoom: '倍率', magnetF: 'グリッドに合わせる', magnetHint: 'ONにすると0.25ヶ月グリッドと隣接ブロックの端に吸着します。OFFなら自由に配置できます。',
       helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除', rowAdd: '下に行を追加',
       rowHint: '行の境界線をドラッグしても高さを変えられます。',
@@ -1104,7 +1106,7 @@ class Component extends DCLogic {
     if (this._msCleanup) this._msCleanup();
   }
   componentDidUpdate() {
-    this.save(); this.syncScrollMetrics(); this.fitToolbar();
+    this.save(); this.syncScrollMetrics(); this.fitToolbar(); if (this.root && MapstoneUI.growAll) MapstoneUI.growAll(this.root);
     const ids = new Set(this.state.items.map((i) => i.id));
     if (this._ids && this.animOn()) {
       const fresh = [...ids].filter((id) => !this._ids.has(id));
@@ -2653,7 +2655,7 @@ class Component extends DCLogic {
       indThumbL: Math.round((st.sx / st.sw) * 100 * 100) / 100 + '%',
       onIndDown: this.onIndDown, onIndTrack: this.onIndTrack,
       L: T, langLabel: T.lang, toggleLang: this.toggleLang, selectAll: this.selectAll, beginTextEdit: this.beginTextEdit, endTextEdit: this.endTextEdit, appVer: this.APP_VER,
-      ovShrink: ovBtn('shrink'), ovMoveOther: ovBtn('moveOther'), ovMoveSelf: ovBtn('moveSelf'), setOverlap: this.setOverlap,
+      ovShrink: ovBtn('shrink'), ovMoveOther: ovBtn('moveOther'), ovMoveSelf: ovBtn('moveSelf'), setOverlap: this.setOverlap, overlapName: this.L()[{ shrink: 'opShrink', moveOther: 'opMoveOther', moveSelf: 'opMoveSelf' }[cfg.overlap] || 'opShrink'], overlapDesc: this.L()['opDesc_' + (cfg.overlap || 'shrink')],
       addPlain: this.addPlain, onHandleDbl: this.onHandleDbl,
       title: st.title, savedLabel: st.saved, panel: st.panel, panelLabel: st.panel ? T.panelClose : T.panelOpen,
       panelBorder: st.panel ? '#181a1b' : 'var(--color-border-neutral-2)',
