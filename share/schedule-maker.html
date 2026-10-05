@@ -12,6 +12,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   location.replace(entry.href);
 }
 </script>
+<style>x-dc{display:none!important}html,body{background:#fff}</style>
 <script src="./mapstone-core.js"></script>
 <script src="./mapstone-ui.js"></script>
 <script src="./mapstone-help.js"></script>
@@ -152,16 +153,16 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <span class="ms-toolbar-label">{{ L.viewG }}</span>
         <span class="ms-view-inline">
           <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durUnit }}</button>
-          <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
-          <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
-          <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
+          <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
+          <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
+          <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
           <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
         </span>
         <details class="ms-tool-menu ms-view-more"><summary>{{ L.viewG }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
           <button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durUnit }}</button>
-          <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
-          <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
-          <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" title="{{ L.weekTip }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
+          <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
+          <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
+          <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
           <button onClick="{{ toggleMagnet }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
         </div></details>
       </div>
@@ -171,8 +172,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <span class="ms-zoom-word" style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
         <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:#e30084">
         <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
-        <button class="ms-tool-button ms-iconable" onClick="{{ fitWidth }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }}" data-tip-if="icon" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l3-3M4 12l3 3M20 12l-3-3M20 12l-3 3"></path></svg><span class="ms-lbl">{{ L.fit }}</span></button>
-        <button class="ms-tool-button ms-iconable" onClick="{{ toggleFocus }}" aria-label="{{ L.full }}" data-tip="{{ L.full }} (F)" data-tip-if="icon" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg><span class="ms-lbl">{{ L.full }}</span></button>
+        <button class="ms-tool-button ms-iconable" onClick="{{ fitWidth }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }} · Shift+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l3-3M4 12l3 3M20 12l-3-3M20 12l-3 3"></path></svg><span class="ms-lbl">{{ L.fit }}</span></button>
+        <button class="ms-tool-button ms-iconable" onClick="{{ toggleFocus }}" aria-label="{{ L.full }}" data-tip="{{ L.full }} · F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg><span class="ms-lbl">{{ L.full }}</span></button>
       </div>
       <span style="flex:1"></span>
       <button class="ms-tool-button ms-accent" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg><span class="ms-lbl-full">{{ L.importG }}</span><span class="ms-lbl-short">{{ L.importShort }}</span></button>
@@ -186,7 +187,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       </div></details>
       <span class="ms-toolbar-sep"></span>
       <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg></button>
-      <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }}" data-tip-if="panel" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
+      <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }} · S / ," onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
     </div>
   </div>
 
@@ -820,6 +821,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.43', title: '첫 로딩 화면·단축키', items: ['첫 로딩 때 보이던 어두운 미리보기 그림과 처리 전 템플릿 깜빡임 제거, 흰 배경 로딩 표시로 교체', '단축키: F 전체 화면 · Shift+F 너비 맞춤 · D 일자 · M 기간(MD/MM) · T 툴팁 · W Week · S 또는 , 설정창 보기 (한글 입력 상태에서도 동작)', '각 버튼 툴팁과 사용법 단축키 표에 그룹별로 표기'] },
     { v: 'v9.42', title: '입력칸 크기·겹침 설정 정리', items: ["새 세션 기본 이름 '신규 세션'", '항목 생성 시 이름 입력칸이 블록보다 길던 문제 수정(글자 길이에 맞춤)', '설정창 메모·라벨 입력칸은 한 줄로 시작해 줄바꿈마다 늘어나고 5줄부터 스크롤', '마우스 조작 안내를 두 줄 설명으로 정리', "겹침 설정 제목 '항목들이 겹쳐지는 경우', 블록→항목 명칭, 세 가지 규칙을 한 줄 아이콘 버튼과 설명으로"] },
     { v: 'v9.41', title: '한 줄 메뉴바·툴팁 개편·Enter 입력 완료·세션', items: ['메뉴바는 항상 한 줄: 공간이 부족하면 아이콘 숨김 → 보기 항목을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 너비 맞춤·전체 화면 아이콘만', '아이콘만 있는 버튼(↻, 행 ↑↓+✕, 아이콘 상태의 너비 맞춤·전체 화면)에 이름 툴팁', '툴팁을 이름 · 기간 · 메모(· 연결) 구간으로 나누고, W·D 태그 30% 축소', '툴팁은 3초 뒤 자동으로 닫힘, 설정에서 3초 ⇄ 계속 표시 선택', '텍스트 칸: Enter 입력 완료, Shift+Enter 줄바꿈', "헤더 '구분' → '세션'", '가로 스크롤 시 세션 열 왼쪽 틈으로 항목이 보이던 문제 수정'] },
     { v: 'v9.40', title: '전체보기 종료 버튼·전체 지우기·공통 구간 조작·기본 보기', items: ['마우스 조작 안내 팝업 삭제', "전체보기 중 오른쪽 위에 '전체보기 종료 : ESC' 버튼 상시 표시", "전체 지우기 시 구분 행도 지우고 빈 행 하나만 남기며 제목은 '일정 제목을 입력해주세요'", '텍스트 입력 중 ⌘/Ctrl+Enter로 다음 칸 이동 또는 입력 끝내기', '더보기·내보내기 메뉴는 항목을 고르면 닫힘(참고 생성 시 메뉴가 가리던 문제)', '공통 구간은 선택한 행 안에 생성, 끌어서 좌우·위아래 이동, 위·아래 손잡이로 행 범위 조절, 왼쪽 손잡이 추가', '기본 보기: MD · 툴팁 · 눈금 맞춤만 켜짐', '사용법 가독성 향상, 보고 있는 섹션을 왼쪽 목차에 표시(처음은 이미지 분석)'] },
@@ -872,7 +874,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.42';
+  APP_VER = 'v9.43';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -2628,7 +2630,7 @@ class Component extends DCLogic {
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
-      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM'), onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, toggleTipHold: this.toggleTipHold, tipHoldLabel: st.tipHold ? this.L().tipHold : this.L().tip3s, interactChecked: st.interact ? 'true' : 'false', interactTrack: st.interact ? '#181a1b' : '#c5cdd6', interactKnob: st.interact ? '23px' : '3px', toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? '#181a1b' : '#c5cdd6', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
+      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM') + '\n· M', onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, toggleTipHold: this.toggleTipHold, tipHoldLabel: st.tipHold ? this.L().tipHold : this.L().tip3s, interactChecked: st.interact ? 'true' : 'false', interactTrack: st.interact ? '#181a1b' : '#c5cdd6', interactKnob: st.interact ? '23px' : '3px', toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? '#181a1b' : '#c5cdd6', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
       showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
       showTooltip:cfg.showTooltip !== false, toggleTooltip:this.toggleTooltip,
       tooltipBg:cfg.showTooltip !== false ? '#181a1b' : '#f3f5f6', tooltipFg:cfg.showTooltip !== false ? '#fff' : '#66707a', tooltipBorder:cfg.showTooltip !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
