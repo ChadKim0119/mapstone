@@ -87,6 +87,17 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-toolbar-label { flex:none;padding:3px 8px;border:1px solid var(--color-border-neutral-2);border-radius:9999px;background:var(--color-magenta-50);font-size:11px;font-weight:700;color:var(--color-text-neutral-4);letter-spacing:.02em; }
     .ms-accent { border-color:#e30084 !important;color:#c2006f !important;background:#fff !important;box-shadow:0 0 0 3px rgba(227,0,132,.08); }
     .ms-accent:hover { background:#fff5fa !important; }
+    .ms-review-panel { position:fixed;left:16px;bottom:16px;z-index:300;width:min(380px,calc(100vw - 32px));max-height:min(46vh,420px);display:flex;flex-direction:column;border:1px solid #dce0e5;border-radius:14px;background:#fff;box-shadow:0 12px 40px rgba(15,23,42,.18);overflow:hidden; }
+    .ms-review-panel header { display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #eef1f4;font-size:13.5px; }
+    .ms-review-count { padding:1px 8px;border-radius:9999px;background:#f3f5f6;font-size:12px;font-weight:700; }
+    .ms-review-x { margin-left:auto;width:26px;height:26px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#66707a; } .ms-review-x:hover { background:#f3f5f6; }
+    .ms-review-panel ol { list-style:none;margin:0;padding:6px;overflow:auto;display:flex;flex-direction:column;gap:2px; }
+    .ms-review-panel li button { width:100%;display:flex;gap:9px;align-items:flex-start;text-align:left;padding:8px 9px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-size:12.5px;line-height:1.55;color:#2b3036; }
+    .ms-review-panel li button:hover, .ms-review-panel li button[aria-current="true"] { background:#fff0f7; }
+    .ms-review-panel li b { flex:none;margin-top:2px;padding:1px 8px;border-radius:9999px;color:#fff;font-size:11px; }
+    .ms-review-panel li em { font-style:normal;font-weight:700;color:#66707a; }
+    .ms-review-panel footer { padding:8px 10px;border-top:1px solid #eef1f4; } .ms-review-panel footer button { width:100%;height:32px;border:1px solid #dce0e5;border-radius:8px;background:#fff;font-weight:600;font-size:12.5px;cursor:pointer; }
+    @media print { .ms-review-panel { display:none !important; } }
     .ms-focus-exit { position:fixed;top:16px;right:16px;z-index:600;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 18px;border:0;border-radius:9999px;background:rgba(24,26,27,.88);color:#fff;font:600 14px/1 inherit;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer;backdrop-filter:blur(6px); }
     .ms-focus-exit:hover { background:#181a1b; }
     .ms-focus-exit kbd { font:700 12px ui-monospace,monospace;padding:4px 8px;border-radius:9999px;background:#e30084;color:#fff; }
@@ -125,6 +136,20 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
 <div data-app="" data-anim="{{ animAttr }}" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
   <sc-if value="{{ focusMode }}" hint-placeholder-val="{{ false }}"><button class="ms-focus-exit" onClick="{{ toggleFocus }}" aria-label="{{ L.focusExit }} : ESC">{{ L.focusExit }} :<kbd>ESC</kbd></button></sc-if>
+  <sc-if value="{{ reviewShown }}" hint-placeholder-val="{{ false }}">
+    <aside data-noprint="" class="ms-review-panel" role="complementary" aria-label="{{ L_reviewTitle }}">
+      <header>
+        <strong>{{ L_reviewTitle }}</strong><span class="ms-review-count">{{ reviewCount }}</span>
+        <button type="button" onClick="{{ closeReview }}" aria-label="닫기" class="ms-review-x">✕</button>
+      </header>
+      <ol>
+        <sc-for list="{{ reviewItems }}" as="r" hint-placeholder-count="4">
+          <li><button type="button" data-id="{{ r.id }}" onClick="{{ onReviewPick }}" aria-current="{{ r.on }}"><b style="background:{{ r.tagBg }}">{{ r.tag }}</b><span><em>{{ r.kind }}</em> {{ r.text }}</span></button></li>
+        </sc-for>
+      </ol>
+      <footer><button type="button" onClick="{{ endComparison }}">비교 표시 해제 · 일반 편집으로</button></footer>
+    </aside>
+  </sc-if>
   <sc-if value="{{ linking }}"><svg data-noprint="" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"><circle cx="{{ linkDrag.x }}" cy="{{ linkDrag.y }}" r="5" fill="#e30084"></circle></svg></sc-if>
 
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
@@ -832,6 +857,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.50', agent: 'Claude Code', title: '버전 비교 확장 — 이미지·포커싱·비교 화면 편집', items: ['버전 비교에 일정표 이미지(파일·캡처 붙여넣기) 입력 추가 — AI가 읽어 비교, 이미지는 이름·세션이 같은 항목끼리 짝지음', '검토 내용을 누르면 비교 타임라인의 해당 구간으로 이동하고 강조', "[비교 화면 편집하기] — 확인 팝업('현재 작업 내용이 비교 화면으로 교체됩니다') 후 현재 일정을 백업하고 비교 결과를 편집 화면으로 열기", '편집 화면 왼쪽 아래에 비교 검토 내용 패널 — 누르면 일정표의 해당 영역으로 이동·강조, 변경 주황·추가 초록·삭제 빨강(점선) 표시', '[비교 표시 해제]로 일반 편집으로 복귀, Cmd/Ctrl+Z로도 되돌리기 가능', '시작 월이 다른 두 파일도 달력 날짜 기준으로 비교해 가짜 변경이 생기지 않음'] },
     { v: 'v9.49', agent: 'Claude Code', title: '라벨 줄바꿈·글자 크기·버전 비교', items: ['설정창 라벨의 줄바꿈이 항목에도 반영되고, 조금 걸치더라도 최대한 도형 안에 유지', '기간 태그가 여러 줄 라벨과 겹치지 않도록 위쪽으로 이동', '도형 밖으로 나간 라벨을 끌어서 옮길 수 있고, 라벨 입력 옆 A− / A+로 글자 크기 조정', '설정창 항목 제목을 [항목 추가]와 같은 용어로 통일 (일정·참고·공통·마일스톤·메모·포스트잇)', '[버전 비교] 신설 — 두 버전(JSON) 파일의 추가·삭제·변경을 색으로 표시하고 검토 내용을 글로 정리'] },
     { v: 'v9.48', agent: 'Claude Code', title: '메모 점 이동 시 튐 수정·앱 칩 확대', items: ['메모 점을 다른 일정·참고·공통 구간으로 옮기거나 새로 연결할 때 메모 라벨이 갑자기 다른 위치로 튀던 문제 수정 — 어디로 연결해도 라벨은 화면상 제자리 유지', '좌상단 앱 이름 칩 확대(글자 14px, 아이콘 22px)', "'버전 미저장' 표기를 'Beta ver.'로 변경"] },
     { v: 'v9.47', agent: 'Claude Code', title: '수정 이력 에이전트 태그·앱 아이콘 교체', items: ['수정 이력의 각 버전에 작업한 AI 에이전트 태그 표시 — [Codex] · [Claude Code] · [Claude Design]', "제목의 'Codex' 접두어와 'Codex 수정사항' 제목 삭제", '전달받은 앱 아이콘을 파비콘 · 로딩 화면에 적용, 상단 배지에는 아주 얇은 흰 테두리를 더해 적용'] },
@@ -891,7 +917,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.49';
+  APP_VER = 'v9.50';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -985,7 +1011,7 @@ class Component extends DCLogic {
     sel: null, editing: null, editNote: null, hover: null, focusRow: 'gs',
     panel: true, tab: 'prop', hist: [], future: [], clip: null, saved: '', readOnly: false,
     interact: false, lang: 'ko', vAuthor: '', vDate: '', vNote: '',
-    helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, nowOutOpen: false, relOpen: false, rowDelId: null, hoverRow: null, sx: 0, sw: 1, cw: 1,
+    helpOpen: false, textOpen: false, textFmt: 'txt', clearOpen: false, nowOutOpen: false, relOpen: false, rowDelId: null, hoverRow: null, reviewOpen: true, sx: 0, sw: 1, cw: 1,
     mouseTipOpen: false, mouseTipMuted: this.mouseTipMuted(), animate: this.animPref(), tipHold: this.tipHoldPref()
   }, this.seed());
 
@@ -1217,9 +1243,50 @@ class Component extends DCLogic {
   openImport = () => MapstoneUI.open(this, 'import');
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
   openCompare = () => MapstoneUI.open(this, 'compare');
+  onReviewPick = (e) => this.focusItem(e.currentTarget.dataset.id);
+  closeReview = () => this.setState({ reviewOpen: false });
+  /* 비교 화면 편집하기 done: leave the compare view for the plain editor (markers and colours removed) */
+  endComparison = () => {
+    this.mutate((d) => { d.items.forEach((it) => { if (it.cmp === 'removed') it._drop = true; else if (it.cmp) { it.color = it.cmpColor || it.color; } delete it.cmp; delete it.cmpNote; delete it.cmpColor; }); d.items = d.items.filter((i) => !i._drop); d.rows.forEach((r) => { delete r.cmp; delete r.cmpNote; }); d.rows = d.rows.filter((r) => d.items.some((i) => i.row === r.id || i.rowFrom === r.id) || !r.cmp); });
+    this.setState({ reviewOpen: false });
+  };
+  reviewList() {
+    const st = this.state, kindName = this.L();
+    const out = [];
+    st.rows.forEach((r) => { if (r.cmp) out.push({ id: r.id, type: r.cmp, kind: '세션', text: r.cmpNote }); });
+    st.items.forEach((it) => { if (it.cmp) out.push({ id: it.id, type: it.cmp, kind: ({ chev: kindName.chev, plain: kindName.plain, band: kindName.band, marker: kindName.marker, flag: kindName.kFlag, sticky: kindName.sticky })[it.kind] || '항목', text: it.cmpNote }); });
+    const order = { changed: 0, added: 1, removed: 2 };
+    return out.sort((a, b) => order[a.type] - order[b.type]);
+  }
   fileName(ext) { const d=new Date();return 'mapstone_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.'+ext; }
   openFile = () => MapstoneUI.open(this,'file');
   exportJson = () => (MapstoneUI.saveFile ? (d, n) => MapstoneUI.saveFile(this, d, n) : MapstoneUI.download)(this._recoveryData ? this._recoveryData : MapstoneCore.serializeFile(this.dataDocument()), this.fileName(this._recoveryData ? 'json' : 'mapstone'));
+  /* 검토 내용 → 화면: bring an item (or session) into view, select it and pulse it */
+  focusItem(id) {
+    const st = this.state, it = st.items.find((i) => i.id === id), board = this._board;
+    if (!board) return false;
+    let node = null;
+    if (it) {
+      this.setState({ sel: id, editing: null, focusRow: it.row || it.rowFrom || st.focusRow });
+      const x = 192 + this.xOf(it.s), w = ['marker', 'flag'].includes(it.kind) ? 0 : this.wOf(it.s, it.e);
+      const yTop = it.kind === 'marker' ? 0 : it.kind === 'band' ? this.rowTop(it.rowFrom || st.rows[0].id) : this.rowTop(it.row) + (this.trackBox ? this.trackBox(it).localTop : 0);
+      const to = { left: Math.max(0, x + w / 2 - board.clientWidth / 2), top: Math.max(0, yTop + 120 - board.clientHeight / 2) };
+      board.scrollTo({ ...to, behavior: this.animOn() ? 'smooth' : 'auto' });
+      /* smooth scrolling can stall (background tabs, reduced motion); land exactly on the target afterwards */
+      setTimeout(() => board.scrollTo({ ...to, behavior: 'auto' }), 450);
+    } else if (st.rows.some((r) => r.id === id)) {
+      this.setState({ focusRow: id });
+      const to = { top: Math.max(0, this.rowTop(id) + 120 - board.clientHeight / 3) };
+      board.scrollTo({ ...to, behavior: this.animOn() ? 'smooth' : 'auto' });
+      setTimeout(() => board.scrollTo({ ...to, behavior: 'auto' }), 450);
+      node = this.root.querySelector('[data-row="' + CSS.escape(id) + '"]');
+    }
+    setTimeout(() => {
+      node = node || Array.from(this.root.querySelectorAll('[data-id="' + CSS.escape(id) + '"]')).find((e) => !e.dataset.mode && !e.hasAttribute('data-link-dot'));
+      if (node && node.animate) node.animate([{ outline: '4px solid rgba(227,0,132,.9)', outlineOffset: '4px' }, { outline: '4px solid rgba(227,0,132,0)', outlineOffset: '12px' }], { duration: 1100, easing: 'ease-out', iterations: 2 });
+    }, 380);
+    return true;
+  }
   importDocument(data) {
     if (this.state.readOnly) return;
     const d = MapstoneCore.validate(data); const before=this.snapshot(); this._saveBlocked=false; this._recoveryData=null;
@@ -2689,7 +2756,7 @@ class Component extends DCLogic {
       textPreview: st.textOpen ? this.buildText(st.textFmt) : '',
       fmtTxt: { bg: st.textFmt === 'txt' ? '#181a1b' : '#fff', fg: st.textFmt === 'txt' ? '#fff' : 'var(--color-text-neutral-5)', border: st.textFmt === 'txt' ? '#181a1b' : 'var(--color-border-neutral-2)' },
       fmtMd: { bg: st.textFmt === 'md' ? '#181a1b' : '#fff', fg: st.textFmt === 'md' ? '#fff' : 'var(--color-text-neutral-5)', border: st.textFmt === 'md' ? '#181a1b' : 'var(--color-border-neutral-2)' },
-      relOpen: st.relOpen, openCompare: this.openCompare, openRel: this.openRel, closeRel: this.closeRel, releases: this.RELEASES.map((r) => ({ ...r, agentBg: { Codex: '#e7f4f1', 'Claude Code': '#fbe8df', 'Claude Design': '#f0ebfb' }[r.agent] || '#f3f5f6', agentFg: { Codex: '#0f6b57', 'Claude Code': '#a3461f', 'Claude Design': '#5b3fd1' }[r.agent] || '#3b4044' })),
+      relOpen: st.relOpen, openCompare: this.openCompare, reviewShown: !!(this.reviewList().length) && st.reviewOpen !== false, reviewItems: this.reviewList().map((r) => ({ ...r, tag: { added: '추가', removed: '삭제', changed: '변경' }[r.type], tagBg: { added: '#12805c', removed: '#d92d20', changed: '#d9730d' }[r.type], on: st.sel === r.id })), reviewCount: this.reviewList().length, onReviewPick: this.onReviewPick, closeReview: this.closeReview, endComparison: this.endComparison, L_reviewTitle: '비교 검토 내용', openRel: this.openRel, closeRel: this.closeRel, releases: this.RELEASES.map((r) => ({ ...r, agentBg: { Codex: '#e7f4f1', 'Claude Code': '#fbe8df', 'Claude Design': '#f0ebfb' }[r.agent] || '#f3f5f6', agentFg: { Codex: '#0f6b57', 'Claude Code': '#a3461f', 'Claude Design': '#5b3fd1' }[r.agent] || '#3b4044' })),
       rowDelOpen: !!st.rowDelId, askRowDelete: this.askRowDelete, cancelRowDelete: this.cancelRowDelete, confirmRowDelete: this.confirmRowDelete,
       rowDelName: (st.rows.find((r) => r.id === st.rowDelId) || {}).name || '',
       duplicateSel: this.duplicateSel,

@@ -62,6 +62,8 @@
       if (it.linkY !== undefined) finite(it.linkY,'연결 높이',0,1);
       for (const k of ['labelDx','labelDy']) if (it[k] !== undefined) finite(it[k],k,-20000,20000);
       if (it.labelSize !== undefined) finite(it.labelSize,'라벨 글자 크기',9,40);
+      if (it.cmp !== undefined && !['added','removed','changed'].includes(it.cmp)) fail('비교 표시 값이 올바르지 않습니다.');
+      if (it.cmpNote !== undefined) text(it.cmpNote,'비교 설명',4000);
       return it;
     });
     syncLinks(items);
@@ -115,8 +117,31 @@
      Pure data → data, so the UI only has to render the result. */
   const KIND_NAME = {chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
   const FIELD_NAME = {label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
-  function compareDocuments(a, b) {
-    const A = validate(a), B = validate(b);
+  /* Files saved from the same schedule share item ids. Documents built from an image/text analysis get fresh ids,
+     so they are paired by (kind, normalised label, session name) instead; pairs get B's id so the rest of the
+     comparison works unchanged. */
+  function alignByContent(A, B) {
+    const norm = t => String(t || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const rowName = (doc, id) => norm((doc.rows.find(r => r.id === id) || {}).name);
+    const key = (doc, it) => it.kind + '|' + norm(it.label) + '|' + (it.kind === 'band' ? rowName(doc, it.rowFrom) : rowName(doc, it.row));
+    const rowMap = new Map(), taken = new Set();
+    for (const r of B.rows) { const m = A.rows.find(x => !taken.has(x.id) && norm(x.name) === norm(r.name)); if (m) { rowMap.set(m.id, r.id); taken.add(m.id); } }
+    const buckets = new Map();
+    for (const it of B.items) { const k = key(B, it); (buckets.get(k) || buckets.set(k, []).get(k)).push(it); }
+    const used = new Set(), idMap = new Map();
+    for (const it of A.items) { const list = buckets.get(key(A, it)); const m = list && list.find(x => !used.has(x.id)); if (m) { used.add(m.id); idMap.set(it.id, m.id); } }
+    const out = JSON.parse(JSON.stringify(A));
+    out.rows.forEach(r => { if (rowMap.has(r.id)) r.id = rowMap.get(r.id); });
+    out.items.forEach(it => {
+      if (idMap.has(it.id)) it.id = idMap.get(it.id);
+      if (rowMap.has(it.row)) it.row = rowMap.get(it.row); if (rowMap.has(it.rowFrom)) it.rowFrom = rowMap.get(it.rowFrom); if (rowMap.has(it.rowTo)) it.rowTo = rowMap.get(it.rowTo);
+      if (it.targetId && idMap.has(it.targetId)) it.targetId = idMap.get(it.targetId);
+    });
+    return out;
+  }
+  function compareDocuments(a, b, opt = {}) {
+    let A = validate(a); const B = validate(b);
+    if (opt.match === 'content') A = validate(alignByContent(A, B));
     const rowName = (doc, id) => (doc.rows.find(r => r.id === id) || {}).name || id || '-';
     const iso = (doc, m) => { const c = doc.cfg, t = c.startM - 1 + Math.floor(m), y = c.startY + Math.floor(t / 12), mm = ((t % 12) + 12) % 12, dim = new Date(Date.UTC(y, mm + 1, 0)).getUTCDate(), d = Math.min(dim, Math.max(1, 1 + Math.floor((m - Math.floor(m)) * dim + 1e-7))); return y + '-' + String(mm + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); };
     const show = (doc, k, v) => v === undefined || v === '' ? '(없음)' : k === 's' || k === 'e' ? iso(doc, v) : k === 'row' || k === 'rowFrom' || k === 'rowTo' ? rowName(doc, v) : typeof v === 'boolean' ? (v ? '예' : '아니오') : k === 'targetId' ? ((doc.items.find(i => i.id === v) || {}).label || v) : typeof v === 'number' ? String(Math.round(v * 100) / 100) : String(v);
@@ -136,6 +161,8 @@
       for (const k of new Set([...Object.keys(o), ...Object.keys(it)])) {
         if (skip.has(k)) continue;
         const x = o[k], y = it[k];
+        /* s/e are month offsets from each file's own start month: compare them as calendar dates */
+        if ((k === 's' || k === 'e') && typeof x === 'number' && typeof y === 'number') { if (iso(A, x) === iso(B, y)) continue; fields.push({key:k, name:FIELD_NAME[k], from:iso(A, x), to:iso(B, y)}); continue; }
         if (JSON.stringify(x) === JSON.stringify(y)) continue;
         if (typeof x === 'number' && typeof y === 'number' && Math.abs(x - y) < 1e-6) continue;
         fields.push({key:k, name:FIELD_NAME[k] || k, from:show(A, k, x), to:show(B, k, y)});
@@ -149,6 +176,35 @@
     if (A.title !== B.title) out.unshift({type:'changed', scope:'doc', name:'제목', text:'제목 변경 · ' + A.title + ' → ' + B.title, fields:[{key:'title', from:A.title, to:B.title}]});
     if (['startY','startM','months'].some(k => A.cfg[k] !== B.cfg[k])) out.unshift({type:'changed', scope:'doc', name:'기간', text:'표시 기간 변경 · ' + A.cfg.startY + '.' + A.cfg.startM + ' ' + A.cfg.months + '개월 → ' + B.cfg.startY + '.' + B.cfg.startM + ' ' + B.cfg.months + '개월'});
     return {summary, changes: out, byId: Object.fromEntries(out.filter(c => c.scope === 'item').map(c => [c.id, c.type])), a: A, b: B};
+  }
+  /* Turns a compare result into a normal document the main editor can show:
+     B is the base, items removed since A come back as faded dashed items, and every touched item is
+     recoloured and annotated (cmp = added | removed | changed, cmpNote = what changed). */
+  const CMP_COLORS = {added:'#12805c', removed:'#d92d20', changed:'#d9730d'};
+  function comparisonDocument(cmp, names = {}) {
+    const doc = clone(cmp.b), A = cmp.a, ids = new Set(doc.items.map(i => i.id));
+    const byId = new Map(cmp.changes.filter(c => c.scope === 'item').map(c => [c.id, c]));
+    for (const it of doc.items) {
+      const c = byId.get(it.id); if (!c) continue;
+      it.cmp = c.type; it.cmpNote = c.text.replace(/^\[[^\]]+\]\s*/, ''); it.cmpColor = it.color; it.color = CMP_COLORS[c.type];
+    }
+    for (const c of cmp.changes) {
+      if (c.scope !== 'item' || c.type !== 'removed') continue;
+      const old = clone(A.items.find(i => i.id === c.id)); if (!old || ids.has(old.id)) continue;
+      // positions are month offsets from each document's own start month: shift A's items onto B's calendar
+      const shift = (A.cfg.startY * 12 + A.cfg.startM - 1) - (doc.cfg.startY * 12 + doc.cfg.startM - 1);
+      old.s += shift; old.e += shift; if (old.kind === 'marker' || old.kind === 'flag') old.e = old.s;
+      old.cmp = 'removed'; old.cmpNote = c.text.replace(/^\[[^\]]+\]\s*/, ''); old.cmpColor = old.color; old.color = CMP_COLORS.removed; old.variant = 'tint'; if (old.kind === 'flag') old.targetId = ''; else delete old.targetId;
+      if (!doc.rows.some(r => r.id === old.row) && old.row) old.row = doc.rows[0].id;
+      if (old.kind === 'band') { const has = id => doc.rows.some(r => r.id === id); if (!has(old.rowFrom) || !has(old.rowTo)) { old.rowFrom = old.rowTo = doc.rows[0].id; } old.row = old.rowFrom; }
+      doc.items.push(old); ids.add(old.id);
+    }
+    const rowChange = new Map(cmp.changes.filter(c => c.scope === 'row').map(c => [c.id, c]));
+    for (const r of doc.rows) { const c = rowChange.get(r.id); if (c) { r.cmp = c.type; r.cmpNote = c.text; } }
+    for (const r of A.rows) if (!doc.rows.some(x => x.id === r.id)) { const c = rowChange.get(r.id); if (c) { doc.rows.push({id:r.id, name:r.name, cmp:'removed', cmpNote:c.text}); } }
+    doc.title = (names.b || doc.title) + ' · 비교 (' + (names.a || A.title) + ' → ' + (names.b || doc.title) + ')';
+    doc.cmpSummary = cmp.summary;
+    return validate(doc);
   }
   function documentOf(s) { const d={schemaVersion:1}; for (const k of keys) d[k]=clone(s[k] ?? (['rows','items','notes','versions'].includes(k)?[]:null)); return d; }
   // Parses only data literals, never evaluates JavaScript (no functions, calls, getters, imports).
@@ -197,5 +253,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,compareDocuments,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,compareDocuments,comparisonDocument,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });
