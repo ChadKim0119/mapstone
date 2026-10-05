@@ -61,6 +61,7 @@
       if (it.linkOffset !== undefined) finite(it.linkOffset,'연결 위치',0,1);
       if (it.linkY !== undefined) finite(it.linkY,'연결 높이',0,1);
       for (const k of ['labelDx','labelDy']) if (it[k] !== undefined) finite(it[k],k,-20000,20000);
+      if (it.labelSize !== undefined) finite(it.labelSize,'라벨 글자 크기',9,40);
       return it;
     });
     syncLinks(items);
@@ -110,6 +111,45 @@
     const now = off(p.now) ?? off(today);
     return validate({title: str(p.title || '가져온 일정', 500), cfg: {startY: Math.floor(first / 12), startM: first % 12 + 1, months, weekPx: 100, weekMode: 'actual', laneH: 44, magnet: true, overlap: 'moveOther'}, rows, items, notes: [], now: now !== null && now >= 0 && now <= months ? now : 0, versions: []});
   }
+  /* 버전 비교: pair rows and items by id, report added / removed / changed with per-field detail.
+     Pure data → data, so the UI only has to render the result. */
+  const KIND_NAME = {chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
+  const FIELD_NAME = {label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
+  function compareDocuments(a, b) {
+    const A = validate(a), B = validate(b);
+    const rowName = (doc, id) => (doc.rows.find(r => r.id === id) || {}).name || id || '-';
+    const iso = (doc, m) => { const c = doc.cfg, t = c.startM - 1 + Math.floor(m), y = c.startY + Math.floor(t / 12), mm = ((t % 12) + 12) % 12, dim = new Date(Date.UTC(y, mm + 1, 0)).getUTCDate(), d = Math.min(dim, Math.max(1, 1 + Math.floor((m - Math.floor(m)) * dim + 1e-7))); return y + '-' + String(mm + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); };
+    const show = (doc, k, v) => v === undefined || v === '' ? '(없음)' : k === 's' || k === 'e' ? iso(doc, v) : k === 'row' || k === 'rowFrom' || k === 'rowTo' ? rowName(doc, v) : typeof v === 'boolean' ? (v ? '예' : '아니오') : k === 'targetId' ? ((doc.items.find(i => i.id === v) || {}).label || v) : typeof v === 'number' ? String(Math.round(v * 100) / 100) : String(v);
+    const label = (it) => (it.label || '').replace(/\s*\n\s*/g, ' ').trim() || '(이름 없음)';
+    const summary = { added: 0, removed: 0, changed: 0, same: 0 };
+    const out = [];
+    const rowsA = new Map(A.rows.map(r => [r.id, r])), rowsB = new Map(B.rows.map(r => [r.id, r]));
+    for (const r of B.rows) if (!rowsA.has(r.id)) out.push({type:'added', scope:'row', id:r.id, name:r.name || '(이름 없음)', text:'세션 추가 · ' + (r.name || '(이름 없음)')});
+    for (const r of A.rows) if (!rowsB.has(r.id)) out.push({type:'removed', scope:'row', id:r.id, name:r.name || '(이름 없음)', text:'세션 삭제 · ' + (r.name || '(이름 없음)')});
+    for (const r of B.rows) { const o = rowsA.get(r.id); if (o && o.name !== r.name) out.push({type:'changed', scope:'row', id:r.id, name:r.name, text:'세션 이름 변경 · ' + o.name + ' → ' + r.name, fields:[{key:'name', from:o.name, to:r.name}]}); }
+    const ia = new Map(A.items.map(i => [i.id, i])), ib = new Map(B.items.map(i => [i.id, i]));
+    const skip = new Set(['id', 'kind', 'src']);
+    for (const it of B.items) {
+      const o = ia.get(it.id), kind = KIND_NAME[it.kind] || it.kind;
+      if (!o) { out.push({type:'added', scope:'item', id:it.id, kind:it.kind, name:label(it), text:'[' + kind + '] 추가 · ' + label(it) + (['chev','plain','band'].includes(it.kind) ? ' (' + iso(B, it.s) + ' ~ ' + iso(B, it.e) + ')' : it.kind === 'marker' || it.kind === 'flag' ? ' (' + iso(B, it.s) + ')' : '')}); continue; }
+      const fields = [];
+      for (const k of new Set([...Object.keys(o), ...Object.keys(it)])) {
+        if (skip.has(k)) continue;
+        const x = o[k], y = it[k];
+        if (JSON.stringify(x) === JSON.stringify(y)) continue;
+        if (typeof x === 'number' && typeof y === 'number' && Math.abs(x - y) < 1e-6) continue;
+        fields.push({key:k, name:FIELD_NAME[k] || k, from:show(A, k, x), to:show(B, k, y)});
+      }
+      if (o.kind !== it.kind) fields.unshift({key:'kind', name:'종류', from:KIND_NAME[o.kind] || o.kind, to:kind});
+      if (fields.length) out.push({type:'changed', scope:'item', id:it.id, kind:it.kind, name:label(it), fields, text:'[' + kind + '] 변경 · ' + label(it) + ' — ' + fields.map(f => f.name + ' ' + f.from + ' → ' + f.to).join(' · ')});
+      else summary.same++;
+    }
+    for (const it of A.items) if (!ib.has(it.id)) out.push({type:'removed', scope:'item', id:it.id, kind:it.kind, name:label(it), text:'[' + (KIND_NAME[it.kind] || it.kind) + '] 삭제 · ' + label(it)});
+    for (const c of out) summary[c.type]++;
+    if (A.title !== B.title) out.unshift({type:'changed', scope:'doc', name:'제목', text:'제목 변경 · ' + A.title + ' → ' + B.title, fields:[{key:'title', from:A.title, to:B.title}]});
+    if (['startY','startM','months'].some(k => A.cfg[k] !== B.cfg[k])) out.unshift({type:'changed', scope:'doc', name:'기간', text:'표시 기간 변경 · ' + A.cfg.startY + '.' + A.cfg.startM + ' ' + A.cfg.months + '개월 → ' + B.cfg.startY + '.' + B.cfg.startM + ' ' + B.cfg.months + '개월'});
+    return {summary, changes: out, byId: Object.fromEntries(out.filter(c => c.scope === 'item').map(c => [c.id, c.type])), a: A, b: B};
+  }
   function documentOf(s) { const d={schemaVersion:1}; for (const k of keys) d[k]=clone(s[k] ?? (['rows','items','notes','versions'].includes(k)?[]:null)); return d; }
   // Parses only data literals, never evaluates JavaScript (no functions, calls, getters, imports).
   function serializeFile(data) { return JSON.stringify({format:'mapstone',formatVersion:1,document:validate(data)}); }
@@ -157,5 +197,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,compareDocuments,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });
