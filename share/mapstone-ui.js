@@ -31,22 +31,22 @@
     hideTip();const node=event.currentTarget,help=node.dataset&&node.dataset.tip;
     if(app.drag||(app.state.cfg.showTooltip===false&&!help))return;
     if(help&&((node.dataset.tipIf==='icon'&&!node.closest('.c4'))||(node.dataset.tipIf==='panel'&&!node.closest('.c6'))))return;
-    const L=app.L(),it=help ? {kind:'tip',memo:help} : node.hasAttribute('data-now-tag') ? {kind:'now',s:app.state.now,memo:L.nowTip} : app.state.items.find(i=>i.id===node.dataset.id);
+    const L=app.L(),it=help ? {kind:'tip',memo:help} : node.hasAttribute('data-now-tag') ? {kind:'tip',memo:L.nowTip} : app.state.items.find(i=>i.id===node.dataset.id);
     if(!it||app.state.editing===it.id)return;
     const range=['chev','plain','band'].includes(it.kind);
     const targetId=it.kind==='flag' ? (it.targetId ?? app.rowLayout()[it.row]?.modes[it.id]?.targetId) : '';
     const target=it.kind==='flag'&&app.state.items.find(i=>i.id===targetId);
     const text=it.kind==='sticky'?it.label:it.memo;
-    if(!range&&!text&&it.kind!=='flag'&&it.kind!=='now')return;
+    if(!range&&!text&&!['flag','marker'].includes(it.kind))return;
     tip=el('div',null,{className:'ms-tooltip'+(it.kind==='tip'?' ms-tooltip-plain':'')});tip.setAttribute('role','tooltip');
+    const day=m=>{const iso=app.isoOf(m),w=(L.weekdays||'일월화수목금토')[new Date(iso+'T00:00:00').getDay()];return iso+'('+w+')';};
     const section=(title,...body)=>{const sec=el('div',null,{className:'ms-tip-sec'});sec.append(el('div',title,{className:'ms-tip-h'}),...body);tip.append(sec);};
     if(it.kind==='tip'){tip.append(el('div',text));}
     else{
-      if(it.label&&it.kind!=='sticky')tip.append(el('div',it.label,{className:'ms-tip-title'}));
-      if(range){const row=el('div',null,{className:'ms-tip-range'});row.append(el('span',app.isoOf(it.s)+' → '+app.isoOf(it.e)),el('span',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'),{className:'ms-tip-chip'}));section(L.tipRange,row);}
-      else if(it.kind==='now'||it.kind==='flag'||it.kind==='marker')section(L.tipRange,el('div',app.isoOf(it.s)));
+      if(range){const row=el('div',null,{className:'ms-tip-range'});row.append(el('span',day(it.s)+' → '+day(it.e)),el('span',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'),{className:'ms-tip-chip'}));section(L.tipRange,row);}
+      else if(it.kind==='flag'||it.kind==='marker')section(L.tipRange,el('div',day(it.s)));
       if(it.kind==='flag')section(L.tipLink,el('div',target?target.label:L.noTarget));
-      if(text)section(it.kind==='now'?'':L.tipMemo,el('div',text,{className:'ms-tip-memo'}));
+      if(text)section(L.tipMemo,el('div',text,{className:'ms-tip-memo'}));
     }
     document.body.append(tip);
     const anchor=node.querySelector('[data-alert-label]')||node;
