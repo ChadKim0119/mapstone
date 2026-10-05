@@ -117,11 +117,15 @@
      Pure data → data, so the UI only has to render the result. */
   const KIND_NAME = {chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
   const FIELD_NAME = {label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
+  /* Two texts count as the same when only separators/brackets/spacing/case differ:
+     "e-Care (DMS)" == "e-Care / DMS" == "e-care · dms". Real wording changes still differ. */
+  const plainText = (t) => String(t == null ? '' : t).normalize('NFKC').toLowerCase().replace(/[\s()\[\]{}<>\/\\|·・•,;:~\-–—_.]+/g, ' ').trim();
+  const sameText = (x, y) => plainText(x) === plainText(y);
   /* Files saved from the same schedule share item ids. Documents built from an image/text analysis get fresh ids,
      so they are paired by (kind, normalised label, session name) instead; pairs get B's id so the rest of the
      comparison works unchanged. */
   function alignByContent(A, B) {
-    const norm = t => String(t || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const norm = plainText;
     const rowName = (doc, id) => norm((doc.rows.find(r => r.id === id) || {}).name);
     const key = (doc, it) => it.kind + '|' + norm(it.label) + '|' + (it.kind === 'band' ? rowName(doc, it.rowFrom) : rowName(doc, it.row));
     const rowMap = new Map(), taken = new Set();
@@ -151,9 +155,10 @@
     const rowsA = new Map(A.rows.map(r => [r.id, r])), rowsB = new Map(B.rows.map(r => [r.id, r]));
     for (const r of B.rows) if (!rowsA.has(r.id)) out.push({type:'added', scope:'row', id:r.id, name:r.name || '(이름 없음)', text:'세션 추가 · ' + (r.name || '(이름 없음)')});
     for (const r of A.rows) if (!rowsB.has(r.id)) out.push({type:'removed', scope:'row', id:r.id, name:r.name || '(이름 없음)', text:'세션 삭제 · ' + (r.name || '(이름 없음)')});
-    for (const r of B.rows) { const o = rowsA.get(r.id); if (o && o.name !== r.name) out.push({type:'changed', scope:'row', id:r.id, name:r.name, text:'세션 이름 변경 · ' + o.name + ' → ' + r.name, fields:[{key:'name', from:o.name, to:r.name}]}); }
+    for (const r of B.rows) { const o = rowsA.get(r.id); if (o && o.name !== r.name && !sameText(o.name, r.name)) out.push({type:'changed', scope:'row', id:r.id, name:r.name, text:'세션 이름 변경 · ' + o.name + ' → ' + r.name, fields:[{key:'name', from:o.name, to:r.name}]}); }
     const ia = new Map(A.items.map(i => [i.id, i])), ib = new Map(B.items.map(i => [i.id, i]));
-    const skip = new Set(['id', 'kind', 'src']);
+    /* colour, fill and layout-only fields are cosmetic: they never count as a change */
+    const skip = new Set(['id', 'kind', 'src', 'color', 'variant', 'cmp', 'cmpNote', 'cmpColor']);
     for (const it of B.items) {
       const o = ia.get(it.id), kind = KIND_NAME[it.kind] || it.kind;
       if (!o) { out.push({type:'added', scope:'item', id:it.id, kind:it.kind, name:label(it), text:'[' + kind + '] 추가 · ' + label(it) + (['chev','plain','band'].includes(it.kind) ? ' (' + iso(B, it.s) + ' ~ ' + iso(B, it.e) + ')' : it.kind === 'marker' || it.kind === 'flag' ? ' (' + iso(B, it.s) + ')' : '')}); continue; }
@@ -165,6 +170,7 @@
         if ((k === 's' || k === 'e') && typeof x === 'number' && typeof y === 'number') { if (iso(A, x) === iso(B, y)) continue; fields.push({key:k, name:FIELD_NAME[k], from:iso(A, x), to:iso(B, y)}); continue; }
         if (JSON.stringify(x) === JSON.stringify(y)) continue;
         if (typeof x === 'number' && typeof y === 'number' && Math.abs(x - y) < 1e-6) continue;
+        if ((k === 'label' || k === 'memo') && sameText(x, y)) continue;
         fields.push({key:k, name:FIELD_NAME[k] || k, from:show(A, k, x), to:show(B, k, y)});
       }
       if (o.kind !== it.kind) fields.unshift({key:'kind', name:'종류', from:KIND_NAME[o.kind] || o.kind, to:kind});
@@ -173,8 +179,10 @@
     }
     for (const it of A.items) if (!ib.has(it.id)) out.push({type:'removed', scope:'item', id:it.id, kind:it.kind, name:label(it), text:'[' + (KIND_NAME[it.kind] || it.kind) + '] 삭제 · ' + label(it)});
     for (const c of out) summary[c.type]++;
+    summary.doc = 0;
     if (A.title !== B.title) out.unshift({type:'changed', scope:'doc', name:'제목', text:'제목 변경 · ' + A.title + ' → ' + B.title, fields:[{key:'title', from:A.title, to:B.title}]});
     if (['startY','startM','months'].some(k => A.cfg[k] !== B.cfg[k])) out.unshift({type:'changed', scope:'doc', name:'기간', text:'표시 기간 변경 · ' + A.cfg.startY + '.' + A.cfg.startM + ' ' + A.cfg.months + '개월 → ' + B.cfg.startY + '.' + B.cfg.startM + ' ' + B.cfg.months + '개월'});
+    summary.doc = out.filter(c => c.scope === 'doc').length;
     return {summary, changes: out, byId: Object.fromEntries(out.filter(c => c.scope === 'item').map(c => [c.id, c.type])), a: A, b: B};
   }
   /* Turns a compare result into a normal document the main editor can show:
