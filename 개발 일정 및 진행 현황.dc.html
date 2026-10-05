@@ -292,21 +292,21 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <div style="position:absolute;left:4px;right:16px;top:50%;transform:translateY(-50%);font-size:{{ b.labelSize }};font-weight:600;line-height:1.3;text-align:center;letter-spacing:-.01em;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}</div>
                       </sc-if>
                       <sc-if value="{{ b.leader }}" hint-placeholder-val="{{ false }}">
-                        <svg data-leader="" aria-hidden="true" style="position:absolute;overflow:visible;pointer-events:none;z-index:5;{{ b.leaderBox }}"><path d="{{ b.leaderPath }}" fill="none" stroke="{{ b.leaderColor }}" stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round"></path><circle cx="0" cy="0" r="0"></circle></svg>
+                        <svg data-leader="" aria-hidden="true" style="position:absolute;overflow:visible;pointer-events:none;z-index:5;{{ b.leaderBox }}"><path d="{{ b.leaderPath }}" fill="none" stroke="{{ b.leaderColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ b.outRight }}" hint-placeholder-val="{{ false }}">
-                        <span style="position:absolute;left:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span>
-                        <div style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}">{{ b.label }}</div>
+                        <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span></sc-if>
+                        <div style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}</div>
                       </sc-if>
                       <sc-if value="{{ b.outLeft }}" hint-placeholder-val="{{ false }}">
-                        <span style="position:absolute;right:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span>
-                        <div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}">{{ b.label }}</div>
+                        <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;right:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span></sc-if>
+                        <div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}</div>
                       </sc-if>
                       <sc-if value="{{ b.outStrip }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:5px;width:0;border-left:1px dashed var(--color-border-neutral-3);pointer-events:none;top:{{ b.connTop }};height:{{ b.connH }}"></div>
+                        <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:5px;width:0;border-left:1px dashed var(--color-border-neutral-3);pointer-events:none;top:{{ b.connTop }};height:{{ b.connH }}"></div></sc-if>
                       </sc-if>
                       <sc-if value="{{ b.outStrip }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:0;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6;top:{{ b.stripTop }}" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}">{{ b.label }}</div>
+                        <div style="position:absolute;left:0;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6;top:{{ b.stripTop }}" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}</div>
                       </sc-if>
                       <sc-if value="{{ b.durIn }}" hint-placeholder-val="{{ true }}">
                         <div style="position:absolute;right:19px;bottom:1px;white-space:nowrap;font-size:10.5px;font-weight:700;border-radius:9999px;pointer-events:none;padding:{{ b.durPad }};background:{{ b.durBg }};color:{{ b.durFg }}">{{ b.dur }}</div>
@@ -860,6 +860,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.52', agent: 'Claude Code', title: '돌출 라벨 툴팁·연결선 정리', items: ['툴팁은 도형에만 표시 — 도형 밖으로 나간 라벨 위에서는 뜨지 않고, 도형에서 라벨로 옮기면 닫힘', '돌출 라벨을 옮기면 도형 옆에 남던 짧은 선 제거', '돌출 라벨 연결선을 일자 연결선처럼 직각으로 꺾이는 선으로 변경(가로·세로 방향에 따라 경로 선택), 옅은 도형에서는 회색으로 보정'] },
     { v: 'v9.51', agent: 'Claude Code', title: '돌출 라벨 연결선·버전 비교 정리', items: ['도형 밖으로 나간 일정 라벨을 옮기면 블록과 라벨을 잇는 점선 연결선이 나타남', '버전 비교: 구두점·괄호·슬래시·공백만 다른 텍스트(e-Care (DMS) → e-Care / DMS)는 변경으로 보지 않음', '버전 비교: 색상·채우기 변경과 NOW 위치 변경은 무시', '버전 비교: 변경 · 추가 · 삭제 그룹 카드, 항목별 필드 이전 → 이후 표시, 칩과 그룹 건수 일치(제목·기간은 따로 표시)', '버전 비교 창 버튼 크기·패딩 통일(높이 32px, 패딩 12px, 글자 13px / 주 버튼 34px)'] },
     { v: 'v9.50', agent: 'Claude Code', title: '버전 비교 확장 — 이미지·포커싱·비교 화면 편집', items: ['버전 비교에 일정표 이미지(파일·캡처 붙여넣기) 입력 추가 — AI가 읽어 비교, 이미지는 이름·세션이 같은 항목끼리 짝지음', '검토 내용을 누르면 비교 타임라인의 해당 구간으로 이동하고 강조', "[비교 화면 편집하기] — 확인 팝업('현재 작업 내용이 비교 화면으로 교체됩니다') 후 현재 일정을 백업하고 비교 결과를 편집 화면으로 열기", '편집 화면 왼쪽 아래에 비교 검토 내용 패널 — 누르면 일정표의 해당 영역으로 이동·강조, 변경 주황·추가 초록·삭제 빨강(점선) 표시', '[비교 표시 해제]로 일반 편집으로 복귀, Cmd/Ctrl+Z로도 되돌리기 가능', '시작 월이 다른 두 파일도 달력 날짜 기준으로 비교해 가짜 변경이 생기지 않음'] },
     { v: 'v9.49', agent: 'Claude Code', title: '라벨 줄바꿈·글자 크기·버전 비교', items: ['설정창 라벨의 줄바꿈이 항목에도 반영되고, 조금 걸치더라도 최대한 도형 안에 유지', '기간 태그가 여러 줄 라벨과 겹치지 않도록 위쪽으로 이동', '도형 밖으로 나간 라벨을 끌어서 옮길 수 있고, 라벨 입력 옆 A− / A+로 글자 크기 조정', '설정창 항목 제목을 [항목 추가]와 같은 용어로 통일 (일정·참고·공통·마일스톤·메모·포스트잇)', '[버전 비교] 신설 — 두 버전(JSON) 파일의 추가·삭제·변경을 색으로 표시하고 검토 내용을 글로 정리'] },
@@ -921,7 +922,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.51';
+  APP_VER = 'v9.52';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -2048,7 +2049,11 @@ class Component extends DCLogic {
     this.setState({ editing: null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
   };
   onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return; this.setState({selLinkDot:null,sel:id,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
-  onHover = (e) => { MapstoneUI.showTip(this, e); this.setState({ hover: e.currentTarget.dataset.id }); };
+  /* tooltips belong to the shape: entering its detached/outside label closes the tooltip and keeps it from re-opening */
+  onOutLabelEnter = (e) => { e.stopPropagation(); MapstoneUI.hideTip(); this.setState({ hover: null }); };
+  /* tooltips belong to the shape itself: entering its outside label closes the tooltip */
+  onOutLabelEnter = (e) => { e.stopPropagation(); MapstoneUI.hideTip(); this.setState({ hover: null }); };
+  onHover = (e) => { if (e.target && e.target.closest && e.target.closest('[data-mode="outlabel"]')) return; MapstoneUI.showTip(this, e); this.setState({ hover: e.currentTarget.dataset.id }); };
   onNowHover = (e) => MapstoneUI.showTip(this, e);
   onNowKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.nowToday(); MapstoneUI.hideTip(); } };
   offHover = () => { MapstoneUI.hideTip(); this.setState({ hover: null }); };
@@ -2587,16 +2592,21 @@ class Component extends DCLogic {
         fg: solid ? (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff') : this.dark(it.color),
         labelSize: px(it.labelSize || 12.5), outDx: px(it.labelDx || 0), outDy: px(it.labelDy || 0),
         ...(() => {
-          /* a moved label keeps a leader line to its block: from the edge it was attached to, to the nearest point of the label box */
+          /* a moved label keeps a bent (right-angle) connector to its block, like the memo connectors */
           const dx = it.labelDx || 0, dy = it.labelDy || 0, mode = m.mode;
-          if ((!dx && !dy) || !['right', 'left', 'strip'].includes(mode)) return { leader: false, leaderPath: '', leaderBox: '' };
+          if ((!dx && !dy) || !['right', 'left', 'strip'].includes(mode)) return { leader: false, stub: true, leaderPath: '', leaderBox: '' };
           const lines = String(it.label || '').split('\n'), fs = it.labelSize || 12.5, bw = Math.max(...lines.map((l) => this.measure(l))) * fs / 12.5 + 14, bh = lines.length * fs * 1.3 + 4;
           const ax = mode === 'right' ? w : mode === 'left' ? 0 : 5, ay = mode === 'strip' ? h : h / 2;
           const lx = mode === 'right' ? w + 8 + dx : mode === 'left' ? -8 - bw + dx : dx, ly = (mode === 'strip' ? stripTop : h / 2 - bh / 2) + dy;
-          const ex = Math.max(lx, Math.min(ax, lx + bw)), ey = Math.max(ly, Math.min(ay, ly + bh));
-          const path = 'M ' + ax + ' ' + ay + ' L ' + ex + ' ' + ey;
-          const x0 = Math.min(ax, ex) - 6, y0 = Math.min(ay, ey) - 6, ww = Math.abs(ex - ax) + 12, hh = Math.abs(ey - ay) + 12;
-          return { leader: true, leaderPath: 'M ' + (ax - x0) + ' ' + (ay - y0) + ' L ' + (ex - x0) + ' ' + (ey - y0), leaderBox: 'left:' + x0 + 'px;top:' + y0 + 'px;width:' + ww + 'px;height:' + hh + 'px', leaderColor: fillBg };
+          const cx = lx + bw / 2, cy = ly + bh / 2;
+          /* horizontal first when the label is mostly to the side, vertical first when it is mostly above/below */
+          const side = lx > ax ? 'right' : lx + bw < ax ? 'left' : null, vert = ly > ay ? 'below' : ly + bh < ay ? 'above' : null;
+          let pts;
+          if (side && (!vert || Math.abs(cx - ax) >= Math.abs(cy - ay))) { const ex = side === 'right' ? lx : lx + bw; pts = [[ax, ay], [(ax + ex) / 2, ay], [(ax + ex) / 2, Math.max(ly + 4, Math.min(cy, ly + bh - 4))], [ex, Math.max(ly + 4, Math.min(cy, ly + bh - 4))]]; if (Math.abs(cy - ay) < 2) pts = [[ax, ay], [ex, ay]]; }
+          else if (vert) { const ey = vert === 'below' ? ly : ly + bh, ex = Math.max(lx + 6, Math.min(ax, lx + bw - 6)); pts = [[ax, ay], [ax, (ay + ey) / 2], [ex, (ay + ey) / 2], [ex, ey]]; if (Math.abs(ex - ax) < 2) pts = [[ax, ay], [ax, ey]]; }
+          else return { leader: false, stub: false, leaderPath: '', leaderBox: '' };
+          const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]), x0 = Math.min(...xs) - 4, y0 = Math.min(...ys) - 4;
+          return { leader: true, stub: false, leaderPath: 'M ' + pts.map((q) => (q[0] - x0).toFixed(1) + ' ' + (q[1] - y0).toFixed(1)).join(' L '), leaderBox: 'left:' + x0 + 'px;top:' + y0 + 'px;width:' + (Math.max(...xs) - x0 + 4) + 'px;height:' + (Math.max(...ys) - y0 + 4) + 'px', leaderColor: this.lum(it.color) > 0.72 ? '#8a95a1' : it.color };
         })(),
         sel: sel, editing: editing,
         inside: !editing && m.mode === 'in', outRight: !editing && m.mode === 'right',
@@ -2857,7 +2867,7 @@ class Component extends DCLogic {
       selIsSticky: !!sel && sel.kind === 'sticky',
       onRowName: this.onRowName, onRowDelete: this.onRowDelete, onRowUp: this.onRowUp, onRowDown: this.onRowDown, onRowFocus: this.onRowFocus,
       onItemDown: this.onItemDown, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
-      onHover: this.onHover, offHover: this.offHover,
+      onHover: this.onHover, onOutLabelEnter: this.onOutLabelEnter, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,
       onField: this.onField, onStep: this.onStep, onColor: this.onColor, onVariant: this.onVariant, onCfg: this.onCfg,
