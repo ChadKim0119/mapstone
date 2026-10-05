@@ -221,11 +221,11 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           </div>
 
           <div style="display:flex;align-items:stretch;position:sticky;top:0;z-index:62;background:#fff">
-            <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700">{{ L.category }}</div>
+            <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700">{{ L.category }}</div>
             <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
 <sc-for list="{{ subdivisions }}" as="q"><span style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
               <sc-for list="{{ cols }}" as="c" hint-placeholder-count="22">
-                <div data-col="{{ c.key }}" style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }}">
+                <div data-col="{{ c.key }}" style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }};background:{{ c.bg }}">
                   <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.75);height:13px">{{ c.yearLabel }}</span>
                   <span style="font-size:13px;font-weight:700">{{ c.label }}</span>
                 </div>
@@ -700,6 +700,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div style="padding:24px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:var(--color-bg-neutral-1);text-align:center;font-size:12px;white-space:pre-line;color:var(--color-text-neutral-3)">{{ L.noVer }}</div>
             </sc-if>
           </div>
+          <div data-credit="" style="margin:28px 20px 20px;padding-top:12px;border-top:1px solid var(--color-border-neutral-1);font-size:11.5px;line-height:1.6;color:var(--color-text-neutral-3)">Mapstone {{ appVer }}<br>{{ L.credit }}</div>
         </sc-if>
 
       </div>
@@ -821,6 +822,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.44', title: '파일 저장 위치·이름, 제작 표기, 헤더 정리', items: ['파일 저장[JSON] 시 저장 위치와 파일 이름 지정(Chrome·Edge), 그 외 브라우저는 파일 이름 지정 후 다운로드', '사용법 좌하단과 설정 › 버전 하단에 프로그램 이름 · 버전 · 제작 표기', '헤더 세션 칸 가운데 정렬', '헤더 월 칸에 은은한 교차 색상', '배율 300% 초과 시 주차별 세로선을 아주 연하게 표시'] },
     { v: 'v9.43', title: '첫 로딩 화면·단축키', items: ['첫 로딩 때 보이던 어두운 미리보기 그림과 처리 전 템플릿 깜빡임 제거, 흰 배경 로딩 표시로 교체', '단축키: F 전체 화면 · Shift+F 너비 맞춤 · D 일자 · M 기간(MD/MM) · T 툴팁 · W Week · S 또는 , 설정창 보기 (한글 입력 상태에서도 동작)', '각 버튼 툴팁과 사용법 단축키 표에 그룹별로 표기'] },
     { v: 'v9.42', title: '입력칸 크기·겹침 설정 정리', items: ["새 세션 기본 이름 '신규 세션'", '항목 생성 시 이름 입력칸이 블록보다 길던 문제 수정(글자 길이에 맞춤)', '설정창 메모·라벨 입력칸은 한 줄로 시작해 줄바꿈마다 늘어나고 5줄부터 스크롤', '마우스 조작 안내를 두 줄 설명으로 정리', "겹침 설정 제목 '항목들이 겹쳐지는 경우', 블록→항목 명칭, 세 가지 규칙을 한 줄 아이콘 버튼과 설명으로"] },
     { v: 'v9.41', title: '한 줄 메뉴바·툴팁 개편·Enter 입력 완료·세션', items: ['메뉴바는 항상 한 줄: 공간이 부족하면 아이콘 숨김 → 보기 항목을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 너비 맞춤·전체 화면 아이콘만', '아이콘만 있는 버튼(↻, 행 ↑↓+✕, 아이콘 상태의 너비 맞춤·전체 화면)에 이름 툴팁', '툴팁을 이름 · 기간 · 메모(· 연결) 구간으로 나누고, W·D 태그 30% 축소', '툴팁은 3초 뒤 자동으로 닫힘, 설정에서 3초 ⇄ 계속 표시 선택', '텍스트 칸: Enter 입력 완료, Shift+Enter 줄바꿈', "헤더 '구분' → '세션'", '가로 스크롤 시 세션 열 왼쪽 틈으로 항목이 보이던 문제 수정'] },
@@ -874,7 +876,7 @@ class Component extends DCLogic {
     { v: 'v2.0', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.43';
+  APP_VER = 'v9.44';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -921,7 +923,7 @@ class Component extends DCLogic {
       helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
-      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '모든 항목(일정·참고·공통·마일스톤·메모·포스트잇)과 구분 행이 삭제되고, 빈 행 하나만 남습니다.\n타임라인 설정과 버전 히스토리는 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', titlePrompt: '일정 제목을 입력해주세요', focusExit: '전체보기 종료', rowNamePh: '세션 이름을 입력해주세요', importShort: '이미지 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipMemo: '메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
+      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '모든 항목(일정·참고·공통·마일스톤·메모·포스트잇)과 구분 행이 삭제되고, 빈 행 하나만 남습니다.\n타임라인 설정과 버전 히스토리는 유지되며 Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', titlePrompt: '일정 제목을 입력해주세요', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '전체보기 종료', rowNamePh: '세션 이름을 입력해주세요', importShort: '이미지 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipMemo: '메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
       weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考', band: '共通', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
@@ -960,7 +962,7 @@ class Component extends DCLogic {
       helpT: '使い方', rowProp: '行の設定', rowName: '行の名前', rowHF: '行の高さ (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: '行の背景色', rowColorNone: 'なし', rowDel: '行を削除', rowAdd: '下に行を追加',
       rowHint: '行の境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
-      clearAll: '全て削除', clearTitle: '全て削除', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべての項目（スケジュール・参考・共通・マイルストーン・メモ・付箋）と区分行が削除され、空の行が1つだけ残ります。\nタイムライン設定とバージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', titlePrompt: 'スケジュールのタイトルを入力してください', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipMemo: 'メモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
+      clearAll: '全て削除', clearTitle: '全て削除', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべての項目（スケジュール・参考・共通・マイルストーン・メモ・付箋）と区分行が削除され、空の行が1つだけ残ります。\nタイムライン設定とバージョン履歴は保持され、Cmd(Ctrl)+Z で元に戻せます。', titlePrompt: 'スケジュールのタイトルを入力してください', credit: '制作 : 커넥티드카 사업팀 김창목', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipMemo: 'メモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
     }
   };
 
@@ -1199,7 +1201,7 @@ class Component extends DCLogic {
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
   fileName(ext) { const d=new Date();return 'mapstone_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.'+ext; }
   openFile = () => MapstoneUI.open(this,'file');
-  exportJson = () => MapstoneUI.download(this._recoveryData ? this._recoveryData : MapstoneCore.serializeFile(this.dataDocument()), this.fileName(this._recoveryData ? 'json' : 'mapstone'));
+  exportJson = () => (MapstoneUI.saveFile ? (d, n) => MapstoneUI.saveFile(this, d, n) : MapstoneUI.download)(this._recoveryData ? this._recoveryData : MapstoneCore.serializeFile(this.dataDocument()), this.fileName(this._recoveryData ? 'json' : 'mapstone'));
   importDocument(data) {
     if (this.state.readOnly) return;
     const d = MapstoneCore.validate(data); const before=this.snapshot(); this._saveBlocked=false; this._recoveryData=null;
@@ -2428,10 +2430,12 @@ class Component extends DCLogic {
       const m = ((t % 12) + 12) % 12;
       cols.push({
         key: i, label: (m + 1) + '월', yearLabel: i === 0 || m === 0 ? '`' + String(y).slice(2) : '',
-        width: px(W[i])
+        width: px(W[i]), bg: i % 2 ? 'rgba(255,255,255,.06)' : 'transparent'
       });
       if(cfg.months<5) for(let j=1;j<8;j++) { gridCols.push({key:i+'-'+j,left:px(O[i]+W[i]*j/8),color:'rgba(127,138,148,.16)'}); subdivisions.push({id:i+'-'+j,m:i,end:O[i]+W[i],left:px(O[i]+W[i]*j/8),label:String(1+Math.floor(new Date(y,m+1,0).getDate()*j/8))}); }
       else for (let j = 0; j < Math.ceil(this.weeksIn(i)); j++) subdivisions.push({ id: i + '-w' + j, m: i, end: O[i] + W[i], left: px(O[i] + W[i] * j / this.weeksIn(i) + 3), label: (j + 1) + 'w' });
+      /* above 300% zoom, faint week lines help reading dates (short schedules already have 8 divisions) */
+      if (cfg.months >= 5 && this.weekPxVal() / 19 > 3) for (let j = 1; j < Math.ceil(this.weeksIn(i)); j++) gridCols.push({ key: i + '-wl' + j, left: px(O[i] + W[i] * j / this.weeksIn(i)), color: 'rgba(127,138,148,.10)' });
       gridCols.push({ key: i, left: px(O[i]), color: m === 0 ? 'var(--color-border-neutral-2)' : 'var(--color-border-neutral-1)' });
     }
 
