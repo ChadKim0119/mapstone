@@ -129,7 +129,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
     <div style="display:flex;align-items:center;gap:10px">
-      <button onClick="{{ openRel }}" title="{{ L.relTitle }}" style="flex:none;padding:3px 11px 3px 6px;display:inline-flex;align-items:center;gap:6px;border:none;border-radius:9999px;background:#181a1b;font-size:12px;font-weight:700;color:#fff;letter-spacing:.01em;cursor:pointer" aria-label="MapStone {{ appVer }}"><svg width="18" height="18" viewBox="0 0 512 512" aria-hidden="true" style="flex:none;display:block"><rect x="0" y="0" width="512" height="512" rx="116" fill="#181A1B"></rect><rect x="112" y="136" width="176" height="56" rx="28" fill="#FFFFFF"></rect><rect x="184" y="228" width="216" height="56" rx="28" fill="#E30084"></rect><rect x="112" y="320" width="104" height="56" rx="28" fill="#FFFFFF"></rect><path d="M296 320l28 28-28 28-28-28z" fill="#FFFFFF"></path><rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="1" vector-effect="non-scaling-stroke"></rect></svg>MapStone {{ appVer }}</button>
+      <button onClick="{{ openRel }}" title="{{ L.relTitle }}" style="flex:none;padding:5px 15px 5px 8px;display:inline-flex;align-items:center;gap:8px;border:none;border-radius:9999px;background:#181a1b;font-size:14px;font-weight:700;color:#fff;letter-spacing:.01em;cursor:pointer" aria-label="MapStone {{ appVer }}"><svg width="22" height="22" viewBox="0 0 512 512" aria-hidden="true" style="flex:none;display:block"><rect x="0" y="0" width="512" height="512" rx="116" fill="#181A1B"></rect><rect x="112" y="136" width="176" height="56" rx="28" fill="#FFFFFF"></rect><rect x="184" y="228" width="216" height="56" rx="28" fill="#E30084"></rect><rect x="112" y="320" width="104" height="56" rx="28" fill="#FFFFFF"></rect><path d="M296 320l28 28-28 28-28-28z" fill="#FFFFFF"></path><rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="1" vector-effect="non-scaling-stroke"></rect></svg>MapStone {{ appVer }}</button>
       <span style="flex:none;padding:3px 8px;border-radius:9999px;background:var(--color-bg-neutral-2);font-size:12px;font-weight:700;color:var(--color-text-neutral-4)">{{ verLabel }}</span><input value="{{ title }}" onChange="{{ onTitle }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" aria-label="{{ L.titleF }}" style="flex:1;min-width:0;border:1px solid transparent;border-radius:6px;padding:4px 8px;margin-left:-8px;font-size:20px;font-weight:700;color:var(--color-text-neutral-6);background:transparent;outline:none" style-hover="border-color:var(--color-border-neutral-2)" style-focus="border-color:#000">
       
       <span style="flex:none;font-size:12px;font-weight:500;color:var(--color-text-neutral-3)">{{ savedLabel }}</span>
@@ -823,6 +823,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.48', agent: 'Claude Code', title: '메모 점 이동 시 튐 수정·앱 칩 확대', items: ['메모 점을 다른 일정·참고·공통 구간으로 옮기거나 새로 연결할 때 메모 라벨이 갑자기 다른 위치로 튀던 문제 수정 — 어디로 연결해도 라벨은 화면상 제자리 유지', '좌상단 앱 이름 칩 확대(글자 14px, 아이콘 22px)', "'버전 미저장' 표기를 'Beta ver.'로 변경"] },
     { v: 'v9.47', agent: 'Claude Code', title: '수정 이력 에이전트 태그·앱 아이콘 교체', items: ['수정 이력의 각 버전에 작업한 AI 에이전트 태그 표시 — [Codex] · [Claude Code] · [Claude Design]', "제목의 'Codex' 접두어와 'Codex 수정사항' 제목 삭제", '전달받은 앱 아이콘을 파비콘 · 로딩 화면에 적용, 상단 배지에는 아주 얇은 흰 테두리를 더해 적용'] },
     { v: 'v9.46', agent: 'Claude Code', title: '앱 이름·아이콘', items: ["좌상단 'Prototype' 배지를 앱 이름 'MapStone'과 버전으로 변경", '로드맵 막대와 마일스톤(다이아몬드)을 담은 새 플랫 아이콘을 배지 · 파비콘 · 로딩 화면에 적용', '창 제목 · 제작 표기도 MapStone으로 통일'] },
     { v: 'v9.45', agent: 'Claude Code', title: '부드러운 배율·스크롤, 툴팁 정리', items: ['배율 600% 초과 시 일자별 세로선을 점선으로 표시', '배율 조정 시 화면 가운데(휠·핀치는 마우스 위치)를 기준으로 확대·축소, 프레임 단위로 묶어 부드럽게 처리', '좌우 스크롤 중 화면 전체를 다시 그리지 않도록 바꿔 끊김·깜빡임 제거', '툴팁 기간에 요일 표시 — 2026-04-01(수)', '툴팁 제목 영역 삭제, NOW 툴팁은 사용법만', '마일스톤에도 툴팁(날짜·메모)', '가로 스크롤 시 메모 라벨이 세션 열·헤더 위로 겹쳐 보이던 문제 수정'] },
@@ -880,7 +881,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.47';
+  APP_VER = 'v9.48';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -901,7 +902,7 @@ class Component extends DCLogic {
       dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
-      tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: '버전 미저장', savedAuto: '자동 저장',
+      tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '블록 메모 (마우스 오버 시 표시)', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
       kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간 (여러 행)', kMarker: '마일스톤', kFlag: '메모',
       rowF: '행', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이 (레인 수)',
@@ -940,7 +941,7 @@ class Component extends DCLogic {
       dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
-      tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'バージョン未保存', savedAuto: '自動保存',
+      tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ブロックメモ（ホバーで表示）', phMemo: '背景・リスク・担当など', kindF: '種類',
       kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: 'メモ',
       rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ（レーン数）',
@@ -2061,10 +2062,13 @@ class Component extends DCLogic {
   // ── fields ────────────────────────────────────
   connectFlag(id, targetId, offset = 1, push = true, y = 1) {
     if (targetId && !this.state.items.some(i => i.id === targetId && this.linkKind(i.kind))) return;
-    const before = !targetId && this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id && f.connected);
+    /* keep the label where it is on screen whenever the anchor changes (re-link, new link or unlink),
+       otherwise the label jumps with the new target's geometry */
+    const before = this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id);
     this.mutate(d => { const flag=d.items.find(i=>i.id===id && i.kind==='flag'); if (flag) { flag.targetId=targetId; if (targetId) { flag.linkOffset=offset; flag.linkY=y; } else { delete flag.linkOffset; delete flag.linkY; } } }, push);
     if (before) {
       const after=this.renderVals().rowsView.flatMap(r=>r.flags).find(f=>f.id===id);
+      if (!after) return;
       this.mutate(d=>{const flag=d.items.find(i=>i.id===id);flag.labelDx=(flag.labelDx||0)+parseFloat(before.left)+parseFloat(before.labelLeft)-parseFloat(after.left)-parseFloat(after.labelLeft);flag.labelDy=(flag.labelDy||0)+parseFloat(before.top)+parseFloat(before.labelTop)-parseFloat(after.top)-parseFloat(after.labelTop);},false);
     }
   }
