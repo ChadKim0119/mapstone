@@ -3,8 +3,11 @@
   "configurations": [
     {
       "name": "mapstone",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "4173", "--bind", "127.0.0.1"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "const h=require('http'),f=require('fs'),p=require('path'),r=process.cwd(),SAVE=\"/private/tmp/claude-501/-Users-kcm-Documents-GitHub-mapstone/4c6844a3-95c5-414c-ac9c-a8e86f2508a4/scratchpad/help\",t={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};h.createServer((q,s)=>{const u0=new URL(q.url,'http://x');if(q.method==='POST'&&u0.pathname==='/__save'){const n=p.basename(u0.searchParams.get('n')||'shot.png');const b=[];q.on('data',d=>b.push(d));q.on('end',()=>{f.writeFileSync(p.join(SAVE,n),Buffer.concat(b));s.writeHead(200).end('ok')});return;}let u=decodeURIComponent(u0.pathname);if(u.endsWith('/'))u+='index.html';const x=p.join(r,p.normalize(u));if(!x.startsWith(r))return s.writeHead(403).end();f.readFile(x,(e,d)=>e?s.writeHead(404).end():s.writeHead(200,{'Content-Type':t[p.extname(x)]||'application/octet-stream'}).end(d))}).listen(4173,'127.0.0.1')"
+      ],
       "port": 4173
     }
   ]
