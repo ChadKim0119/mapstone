@@ -271,7 +271,8 @@
           const top=el('div',null,{className:'ms-cmp-itemhead'});if(c.kind)top.append(el('em',CMP_KIND[c.kind]||'항목',{className:'ms-cmp-kind'}));top.append(el('strong',c.name||'(이름 없음)'));
           if(c.type==='added'){const m=/\((.+)\)\s*$/.exec(c.text);if(m)top.append(el('span',m[1],{className:'ms-cmp-when'}));}
           btn.append(top);
-          if(c.fields&&c.fields.length){const grid=el('dl',null,{className:'ms-cmp-fields'});for(const f of c.fields){grid.append(el('dt',f.name||(f.key==='name'?'이름':f.key==='title'?'제목':f.key)));const dd=el('dd');dd.append(el('span',f.from,{className:'ms-cmp-from'}),el('span','→',{className:'ms-cmp-arrow'}),el('span',f.to,{className:'ms-cmp-to'}));grid.append(dd);}btn.append(grid);}
+          const rows=c.lines&&c.lines.length?c.lines:(c.fields||[]).map(f=>({label:f.name||(f.key==='name'?'이름':f.key==='title'?'제목':f.key),from:f.from,to:f.to}));
+          if(rows.length){const grid=el('dl',null,{className:'ms-cmp-fields'});for(const f of rows){grid.append(el('dt',f.label));const dd=el('dd');dd.append(el('span',f.from,{className:'ms-cmp-from'}),el('span','→',{className:'ms-cmp-arrow'}),el('span',f.to,{className:'ms-cmp-to'}));grid.append(dd);}btn.append(grid);}
           else if(c.scope==='doc')btn.append(el('div',c.text.replace(/^[^·]*·\s*/,''),{className:'ms-cmp-note'}));
           btn.addEventListener('click',()=>{result.querySelectorAll('.ms-cmp-pick.on').forEach(x=>x.classList.remove('on'));btn.classList.add('on');focusInTimeline(tl,c.id);});li.append(btn);list.append(li);}
         group.append(list);wrapList.append(group);}

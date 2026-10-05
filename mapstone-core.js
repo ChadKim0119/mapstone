@@ -64,6 +64,7 @@
       if (it.labelSize !== undefined) finite(it.labelSize,'라벨 글자 크기',9,40);
       if (it.cmp !== undefined && !['added','removed','changed'].includes(it.cmp)) fail('비교 표시 값이 올바르지 않습니다.');
       if (it.cmpNote !== undefined) text(it.cmpNote,'비교 설명',4000);
+      if (it.cmpLines !== undefined && (!Array.isArray(it.cmpLines) || it.cmpLines.length > 12 || it.cmpLines.some(l => !l || typeof l.label !== 'string' || typeof l.from !== 'string' || typeof l.to !== 'string' || l.from.length > 600 || l.to.length > 600))) fail('비교 상세 형식이 올바르지 않습니다.');
       return it;
     });
     syncLinks(items);
@@ -143,6 +144,29 @@
     });
     return out;
   }
+  const clip = (t, n = 44) => { const x = String(t == null ? '' : t).replace(/\s*\n\s*/g, ' ').trim(); return x.length > n ? x.slice(0, n - 1) + '…' : x; };
+  const short = (d) => String(d).slice(5);
+  /* Reader-facing summary of one changed item: kind → period → name → session → memo, one line each.
+     Derived fields (a 공통 item's start/end sessions after it became a 일정, layout-only values) are left out. */
+  function summarizeFields(fields) {
+    const get = (k) => fields.find(f => f.key === k);
+    const out = [], kind = get('kind');
+    if (kind) out.push({label:'종류', from:kind.from, to:kind.to});
+    const s = get('s'), e = get('e');
+    if (s || e) {
+      const f1 = s ? s.from : null, t1 = s ? s.to : null, f2 = e ? e.from : null, t2 = e ? e.to : null;
+      if (s && e) out.push({label:'기간', from:f1 + ' ~ ' + short(f2), to:t1 + ' ~ ' + short(t2)});
+      else if (s) out.push({label:'시작', from:f1, to:t1}); else out.push({label:'종료', from:f2, to:t2});
+    }
+    const label = get('label'); if (label) out.push({label:'이름', from:clip(label.from), to:clip(label.to)});
+    const row = get('row'); if (row) out.push({label:'세션', from:row.from, to:row.to});
+    const rf = get('rowFrom'), rt = get('rowTo');
+    if ((rf || rt) && !kind) out.push({label:'범위', from:(rf ? rf.from : '') + ' ~ ' + (rt ? rt.from : ''), to:(rf ? rf.to : '') + ' ~ ' + (rt ? rt.to : '')});
+    const memo = get('memo'); if (memo) out.push({label:'메모', from:clip(memo.from), to:clip(memo.to)});
+    const link = get('targetId'); if (link) out.push({label:'연결', from:link.from, to:link.to});
+    const hide = get('hideDuration'); if (hide) out.push({label:'기간 표시', from:hide.from === '예' ? '숨김' : '표시', to:hide.to === '예' ? '숨김' : '표시'});
+    return out;
+  }
   function compareDocuments(a, b, opt = {}) {
     let A = validate(a); const B = validate(b);
     if (opt.match === 'content') A = validate(alignByContent(A, B));
@@ -158,7 +182,7 @@
     for (const r of B.rows) { const o = rowsA.get(r.id); if (o && o.name !== r.name && !sameText(o.name, r.name)) out.push({type:'changed', scope:'row', id:r.id, name:r.name, text:'세션 이름 변경 · ' + o.name + ' → ' + r.name, fields:[{key:'name', from:o.name, to:r.name}]}); }
     const ia = new Map(A.items.map(i => [i.id, i])), ib = new Map(B.items.map(i => [i.id, i]));
     /* colour, fill and layout-only fields are cosmetic: they never count as a change */
-    const skip = new Set(['id', 'kind', 'src', 'color', 'variant', 'cmp', 'cmpNote', 'cmpColor']);
+    const skip = new Set(['id', 'kind', 'src', 'color', 'variant', 'cmp', 'cmpNote', 'cmpColor', 'cmpLines']);
     for (const it of B.items) {
       const o = ia.get(it.id), kind = KIND_NAME[it.kind] || it.kind;
       if (!o) { out.push({type:'added', scope:'item', id:it.id, kind:it.kind, name:label(it), text:'[' + kind + '] 추가 · ' + label(it) + (['chev','plain','band'].includes(it.kind) ? ' (' + iso(B, it.s) + ' ~ ' + iso(B, it.e) + ')' : it.kind === 'marker' || it.kind === 'flag' ? ' (' + iso(B, it.s) + ')' : '')}); continue; }
@@ -174,7 +198,7 @@
         fields.push({key:k, name:FIELD_NAME[k] || k, from:show(A, k, x), to:show(B, k, y)});
       }
       if (o.kind !== it.kind) fields.unshift({key:'kind', name:'종류', from:KIND_NAME[o.kind] || o.kind, to:kind});
-      if (fields.length) out.push({type:'changed', scope:'item', id:it.id, kind:it.kind, name:label(it), fields, text:'[' + kind + '] 변경 · ' + label(it) + ' — ' + fields.map(f => f.name + ' ' + f.from + ' → ' + f.to).join(' · ')});
+      if (fields.length) out.push({type:'changed', scope:'item', id:it.id, kind:it.kind, name:label(it), fields, lines:summarizeFields(fields), text:'[' + kind + '] 변경 · ' + label(it) + ' — ' + fields.map(f => f.name + ' ' + f.from + ' → ' + f.to).join(' · ')});
       else summary.same++;
     }
     for (const it of A.items) if (!ib.has(it.id)) out.push({type:'removed', scope:'item', id:it.id, kind:it.kind, name:label(it), text:'[' + (KIND_NAME[it.kind] || it.kind) + '] 삭제 · ' + label(it)});
@@ -194,7 +218,7 @@
     const byId = new Map(cmp.changes.filter(c => c.scope === 'item').map(c => [c.id, c]));
     for (const it of doc.items) {
       const c = byId.get(it.id); if (!c) continue;
-      it.cmp = c.type; it.cmpNote = c.text.replace(/^\[[^\]]+\]\s*/, ''); it.cmpColor = it.color; it.color = CMP_COLORS[c.type];
+      it.cmp = c.type; it.cmpNote = c.text.replace(/^\[[^\]]+\]\s*/, ''); it.cmpLines = c.lines || [];
     }
     for (const c of cmp.changes) {
       if (c.scope !== 'item' || c.type !== 'removed') continue;
@@ -202,7 +226,7 @@
       // positions are month offsets from each document's own start month: shift A's items onto B's calendar
       const shift = (A.cfg.startY * 12 + A.cfg.startM - 1) - (doc.cfg.startY * 12 + doc.cfg.startM - 1);
       old.s += shift; old.e += shift; if (old.kind === 'marker' || old.kind === 'flag') old.e = old.s;
-      old.cmp = 'removed'; old.cmpNote = c.text.replace(/^\[[^\]]+\]\s*/, ''); old.cmpColor = old.color; old.color = CMP_COLORS.removed; old.variant = 'tint'; if (old.kind === 'flag') old.targetId = ''; else delete old.targetId;
+      old.cmp = 'removed'; old.cmpNote = c.text.replace(/^\[[^\]]+\]\s*/, ''); old.cmpLines = []; old.variant = 'tint'; if (old.kind === 'flag') old.targetId = ''; else delete old.targetId;
       if (!doc.rows.some(r => r.id === old.row) && old.row) old.row = doc.rows[0].id;
       if (old.kind === 'band') { const has = id => doc.rows.some(r => r.id === id); if (!has(old.rowFrom) || !has(old.rowTo)) { old.rowFrom = old.rowTo = doc.rows[0].id; } old.row = old.rowFrom; }
       doc.items.push(old); ids.add(old.id);
