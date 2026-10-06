@@ -20,7 +20,7 @@ test('AI analysis output becomes a repaired, validated document',()=>{const d=C.
   {type:'band',row:'qa',rowTo:'dev',start:'2026-05-01',end:'2026-06-01',label:'프리즈'},
   {type:'sticky',start:'2026-03-01',label:'범례'},{type:'chev',row:'dev',start:'날짜없음',label:'skip'}]},'2030-01-01');
   assert.deepEqual([d.cfg.startY,d.cfg.startM,d.cfg.months],[2026,3,4]);assert.equal(d.rows[0].color,undefined);assert.equal(d.rows[1].color,'#eaf2fb');
-  const [a,b,m,f,band,st]=d.items;assert.equal(d.items.length,6);assert.equal(a.s,0);assert.equal(a.e,1+15/30);assert.equal(b.row,'r1');assert.equal(b.lane,2);assert.equal(b.e,b.s+.125);
+  const [a,b,m,f,band,st]=d.items;assert.equal(d.items.length,6);assert.equal(a.s,0);assert.equal(a.e,1+15/30);assert.equal(b.kind,'marker');assert.equal(b.row,'');assert.equal(b.lane,2);assert.equal(b.e,b.s);
   assert.equal(m.kind,'marker');assert.equal(m.row,'');assert.equal(m.s,m.e);assert.equal(f.row,'r1');assert.deepEqual([band.rowFrom,band.rowTo],['r1','r2']);assert.equal(st.kind,'sticky');assert.ok(st.w>0);assert.equal(d.now,1+15/30);
   assert.equal(new Set(d.items.map(i=>i.id)).size,6);assert.throws(()=>C.fromAnalysis({items:[{start:'?'}]}));});
 
@@ -28,3 +28,17 @@ test('Analysis colors follow the row block and are stable on repeated client nor
  const d=C.fromAnalysis({rangeStart:'2026-01-01',rows:[{id:'a',name:'A'},{id:'b',name:'B'}],items:[{type:'flag',row:'a',start:'2026-01-01',label:'memo'},{type:'chev',row:'a',start:'2026-01-01',end:'2026-02-01',label:'base',color:'#0078d4'},{type:'plain',row:'a',start:'2026-01-02',end:'2026-02-01',label:'ref',color:'#ff0000'},{type:'chev',row:'b',start:'2026-01-01',end:'2026-02-01',label:'B',color:'#5b3fd1'}]});
  assert.equal(d.items[1].color,'#0078d4');assert.equal(d.items[0].color,'#006abb');assert.equal(d.items[2].color,'#1f88d9');assert.equal(d.items[3].color,'#5b3fd1');const before=JSON.stringify(d);C.analysisColors(d);assert.equal(JSON.stringify(d),before);
 });
+
+test('Analysis converts one-day ranges to milestones and separates overlapping ranges',()=>{
+ const d=C.fromAnalysis({rangeStart:'2026-10-01',rows:[{id:'r',name:'개발'}],items:[
+ {type:'chev',row:'r',start:'2026-10-19',end:'2026-10-23',label:'A'},
+ {type:'plain',row:'r',start:'2026-10-20',end:'2026-10-24',label:'B'},
+ {type:'chev',row:'r',start:'2026-10-24',end:'2026-10-28',label:'C'},
+ ...['chev','plain','band'].map(type=>({type,row:'r',start:'2026-10-23',end:'2026-10-23',label:type})),
+ {type:'chev',start:'2026-10-29',label:'날짜만 지정'},
+ {type:'chev',row:'r',start:'2026-10-28',end:'2026-10-20',label:'역전'}
+ ]});
+ assert.deepEqual(d.items.slice(0,3).map(i=>i.lane),[0,1,0]);
+ for(const i of d.items.slice(3,7)){assert.equal(i.kind,'marker');assert.equal(i.s,i.e);assert.equal(i.row,'');}
+ assert.equal(d.items[7].kind,'chev');assert.ok(d.items[7].e>d.items[7].s);
+ });

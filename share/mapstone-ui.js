@@ -44,7 +44,7 @@
     if(it.kind==='tip'){tip.append(el('div',text));}
     else{
       if(range){const row=el('div',null,{className:'ms-tip-range'});row.append(el('span',day(it.s)+' ~ '+day(it.e)),el('span',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'),{className:'ms-tip-chip'}));section(L.tipRange,row);}
-      else if(it.kind==='flag'||it.kind==='marker')section(L.tipRange,el('div',day(it.s)));
+      else if(it.kind==='flag'||it.kind==='marker')section(L.tipSchedule,el('div',day(it.s)));
       if(it.kind==='flag')section(L.tipLink,el('div',target?target.label:L.noTarget));
       if(text)section(L.tipMemo,el('div',text,{className:'ms-tip-memo'}));
     }
@@ -113,7 +113,7 @@
     const busy=async(btn,fn)=>{const label=btn.textContent;btn.disabled=true;btn.textContent='분석 중…';try{await fn();}catch(e){reset(e.message);}finally{btn.disabled=false;btn.textContent=label;}};
     const ai=async(payload,what)=>{reset(what+'에서 일정·마일스톤을 분석하고 있습니다… 자료가 크면 1~2분 걸릴 수 있습니다.');const r=await request(app.sync.endpoint,'/analyze',app.sync.code||'','POST',payload,'code',180000);return C.analysisColors(C.validate(r.document));};
 
-    body.append(el('h3','1. 이미지 분석하기'),el('p','로드맵 이미지 또는 손그림 등을 분석하여 Mapstone 일정으로 변환합니다.'));
+    body.append(el('h3','1. 이미지 분석하기'),el('p','로드맵 이미지 또는 손그림 등을 분석하여 Mapstone 일정으로 변환합니다. 1일 항목은 마일스톤으로, 겹치는 일정은 별도 레인으로 배치합니다.'));
     let picked=null;const thumb=el('img',null,{alt:''});thumb.hidden=true;
     const preview=el('div',null,{className:'ms-image-preview'});preview.hidden=true;
     const syncImage=()=>{preview.hidden=thumb.hidden=!picked;if(picked)thumb.src=picked.src;else thumb.removeAttribute('src');};
@@ -125,7 +125,7 @@
     body.append(analyzeImage,imgSpot);
 
     const txtHead=el('h3','2. 텍스트 분석하기');
-    body.append(txtHead,el('p','회의록, 문서 또는 표의 텍스트를 분석하여 Mapstone 일정으로 변환합니다.'));
+    body.append(txtHead,el('p','회의록, 문서 또는 표의 텍스트를 분석하여 Mapstone 일정으로 변환합니다. 1일 항목은 마일스톤으로 반영합니다. 날짜와 소요 기간을 명시하면 더 정확하게 배치됩니다.'));
     const setText=async f=>{try{if(f.type.startsWith('image/'))return setImage(f);if(f.size>8*1024*1024)throw new Error('텍스트 파일은 8MB 이하여야 합니다.');input.value=await f.text();syncText();reset(f.name+' 내용을 불러왔습니다.');}catch(e){reset(e.message);}};
     dropZone(body,'텍스트 파일을 여기에 끌어다 놓거나 붙여넣으세요','복사한 내용은 이 영역이나 아래 입력칸을 누른 뒤 Ctrl/Cmd+V로 여기에 붙여넣으세요.','.txt,.md,.csv,.tsv,.json,.js,.html,.xml,text/*,application/json',setText);
     const input=field(body,'분석할 텍스트','textarea');input.rows=8;input.placeholder='텍스트를 붙여넣으세요 (Ctrl/Cmd+V).\n예) 3/2 킥오프, 3월 요구사항 정의, 4~5월 개발, 6/15 QA, 6/30 오픈';input.addEventListener('input',()=>{reset();syncText();});
@@ -133,7 +133,7 @@
     const syncText=()=>{clearText.hidden=!input.value;};syncText();
     const analyzeText=button('텍스트 분석',()=>busy(analyzeText,async()=>{const text=input.value.trim();if(!text)throw new Error('텍스트를 붙여넣거나 파일을 추가하세요.');if(text.length>200000)throw new Error('텍스트는 200,000자 이하여야 합니다.');let doc=null;try{doc=C.parseImport(text);}catch{}if(doc)return show(doc,'Mapstone 데이터를 읽었습니다.');show(await ai({text},'텍스트'),'텍스트 분석이 완료되었습니다.');}));analyzeText.classList.add('ms-primary');
     body.append(analyzeText,txtSpot);
-    const help=el('details');help.append(el('summary','외부 LLM용 요청문 · 데이터 예제'));const prompt='PRD를 분석해 아래 형식의 const schedule 데이터만 작성해 줘. 시작 월을 0으로 하고 s/e는 개월 단위(5개월 미만은 0.125 단위)로 지정해. rows의 id와 items의 row를 일치시키고 블록 id는 고유하게 지정해. 실행 함수나 계산식 없이 데이터 리터럴로 출력해.\n\nconst schedule = '+JSON.stringify(example,null,2)+';';help.append(el('pre',prompt));help.append(button('요청문 복사',async()=>{try{await navigator.clipboard.writeText(prompt);}catch{download(prompt,'mapstone-llm-prompt.txt');}}));
+    const help=el('details');help.append(el('summary','외부 LLM용 요청문 · 데이터 예제'));const prompt='PRD를 분석해 아래 형식의 const schedule 데이터만 작성해 줘. 시작 월을 0으로 하고 s/e는 개월 단위(5개월 미만은 0.125 단위)로 지정해. rows의 id와 items의 row를 일치시키고 블록 id는 고유하게 지정해. 1일 소요 작업과 특정 날짜의 항목은 kind: marker, s와 e를 같은 값, row는 빈 문자열로 지정해. 같은 행에서 날짜가 겹치는 일정·참고 블록은 lane을 분리하고 마일스톤이나 메모로 중복 생성하지 마. 실행 함수나 계산식 없이 데이터 리터럴로 출력해.\n\nconst schedule = '+JSON.stringify(example,null,2)+';';help.append(el('pre',prompt));help.append(button('요청문 복사',async()=>{try{await navigator.clipboard.writeText(prompt);}catch{download(prompt,'mapstone-llm-prompt.txt');}}));
     body.append(help);imgSpot.append(review,message);
     const dialog=body.closest('dialog');for(const t of ['pointerdown','drop','input','change'])dialog.addEventListener(t,e=>{spot=txtHead.compareDocumentPosition(e.target)&Node.DOCUMENT_POSITION_FOLLOWING?txtSpot:imgSpot;},true);
     // Paste anywhere in the dialog: images go to section 1, text outside the textarea goes into it.

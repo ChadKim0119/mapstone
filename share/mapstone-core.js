@@ -103,13 +103,21 @@
     const items = []; let stickies = 0, end = 0;
     src.slice(0, 5000).forEach((i, n) => {
       if (!i) return;
-      const kind = kinds.includes(i.type) ? i.type : 'chev';
+      let kind = kinds.includes(i.type) ? i.type : 'chev';
       const s = off(i.start) ?? off(i.end); if (s === null) return;
       let e = ['marker', 'flag', 'sticky'].includes(kind) ? s : (off(i.end) ?? s);
+      if (['chev', 'plain', 'band'].includes(kind) && e === s) kind = 'marker';
       if (['chev', 'plain', 'band'].includes(kind) && e <= s) e = s + 0.125;
       const it = {id: 'a' + (n + 1), kind, row: '', lane: Math.min(20, Math.max(0, Math.round(+i.lane || 0))), span: 1, s, e, label: str(i.label, 2000), memo: str(i.memo, 20000), color: hex(i.color) || fallback[kind] || palette[n % palette.length], variant: i.variant === 'tint' || (kind === 'plain' && i.variant !== 'solid') ? 'tint' : 'solid'};
       if (['chev', 'plain', 'flag'].includes(kind)) it.row = rowId(i.row);
       if (kind === 'band') { const a = rows.findIndex(r => r.id === rowId(i.row)), b = rows.findIndex(r => r.id === rowId(i.rowTo || i.row)); it.rowFrom = rows[Math.min(a, b)].id; it.rowTo = rows[Math.max(a, b)].id; it.row = it.rowFrom; it.lane = 0; }
+      if (['chev', 'plain'].includes(kind)) {
+        const occupied = lane => items.some(o => o.row === it.row && ['chev', 'plain'].includes(o.kind) && o.lane === lane && o.s < it.e && it.s < o.e);
+        if (occupied(it.lane)) {
+          // ponytail: at most 101 lanes per row; retain the source lane when all are occupied.
+          for (let lane = 0; lane <= 100; lane++) if (!occupied(lane)) { it.lane = lane; break; }
+        }
+      }
       if (kind === 'sticky') { Object.assign(it, {y: 40 + stickies * 96, w: 240, h: 88}); stickies++; }
       if (i.hideDuration === true) it.hideDuration = true;
       end = Math.max(end, e); items.push(it);
