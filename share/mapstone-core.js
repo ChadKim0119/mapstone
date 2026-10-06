@@ -7,7 +7,7 @@
   'use strict';
   const clone = x => JSON.parse(JSON.stringify(x));
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const keys = ['title', 'cfg', 'rows', 'items', 'notes', 'now', 'versions'];
+  const keys = ['title', 'cfg', 'rows', 'items', 'notes', 'now', 'versions', 'versionProjectId'];
   const rowColors = [['none', 'none'], ['파랑', '#eaf2fb'], ['보라', '#f0ebfb'], ['민트', '#e7f4f1'], ['노랑', '#fdf6e3'], ['살구', '#fdeee6'], ['분홍', '#fdeef4'], ['회색', '#f3f5f6']];
   function rowColor(value) {
     if (!/^#[0-9a-f]{6}$/i.test(value || '')) return undefined;
@@ -77,7 +77,9 @@
     const versions = data.versions || [];
     if (!Array.isArray(versions) || versions.length > 30) fail('버전은 최대 30개입니다. 오래된 버전을 백업 후 정리해 주세요.');
     versions.forEach(v => { if (!v || typeof v.id !== 'string' || typeof v.snap !== 'string' || v.snap.length > 8*1024*1024) fail('버전 형식 오류'); });
-    return {schemaVersion:1, title:text(data.title || '새 일정','제목',500), cfg, rows, items, notes:clone(notes), now:finite(data.now ?? 0,'NOW',-1200,1200), versions:clone(versions)};
+    const versionProjectId=data.versionProjectId ?? null;
+    if(versionProjectId!==null && (typeof versionProjectId!=='string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(versionProjectId)))fail('버전 작업물 ID 형식 오류');
+    return {schemaVersion:1, versionProjectId, title:text(data.title || '새 일정','제목',500), cfg, rows, items, notes:clone(notes), now:finite(data.now ?? 0,'NOW',-1200,1200), versions:clone(versions)};
   }
   // AI analysis output (ISO dates, free-form ids) → validated document. Repairs instead of rejecting:
   // unknown rows fall back to the first row, bad colors to a palette, reversed ranges get a minimum length.

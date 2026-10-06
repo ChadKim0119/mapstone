@@ -102,13 +102,13 @@ Deno.serve(async (req:Request)=>{
       if(path.length===3 && path[2]==='versions' && req.method==='POST'){
         if((await db('rpc/mapstone_take_rate_limit','POST',{p_key_hash:await hash('version-save:'+owner),p_limit:100}))!==true)return json({error:'저장 요청이 많습니다. 잠시 후 다시 시도하세요.'},429);
         const body=await readBody(req);if(!/^[A-Za-z0-9_-]{1,128}$/.test(body.id||''))return json({error:'버전 ID를 확인하세요.'},400);
-        const document=Core.validate({...body.document,versions:[]});
+        const document=Core.validate({...body.document,versions:[],versionProjectId:path[1]});
         const saved=await db('rpc/mapstone_save_version','POST',{p_project:path[1],p_owner:owner,p_id:body.id,p_document:document,p_note:String(body.note||'').slice(0,20000)});
         return json(saved[0],201);
       }
       const projects=await db('mapstone_version_projects?id=eq.'+path[1]+'&owner_hash=eq.'+owner+'&select=id');
       if(!projects.length)return json({error:'보관된 작업물을 찾을 수 없습니다.'},404);
-      if(path.length===3 && path[2]==='versions' && req.method==='GET')return json(await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&select=id,sequence,created_at,note&order=sequence.desc'));
+      if(path.length===3 && path[2]==='versions' && req.method==='GET')return json(await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&select=id,sequence,created_at,note,title:document->>title&order=sequence.desc'));
       if(path.length===4 && path[2]==='versions' && req.method==='GET'){
         if(!/^[A-Za-z0-9_-]{1,128}$/.test(path[3]))return json({error:'버전 ID를 확인하세요.'},400);
         const v=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&id=eq.'+path[3]);return v.length?json(v[0]):json({error:'버전을 찾을 수 없습니다.'},404);
