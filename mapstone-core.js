@@ -115,7 +115,21 @@
     const last = Math.max(first, ...dates.map(d => d.i));
     const months = Math.min(48, Math.max(1, last - first + 1, Math.ceil(end - 1e-9)));
     const now = off(p.now) ?? off(today);
-    return validate({title: str(p.title || '가져온 일정', 500), cfg: {startY: Math.floor(first / 12), startM: first % 12 + 1, months, weekPx: 100, weekMode: 'actual', laneH: 44, magnet: true, overlap: 'moveOther'}, rows, items, notes: [], now: now !== null && now >= 0 && now <= months ? now : 0, versions: []});
+    return analysisColors(validate({title: str(p.title || '가져온 일정', 500), cfg: {startY: Math.floor(first / 12), startM: first % 12 + 1, months, weekPx: 100, weekMode: 'actual', laneH: 44, magnet: true, overlap: 'moveOther'}, rows, items, notes: [], now: now !== null && now >= 0 && now <= months ? now : 0, versions: []}));
+  }
+  function analysisColors(doc) {
+    const palette = ['#5b3fd1', '#0078d4', '#17a2a2', '#f86800', '#1e3a8a', '#66707a'];
+    doc.rows.forEach((row, index) => {
+      const anchor = doc.items.find(it => it.row === row.id && ['chev', 'plain'].includes(it.kind));
+      const base = anchor?.color || palette[index % palette.length];
+      let n = 1;
+      doc.items.filter(it => it.row === row.id).forEach(it => {
+        if(it === anchor)return;
+        const mix = [0, -.12, .12][n++ % 3];
+        it.color = '#' + [1, 3, 5].map(k => {const c = parseInt(base.slice(k, k+2), 16);return Math.round(mix < 0 ? c * (1+mix) : c + (255-c)*mix).toString(16).padStart(2, '0');}).join('');
+      });
+    });
+    return doc;
   }
   /* 버전 비교: pair rows and items by id, report added / removed / changed with per-field detail.
      Pure data → data, so the UI only has to render the result. */
@@ -302,5 +316,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,analysisColors,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });
