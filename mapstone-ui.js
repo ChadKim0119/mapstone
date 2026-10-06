@@ -18,7 +18,7 @@
     input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();go.click();}});setTimeout(()=>{input.focus();input.setSelectionRange(0,name.length-ext.length);},50);
   }
   function status(app,message){if(app._syncLabel)app._syncLabel.textContent=message;}
-  function fitWidth(app){if(!app._board)return;const weeks=Array.from({length:app.state.cfg.months},(_,i)=>app.weeksIn(i)).reduce((a,b)=>a+b,0);const value=Math.max(app.ZMIN||4,Math.min(app.ZMAX||640,(app._board.clientWidth-218)/weeks));app.mutate(d=>{d.cfg.weekPx=value;},false);app._board.scrollLeft=0;}
+  function fitWidth(app){if(!app._board)return;const weeks=Array.from({length:app.state.cfg.months},(_,i)=>app.weeksIn(i)).reduce((a,b)=>a+b,0);const value=Math.max(app.ZMIN||4,Math.min(app.ZMAX||640,(app._board.clientWidth-218)/weeks));app.viewCfg(d=>{d.cfg.weekPx=value;},false);app._board.scrollLeft=0;}
   function toggleFocus(app){hideTip();const focus=!app.state.focusMode;app.setState({focusMode:focus,sel:null,editing:null});requestAnimationFrame(()=>fitWidth(app));}
   // 설정창 text areas: start at one line, grow with each line, cap at 5 lines and scroll beyond
   function grow(t){if(!t||t.tagName!=='TEXTAREA'||!t.closest('[data-properties]'))return;const cs=getComputedStyle(t),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.5,frame=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom)+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth),max=Math.ceil(lh*5+frame);t.style.height='auto';const want=t.scrollHeight+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth);t.style.height=Math.min(Math.max(want,Math.ceil(lh+frame)),max)+'px';t.style.overflowY=want>max?'auto':'hidden';}
@@ -43,7 +43,7 @@
     const section=(title,...body)=>{const sec=el('div',null,{className:'ms-tip-sec'});sec.append(el('div',title,{className:'ms-tip-h'}),...body);tip.append(sec);};
     if(it.kind==='tip'){tip.append(el('div',text));}
     else{
-      if(range){const row=el('div',null,{className:'ms-tip-range'});row.append(el('span',day(it.s)+' → '+day(it.e)),el('span',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'),{className:'ms-tip-chip'}));section(L.tipRange,row);}
+      if(range){const row=el('div',null,{className:'ms-tip-range'});row.append(el('span',day(it.s)+' ~ '+day(it.e)),el('span',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'),{className:'ms-tip-chip'}));section(L.tipRange,row);}
       else if(it.kind==='flag'||it.kind==='marker')section(L.tipRange,el('div',day(it.s)));
       if(it.kind==='flag')section(L.tipLink,el('div',target?target.label:L.noTarget));
       if(text)section(L.tipMemo,el('div',text,{className:'ms-tip-memo'}));
@@ -294,7 +294,7 @@
       '행 배경색과 레인 수는 설정창 [속성]에서 바꿉니다.']],
     ['toolbar','보기 · 화면','표시 방식과 확대 비율을 바꿉니다. 일정 데이터는 바뀌지 않습니다.',['toolbar'],[
       'MM / MD: 블록 기간 표시를 켜고 끕니다. 단위는 설정에서 MM ⇄ MD로 바꿉니다.',
-      '일자: 블록 아래에 시작 → 종료 날짜를 표시합니다. 툴팁: 마우스를 올리면 이름 · 기간 · 메모를 나눠 보여 주고 3초 뒤 사라집니다(설정 › 툴팁 표시 시간에서 계속 표시로 변경).',
+      '일자: 블록 아래에 시작 ~ 종료 날짜를 표시합니다. 툴팁: 마우스를 올리면 이름 · 기간 · 메모를 나눠 보여 주고 3초 뒤 사라집니다(설정 › 툴팁 표시 시간에서 계속 표시로 변경).',
       'Week: 월 아래에 주차(5개월 미만은 일자)를 표시합니다. 공간이 부족하면 뒤쪽부터 숨기고 …로 표시합니다.',
       '화면이 좁으면 메뉴바가 한 줄을 유지하도록 아이콘 숨김 → 보기 항목을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 너비 맞춤 · 전체 화면을 아이콘으로 순서대로 바뀝니다.',
       '배율: 슬라이더로 확대·축소합니다. 핸들을 더블클릭하거나 [너비 맞춤]을 누르면 전체 기간이 화면에 맞춰집니다.',

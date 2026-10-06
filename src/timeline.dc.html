@@ -207,6 +207,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
           <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
           <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
+          <button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}">Now</button>
           <button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetF }} · S" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
         </span>
         <details class="ms-tool-menu ms-view-more"><summary>{{ L.viewG }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
@@ -214,6 +215,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
           <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
           <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">Week</button>
+          <button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}">Now</button>
           <button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetF }} · S" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button>
         </div></details>
       </div>
@@ -223,18 +225,19 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <span class="ms-zoom-word" style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
         <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:#e30084">
         <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
-        <button class="ms-tool-button ms-iconable" onClick="{{ fitWidth }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }} · Shift+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l3-3M4 12l3 3M20 12l-3-3M20 12l-3 3"></path></svg><span class="ms-lbl">{{ L.fit }}</span></button>
-        <button class="ms-tool-button ms-iconable" onClick="{{ toggleFocus }}" aria-label="{{ L.full }}" data-tip="{{ L.full }} · F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg><span class="ms-lbl">{{ L.full }}</span></button>
+        <button class="ms-tool-button ms-icon-button" onClick="{{ fitWidth }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }} · Shift+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l3-3M4 12l3 3M20 12l-3-3M20 12l-3 3"></path></svg></button>
+        <button class="ms-tool-button ms-icon-button" onClick="{{ toggleFocus }}" aria-label="{{ L.full }}" data-tip="{{ L.full }} · F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
       </div>
       <span style="flex:1"></span>
       <button class="ms-tool-button ms-accent" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg><span class="ms-lbl-full">{{ L.importG }}</span><span class="ms-lbl-short">{{ L.importShort }}</span></button>
-      <button class="ms-tool-button" onClick="{{ openCompare }}" aria-label="{{ L.compareBtn }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M12 3v18"></path></svg>{{ L.compareBtn }}</button>
+
       <button class="ms-tool-button" onClick="{{ openFile }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>{{ L.fileG }}</button>
       <details class="ms-tool-menu"><summary>{{ L.exp }} <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
         <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.saveFile }}</button>
         <button class="ms-tool-button" onClick="{{ exportPng }}">{{ L.png }}</button>
         <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
         <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
+      <button class="ms-tool-button" onClick="{{ openCompare }}" aria-label="{{ L.compareBtn }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M12 3v18"></path></svg>{{ L.compareBtn }}</button>
       </div></details>
       <button class="ms-tool-button" onClick="{{ openWorkspace }}" aria-label="{{ L.shareBtn }} (⌘/Ctrl+L)" data-tip="{{ L.shareBtn }} · ⌘/Ctrl+L" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.4"></circle><circle cx="18" cy="6" r="2.4"></circle><circle cx="18" cy="18" r="2.4"></circle><path d="M8.2 11l7.6-4M8.2 13l7.6 4"></path></svg>{{ L.shareBtn }}</button>
       <span class="ms-toolbar-sep"></span>
@@ -258,10 +261,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
               <div data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:9;left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
-                  <input value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:12px;font-weight:700;outline:none">
+                  <textarea rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:700;outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size:12px;font-weight:700;line-height:1.35;text-align:center;letter-spacing:-.01em;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ showElementDates }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
+                  <div style="font-size:{{ k.labelSize }};font-weight:700;line-height:1.35;text-align:center;letter-spacing:-.01em;white-space:pre-wrap;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ k.showDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
                 </sc-if>
                 <div style="position:absolute;left:50%;top:100%;width:0;height:{{ k.stemH }};border-left:2px solid {{ k.color }};pointer-events:none"></div>
                 <div style="position:absolute;left:50%;top:100%;margin-left:-3px;margin-top:{{ k.stemH }};width:6px;height:6px;border-radius:9999px;background:{{ k.color }};pointer-events:none"></div>
@@ -311,7 +314,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ b.dateLabel }}</span></sc-if>
                       <div style="position:absolute;left:0;top:0;right:0;bottom:0;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);background:{{ b.bg }}"></div>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
-                        <input value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);min-width:60px;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;z-index:3">
+                        <textarea rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);min-width:60px;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;resize:none;z-index:3"></textarea>
                       </sc-if>
                       <sc-if value="{{ b.inside }}" hint-placeholder-val="{{ true }}">
                         <div style="position:absolute;left:4px;right:16px;top:50%;transform:translateY(-50%);font-size:{{ b.labelSize }};font-weight:600;line-height:1.3;text-align:center;letter-spacing:-.01em;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}</div>
@@ -359,10 +362,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:8;border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
                       <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ p.dateLabel }}</span></sc-if>
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:12.5px;line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
+                        <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
-                        <div style="font-size:12.5px;font-weight:500;line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
+                        <div style="font-size:{{ p.labelSize }};font-weight:500;line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
                       </sc-if>
                       <div style="position:absolute;right:6px;bottom:2px;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ p.durFg }}">{{ p.dur }}</div>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
@@ -380,13 +383,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
                       <span data-link-dot="" data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
-                        <input value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:12px;font-weight:700;outline:none">
+                        <textarea rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:700;outline:none;resize:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ f.connected }}">
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ f.show }}">
-                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
+                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:700;padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -401,10 +404,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div data-id="{{ d.id }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:2;left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
                 <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ d.dateLabel }}</span></sc-if>
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
-                  <input value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:12px;font-weight:700;outline:none">
+                  <textarea rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:700;outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ d.show }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size:13px;font-weight:700;line-height:1.4;text-align:center;letter-spacing:-.01em;word-break:keep-all;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div>
+                  <div style="font-size:13px;font-weight:700;line-height:1.4;text-align:center;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div>
                 </sc-if>
                 <div style="position:absolute;left:0;right:0;bottom:3px;text-align:center;white-space:nowrap;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ d.durFg }}">{{ d.dur }}</div>
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
@@ -423,16 +426,17 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ imagesView }}" as="im">
             <div data-id="{{ im.id }}" role="button" tabindex="0" aria-label="{{ im.label }}" onKeyDown="{{ onItemKey }}" data-sticky="" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:120;left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
               <img data-ms-src="{{ im.src }}" alt="{{ im.label }}" draggable="false" style="width:100%;height:100%;object-fit:contain;pointer-events:none">
+              <div style="position:absolute;top:100%;left:0;max-width:100%;font-size:{{ im.labelSize }};white-space:pre-wrap;background:#fff;color:#181a1b;padding:2px 5px;border-radius:4px">{{ im.label }}</div>
               <sc-if value="{{ im.sel }}"><div data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(227,0,132,.45);cursor:nwse-resize"></div></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
             <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:122;border-radius:2px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:13px;line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
+                <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
               </sc-if>
               <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
-                <div style="font-size:13px;line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
+                <div style="font-size:{{ p.labelSize }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
               </sc-if>
               <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
                 <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:4px;pointer-events:none"></div>
@@ -452,10 +456,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <div style="position:absolute;bottom:0;width:2px;background:#e30084;pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ nowToday }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:0;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:12px;font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showElementDates }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ nowToday }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:-2px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:12px;font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showElementDates }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:-2px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
         </div>
 
@@ -489,7 +493,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </div>
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.labelF }}
-                    <sc-if value="{{ selIsTrack }}" hint-placeholder-val="{{ false }}">
+                    <sc-if value="{{ selHasText }}" hint-placeholder-val="{{ false }}">
                       <span class="ms-fontsize" style="display:inline-flex;align-items:center;gap:2px">
                         <button type="button" data-delta="-1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelSmaller }}" data-tip="{{ L.labelSmaller }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:11px;font-weight:700;cursor:pointer">A−</button>
                         <span style="min-width:34px;text-align:center;font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-5)">{{ selLabelSize }}</span>
@@ -497,7 +501,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       </span>
                     </sc-if>
                   </span>
-                  <textarea value="{{ selLabel }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
@@ -519,8 +523,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     </div>
                   </div>
                 </sc-if>
+<sc-if value="{{ selHasDateHide }}"><label style="display:flex;align-items:center;gap:8px;font-size:12px"><input type="checkbox" checked="{{ selHideDate }}" onChange="{{ onHideDate }}">{{ L.hideMemoDate }}</label></sc-if>
                 <sc-if value="{{ selIsFlag }}">
-                  <label style="display:flex;align-items:center;gap:8px;font-size:12px"><input type="checkbox" checked="{{ selHideDate }}" onChange="{{ onHideDate }}">{{ L.hideMemoDate }}</label>
+
                   <label style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600">{{ L.linkedTo }}</span>
                     <select aria-label="{{ L.linkedTo }}" value="{{ selTargetId }}" onChange="{{ onLinkTarget }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 8px;font-size:13px;background:#fff">
@@ -889,6 +894,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.58', agent: 'Codex', title: '보기·NOW 속성·텍스트·새 항목 조절 개선', items: ['버전 비교를 내보내기 메뉴로 이동하고 화면 버튼을 아이콘으로 정리', 'NOW 보기·일자 숨김·단일 날짜·글자 크기 속성 및 마일스톤 겹침 배치', '기간 일자를 MM.DD ~ MM.DD로 통일, 모든 텍스트 항목의 크기·줄바꿈 반영', '보기 전용의 표시 옵션·배율을 로컬 보기 설정으로 분리', '행 빈 영역 선택 및 행 밖 선택 해제, 배율 기반 새 항목 폭·빈 레인 배치와 높이 계산 개선'] },
     { v: 'v9.57', agent: 'Claude Code', title: '공유 통합 — 권한·비밀번호·편집 전환', items: ['[내보내기]의 링크 생성과 공유를 하나의 [공유] 버튼과 모달로 통합(내보내기 메뉴에서 분리)', '권한 선택: 보기만 가능(기본) / 함께 편집 — 함께 편집은 링크만 있으면 누구나 편집하고 2초 동기화로 마지막 수정이 항상 최신 유지', '열람 비밀번호(기본 없음, 4자 이상, 설정 화면에서는 그대로 표시)와 보기 링크의 편집 전환 비밀번호를 따로 설정', '받는 사람: 비밀번호 없는 링크는 바로 열리고, 있으면 입력 창, 틀리면 거절 — 보기 화면의 [편집 모드 전환]에서 편집 비밀번호를 입력하면 편집 가능', '⌘/Ctrl+L: 기본값(보기만 가능, 비밀번호 없음)으로 링크를 즉시 만들고 복사', '서버: 열람·편집 접근 규칙을 한 함수(shareAccess)로 통일, 틀린 비밀번호 시도 횟수 제한(시간당 8회), 타이밍 안전 비교, 접속 코드 방은 공유 링크로 열리지 않음', '기능명의 [ ] 앞 띄어쓰기: 파일 저장 [JSON], 이미지 저장 [PNG]', 'DB 변경: edit_password_hash 컬럼 추가(마이그레이션 필요)'] },
     { v: 'v9.56', agent: 'Codex', title: '다중 선택·간결한 날짜 표시·보기 링크 생성', items: ['보기 > 일자 표시를 MM.DD로 통일하고 메모 속성에 날짜 미표기 옵션 추가 — 저장·가져오기·내보내기에 유지', '참고 항목 시작점에 마우스 조절 핸들 추가 — 숫자·일자 입력 및 Ctrl 하루 단위 조정과 함께 사용', '⌘ 클릭으로 개별 선택·해제, Shift 클릭으로 범위 선택, 빈 영역 드래그로 사각형 선택 및 추가 선택 제공', '선택한 항목의 방향키·마우스 이동, 삭제·복사·잘라내기·붙여넣기·복제 및 실행 취소 지원 — 함께 복사한 메모 연결 관계 유지', '내보내기 > 링크 생성으로 현재 일정의 보기 전용 사본을 서버에 저장하고 링크 복사·열기 제공 — 링크에서 자동 접속, 이후 변경은 새 링크 생성 시 반영'] },
     { v: 'v9.55', agent: 'Codex', title: '하루 단위 정밀 드래그·날짜 기준선·색상 팔레트 확장', items: ['S 단축키를 눈금 맞춤 켜기·끄기로 변경, 설정창 보기·닫기는 쉼표로 유지하고 사용법·툴팁에 반영', 'Ctrl을 누른 드래그는 눈금 맞춤과 관계없이 마우스 24px 이동당 하루씩 정밀 조정 — 배율에 영향받지 않고 시작·종료 조절과 전체 이동에 적용', '항목 전체 이동 시 시작·종료 날짜 기준선 표시, Ctrl 이동은 두 날짜를 같은 일수만큼 이동하며 드래그 중 Ctrl 전환 시 위치 튐 방지', '시작·종료 입력을 기본 일자 모드로 변경하고 숫자·일자 토글에 조정 단위 설명 추가', '색상 확장·접기 버튼 추가 — 기존 9개 색상의 색조·채도를 유지하며 어두운 톤 2개와 밝은 톤 2개씩 제공'] },
@@ -956,7 +962,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.57';
+  APP_VER = 'v9.58';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -974,9 +980,9 @@ class Component extends DCLogic {
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
       importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장 [JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '이 메모 날짜 숨기기', timeModeHint: '일자: 하루씩 · 숫자: 개월 단위로 조정', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', timeMode: '시작·종료 입력 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', timeModeHint: '일자: 하루씩 · 숫자: 개월 단위로 조정', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', timeMode: '시작·종료 입력 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
-      relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: 오늘 날짜로 이동', dup: '복제',
+      relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '드래그: 기준선 이동 / 더블클릭: NOW 속성', dup: '복제',
       tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '블록 메모 (마우스 오버 시 표시)', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
       kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간 (여러 행)', kMarker: '마일스톤', kFlag: '메모',
@@ -1013,9 +1019,9 @@ class Component extends DCLogic {
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存 [PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
       importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存 [JSON]', panelF: '設定パネル表示', helpTip: 'ショートカットと操作方法を見る',
-      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: 'このメモの日付を非表示', timeModeHint: '日付：1日ずつ · 数値：月単位で調整', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', timeMode: '開始・終了の入力方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
+      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: '日付を非表示', timeModeHint: '日付：1日ずつ · 数値：月単位で調整', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', timeMode: '開始・終了の入力方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
-      relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：今日の日付へ', dup: '複製',
+      relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'ドラッグ：基準線を移動 / ダブルクリック：NOW設定', dup: '複製',
       tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ブロックメモ（ホバーで表示）', phMemo: '背景・リスク・担当など', kindF: '種類',
       kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: 'メモ',
@@ -1192,6 +1198,8 @@ class Component extends DCLogic {
     if (this._msCleanup) this._msCleanup();
   }
   componentDidUpdate() {
+    if(this.state.readOnly && this._viewCfg && this.state.cfg!==this._viewAppliedCfg){this._viewBaseCfg=this.state.cfg;this._viewAppliedCfg={...this.state.cfg,...this._viewCfg};this.setState({cfg:this._viewAppliedCfg});return;}
+    if(!this.state.readOnly){this._viewCfg=null;this._viewBaseCfg=null;this._viewAppliedCfg=null;}
     if (this._zoomFix && this._board) { const z = this._zoomFix; this._zoomFix = null; this._board.scrollLeft = Math.max(0, 192 + z.content * z.ratio - z.ax); }
     this.save(); this.syncScrollMetrics(); this.fitToolbar(); if (this.root && MapstoneUI.growAll) MapstoneUI.growAll(this.root);
     const ids = new Set(this.state.items.map((i) => i.id));
@@ -1254,8 +1262,9 @@ class Component extends DCLogic {
     setTimeout(this._onScroll, 60);
   };
   setRoot = (el) => { this.root = el; };
-  dataDocument() { return MapstoneCore.documentOf(this.state); }
+  dataDocument() { return MapstoneCore.documentOf(this.state.readOnly && this._viewBaseCfg ? {...this.state,cfg:this._viewBaseCfg} : this.state); }
   save() {
+    if(this.state.readOnly)return;
     if (this._saveBlocked) return;
     const json = JSON.stringify(this.dataDocument());
     if (json === this._savedData || json === this._queuedData) return;
@@ -1438,7 +1447,7 @@ class Component extends DCLogic {
   addSticky = () => {
     const st = this.state;
     const id = this.uid();
-    const it = { id, kind: 'sticky', row: '', lane: 0, s: Math.max(0, Math.round(st.now * 2) / 2), e: 0, y: 60, w: 210, h: 120, label: this.L().stickyNew, color: '#fdf3d0', span: 1, variant: 'solid', memo: '' };
+    const it = { id, kind: 'sticky', row: '', lane: 0, s: Math.max(0, Math.round(st.now * 2) / 2), e: 0, y: 60, w: Math.min(240,Math.max(140,(this._board?.clientWidth||800)*.22)), h: 120, label: this.L().stickyNew, color: '#fdf3d0', span: 1, variant: 'solid', memo: '' };
     this.mutate((d) => { d.items.push(it); });
     this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   };
@@ -1493,15 +1502,25 @@ class Component extends DCLogic {
   onRowAuto = () => { const id = this.state.focusRow; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) delete r.h; }); };
   onRowColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.focusRow; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) { if (c === 'none') delete r.color; else r.color = c; } }); };
   toggleMagnet = () => { this.mutate((d) => { d.cfg.magnet = !d.cfg.magnet; }); };
-  toggleMM = () => { this.mutate((d) => { d.cfg.showMM = d.cfg.showMM === false; }); };
-  toggleWeek = () => { this.mutate((d) => { d.cfg.showWeek = d.cfg.showWeek === false; }); };
-  toggleElementDates = () => { this.mutate(d => { d.cfg.showElementDates = !d.cfg.showElementDates; }); };
+  viewCfg(fn,push) {
+    if(!this.state.readOnly)return this.mutate(fn,push);
+    this._viewBaseCfg=this._viewBaseCfg || this.state.cfg;
+    const d={cfg:{...this.state.cfg}};fn(d);this._viewCfg=this._viewCfg || {};
+    Object.keys(d.cfg).forEach(k=>{if(d.cfg[k]!==this.state.cfg[k])this._viewCfg[k]=d.cfg[k];});
+    this._viewAppliedCfg=d.cfg;this.setState({cfg:d.cfg});return true;
+  }
+  toggleNow = () => this.viewCfg(d=>{d.cfg.showNow=d.cfg.showNow===false;});
+  toggleMM = () => { this.viewCfg((d) => { d.cfg.showMM = d.cfg.showMM === false; }); };
+  toggleWeek = () => { this.viewCfg((d) => { d.cfg.showWeek = d.cfg.showWeek === false; }); };
+  toggleElementDates = () => { this.viewCfg(d => { d.cfg.showElementDates = !d.cfg.showElementDates; }); };
   toggleTooltip = () => {
-    this.mutate(d => { d.cfg.showTooltip = d.cfg.showTooltip === false; });
+    this.viewCfg(d => { d.cfg.showTooltip = d.cfg.showTooltip === false; });
     MapstoneUI.hideTip();
     MapstoneUI.toast(this, this.state.cfg.showTooltip ? this.L().tooltipOn : this.L().tooltipOff);
   };
   durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
+  labelFont(it) {return it.labelSize || (['marker','flag','now'].includes(it.kind)?12:it.kind==='sticky'?13:12.5);}
+  labelBox(it,extra=24) {const size=this.labelFont(it),lines=String(it.label||'').split('\n');return {width:Math.max(...lines.map(l=>this.measure(l)))*size/12.5+extra,height:Math.max(24,lines.length*size*1.35+8)};}
   stopClick = (e) => e.stopPropagation();
   openRel = () => this.setState({ relOpen: true });
   closeRel = () => this.setState({ relOpen: false });
@@ -1644,7 +1663,7 @@ class Component extends DCLogic {
     else this.selectItems(current,id,current.length===1 ? id : this.state.selectionAnchor || id);
     return true;
   }
-  selItem() { return this.state.items.find((i) => i.id === this.state.sel); }
+  selItem() { return this.state.sel==='__now' ? {id:'__now',kind:'now',label:'NOW',s:this.state.now,e:this.state.now,labelSize:this.state.cfg.nowLabelSize||12,hideDate:!!this.state.cfg.hideNowDate} : this.state.items.find((i) => i.id === this.state.sel); }
   measure(txt) {
     if (!this._ctx) {
       try { this._ctx = document.createElement('canvas').getContext('2d'); this._ctx.font = '600 12.5px "Pretendard Variable", Pretendard, system-ui, sans-serif'; } catch (err) { this._ctx = null; }
@@ -1674,20 +1693,21 @@ class Component extends DCLogic {
   /* label placement: inside the block, in the free gap beside it, or in a strip
      appended under the row — prevents label-on-label collisions at the source */
   rowLayout() {
+    if(this.drag?.layout && ['top','bottom'].includes(this.drag.mode))return this.drag.layout;
     const st = this.state, laneH = st.cfg.laneH;
     const map = {};
     st.rows.forEach((r) => {
       const its = st.items.filter((i) => i.row === r.id && i.kind !== 'band' && i.kind !== 'marker' && this.visibleItem(i));
       let lanes = 2;
-      its.forEach((i) => { lanes = Math.max(lanes, i.lane + (i.span || 1)); });
+      its.forEach((i) => { lanes = Math.max(lanes, this.boxKind(i.kind) && i.trackH!==undefined ? Math.ceil(((i.trackY??6+i.lane*laneH)+i.trackH+6)/laneH) : i.lane + (i.span || 1)); });
       const chevs = its.filter((i) => i.kind === 'chev').slice().sort((a, b) => a.s - b.s);
       const blocks = its.filter((i) => this.boxKind(i.kind));
       const strips = [];
       const modes = {};
       chevs.forEach((it) => {
-        const h = (it.span || 1) * laneH - 12;
+        const h = it.trackH ?? (it.span || 1) * laneH - 12;
         const w = this.wOf(it.s, it.e);
-        const need = this.measure(it.label || '') + 18;
+        const need = this.labelBox(it,18).width;
         if (this.labelFits(it.label || '',w-20,h-2,it.labelSize || 12.5)) { modes[it.id] = { mode: 'in' }; return; }
         let rg = Math.max(0, this.xOf(st.cfg.months) - this.xOf(it.e)), lg = this.xOf(it.s);
         its.forEach((o) => {
@@ -1709,7 +1729,7 @@ class Component extends DCLogic {
       its.filter((i) => i.kind === 'flag').forEach((f) => {
         const target = f.targetId !== undefined ? st.items.find(c => c.id === f.targetId && this.linkKind(c.kind)) : blocks.filter(c => c.lane <= f.lane && f.lane < c.lane + (c.span || 1) && c.s <= f.s && f.s <= c.e).sort((a, b) => b.lane - a.lane || (a.e - a.s) - (b.e - b.s))[0];
         if (!target) { modes[f.id] = { mode: 'inline' }; return; }
-        const need = this.measure(f.label || '') + 50 + (st.cfg.showElementDates ? this.measure(this.isoOf(f.s))+6 : 0);
+        const need = this.labelBox(f,50).width + (st.cfg.showElementDates ? this.measure(this.shortDate(f.s))+6 : 0);
         const x0 = this.xOf(f.s), x1 = x0 + need;
         let k = 0;
         while (strips[k] && strips[k].some((g) => g[0] < x1 && g[1] > x0)) k++;
@@ -1719,9 +1739,10 @@ class Component extends DCLogic {
       });
       const contentH = lanes * laneH + 14;
       const baseH = r.h ? Math.max(laneH + 14, r.h) : contentH;
+      const stripH=Math.max(24,...its.filter(i=>modes[i.id]?.mode==='strip').map(i=>this.labelBox(i).height+4));
       map[r.id] = {
-        lanes: lanes, strips: strips.length, laneCap: Math.max(1, Math.floor((baseH - 14) / laneH)),
-        height: baseH + strips.length * 24, modes: modes
+        lanes: lanes, strips: strips.length, stripH, laneCap: Math.max(1, Math.floor((baseH - 14) / laneH)),
+        height: baseH + strips.length * stripH, modes: modes
       };
     });
     return map;
@@ -1859,10 +1880,12 @@ class Component extends DCLogic {
   onNowDown = (e) => {
     e.stopPropagation();
     MapstoneUI.hideTip();
+    this.setState({sel:'__now',selection:[],focusRow:null,editing:null,tab:'prop'});
     if (this.state.readOnly) return;
     this.drag = { id: '__now', mode: 'now', x0: e.clientX, y0: e.clientY, s: this.state.now, e: 0, snap: this.snapshot(), moved: false };
     this.bind();
   };
+  onNowDbl = (e) => {e.stopPropagation();this.setState({sel:'__now',selection:[],focusRow:null,editing:null,panel:true,tab:'prop'});};
   bind() {
     this._mv = (ev) => this.onMove(ev);
     this._up = (ev) => this.stopDrag(ev);
@@ -1888,13 +1911,13 @@ class Component extends DCLogic {
     const layout=this.rowLayout(),b=this.trackBox(it,layout);
     let min=6,max=b.total-6;
     this.state.items.forEach(o=>{
-      if(o.id===it.id || !this.boxKind(o.kind) || this.xOf(o.s)>=this.xOf(it.s)+this.wOf(it.s,it.e) || this.xOf(o.s)+this.wOf(o.s,o.e)<=this.xOf(it.s))return;
+      if(o.id===it.id || !this.visibleItem(o) || !this.boxKind(o.kind) || this.xOf(o.s)>=this.xOf(it.s)+this.wOf(it.s,it.e) || this.xOf(o.s)+this.wOf(o.s,o.e)<=this.xOf(it.s))return;
       const p=this.trackBox(o,layout);
       if(p.bottom<=b.top)min=Math.max(min,p.bottom+2);
       if(p.top>=b.bottom)max=Math.min(max,p.top-2);
     });
     const rows=[];let y=0;this.state.rows.forEach(r=>{rows.push({top:y,bottom:y+layout[r.id].height});y+=layout[r.id].height+1;});
-    return {...b,rows,min:Math.min(min,b.top),max:Math.max(max,b.bottom)};
+    return {...b,layout,rows,min:Math.min(min,b.top),max:Math.max(max,b.bottom)};
   }
   /* vertical snap for height drags: a row boundary always catches the edge briefly (detent);
      with 눈금 맞춤 on, the edge also locks to the nearest lane line of whichever row it is in. */
@@ -1910,6 +1933,8 @@ class Component extends DCLogic {
   resizeHeight(d,g,delta,snap=false) {
     const it=d.items.find(i=>i.id===g.id);if(!it)return;
     if(g.top===undefined)Object.assign(g,this.heightBounds(it));
+    // Keep row boundaries stable when an item is resized across rows.
+    d.rows.forEach(r=>{const l=g.layout[r.id];if(!r.h && l)r.h=l.height-l.strips*l.stripH;});
     const minimum=Math.min(24,g.height),edge=v=>snap?this.snapEdge(v,g.mode,g.rows):v;
     const top=g.mode==='top'?Math.max(g.min,Math.min(g.bottom-minimum,edge(g.top+delta))):g.top;
     const bottom=g.mode==='top'?g.bottom:Math.max(g.top+minimum,Math.min(g.max,edge(g.bottom+delta)));
@@ -1961,7 +1986,7 @@ class Component extends DCLogic {
     const base=e.metaKey || e.shiftKey ? this.selectedIds() : [];
     const rects=Array.from(this.root?.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])') || []).map(node=>({id:node.dataset.id,box:node.getBoundingClientRect()})).filter(r=>r.box.width>0 && r.box.height>0 && this.state.items.some(i=>i.id===r.id && this.visibleItem(i)));
     this.drag={mode:'marquee',x0:e.clientX,y0:e.clientY,base,rects,moved:false};
-    if (!base.length) this.clearSelection();
+    if (!base.length) {this.clearSelection();const row=e.target?.closest('[data-track]')?.getAttribute('data-track');if(row)this.setState({focusRow:row});}
     this.bind();
   }
   moveMarquee(ev) {
@@ -2165,7 +2190,7 @@ class Component extends DCLogic {
     this.mutate((d) => {
       const a = d.items.find((i) => i.id === id);
       if (!a) return;
-      const peers = d.items.filter((o) => o.id !== id && !protectedIds.has(o.id) && o.row === a.row && this.boxKind(o.kind)
+      const peers = d.items.filter((o) => o.id !== id && o.row === a.row && this.boxKind(o.kind)
         && o.lane < a.lane + (a.span || 1) && o.lane + (o.span || 1) > a.lane);
       if (mode === 'l') {
         let edge = 0;
@@ -2184,16 +2209,16 @@ class Component extends DCLogic {
     if (e.button === 2) return;
     const row = e.currentTarget.getAttribute('data-track');
     if (e.target === e.currentTarget && !e.metaKey && !e.shiftKey) this.clearSelection();
-    else this.setState({ focusRow: row });
+    this.setState({ focusRow: row });
   };
   onTrackDblClick = (e) => {
     if (e.target !== e.currentTarget || this.state.readOnly) return;
     const row = e.currentTarget.getAttribute('data-track');
     const r = e.currentTarget.getBoundingClientRect();
-    const s = Math.max(0, this.snapM(this.mOf(e.clientX - r.left), '', row));
+    const s = Math.max(0,Math.min(this.mOf(Math.max(0,this.xOf(this.state.cfg.months)-this.xOf(this.newItemEnd(0)))),this.snapM(this.mOf(e.clientX-r.left),'',row)));
     const lane = Math.max(0, Math.round((e.clientY - r.top - 6) / this.laneH()));
     const id = this.uid();
-    this.mutate((d) => { d.items.push({ id, kind: 'chev', row, lane, s, e: s + (this.state.cfg.months < 5 ? 0.5 : 2), label: this.L().newChev, color: '#66707a', span: 1, variant: 'solid', memo: '' }); this.resolve(d, id); });
+    this.mutate((d) => { d.items.push({ id, kind: 'chev', row, lane, s, e: this.newItemEnd(s), label: this.L().newChev, color: '#66707a', span: 1, variant: 'solid', memo: '' });this.ensureItemRoom(d,id);this.resolve(d, id); });
     this.setState({ sel: id, editing: id, focusRow: row, tab: 'prop' });
   };
   onItemDbl = (e) => {
@@ -2211,10 +2236,10 @@ class Component extends DCLogic {
   onOutLabelEnter = (e) => { e.stopPropagation(); MapstoneUI.hideTip(); this.setState({ hover: null }); };
   onHover = (e) => { if (e.target && e.target.closest && e.target.closest('[data-mode="outlabel"]')) return; MapstoneUI.showTip(this, e); this.setState({ hover: e.currentTarget.dataset.id }); };
   onNowHover = (e) => MapstoneUI.showTip(this, e);
-  onNowKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.nowToday(); MapstoneUI.hideTip(); } };
+  onNowKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.onNowDbl(e); MapstoneUI.hideTip(); } };
   offHover = () => { MapstoneUI.hideTip(); this.setState({ hover: null }); };
   endEdit = () => { this.endTextEdit(); this.setState({ editing: null, editNote: null }); };
-  onEditKey = (e) => { if (e.key === 'Enter' || e.key === 'Escape') this.endEdit(); };
+  onEditKey = (e) => { if ((e.key === 'Enter' && !e.shiftKey) || e.key === 'Escape') {e.preventDefault();this.endEdit();} };
   onLabelInput = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const it = d.items.find((i) => i.id === id); if (it) it.label = v; }); };
 
   onNoteDbl = (e) => this.setState({ editNote: e.currentTarget.dataset.id, sel: null });
@@ -2273,23 +2298,25 @@ class Component extends DCLogic {
   };
 
   // ── add / delete ──────────────────────────────
+  newItemEnd(s) { const width=Math.min(200,Math.max(120,(this._board?.clientWidth||800)*.2));return Math.min(this.state.cfg.months,this.mOf(this.xOf(s)+width)); }
+  ensureItemRoom(d,id) {const it=d.items.find(i=>i.id===id),r=d.rows.find(r=>r.id===it?.row);if(r?.h && this.boxKind(it.kind))r.h=Math.max(r.h,(it.lane+1)*this.laneH()+14);}
   addAt(kind) {
     const st = this.state;
     if (st.readOnly) return;
     const row = st.focusRow || st.rows[0].id;
-    const s = Math.round(st.now * 2) / 2;
+    const s = Math.max(0,Math.min(this.mOf(Math.max(0,this.xOf(st.cfg.months)-this.xOf(this.newItemEnd(0)))),Math.round(st.now * 2) / 2));
     const id = this.uid();
-    let lanes = 2;
-    st.items.forEach((i) => { if (i.row === row && i.kind !== 'band') lanes = Math.max(lanes, i.lane + (i.span || 1)); });
+    const end=this.newItemEnd(s);let lanes=0;
+    while(st.items.some(i=>i.row===row && this.boxKind(i.kind) && this.visibleItem(i) && i.s<end && i.e>s && (i.trackY??6+i.lane*this.laneH())<6+(lanes+1)*this.laneH()-12 && (i.trackY??6+i.lane*this.laneH())+(i.trackH??(i.span||1)*this.laneH()-12)>6+lanes*this.laneH()))lanes++;
     const L = this.L();
     const box = kind === 'chev' || kind === 'plain';
-    const it = { id, kind, row, lane: box ? lanes : 0, s, e: box ? s + 2 : kind === 'band' ? s + 1.5 : s, span: 1, variant: box && kind === 'plain' ? 'tint' : 'solid', memo: '' };
+    const it = { id, kind, row, lane: box ? lanes : 0, s, e: box || kind==='band' ? end : s, span: 1, variant: box && kind === 'plain' ? 'tint' : 'solid', memo: '' };
     if (kind === 'chev') { it.label = L.newChev; it.color = '#66707a'; }
-    if (kind === 'plain') { it.label = L.newPlain; it.color = '#66707a'; it.e = s + 3; }
+    if (kind === 'plain') { it.label = L.newPlain; it.color = '#66707a'; }
     if (kind === 'band') { it.label = L.newBand; it.color = '#1e3a8a'; it.rowFrom = row; it.rowTo = row; it.row = row; }
     if (kind === 'marker') { it.label = L.newMarker; it.color = '#66707a'; it.row = ''; }
     if (kind === 'flag') { it.label = L.newFlag; it.color = '#e22a21'; it.targetId = ''; }
-    this.mutate((d) => { d.items.push(it); this.resolve(d, id); });
+    this.mutate((d) => { d.items.push(it);this.ensureItemRoom(d,id);this.resolve(d, id); });
     this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   }
   addPlain = () => this.addAt('plain');
@@ -2297,7 +2324,7 @@ class Component extends DCLogic {
   addBand = () => this.addAt('band');
   addMarker = () => this.addAt('marker');
   addFlag = () => this.addAt('flag');
-  deleteSel = () => { if(this.state.readOnly)return;const ids=this.selectedIds(),chosen=new Set(ids);if(!ids.length)return;this.animateOut(ids,()=>{this.mutate(d=>{d.items=d.items.filter(i=>!chosen.has(i.id));});this.clearSelection();}); };
+  deleteSel = () => { if(this.state.readOnly)return;if(this.state.sel==='__now'){this.mutate(d=>{d.cfg.showNow=false;});this.clearSelection();return;}const ids=this.selectedIds(),chosen=new Set(ids);if(!ids.length)return;this.animateOut(ids,()=>{this.mutate(d=>{d.items=d.items.filter(i=>!chosen.has(i.id));});this.clearSelection();}); };
 
   addRow = (e) => { e.stopPropagation(); if (this.state.readOnly) return; const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.setState({ focusRow: id }); };
   onRowName = (e) => { const id = e.currentTarget.dataset.id; const v = e.currentTarget.value; this.editText((d) => { const r = d.rows.find((x) => x.id === id); if (r) r.name = v; }); };
@@ -2358,6 +2385,7 @@ class Component extends DCLogic {
     let v = el.value;
     if (el.type === 'number') { v = parseFloat(v); if (isNaN(v)) return; }
     const id = this.state.sel;
+    if(id==='__now'){if(f==='s')this.mutate(d=>{d.now=v;});return;}
     if(f==='span') {const it=this.state.items.find(i=>i.id===id);if(it&&this.boxKind(it.kind)){const g={id,mode:'bottom',...this.heightBounds(it)};this.mutate(d=>this.resizeHeight(d,g,Math.max(1,v)*this.laneH()-12-g.height));return;}}
     const text = f === 'label' || f === 'memo';
     this.mutate((d) => {
@@ -2386,6 +2414,7 @@ class Component extends DCLogic {
     const m = this.monthOfISO(e.currentTarget.value);
     if (m === null) return;
     const id = this.state.sel;
+    if(id==='__now'){this.mutate(d=>{d.now=m;});return;}
     this.mutate((d) => {
       const it = d.items.find((i) => i.id === id);
       if (!it) return;
@@ -2405,7 +2434,9 @@ class Component extends DCLogic {
   /* 글자 크기: one step = 1px, 9–40px; resets to default (12.5) when set back to it */
   onLabelSize = (e) => {
     const id = this.state.sel, delta = parseFloat(e.currentTarget.dataset.delta);
-    this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (!it) return; const next = Math.max(9, Math.min(40, Math.round(((it.labelSize || 12.5) + delta) * 2) / 2)); if (next === 12.5) delete it.labelSize; else it.labelSize = next; });
+    if(!Number.isFinite(delta))return;
+    if(id==='__now'){this.mutate(d=>{d.cfg.nowLabelSize=Math.max(9,Math.min(40,(d.cfg.nowLabelSize||12)+delta));});return;}
+    this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (!it) return; const size=Math.max(9,Math.min(40,this.labelFont(it)+delta));if(size===this.labelFont({...it,labelSize:undefined}))delete it.labelSize;else it.labelSize=size; });
   };
   onStep = (e) => {
     const d0 = e.currentTarget.dataset;
@@ -2417,6 +2448,7 @@ class Component extends DCLogic {
       const m = this.shiftDay(it[d0.field], Math.sign(delta));
       this.onDateField({currentTarget:{dataset:{field:d0.field},value:this.isoOf(m)}}); return;
     }
+    if(id==='__now'){this.mutate(d=>{d.now+=delta;});return;}
     if(d0.field==='span'){const it=this.state.items.find(i=>i.id===id);if(it&&this.boxKind(it.kind)){const g={id,mode:'bottom',...this.heightBounds(it)};this.mutate(d=>this.resizeHeight(d,g,delta*this.laneH()));return;}}
     this.mutate((d) => {
       const it = d.items.find((i) => i.id === id);
@@ -2457,7 +2489,7 @@ class Component extends DCLogic {
     const el = this._board, old = this.state.cfg.weekPx;
     if (el && old) { const rect = el.getBoundingClientRect(), ax = clientX === undefined ? el.clientWidth / 2 : clientX - rect.left; this._zoomFix = { ax, content: el.scrollLeft + ax - 192, ratio: wp / old }; }
     if (this.root) { this.root.setAttribute('data-zooming', ''); clearTimeout(this._ztimer); this._ztimer = setTimeout(() => this.root && this.root.removeAttribute('data-zooming'), 220); }
-    this.mutate((d) => { d.cfg.weekPx = wp; }, false);
+    this.viewCfg((d) => { d.cfg.weekPx = Math.max(this.ZMIN,Math.min(this.ZMAX,wp)); }, false);
   }
   onWeekMode = (e) => { const m = e.currentTarget.dataset.week; this.mutate((d) => { d.cfg.weekMode = m; }); };
   toggleWeekMode = () => { this.mutate((d) => { d.cfg.weekMode = d.cfg.weekMode === 'actual' ? 'uniform' : 'actual'; }); };
@@ -2499,7 +2531,7 @@ class Component extends DCLogic {
     const scale = (1-Math.abs(2*next-1))/(1-Math.abs(2*l-1)||1);
     return '#'+rgb.map(v=>Math.round(Math.max(0,Math.min(1,(v-l)*scale+next))*255).toString(16).padStart(2,'0')).join('');
   }
-  onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{const it=d.items.find(i=>i.id===id);if(it && it.kind==='flag')it.hideDate=!!e.currentTarget.checked;});};
+  onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{if(id==='__now'){d.cfg.hideNowDate=!!e.currentTarget.checked;return;}const it=d.items.find(i=>i.id===id);if(it && ['flag','marker'].includes(it.kind))it.hideDate=!!e.currentTarget.checked;});};
   onColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.color = c; }); };
   onVariant = (e) => { const v = e.currentTarget.dataset.variant; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.variant = v; }); };
   onTitle = (e) => { const v = e.currentTarget.value; this.editText((d) => { d.title = v; }); };
@@ -2572,19 +2604,9 @@ class Component extends DCLogic {
     const hex = (c) => String(c || '#66707a').replace('#', '').toUpperCase();
     const W = this.widths(), O = this.offs(W);
     const LB = 172, HDR = 58;
-    const markers = st.items.filter((i) => i.kind === 'marker');
-    const mrows = [];
-    const mplace = {};
-    markers.slice().sort((a, b) => a.s - b.s).forEach((it) => {
-      const w = this.measure(it.label || '') + 24 + (st.cfg.showElementDates ? this.measure(this.isoOf(it.s)) + 6 : 0);
-      const x0 = this.xOf(it.s) - w / 2, x1 = x0 + w;
-      let k = 0;
-      while (mrows[k] && mrows[k].some((g) => g[0] < x1 + 8 && g[1] > x0 - 8)) k++;
-      mrows[k] = mrows[k] || [];
-      mrows[k].push([x0, x1]);
-      mplace[it.id] = k;
-    });
-    const stripH = Math.max(1, mrows.length) * 30 + 14;
+    const view=this.renderVals();
+    const markers = st.items.filter((i) => i.kind === 'marker' && this.visibleItem(i));
+    const stripH = parseFloat(view.markerStripH);
     this._L = this.rowLayout();
     const rowsTop = stripH + HDR;
     let totalH = rowsTop;
@@ -2650,7 +2672,7 @@ class Component extends DCLogic {
         shape: S.rect, x: X(LB + this.xOf(it.s)), y: Y(t1 + 6), w: Sz(this.wOf(it.s, it.e)), h: Sz(Math.max(40, t2 - t1 - 14)),
         fill: { color: tint ? 'FFFFFF' : hex(it.color) }, line: { color: hex(it.color), width: 1 },
         color: tint ? hex(this.dark(it.color)) : (this.lum(it.color) > 0.62 ? '181A1B' : 'FFFFFF'),
-        fontSize: fs(12), bold: true, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
+        fontSize: fs(this.labelFont(it)), bold: true, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
       });
     });
 
@@ -2665,40 +2687,41 @@ class Component extends DCLogic {
         w: Sz(this.wOf(it.s, it.e)), h: Sz(this.trackBox(it).height),
         fill: { color: tint ? 'FFFFFF' : hex(it.color) }, line: { color: hex(it.color), width: 1 },
         color: tint ? hex(this.dark(it.color)) : (this.lum(it.color) > 0.62 ? '181A1B' : 'FFFFFF'),
-        fontSize: fs(11.5), bold: false, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
+        fontSize: fs(this.labelFont(it)), bold: false, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
       });
     });
 
-    const view=this.renderVals();
+
     const line=(x1,y1,x2,y2,color)=>slide.addShape(S.line,{x:X(Math.min(x1,x2)),y:Y(Math.min(y1,y2)),w:Math.abs(x2-x1)*sc,h:Math.abs(y2-y1)*sc,line:{color:hex(color),width:1},flipV:(x2-x1)*(y2-y1)<0});
     view.rowsView.forEach(row=>row.flags.forEach(f=>{
       const x=LB+parseFloat(f.left),y=rowTopPx[row.id]+parseFloat(f.top),lx=x+parseFloat(f.labelLeft),ly=y+parseFloat(f.labelTop);
       if(f.connected){const coords=f.connPath.match(/-?[\d.]+/g).map(Number);line(x,y+11,x,y+coords[2],f.color);line(x,y+coords[2],x+coords[3],y+coords[2],f.color);}
       slide.addShape(S.ellipse,{x:X(x+parseFloat(f.dotLeft)+5.5),y:Y(y+parseFloat(f.dotTop)+5.5),w:Sz(11),h:Sz(11),fill:{color:hex(f.color)},line:{color:'FFFFFF',width:.75}});
-      slide.addText(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''),{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''))+32),h:Sz(24),fontSize:fs(12),bold:true,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
+      slide.addText(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''),{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''))+32),h:Sz(this.labelBox({kind:'flag',label:f.label,labelSize:parseFloat(f.labelSize)}).height),fontSize:fs(parseFloat(f.labelSize)),bold:true,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
     }));
-    st.items.filter(i=>i.kind==='sticky').forEach(it=>slide.addText(it.label,{shape:S.rect,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||220),h:Sz(it.h||120),fontSize:fs(13),color:'181A1B',fill:{color:hex(it.color)},margin:3,breakLine:false}));
-    st.items.filter(i=>i.kind==='image').forEach(it=>slide.addImage({data:it.src,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||320),h:Sz(it.h||200)}));
+    st.items.filter(i=>i.kind==='sticky').forEach(it=>slide.addText(it.label,{shape:S.rect,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||220),h:Sz(it.h||120),fontSize:fs(this.labelFont(it)),color:'181A1B',fill:{color:hex(it.color)},margin:3,breakLine:false}));
+    st.items.filter(i=>i.kind==='image').forEach(it=>{slide.addImage({data:it.src,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||320),h:Sz(it.h||200)});slide.addText(it.label,{x:X(LB+this.xOf(it.s)),y:Y((it.y||0)+(it.h||200)),w:Sz(it.w||320),h:Sz(this.labelBox(it).height),fontSize:fs(this.labelFont(it)),color:'181A1B',fill:{color:'FFFFFF'},margin:1});});
     if(cfg.showWeek!==false)view.subdivisions.forEach(q=>slide.addText(q.label,{x:X(LB+parseFloat(q.left)),y:Y(stripH+HDR-14),w:Sz(this.measure(q.label)+4),h:Sz(12),fontSize:fs(9),color:'FFFFFF',align:'left',margin:0}));
-    if(cfg.showElementDates)st.items.filter(i=>['chev','plain','band','marker'].includes(i.kind)).forEach(it=>{
-      const x=LB+this.xOf(it.s),y=it.kind==='marker'?(mplace[it.id]||0)*30+24:it.kind==='band'?rowTopPx[it.rowFrom]+6+Math.max(40,rowTopPx[it.rowTo]+this.rowHeight(it.rowTo)-rowTopPx[it.rowFrom]-14):rowTopPx[it.row]+this.trackBox(it).localTop+this.trackBox(it).height;
-      const text=this.shortDate(it.s)+(it.kind==='marker'?'':' → '+this.shortDate(it.e));slide.addText(text,{x:X(x),y:Y(y),w:Sz(this.measure(text)+10),h:Sz(14),fontSize:fs(10),color:'3B4044',fill:{color:'FFFFFF'},margin:0});
+    if(cfg.showElementDates)st.items.filter(i=>['chev','plain','band','marker'].includes(i.kind) && !i.hideDate && this.visibleItem(i)).forEach(it=>{
+      const x=LB+this.xOf(it.s),y=it.kind==='marker'?parseFloat(view.markersView.find(m=>m.id===it.id)?.top||0)+this.labelBox(it).height:it.kind==='band'?rowTopPx[it.rowFrom]+6+Math.max(40,rowTopPx[it.rowTo]+this.rowHeight(it.rowTo)-rowTopPx[it.rowFrom]-14):rowTopPx[it.row]+this.trackBox(it).localTop+this.trackBox(it).height;
+      const text=this.shortDate(it.s)+(it.kind==='marker'?'':' ~ '+this.shortDate(it.e));slide.addText(text,{x:X(x),y:Y(y),w:Sz(this.measure(text)+10),h:Sz(14),fontSize:fs(10),color:'3B4044',fill:{color:'FFFFFF'},margin:0});
     });
 
     markers.forEach((it) => {
-      const k = mplace[it.id] || 0;
       const x = X(LB + this.xOf(it.s));
       slide.addShape(S.line, { x: x, y: Y(stripH - 8), w: 0, h: Y(totalH) - Y(stripH - 8), line: { color: hex(it.color), width: 1, dashType: 'dash' } });
       slide.addText(it.label, {
-        shape: S.roundRect, rectRadius: 0.02, x: x-Sz(this.measure(it.label)+24)/2, y: Y(k * 30), w: Sz(this.measure(it.label)+24), h: Sz(24),
+        shape: S.roundRect, rectRadius: 0.02, x: x-Sz(this.labelBox(it).width)/2, y: Y(parseFloat(view.markersView.find(m=>m.id===it.id)?.top)||0), w: Sz(this.labelBox(it).width), h: Sz(this.labelBox(it).height),
         fill: { color: 'FFFFFF' }, line: { color: hex(it.color), width: 0.75 },
-        color: hex(this.dark(it.color)), fontSize: fs(11.5), bold: true, align: 'center', valign: 'middle', margin: 1, fontFace: 'Pretendard'
+        color: hex(this.dark(it.color)), fontSize: fs(this.labelFont(it)), bold: true, align: 'center', valign: 'middle', margin: 1, fontFace: 'Pretendard'
       });
     });
 
+    if(view.showNow){
     const nx = X(LB + this.xOf(st.now));
     slide.addShape(S.line, { x: nx, y: Y(stripH - 8), w: 0, h: Y(totalH) - Y(stripH - 8), line: { color: 'E30084', width: 1.5 } });
-    slide.addText('NOW', { shape: S.roundRect, rectRadius: 0.06, x: nx - 0.3, y: Y(totalH) + 0.04, w: 0.6, h: 0.22, fill: { color: 'E30084' }, color: 'FFFFFF', fontSize: 9, bold: true, align: 'center', valign: 'middle', margin: 0, fontFace: 'Pretendard' });
+    slide.addText('NOW'+(view.showNowDate?' '+this.shortDate(st.now):''), { shape: S.roundRect, rectRadius: 0.06, x: nx - 0.3, y: Y(totalH) + 0.04, w:Sz(48+(view.showNowDate?this.measure(this.shortDate(st.now)):0)), h: 0.22, fill: { color: 'E30084' }, color: 'FFFFFF', fontSize:fs(cfg.nowLabelSize||12), bold: true, align: 'center', valign: 'middle', margin: 0, fontFace: 'Pretendard' });
+    }
 
     const minX=Math.min(...objects.map(o=>o[2].x)),minY=Math.min(...objects.map(o=>o[2].y)),maxX=Math.max(...objects.map(o=>o[2].x+o[2].w)),maxY=Math.max(...objects.map(o=>o[2].y+o[2].h));
     const fit=Math.min(12.633/(maxX-minX),6.8/(maxY-minY));
@@ -2758,7 +2781,7 @@ class Component extends DCLogic {
       const box=this.trackBox(it,L),h=box.height,top=box.localTop;
       const w = this.wOf(it.s, it.e);
       const m = (lay && lay.modes[it.id]) || { mode: 'in' };
-      const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : h + 6;
+      const stripTop = lay ? lay.height-lay.strips*lay.stripH-10+(m.strip||0)*lay.stripH-top : h + 6;
       const sel = this.isSelected(it.id);
       const hov = st.hover === it.id;
       const drag = !!(this.drag && (this.drag.id === it.id || this.drag.ids?.includes(it.id)));
@@ -2767,7 +2790,7 @@ class Component extends DCLogic {
       const durBadgeBg = solid ? (this.lum(it.color) < 0.55 ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.72)') : '#ffffff';
       const durBadge = this.measure(it.label || '') + this.measure(this.durationHidden(it) ? '' : this.durOf(it.s, it.e)) + 40 > w;
       return {
-        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
         bg: solid ? it.color : this.rgba(it.color, 0.16),
         fg: solid ? (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff') : this.dark(it.color),
         labelSize: px(it.labelSize || 12.5), outDx: px(it.labelDx || 0), outDy: px(it.labelDy || 0),
@@ -2806,7 +2829,7 @@ class Component extends DCLogic {
       const box=this.trackBox(it,L),h=box.height;
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
         left: px(this.xOf(it.s)), width: px(this.wOf(it.s, it.e)), top: px(box.localTop), height: px(h),
         bg: tint ? this.rgba(it.color, 0.1) : it.color,
         border: tint ? this.rgba(it.color, 0.5) : it.color,
@@ -2824,14 +2847,14 @@ class Component extends DCLogic {
       const target = st.items.find(i => i.id === m.targetId);
       const bandBottom=target?.kind==='band' ? this.rowTop(target.rowTo)+this.rowHeight(target.rowTo) : 0;
       const top = target?.kind==='band' ? 6+Math.max(40,bandBottom-this.rowTop(target.rowFrom)-14)*(it.linkY ?? 1)-11 : target ? this.trackBox(target,L).localTop+this.trackBox(target,L).height*(it.linkY ?? 1)-11 : 6 + it.lane * laneH + laneH / 2 - 11;
-      const stripTop = lay ? lay.lanes * laneH + 4 + (m.strip || 0) * 24 - top : 26;
+      const stripTop = lay ? lay.height-lay.strips*lay.stripH-10+(m.strip||0)*lay.stripH-top : 26;
       const labelLeft=(m.mode === 'strip' ? -6 : 12)+(it.labelDx || 0), labelTop=(m.mode === 'strip' ? stripTop : 0)+(it.labelDy || 0);
-      const badgeWidth=this.measure(it.label || '')+32+(cfg.showElementDates && !it.hideDate ? this.measure(this.shortDate(it.s))+6 : 0);
+      const badgeWidth=this.labelBox(it,32).width+(cfg.showElementDates && !it.hideDate ? this.measure(this.shortDate(it.s))+6 : 0),badgeHeight=this.labelBox(it,32).height;
       const edgeX=labelLeft >= 0 ? labelLeft : labelLeft+badgeWidth <= 0 ? labelLeft+badgeWidth : 0;
-      const edgeY=labelTop > 11 ? labelTop : labelTop+24 < 11 ? labelTop+24 : labelTop+12;
+      const edgeY=labelTop > 11 ? labelTop : labelTop+badgeHeight < 11 ? labelTop+badgeHeight : labelTop+badgeHeight/2;
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, label: it.label, memo: it.memo || '', color: it.color, ink: this.dark(it.color),
+        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '', color: it.color, ink: this.dark(it.color),
         targetId: target ? target.id : '', linkLabel: target ? this.L().linkedTo + ': ' + target.label : this.L().unlinked,
         /* stacking: blocks < memo labels (100/110) < session column (115) · month header (116) < drag guide (119) < sticky memos · images (120+) */ zIndex: this.isSelected(it.id) ? 110 : 100,
         badgeBg: '#fff',
@@ -2871,7 +2894,7 @@ class Component extends DCLogic {
       const sel = this.isSelected(it.id);
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, memo: it.memo || '',
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '',
         left: px(172 + this.xOf(it.s)), width: px(this.wOf(it.s, it.e)),
         top: px(t1 + 6), height: px(Math.max(40, t2 - t1 - 14)),
         bg: it.variant === 'tint' ? this.rgba(it.color, 0.16) : it.color,
@@ -2884,11 +2907,14 @@ class Component extends DCLogic {
       };
     });
 
-    const markers = st.items.filter((i) => i.kind === 'marker');
+    const markers = st.items.filter((i) => i.kind === 'marker' && this.visibleItem(i));
+    const nowItem={id:'__now',kind:'now',label:'NOW',s:st.now,labelSize:cfg.nowLabelSize||12,hideDate:!!cfg.hideNowDate};
+    const showNow=this.props.showNowLine!==false && cfg.showNow!==false;
+    const markerLaneH=Math.max(30,...markers.map(it=>this.labelBox(it).height+6),this.labelBox(nowItem).height+6);
     const mrows = [];
     const mplace = {};
-    markers.slice().sort((a, b) => a.s - b.s).forEach((it) => {
-      const w = this.measure(it.label || '') + 24 + (st.cfg.showElementDates ? this.measure(this.isoOf(it.s)) + 6 : 0);
+    markers.concat(showNow?[nowItem]:[]).sort((a, b) => a.s - b.s).forEach((it) => {
+      const w=this.labelBox(it).width+(cfg.showElementDates && !it.hideDate?this.measure(this.shortDate(it.s))+6:0);
       const x0 = this.xOf(it.s) - w / 2, x1 = x0 + w;
       let k = 0;
       while (mrows[k] && mrows[k].some((g) => g[0] < x1 + 8 && g[1] > x0 - 8)) k++;
@@ -2897,14 +2923,14 @@ class Component extends DCLogic {
       mplace[it.id] = k;
     });
     const mrowCount = Math.max(1, mrows.length);
-    const stripH = mrowCount * 30 + 14;
+    const stripH = mrowCount * markerLaneH + 14;
     const markersView = markers.filter((i) => this.visibleItem(i)).map((it0) => {
       const it = this.view(it0);
       const editing = st.editing === it.id;
       const k = mplace[it.id] || 0;
       return {
-        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, label: it.label, color: it.color, ink: this.dark(it.color),
-        left: px(this.xOf(it.s)), top: px(k * 30), stemH: px(stripH - k * 30 - 26),
+        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, label: it.label, labelSize:px(this.labelFont(it)), color: it.color, ink: this.dark(it.color),
+        left: px(this.xOf(it.s)), top: px(k * markerLaneH), stemH: px(Math.max(0,stripH-k*markerLaneH-this.labelBox(it).height)),
         sel: this.isSelected(it.id), editing: editing, show: !editing
       };
     });
@@ -2915,7 +2941,7 @@ class Component extends DCLogic {
       const alpha = it.variant === 'tint' ? 0.55 : 1;
       const base = it.color || '#fdf3d0';
       return {
-        dateLabel: this.shortDate(it.s)+' → '+this.shortDate(it.e), id: it.id, label: it.label, left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, label: it.label, labelSize:px(this.labelFont(it)), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
         width: px(it.w || 210), height: px(it.h || 120),
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
@@ -2925,7 +2951,7 @@ class Component extends DCLogic {
 
     const sel = this.selItem(), selectionCount=this.selectedIds().length;
     const TT = this.L();
-    const kindNames = { image:'이미지', sticky:TT.sticky, chev: TT.chev, plain: TT.plain, band: TT.band, marker: TT.marker, flag: TT.kFlag };
+    const kindNames = { now:'NOW', image:'이미지', sticky:TT.sticky, chev: TT.chev, plain: TT.plain, band: TT.band, marker: TT.marker, flag: TT.kFlag };
     const focusRow = st.rows.find((r) => r.id === st.focusRow);
     const vReady = !!(st.vAuthor || '').trim() && !!st.vDate;
     const tabC = (t) => (st.tab === t ? '#181a1b' : 'var(--color-text-neutral-3)');
@@ -2944,7 +2970,7 @@ class Component extends DCLogic {
       readOnly: !!st.readOnly,
       focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, openEditGate:this.openEditGate, canUnlockEdit: !!st.canUnlockEdit && !!st.readOnly, exportJson:this.exportJson, openFile:this.openFile,
       timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
-      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
+      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,src:it.src,label:it.label,labelSize:px(this.labelFont(it)),left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       noSelection: !sel && !focusRowObj, showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
       rowPropH: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id)) : 0,
@@ -2992,8 +3018,8 @@ class Component extends DCLogic {
       weekPxSlider: this.zoomToSlider(this.weekPxVal()),
       zoomPct: Math.round((this.weekPxVal() / 19) * 100) + '%',
       zoomTip: T.weekPx + ' ' + (Math.round(this.weekPxVal() * 10) / 10) + 'px',
-      nowVal: st.now, nowDate: this.dateOf(st.now), showNow: this.props.showNowLine !== false,
-      nowLeft: px(192 + this.xOf(st.now)), nowLineLeft: px(172 + this.xOf(st.now)), nowTop: px(26),
+      nowVal: st.now, nowDate: this.dateOf(st.now), showNow, toggleNow:this.toggleNow,nowBg:cfg.showNow!==false?'#181a1b':'#f3f5f6',nowFg:cfg.showNow!==false?'#fff':'#66707a',onNowDbl:this.onNowDbl,
+      nowLeft: px(192 + this.xOf(st.now)), nowLineLeft: px(172 + this.xOf(st.now)), nowTop: px((mplace.__now||0)*markerLaneH+this.labelBox(nowItem).height),nowTagTop:px((mplace.__now||0)*markerLaneH),nowLabelSize:px(cfg.nowLabelSize||12),showNowDate:!!cfg.showElementDates && !cfg.hideNowDate,
       interactState: st.interact ? 'ON' : 'OFF',
       interactBg: st.interact ? '#181a1b' : '#fff', interactFg: st.interact ? '#fff' : 'var(--color-text-neutral-5)',
       interactBorder: st.interact ? '#181a1b' : 'var(--color-border-neutral-2)',
@@ -3013,16 +3039,16 @@ class Component extends DCLogic {
       palette: (st.paletteExpanded ? [0,-.55,-.3,.3,.55] : [0]).flatMap(tone=>this.PAL.map(([name,base])=>{const hex=tone ? this.paletteTone(base,tone) : base;return {name:name+(tone ? ' · '+(tone<0 ? T.shadeDark : T.shadeLight)+' '+(Math.abs(tone)>.4 ? 2 : 1) : ''),hex,border:sel && sel.color===hex ? '#000' : 'rgba(0,0,0,.12)'};})),
       rowOptions: st.rows.map((r) => ({ id: r.id, name: r.name })),
       focusName: focusRow ? focusRow.name : '없음',
-      hasSel: !!sel && selectionCount===1, multiSelected: selectionCount>1, selectionCount, noSel: !sel,
+      hasSel: !!sel && (selectionCount===1 || sel.kind==='now'), multiSelected: selectionCount>1, selectionCount, noSel: !sel,
       selKindLabel: sel ? kindNames[sel.kind] || '항목' : '',
       selLabel: sel ? sel.label : '', selMemo: sel ? sel.memo || '' : '',
       selRowFrom: sel ? sel.rowFrom || '' : '', selRowTo: sel ? sel.rowTo || '' : '',
       onHeightKey:this.onHeightKey,
-      selHideDate: !!sel?.hideDate, onHideDate: this.onHideDate, selIsFlag: !!sel && sel.kind === 'flag', selNotFlag: !!sel && sel.kind !== 'flag', selRange:!!sel && !['flag','marker'].includes(sel.kind), selStartLabel:sel?.kind==='marker' ? T.elementDates : T.startF, selDateColumns:sel?.kind==='marker'||st.propertyDates?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)',
+      selHideDate: !!sel?.hideDate, onHideDate: this.onHideDate,selIsNow:sel?.kind==='now',selHasText:!!sel,selHasDateHide:!!sel && ['flag','marker','now'].includes(sel.kind), selIsFlag: !!sel && sel.kind === 'flag', selNotFlag: !!sel && sel.kind !== 'flag', selRange:!!sel && !['flag','marker','now'].includes(sel.kind), selStartLabel:['marker','now'].includes(sel?.kind) ? T.elementDates : T.startF, selDateColumns:['marker','now'].includes(sel?.kind)||st.propertyDates?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)',
       selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
       linkOptions: st.items.filter(i=>this.linkKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===(i.rowFrom||i.row))?.name || '')+' · '+i.label})),
       marquee:st.marquee, linkDrag: st.linkDrag, linking:!!st.linkDrag,
-      selLabelSize: sel ? (sel.labelSize || 12.5) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
+      selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
       selS: sel ? sel.s : 0, selE: sel ? sel.e : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? this.boxKind(sel.kind)?Math.round((this.trackBox(sel,L).height+12)/laneH*100)/100:sel.span||1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
       propertyDates: !!st.propertyDates, togglePropertyDates: this.togglePropertyDates, onPropertyTimeField: this.onPropertyTimeField,
@@ -3052,7 +3078,7 @@ class Component extends DCLogic {
       stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1], border: sel && sel.color === p[1] ? '#181a1b' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
       stickyOpaque: { bg: sel && sel.variant !== 'tint' ? '#181a1b' : '#fff', fg: sel && sel.variant !== 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant !== 'tint' ? '#181a1b' : 'var(--color-border-neutral-2)' },
       stickyTint: { bg: sel && sel.variant === 'tint' ? '#181a1b' : '#fff', fg: sel && sel.variant === 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant === 'tint' ? '#181a1b' : 'var(--color-border-neutral-2)' },
-      selNotSticky: !!sel && !['sticky','image'].includes(sel.kind),
+      selNotSticky: !!sel && !['sticky','image','now'].includes(sel.kind),
       rowPropLanes: focusRowObj ? Math.max(1, Math.round((this.rowHeight(focusRowObj.id) - 14) / cfg.laneH)) : 1,
       selIsSticky: !!sel && sel.kind === 'sticky',
       onRowName: this.onRowName, onRowDelete: this.onRowDelete, onRowUp: this.onRowUp, onRowDown: this.onRowDown, onRowFocus: this.onRowFocus,

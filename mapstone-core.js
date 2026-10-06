@@ -33,6 +33,8 @@
     if (!Array.isArray(data.items) || data.items.length > 5000) fail('블록은 최대 5,000개입니다.');
     const cfg = Object.assign({ startY: 2026, startM: 1, months: 12, weekPx: 19, weekMode: 'uniform', laneH: 44, magnet: true, overlap: 'shrink', showWeek:false, showElementDates:false, durUnit:'MD' }, data.cfg || {});
     for (const [k, lo, hi] of [['startY',1900,2200],['startM',1,12],['months',1,48],['weekPx',4,640],['laneH',28,72]]) finite(cfg[k], k, lo, hi);
+    for(const k of ['showNow','hideNowDate','showMM','showWeek','showElementDates','showTooltip'])if(cfg[k]!==undefined && typeof cfg[k]!=='boolean')fail(k+'는 true/false여야 합니다.');
+    if(cfg.nowLabelSize!==undefined)finite(cfg.nowLabelSize,'NOW 글자 크기',9,40);
     for (const k of ['startY','startM','months']) if (!Number.isInteger(cfg[k])) fail(k + '는 정수여야 합니다.');
     if (!['uniform','actual'].includes(cfg.weekMode) || !['shrink','moveOther','moveSelf'].includes(cfg.overlap)) fail('타임라인 설정이 올바르지 않습니다.');
     const text = (v, name, max = 20000) => typeof v === 'string' && v.length <= max ? v : fail(name + ' 텍스트가 올바르지 않습니다.');
