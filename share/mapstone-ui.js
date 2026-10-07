@@ -7,6 +7,7 @@
   let modal=null, tip=null, activeApp=null;
   function el(tag,text,attrs={}) { const e=document.createElement(tag); if(text!==null)e.textContent=text;Object.assign(e,attrs);for(const [k,v] of Object.entries(attrs))if(k.startsWith('aria-')||k.startsWith('data-'))e.setAttribute(k,v);return e; }
   function button(text,fn){const e=el('button',text,{type:'button',className:'ms-button'});e.addEventListener('click',fn);return e;}
+  function loading(node,on){node.classList.toggle('ms-loading',on);node.setAttribute('aria-busy',String(on));}
   function field(parent,label,type='text',value=''){const l=el('label',null,{className:'ms-field'});l.append(el('span',label));const i=el(type==='textarea'?'textarea':'input',null,{value});if(type!=='textarea')i.type=type;l.append(i);parent.append(l);return i;}
   function download(data,name){const blob=new Blob([typeof data==='string'?data:JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob);const a=el('a',null,{href:url,download:name});a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);}
   // 파일 저장: Chrome/Edge open the native "save as" (folder + name); other browsers ask for a name and download.
@@ -57,7 +58,7 @@
     if(!app.state.tipHold){const mine=tip;tipTimer=setTimeout(()=>{if(tip===mine)hideTip();},3000);}
   }
   function closeModal(){if(!modal)return;const old=modal;modal=null;old.close();old.remove();}
-  function createModal(title){closeModal();hideTip();const d=el('dialog',null,{className:'ms-dialog'});const head=el('header');head.append(el('h2',title),button('닫기',closeModal));d.append(head);const body=el('div',null,{className:'ms-dialog-body'});d.append(body);d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});d.addEventListener('close',()=>{if(modal===d)modal=null;d.remove();});document.body.append(d);modal=d;d.showModal();return body;}
+  function createModal(title,classes=''){closeModal();hideTip();const d=el('dialog',null,{className:'ms-dialog '+classes});const head=el('header');head.append(el('h2',title),button('닫기',closeModal));d.append(head);const body=el('div',null,{className:'ms-dialog-body'});d.append(body);d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});d.addEventListener('close',()=>{if(modal===d)modal=null;d.remove();});document.body.append(d);modal=d;d.showModal();return body;}
   async function request(endpoint,path,credential,method='GET',body,auth='code',timeout=20000,extra){
     const names={admin:'X-Mapstone-Admin',share:'X-Mapstone-Password',code:'X-Mapstone-Code'};
     const headers={'Content-Type':'application/json',[auth===true?names.admin:(names[auth]||names.code)]:credential,...(extra||{})};
@@ -110,14 +111,15 @@
     const show=(doc,how)=>{pending=doc;review.hidden=false;spot.append(review,message);review.replaceChildren(el('h3','분석 결과 검토'),el('strong',doc.title),el('p',summary(doc)),el('p',doc.items.slice(0,20).map(i=>i.label).filter(Boolean).join(' / ')),apply);message.textContent=how+' 교체 전에 기존 일정을 JSON으로 백업하며, 교체 후 실행 취소도 가능합니다.';review.scrollIntoView({block:'nearest'});};
     const imgSpot=el('div'),txtSpot=el('div');let spot=imgSpot;
     const reset=text=>{pending=null;review.hidden=true;message.textContent=text||'';if(text){spot.append(message);message.scrollIntoView({block:'nearest'});}};
-    const busy=async(btn,fn)=>{const label=btn.textContent;btn.disabled=true;btn.textContent='분석 중…';try{await fn();}catch(e){reset(e.message);}finally{btn.disabled=false;btn.textContent=label;}};
+    let analyzing=false;
+    const busy=async(btn,fn)=>{if(analyzing)return;analyzing=true;const label=btn.textContent;analyzeImage.disabled=analyzeText.disabled=input.disabled=clearText.disabled=removeImage.disabled=true;btn.textContent='분석 중…';loading(btn,true);loading(message,true);try{await fn();}catch(e){reset(e.message);}finally{analyzing=false;analyzeImage.disabled=analyzeText.disabled=input.disabled=clearText.disabled=removeImage.disabled=false;btn.textContent=label;loading(btn,false);loading(message,false);}};
     const ai=async(payload,what)=>{reset(what+'에서 일정·마일스톤을 분석하고 있습니다… 자료가 크면 1~2분 걸릴 수 있습니다.');const r=await request(app.sync.endpoint,'/analyze',app.sync.code||'','POST',payload,'code',180000);return C.analysisColors(C.validate(r.document));};
 
     body.append(el('h3','1. 이미지 분석하기'),el('p','로드맵 이미지 또는 손그림 등을 분석하여 Mapstone 일정으로 변환합니다. 1일 항목은 마일스톤으로, 겹치는 일정은 별도 레인으로 배치합니다.'));
     let picked=null;const thumb=el('img',null,{alt:''});thumb.hidden=true;
     const preview=el('div',null,{className:'ms-image-preview'});preview.hidden=true;
     const syncImage=()=>{preview.hidden=thumb.hidden=!picked;if(picked)thumb.src=picked.src;else thumb.removeAttribute('src');};
-    const setImage=async f=>{try{if(!f.type.startsWith('image/'))throw new Error('이미지 파일을 선택하세요.');reset('이미지를 준비하고 있습니다…');picked={name:f.name||'붙여넣은 이미지.png',...await imageData(f)};syncImage();reset(picked.name+' · '+picked.width+'×'+picked.height+' 준비 완료');}catch(e){picked=null;syncImage();reset(e.message);}};
+    const setImage=async f=>{if(analyzing)return;try{if(!f.type.startsWith('image/'))throw new Error('이미지 파일을 선택하세요.');reset('이미지를 준비하고 있습니다…');picked={name:f.name||'붙여넣은 이미지.png',...await imageData(f)};syncImage();reset(picked.name+' · '+picked.width+'×'+picked.height+' 준비 완료');}catch(e){picked=null;syncImage();reset(e.message);}};
     const imgZone=dropZone(body,'이미지를 여기에 끌어다 놓거나 붙여넣으세요','캡처한 화면은 이 영역을 누른 뒤 Ctrl/Cmd+V로 여기에 붙여넣으세요.','image/*',setImage);
     const removeImage=button('×',()=>{picked=null;syncImage();reset('이미지를 삭제했습니다.');});removeImage.classList.add('ms-image-remove');removeImage.setAttribute('aria-label','이미지 삭제');removeImage.title='이미지 삭제';preview.append(thumb,removeImage);imgZone.append(preview);
     syncImage();
@@ -126,7 +128,7 @@
 
     const txtHead=el('h3','2. 텍스트 분석하기');
     body.append(txtHead,el('p','회의록, 문서 또는 표의 텍스트를 분석하여 Mapstone 일정으로 변환합니다. 1일 항목은 마일스톤으로 반영합니다. 날짜와 소요 기간을 명시하면 더 정확하게 배치됩니다.'));
-    const setText=async f=>{try{if(f.type.startsWith('image/'))return setImage(f);if(f.size>8*1024*1024)throw new Error('텍스트 파일은 8MB 이하여야 합니다.');input.value=await f.text();syncText();reset(f.name+' 내용을 불러왔습니다.');}catch(e){reset(e.message);}};
+    const setText=async f=>{if(analyzing)return;try{if(f.type.startsWith('image/'))return setImage(f);if(f.size>8*1024*1024)throw new Error('텍스트 파일은 8MB 이하여야 합니다.');input.value=await f.text();syncText();reset(f.name+' 내용을 불러왔습니다.');}catch(e){reset(e.message);}};
     dropZone(body,'텍스트 파일을 여기에 끌어다 놓거나 붙여넣으세요','복사한 내용은 이 영역이나 아래 입력칸을 누른 뒤 Ctrl/Cmd+V로 여기에 붙여넣으세요.','.txt,.md,.csv,.tsv,.json,.js,.html,.xml,text/*,application/json',setText);
     const input=field(body,'분석할 텍스트','textarea');input.rows=8;input.placeholder='텍스트를 붙여넣으세요 (Ctrl/Cmd+V).\n예) 3/2 킥오프, 3월 요구사항 정의, 4~5월 개발, 6/15 QA, 6/30 오픈';input.addEventListener('input',()=>{reset();syncText();});
     const clearText=button('×',()=>{input.value='';syncText();reset('입력 내용을 지웠습니다.');input.focus();});clearText.classList.add('ms-text-clear');clearText.setAttribute('aria-label','텍스트 지우기');clearText.title='텍스트 지우기';const textField=input.parentElement,textBox=el('div',null,{className:'ms-text-input'});textField.before(textBox);textBox.append(textField,clearText);
@@ -135,9 +137,9 @@
     body.append(analyzeText,txtSpot);
     const help=el('details');help.append(el('summary','외부 LLM용 요청문 · 데이터 예제'));const prompt='PRD를 분석해 아래 형식의 const schedule 데이터만 작성해 줘. 시작 월을 0으로 하고 s/e는 개월 단위(5개월 미만은 0.125 단위)로 지정해. rows의 id와 items의 row를 일치시키고 블록 id는 고유하게 지정해. 1일 소요 작업과 특정 날짜의 항목은 kind: marker, s와 e를 같은 값, row는 빈 문자열로 지정해. 같은 행에서 날짜가 겹치는 일정·참고 블록은 lane을 분리하고 마일스톤이나 메모로 중복 생성하지 마. 실행 함수나 계산식 없이 데이터 리터럴로 출력해.\n\nconst schedule = '+JSON.stringify(example,null,2)+';';help.append(el('pre',prompt));help.append(button('요청문 복사',async()=>{try{await navigator.clipboard.writeText(prompt);}catch{download(prompt,'mapstone-llm-prompt.txt');}}));
     body.append(help);imgSpot.append(review,message);
-    const dialog=body.closest('dialog');for(const t of ['pointerdown','drop','input','change'])dialog.addEventListener(t,e=>{spot=txtHead.compareDocumentPosition(e.target)&Node.DOCUMENT_POSITION_FOLLOWING?txtSpot:imgSpot;},true);
+    const dialog=body.closest('dialog');for(const t of ['pointerdown','drop','input','change'])dialog.addEventListener(t,e=>{if(!analyzing)spot=txtHead.compareDocumentPosition(e.target)&Node.DOCUMENT_POSITION_FOLLOWING?txtSpot:imgSpot;},true);
     // Paste anywhere in the dialog: images go to section 1, text outside the textarea goes into it.
-    dialog.addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])].find(x=>x.type.startsWith('image/'));if(f){e.preventDefault();spot=imgSpot;setImage(f);return;}spot=txtSpot;if(e.target!==input){const t=e.clipboardData?.getData('text');if(t){e.preventDefault();input.value=t;input.focus();syncText();reset();}}});
+    dialog.addEventListener('paste',e=>{if(analyzing){e.preventDefault();return;}const f=[...(e.clipboardData?.files||[])].find(x=>x.type.startsWith('image/'));if(f){e.preventDefault();spot=imgSpot;setImage(f);return;}spot=txtSpot;if(e.target!==input){const t=e.clipboardData?.getData('text');if(t){e.preventDefault();input.value=t;input.focus();syncText();reset();}}});
   }
   /* ---------- 공유 ---------- */
   const PW_MIN=4;
@@ -246,10 +248,10 @@
     body.append(el('details'));const api=body.lastChild;api.append(el('summary','외부 앱 · LLM 연동'),el('p','JSON 데이터 계약과 REST API를 제공합니다. GET /room으로 문서·revision을 읽고 PUT /room에 revision과 수정 문서를 전달합니다. 인증 헤더는 X-Mapstone-Code입니다. 409 응답은 최신 문서를 다시 읽고 병합해야 함을 뜻합니다.'),el('code',DEFAULT_ENDPOINT),button('현재 일정 JavaScript 다운로드',()=>download('const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';','mapstone-schedule.js')));
   }
   function loadFile(app,body){
-    body.append(el('p','저장해 둔 맵스톤 파일(.mapstone) 또는 JSON 일정 데이터를 불러옵니다. 아래 두 가지 방법 중 하나를 사용하세요. 적용 전에 현재 일정은 자동으로 백업됩니다.'));
+    body.append(el('p','저장해 둔 맵스톤 파일(.mapstone) 또는 JSON 일정 데이터를 불러옵니다. 불러온 뒤 실행 취소로 이전 일정으로 돌아갈 수 있습니다.'));
     const how=el('ul');for(const t of ['파일 가져오기: [파일 불러오기…]를 눌러 .mapstone / .json 파일을 고르거나, 파일을 아래 영역에 끌어다 놓으세요.','JSON 붙여넣기: [내보내기 → 파일 저장[JSON]]으로 저장한 내용이나 JSON 텍스트를 복사해 아래 입력칸에 붙여넣으세요 (⌘/Ctrl+V).','일정 · 메모 · 이미지 · 설정 · 버전 이력이 그대로 복원됩니다.'])how.append(el('li',t));body.append(how);
     const message=el('p','',{className:'ms-message'});message.setAttribute('role','status');let pending=null;
-    const apply=button('이 일정 불러오기',()=>{if(!pending||app.state.readOnly)return;download(C.serializeFile(app.dataDocument()),app.fileName('mapstone'));app.importDocument(pending);closeModal();});apply.disabled=true;apply.classList.add('ms-primary');
+    const apply=button('이 일정 불러오기',()=>{if(!pending||app.state.readOnly)return;app.importDocument(pending);closeModal();});apply.disabled=true;apply.classList.add('ms-primary');
     const read=text=>{pending=null;apply.disabled=true;if(!text.trim()){message.textContent='';return;}try{if(text.length>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');try{pending=C.parseFile(text);}catch(e){pending=C.parseImport(text);}message.textContent=pending.title+' · '+summary(pending);apply.disabled=!!app.state.readOnly;}catch(e){message.textContent='맵스톤 데이터를 읽을 수 없습니다: '+e.message;}};
     dropZone(body,'맵스톤 파일을 여기에 끌어다 놓으세요','.mapstone 또는 .json 파일','.mapstone,.json,application/json',async file=>{input.value=await file.text();read(input.value);});
     const input=field(body,'JSON 붙여넣기','textarea');input.rows=6;input.placeholder='{"format":"mapstone","formatVersion":1,"document":{...}}';input.addEventListener('input',()=>read(input.value));
@@ -340,7 +342,7 @@
     let lastCmp=null,activeSlot='a';
     const build=(key,title,hint)=>{const box=el('section',null,{className:'ms-cmp-slot'});const name=el('div','선택한 파일 없음',{className:'ms-cmp-name'});const thumb=el('img',null,{alt:'',className:'ms-cmp-thumb'});thumb.hidden=true;
       const set=(v)=>{slots[key]=v;name.textContent=v?v.name+' · '+v.doc.title:'선택한 파일 없음';name.classList.toggle('on',!!v);if(!v){thumb.hidden=true;}message.textContent='';run();};
-      const fromImage=async f=>{try{if(!f.type.startsWith('image/'))throw Error('이미지 파일을 선택하세요.');message.textContent=title+': 이미지를 분석하고 있습니다… 1~2분 걸릴 수 있어요.';const img=await imageData(f);thumb.src=img.src;thumb.hidden=false;const r=await request(app.sync.endpoint,'/analyze',app.sync.code||'','POST',{image:img.src},'code',180000);set({name:f.name||'붙여넣은 이미지',doc:C.analysisColors(C.validate(r.document)),image:true});}catch(e){set(null);message.textContent=title+': '+e.message;}};
+      const fromImage=async f=>{loading(message,true);try{if(!f.type.startsWith('image/'))throw Error('이미지 파일을 선택하세요.');message.textContent=title+': 이미지를 분석하고 있습니다… 1~2분 걸릴 수 있어요.';const img=await imageData(f);thumb.src=img.src;thumb.hidden=false;const r=await request(app.sync.endpoint,'/analyze',app.sync.code||'','POST',{image:img.src},'code',180000);set({name:f.name||'붙여넣은 이미지',doc:C.analysisColors(C.validate(r.document)),image:true});}catch(e){set(null);message.textContent=title+': '+e.message;}finally{loading(message,false);}};
       const load=async f=>{try{if(f.type.startsWith('image/'))return fromImage(f);if(f.size>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');thumb.hidden=true;set({name:f.name,doc:readDoc(await f.text())});}catch(e){set(null);message.textContent=title+': 맵스톤 데이터를 읽을 수 없습니다. '+e.message;}};
       const zone=dropZone(box,title,hint,'.mapstone,.json,application/json,image/*',load);zone.tabIndex=0;zone.addEventListener('focus',()=>{activeSlot=key;});zone.addEventListener('pointerdown',()=>{activeSlot=key;});
       zone.btns.append(button('캡처 붙여넣기',async()=>{activeSlot=key;try{for(const it of await navigator.clipboard.read()){const type=it.types.find(t=>t.startsWith('image/'));if(type)return fromImage(new File([await it.getType(type)],'붙여넣은 이미지.'+type.split('/')[1],{type}));}message.textContent='클립보드에 이미지가 없습니다. 이미지를 복사한 뒤 다시 누르세요.';}catch(e){message.textContent=clipError(e).message;}}),button('현재 일정 사용',()=>set({name:'현재 작업 중인 일정',doc:app.dataDocument()})));
@@ -402,7 +404,16 @@
     if(!/^[a-f0-9]{48}$/.test(code||'')){code=Array.from(crypto.getRandomValues(new Uint8Array(24))).map(v=>v.toString(16).padStart(2,'0')).join('');localStorage.setItem('mapstone.version.owner',code);}
     return code;
   }
-  const versionEntry=(v,projectId)=>({id:v.id,projectId,sequence:v.sequence,title:v.title || v.document?.title||'',date:new Date(v.created_at).toLocaleDateString('sv-SE'),note:v.note,snap:''});
+  const versionEntry=(v,projectId)=>({id:v.id,projectId,sequence:v.sequence,title:v.title || v.document?.title||'',date:new Date(v.created_at).toLocaleString('sv-SE',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}),note:v.note,snap:''});
+  const versionError=e=>e.status===404?'이 보관함에서 버전을 찾을 수 없습니다. 다른 브라우저에서 저장했다면 보관함의 고급 설정에서 해당 브라우저의 접근 키로 연결하세요.':e.message;
+  function confirmVersionDelete(text){
+    return new Promise(resolve=>{
+      const d=el('dialog',null,{className:'ms-dialog ms-delete-confirm','aria-label':'버전 삭제 확인'}),head=el('header'),body=el('div',null,{className:'ms-dialog-body'}),actions=el('div',null,{className:'ms-version-actions'});
+      const finish=ok=>{d.close();d.remove();resolve(ok);};head.append(el('h2','버전 삭제 확인'));body.append(el('p',text));
+      const cancel=button('취소',()=>finish(false)),remove=button('삭제',()=>finish(true));remove.classList.add('ms-primary');actions.append(cancel,remove);body.append(actions);d.append(head,body);
+      d.addEventListener('cancel',e=>{e.preventDefault();finish(false);});d.addEventListener('keydown',e=>e.stopPropagation());document.body.append(d);d.showModal();cancel.focus();
+    });
+  }
   async function refreshVersionHistory(app) {
     const title=app.state.title,known=app.state.versionProjectId,source=app.state.versions;
     if(!known && !app.state.versions.some(v=>v.projectId))return;
@@ -438,50 +449,55 @@
   async function restoreCloudVersion(app,v){
     if(app.state.readOnly||app.state.versionBusy)return;
     app.setState({versionBusy:true,versionStatus:'버전을 불러오고 있습니다…'});
-    try{const saved=await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode());const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({hist:s.hist.concat([cur]).slice(-60),future:[],versionProjectId:v.projectId,versionStatus:'v'+saved.sequence+' 불러오기 완료 · 실행 취소 가능'}));}
-    catch(e){app.setState({versionStatus:'불러오지 못했습니다. '+e.message});}finally{app.setState({versionBusy:false});}
+    const source=app.state.versionProjectId,title=app.state.title;
+    try{const saved=await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode());if(app.state.versionProjectId!==source||app.state.title!==title)return false;const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({hist:s.hist.concat([cur]).slice(-60),future:[],versionProjectId:v.projectId,versionStatus:'v'+saved.sequence+' 불러오기 완료 · 실행 취소 가능'}));return true;}
+    catch(e){app.setState({versionStatus:'불러오지 못했습니다. '+versionError(e)});return false;}finally{app.setState({versionBusy:false});}
   }
   async function deleteSavedVersion(app,v){
     if(app.state.readOnly||app.state.versionBusy)return false;
-    if(!window.confirm((v.sequence?'v'+v.sequence:'선택한 버전')+'을 삭제할까요? 삭제한 버전은 다시 불러올 수 없습니다. 현재 일정은 유지됩니다.'))return false;
+    if(!await confirmVersionDelete((v.sequence?'v'+v.sequence:'선택한 버전')+'을 삭제할까요? 삭제한 버전은 다시 불러올 수 없습니다. 현재 일정은 유지됩니다.')){app.setState({versionStatus:'삭제를 취소했습니다.'});return false;}
+    if(app.state.readOnly||app.state.versionBusy)return false;
     app.setState({versionBusy:true,versionStatus:'버전을 삭제하고 있습니다…'});
     try{
       if(v.projectId)await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode(),'DELETE');
       app.setState(s=>({versions:s.versions.filter(x=>!(x.id===v.id && x.projectId===v.projectId)),versionStatus:'선택한 버전을 삭제했습니다.'}));return true;
-    }catch(e){app.setState({versionStatus:'삭제하지 못했습니다. 버전은 유지됩니다. '+e.message});return false;}
+    }catch(e){app.setState({versionStatus:'삭제하지 못했습니다. 버전은 유지됩니다. '+versionError(e)});return false;}
     finally{app.setState({versionBusy:false});}
   }
   async function versionLibrary(app,compare=false){
-    const body=createModal(compare?'버전 비교 · 변경 인사이트':'보관된 작업물 불러오기');body.closest('dialog').classList.add('ms-versions',compare?'ms-version-compare':'ms-version-library');
+    if(compare && app.state.versions.length<2){toast(app,'현재 작업물에 저장된 버전이 두 개 이상 있어야 비교할 수 있습니다.');return;}
+    const body=createModal(compare?'버전 비교 · 변경 인사이트':'보관된 작업물 불러오기','ms-versions '+(compare?'ms-version-compare':'ms-version-library'));
     const message=el('p','작업물을 불러오고 있습니다…',{className:'ms-version-status',role:'status'}),projects=el('select',null,{'aria-label':'작업물 선택'}),field=el('label',null,{className:'ms-field'}),list=el('div',null,{className:'ms-version-list'});
     field.append(el('span','작업물'),projects);
-    body.append(el('p',compare?'같은 작업물의 버전 두 개를 선택하세요. Gemini가 일정과 항목의 변화, 영향을 설명합니다.':'작업물을 선택한 뒤 저장된 버전을 불러오세요. 현재 작업은 실행 취소로 되돌릴 수 있습니다.',{className:'ms-version-lead'}),field,message);
+    body.append(el('p',compare?'현재 작업물의 버전 두 개를 선택하세요. Gemini가 일정과 항목의 변화, 영향을 설명합니다.':'작업물을 선택한 뒤 저장된 버전을 불러오세요. 현재 작업은 실행 취소로 되돌릴 수 있습니다.',{className:'ms-version-lead'}));if(!compare)body.append(field);else body.append(el('strong',app.state.title));body.append(message);
     const toolbar=el('div',null,{className:'ms-version-toolbar'}),selection=el('span','0 / 2개 선택'),reportArea=el('section',null,{className:'ms-version-result'}),report=el('pre',null,{className:'ms-version-report'});
     reportArea.hidden=true;reportArea.append(el('h3','변경 인사이트 보고서'),button('보고서 복사',async()=>{try{await navigator.clipboard.writeText(report.textContent);}catch{message.textContent='보고서 텍스트를 선택해 직접 복사하세요.';}}),report);
     let project='',selected=new Set(),boxes=[],generation=0;
     const generate=button('선택한 버전 비교하기',async()=>{
-      if(selected.size!==2)return;const ids=[...selected],target=project,token=generation;generate.disabled=true;boxes.forEach(b=>b.disabled=true);reportArea.hidden=false;report.textContent='Gemini가 일정 변화와 영향을 분석하고 있습니다…';
+      if(selected.size!==2||generate.disabled)return;const ids=[...selected],target=project,token=generation;generate.disabled=true;projects.disabled=true;loading(generate,true);loading(report,true);boxes.forEach(b=>b.disabled=true);reportArea.hidden=false;report.textContent='Gemini가 일정 변화와 영향을 분석하고 있습니다…';
       try{const r=await request(app.sync.endpoint,'/version-projects/'+target+'/compare',versionCode(),'POST',{ids},'code',150000);if(token===generation){report.textContent='v'+r.from+' → v'+r.to+'\n\n'+r.report;reportArea.scrollIntoView({block:'start',behavior:'smooth'});}}
-      catch(e){if(token===generation)report.textContent='요약하지 못했습니다. '+e.message;}finally{if(token===generation){generate.disabled=selected.size!==2;boxes.forEach(b=>b.disabled=!b.checked&&selected.size===2);}}
+      catch(e){if(token===generation)report.textContent='요약하지 못했습니다. '+e.message;}finally{if(token===generation){loading(generate,false);loading(report,false);projects.disabled=false;generate.disabled=selected.size!==2;boxes.forEach(b=>b.disabled=!b.checked&&selected.size===2);}}
     });generate.disabled=true;generate.classList.add('ms-primary');toolbar.append(selection,generate);
     if(compare)body.append(toolbar);body.append(el('h3',compare?'비교할 버전':'저장된 버전'),list);if(compare)body.append(reportArea);
     if(!compare){
-      const recovery=el('details'),summary=el('summary','다른 브라우저의 보관함 열기 · 복구 코드'),input=el('input',null,{type:'password','aria-label':'보관함 복구 코드',autocomplete:'off'}),inputField=el('label',null,{className:'ms-field'});input.value=versionCode();inputField.append(el('span','보관함 복구 코드'),input);
-      recovery.append(summary,el('p','이 코드를 보관하면 다른 브라우저에서도 작업물을 불러올 수 있습니다. 코드를 가진 사람은 보관함을 열 수 있으니 별도로 보관하세요.'),inputField,button('내 복구 코드 복사',async()=>{try{await navigator.clipboard.writeText(versionCode());message.textContent='현재 보관함의 복구 코드를 복사했습니다.';}catch{message.textContent='복구 코드 입력창을 선택해 직접 복사하세요.';}}),button('입력한 코드로 보관함 열기',()=>{if(!/^[a-f0-9]{48}$/.test(input.value.trim())){message.textContent='48자리 복구 코드를 확인하세요.';return;}localStorage.setItem('mapstone.version.owner',input.value.trim());loadProjects();}));body.append(recovery);
+      const recovery=el('details',null,{className:'ms-version-recovery'}),summary=el('summary','고급 · 다른 브라우저의 보관함 연결'),input=el('input',null,{type:'password','aria-label':'보관함 접근 키',autocomplete:'off'}),inputField=el('label',null,{className:'ms-field'});input.value=versionCode();inputField.append(el('span','보관함 접근 키'),input);
+      const actions=el('div',null,{className:'ms-version-actions'}),copy=button('내 코드 복사',async()=>{try{await navigator.clipboard.writeText(versionCode());message.textContent='현재 보관함의 복구 코드를 복사했습니다.';}catch{message.textContent='복구 코드 입력창을 선택해 직접 복사하세요.';}}),recover=button('이 코드로 보관함 열기',()=>{if(projects.disabled)return;if(!/^[a-f0-9]{48}$/.test(input.value.trim())){message.textContent='48자리 복구 코드를 확인하세요.';return;}localStorage.setItem('mapstone.version.owner',input.value.trim());loadProjects();});recover.classList.add('ms-primary');actions.append(copy,recover);
+      recovery.append(summary,el('p','로그인 없이 브라우저별로 보관함을 구분합니다. 다른 브라우저에서 저장한 작업물이 필요할 때만 그 브라우저의 접근 키를 입력하세요. 키를 가진 사람은 보관함에 접근할 수 있습니다.'),inputField,actions);body.append(recovery);
     }
     async function loadProject(){
-      const mine=++generation;project=projects.value;selected.clear();boxes=[];selection.textContent='0 / 2개 선택';generate.disabled=true;list.replaceChildren();reportArea.hidden=true;report.textContent='';if(!project)return;
-      message.textContent='버전을 불러오고 있습니다…';
+      const mine=++generation;project=compare?(app.state.versionProjectId||app.state.versions.find(v=>v.projectId)?.projectId):projects.value;selected.clear();boxes=[];selection.textContent='0 / 2개 선택';generate.disabled=true;list.replaceChildren();reportArea.hidden=true;report.textContent='';if(!project)return;
+      message.textContent='버전을 불러오고 있습니다…';loading(message,true);list.setAttribute('aria-busy','true');projects.disabled=true;
       try{const vs=await request(app.sync.endpoint,'/version-projects/'+project+'/versions',versionCode());if(mine!==generation)return;message.textContent=compare?(vs.length<2?'비교하려면 저장된 버전이 두 개 이상 필요합니다.':'이전 버전 → 이후 버전 순서로 비교합니다. 최대 두 개를 선택할 수 있습니다.'):(vs.length+'개 버전 · 클라우드 보관 중');
         for(const v of vs){const row=el('section',null,{className:'ms-version-card'}),info=el('div',null,{className:'ms-version-info'}),meta=el('div',null,{className:'ms-version-meta'});meta.append(el('strong','v'+v.sequence),el('time',new Date(v.created_at).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})));info.append(meta,el('p',v.note||'변경 내용 미기재'));
           if(compare){const label=el('label'),box=el('input',null,{type:'checkbox','aria-label':'v'+v.sequence+' 비교 선택'});boxes.push(box);box.addEventListener('change',()=>{if(box.checked)selected.add(v.id);else selected.delete(v.id);reportArea.hidden=true;report.textContent='';selection.textContent=selected.size+' / 2개 선택';generate.disabled=selected.size!==2;boxes.forEach(b=>b.disabled=!b.checked&&selected.size===2);row.classList.toggle('is-selected',box.checked);});label.append(box,info);row.append(label);}
-          else{const restore=button('불러오기',async()=>{if(app.state.readOnly||app.state.versionBusy)return;restore.disabled=true;const target=project,token=generation;try{const saved=await request(app.sync.endpoint,'/version-projects/'+target+'/versions/'+encodeURIComponent(v.id),versionCode());if(token!==generation)return;const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,target)),hist:s.hist.concat([cur]).slice(-60),future:[],tab:'ver',panel:true,versionProjectId:target,versionStatus:'클라우드 작업물 불러오기 완료'}));closeModal();}catch(e){message.textContent=e.message;restore.disabled=false;}}),remove=button('삭제',async()=>{const token=generation;restore.disabled=true;remove.disabled=true;const ok=await deleteSavedVersion(app,versionEntry(v,project));if(token!==generation)return;if(ok)await loadProject();else{message.textContent=app.state.versionStatus;restore.disabled=remove.disabled=!!app.state.readOnly;}});remove.setAttribute('aria-label','v'+v.sequence+' 삭제');remove.style.color='#b42318';restore.disabled=remove.disabled=!!app.state.readOnly;const actions=el('div');actions.style.cssText='display:flex;gap:6px;align-items:center';actions.append(restore,remove);row.append(info,actions);}
+          else{const restore=button('불러오기',async()=>{if(app.state.readOnly||app.state.versionBusy)return;restore.disabled=true;loading(restore,true);projects.disabled=true;message.textContent='버전을 불러오고 있습니다…';const target=project,token=generation;try{const ok=await restoreCloudVersion(app,versionEntry(v,target));if(token!==generation)return;if(ok){app.setState({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,target)),tab:'ver',panel:true});closeModal();}else message.textContent=app.state.versionStatus;}finally{restore.disabled=!!app.state.readOnly;projects.disabled=false;loading(restore,false);}}),remove=button('삭제',async()=>{const token=generation;restore.disabled=true;remove.disabled=true;message.textContent='삭제 확인 중…';const ok=await deleteSavedVersion(app,versionEntry(v,project));if(token!==generation)return;if(ok)await loadProject();else{message.textContent=app.state.versionStatus;restore.disabled=remove.disabled=!!app.state.readOnly;}});remove.setAttribute('aria-label','v'+v.sequence+' 삭제');remove.style.color='#b42318';restore.disabled=remove.disabled=!!app.state.readOnly;restore.classList.add('ms-primary');const actions=el('div',null,{className:'ms-version-actions'});actions.append(restore,remove);row.append(info,actions);}
           list.append(row);
         }
       }catch(e){if(mine===generation)message.textContent='버전을 불러오지 못했습니다. '+e.message;}
+      finally{if(mine===generation){loading(message,false);list.setAttribute('aria-busy','false');projects.disabled=false;}}
     }
-    async function loadProjects(){try{const ps=await request(app.sync.endpoint,'/version-projects',versionCode());projects.replaceChildren(...ps.map(p=>el('option',p.title||'이름 없는 작업물',{value:p.id})));const current=app.state.versionProjectId || ps.find(p=>p.title===app.state.title)?.id;if(ps.some(p=>p.id===current))projects.value=current;message.textContent=ps.length?'':'보관된 작업물이 없습니다. 버전 탭에서 현재 작업을 저장하세요.';await loadProject();}catch(e){message.textContent='보관함을 열지 못했습니다. '+e.message;}}
-    projects.addEventListener('change',loadProject);await loadProjects();
+    async function loadProjects(){projects.disabled=true;loading(message,true);message.textContent='작업물을 불러오고 있습니다…';try{const ps=await request(app.sync.endpoint,'/version-projects',versionCode());projects.replaceChildren(...ps.map(p=>el('option',p.title||'이름 없는 작업물',{value:p.id})));const current=app.state.versionProjectId || ps.find(p=>p.title===app.state.title)?.id;if(ps.some(p=>p.id===current))projects.value=current;message.textContent=ps.length?'':'보관된 작업물이 없습니다. 버전 탭에서 현재 작업을 저장하세요.';await loadProject();}catch(e){message.textContent='보관함을 열지 못했습니다. '+e.message;}finally{projects.disabled=false;loading(message,false);}}
+    projects.addEventListener('change',loadProject);if(compare){if(app.state.versionProjectId||app.state.versions.find(v=>v.projectId)?.projectId)await loadProject();else{message.textContent='클라우드에 버전을 저장한 뒤 비교할 수 있습니다.';}}else await loadProjects();
   }
   function open(app,page){const body=createModal(page==='import'?'이미지/텍스트 분석':page==='file'?'맵스톤 파일':page==='help'?'사용법':page==='compare'?'버전 비교':page==='edit-gate'?'편집 모드 전환':'공유');if(page==='import')imports(app,body);else if(page==='help')help(app,body);else if(page==='compare')compareDialog(app,body);else if(page==='file')loadFile(app,body);else if(page==='edit-gate')editGate(app,body);else if(page==='share-quick')workspace(app,body,{quick:true});else workspace(app,body);}
   function attach(app){activeApp=app;app._msAlive=true;app.sync=new Sync(app);
