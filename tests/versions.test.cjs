@@ -29,3 +29,13 @@ test('Separate projects keep independent cloud histories through file round trip
 test('An in-flight save cannot attach its old history to a newly imported project',async()=>{
   let release,saved;const gate=new Promise(r=>release=r);const {ui,app}=fixture(async(url,opt)=>{if(opt.method==='POST'){const b=JSON.parse(opt.body);saved={...b,sequence:1,created_at:'2026-10-07T00:00:00Z'};await gate;return {ok:true,status:201,json:async()=>saved};}return {ok:true,status:200,json:async()=>[saved]};});const pending=ui.saveCloudVersion(app);Object.assign(app.state,C.fromAnalysis({title:'새 프로젝트',rangeStart:'2026-10-01',rows:[{id:'new',name:'새 행'}],items:[]}),{vNote:'새 작업 메모'});release();await pending;assert.equal(app.state.title,'새 프로젝트');assert.equal(app.state.versionProjectId,null);assert.equal(app.state.versions.length,0);assert.equal(app.state.vNote,'새 작업 메모');assert.equal(app.state.versionBusy,false);assert.throws(()=>C.validate({...JSON.parse(app.snapshot()),versionProjectId:0}));
 });
+test('Version operations identify save, restore and delete independently and clear after failure',async()=>{
+  for(const operation of ['save','restore','delete']){
+    let reject,started;const began=new Promise(r=>started=r),gate=new Promise((_,r)=>reject=r);
+    const {ui,app}=fixture(async()=>{started();return gate;});app.state.versions=[];
+    const version={id:'v',projectId:'p'};
+    const pending=operation==='save'?ui.saveCloudVersion(app):operation==='restore'?ui.restoreCloudVersion(app,version):ui.deleteSavedVersion(app,version);
+    await began;assert.equal(app.state.versionBusy,true);assert.equal(app.state.versionOperation,operation);
+    reject(Error('network'));await pending;assert.equal(app.state.versionBusy,false);assert.equal(app.state.versionOperation,null);
+  }
+});

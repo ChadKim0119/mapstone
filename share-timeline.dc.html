@@ -58,6 +58,18 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
     [data-app] [data-resize]::after { content:""; position:absolute; inset:-5px; }
     [data-app] [data-resize]:hover { background:rgba(227,0,132,.75) !important; }
+
+    [data-app] [data-resize] { background:#e30084 !important;border:1px solid #fff;border-radius:3px !important;box-shadow:0 0 0 1px rgba(227,0,132,.18); }
+    [data-app] [data-resize]:is([data-mode="l"],[data-mode="r"]) { width:8px !important;height:16px !important;top:50% !important;margin-top:-8px !important; }
+    [data-app] [data-resize]:is([data-mode="top"],[data-mode="bottom"],[data-mode="btop"],[data-mode="bbot"]) { width:16px !important;height:8px !important;left:50% !important;margin-left:-8px !important; }
+    [data-app] [data-resize]:is([data-mode="top"],[data-mode="btop"]) { top:-4px !important; }
+    [data-app] [data-resize]:is([data-mode="bottom"],[data-mode="bbot"]) { bottom:-4px !important; }
+    [data-properties] .ms-memo-clear:not(#_) { display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px !important;min-height:28px;flex:none;padding:0 !important; }
+    .ms-memo-clear svg { display:block;flex:none; }
+    .ms-settings-group { display:flex;flex-direction:column;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--color-border-neutral-2); }
+    .ms-settings-group h4 { margin:0;font-size:12px;font-weight:700;color:var(--color-text-neutral-5); }
+    .ms-visible-months { display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:8px 10px;background:var(--color-bg-neutral-1);border-radius:6px;font-size:11px;color:var(--color-text-neutral-3); }
+    .ms-visible-months strong { font-size:12px;color:var(--color-text-neutral-5);font-variant-numeric:tabular-nums; }
     /* Session titles stay above the document's maximum 5,000 item layers. */
     .ms-sticky-col[data-row] { z-index:6000 !important; }
     .ms-sticky-col[data-row]:hover,.ms-sticky-col[data-row]:focus-within { z-index:6001 !important; }
@@ -611,7 +623,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </label>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
-                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button onClick="{{ clearMemo }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)">🗑</button></span>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button class="ms-memo-clear" onClick="{{ clearMemo }}" aria-label="{{ L.memoDel }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"></path></svg></button></span>
                   <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" placeholder="{{ L.phMemo }}" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
                 </sc-if>
@@ -764,6 +776,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <sc-if value="{{ showSet }}" hint-placeholder-val="{{ false }}">
           <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
             <span style="font-size:14px;font-weight:700">{{ L.timeline }}</span>
+            <section class="ms-settings-group"><h4>{{ L.periodSettings }}</h4>
             <div class="ms-timeline-range" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startMonth }}</span>
@@ -782,7 +795,17 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </div>
               </div>
             </div>
-            <span data-visible-months="" style="font-size:12px;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-3)">{{ visibleMonthRange }}</span>
+            <div data-visible-months="" class="ms-visible-months"><span>{{ L.visibleMonthLabel }}</span><strong>{{ visibleMonthRange }}</strong></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.weekModeF }}</span>
+              <div style="display:flex;gap:6px">
+                <button data-week="uniform" onClick="{{ onWeekMode }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ wmUniformBorder }};background:{{ wmUniformBg }};color:{{ wmUniformFg }}">{{ L.uniform4 }}</button>
+                <button data-week="actual" onClick="{{ onWeekMode }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ wmActualBorder }};background:{{ wmActualBg }};color:{{ wmActualFg }}">{{ L.actualW }}</button>
+              </div>
+              <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.weekHint }}</span>
+            </div>
+            </section>
+            <section class="ms-settings-group"><h4>{{ L.displaySettings }}</h4>
             <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.laneHF }}</span>
@@ -800,6 +823,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               </div>
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.durUnitHint }}</span>
             </div>
+            </section>
+            <section class="ms-settings-group"><h4>{{ L.interactionSettings }}</h4>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
               <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.interact }}</span><span style="font-size:11px;line-height:1.6;white-space:pre-line;color:var(--color-text-neutral-3)">{{ L.interactTip }}</span></span>
               <button onClick="{{ toggleInteract }}" role="switch" aria-checked="{{ interactChecked }}" aria-label="{{ L.interact }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ interactTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ interactKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
@@ -809,17 +834,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <button onClick="{{ toggleTipHold }}" aria-label="{{ L.tipHoldF }}" style="min-width:76px;height:30px;padding:0 12px;border:1px solid #181a1b;border-radius:6px;background:#181a1b;color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">{{ tipHoldLabel }}<span aria-hidden="true" style="opacity:.6">⇄</span></button>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.animF }}</span>
+              <span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.animF }}</span><span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.animHint }}</span></span>
               <button onClick="{{ toggleAnim }}" role="switch" aria-checked="{{ animChecked }}" aria-label="{{ L.animF }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ animTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ animKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.weekModeF }}</span>
-              <div style="display:flex;gap:6px">
-                <button data-week="uniform" onClick="{{ onWeekMode }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ wmUniformBorder }};background:{{ wmUniformBg }};color:{{ wmUniformFg }}">{{ L.uniform4 }}</button>
-                <button data-week="actual" onClick="{{ onWeekMode }}" style="flex:1;height:36px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ wmActualBorder }};background:{{ wmActualBg }};color:{{ wmActualFg }}">{{ L.actualW }}</button>
-              </div>
-              <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.weekHint }}</span>
-            </div>
+            </section>
             <div style="display:flex;flex-direction:column;gap:8px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.overlapF }}</span>
               <div style="display:flex;gap:6px">
@@ -992,6 +1010,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.76', agent: 'Codex', title: '선택 핸들 통일·설정 그룹과 버전 진행 상태 개선', items: ['일정·참고·공통 구간의 방향별 선택 핸들 크기와 색상 통일', '메모 삭제 아이콘을 SVG로 교체하고 중앙 정렬', '저장·복원·삭제의 진행 상태를 구분해 저장 버튼 문구 오류 수정', '타임라인 설정을 표시 기간·표시 방식·조작 및 효과·겹침 처리로 그룹화', '현재 표시된 월 구간 제목과 애니메이션 설명 추가', '보기 메뉴 안내 툴팁의 폭과 줄바꿈 개선'] },
     { v: 'v9.75', agent: 'Codex', title: '버전 히스토리 동작 배치·속성 명칭 정리', items: ['버전 비교 버튼을 버전 히스토리 제목 오른쪽으로 이동', '버전 화면의 작업물 제목 앞에 타이틀 라벨을 추가하고 형태를 구분', '선택 항목 속성에 항목 종류 라벨을 제공하고 행 이름 앞에 행 명칭 추가', '공통 구간 속성의 시작 행·끝 행 입력 영역 제거', '시작·종료 입력 방식 토글 순서를 일자 / 숫자로 변경'] },
     { v: 'v9.74', agent: 'Codex', title: '설정 입력 폭·속성 그룹·버전 저장 문구 정리', items: ['시작 월과 표시 개월 수 입력 그룹 전체의 가로 폭을 동일하게 조정', '시작·종료 설정을 하나의 영역으로 묶고 입력 방식 토글·설명·날짜 입력을 정렬', '행 설정을 기본 정보·행 크기·배경색·행 관리로 구분하고 높이 입력 두 가지를 같은 형태로 배치', '행 이동·삭제 버튼 스타일과 간격을 속성 패널에 맞춰 정리', '클라우드에 버전 저장 버튼 문구를 버전 저장으로 변경'] },
     { v: 'v9.73', agent: 'Codex', title: '불러오기 팝업 레이아웃·설정 입력 정렬 개선', items: ['시작 월 입력을 가운데 정렬하고 시작 월·표시 개월 수 증감 버튼을 같은 크기로 통일', '파일 불러오기를 로컬 파일·온라인 파일·JSON 붙여넣기 전환 방식으로 재구성 — 팝업 헤더·버튼·간격을 기존 팝업 스타일에 맞춤', 'JSON 데이터의 출처·붙여넣기 방법·일반 텍스트 분석 안내 추가, 선택한 일정 확인과 불러오기 동작을 하단에 배치', '온라인 작업물 선택의 깨진 펼침 아이콘을 교체하고 빈 보관함 안내 제공', '고급 보관함 연결 영역의 펼침 표시·입력·버튼 정렬 및 좁은 화면 레이아웃 개선'] },
@@ -1077,7 +1096,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.75';
+  APP_VER = 'v9.76';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1090,7 +1109,7 @@ class Component extends DCLogic {
     ko: {
       weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간·공통 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '일정', plain: '참고 블록', band: '공통 블록', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', actualW: '실제 주 수',
+      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fit: '너비 맞춤', full: '전체 화면', interact: '마우스 조작', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM는 22MD로 계산합니다 (KOSA 기준을 따름).', mmToolTip: '기간({unit}) 표시 켜기·끄기\n단위(MM / MD)는 설정에서 바꿀 수 있어요.', animF: '애니메이션', animHint: '속성 패널과 버튼 전환을 부드럽게 표시합니다.', periodSettings: '표시 기간', displaySettings: '표시 방식', interactionSettings: '조작 및 효과', visibleMonthLabel: '현재 표시된 월 구간', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
@@ -1129,7 +1148,7 @@ class Component extends DCLogic {
     ja: {
       weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考ブロック', band: '共通ブロック', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', actualW: '実際の週数',
+      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fit: '幅に合わせる', full: '全画面', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', animHint: 'プロパティとボタンの切り替えを滑らかに表示します。', periodSettings: '表示期間', displaySettings: '表示方法', interactionSettings: '操作と効果', visibleMonthLabel: '現在表示中の月間範囲', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存 [PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
@@ -3259,7 +3278,7 @@ class Component extends DCLogic {
       vAuthor: st.vAuthor, vDate: st.vDate, vNote: st.vNote,
       vSaveBg: vReady ? '#000' : 'var(--color-bg-neutral-2)', vSaveFg: vReady ? '#fff' : 'var(--color-text-neutral-2)',
       vSaveBorder: vReady ? '#000' : 'var(--color-border-neutral-2)',
-      vHint: st.versionStatus || '저장한 버전은 보관함에서 언제든 다시 불러올 수 있습니다. 현재 작업물의 버전 두 개 이상을 저장하면 비교할 수 있습니다.', versionCompareDisabled:!!st.versionBusy||st.versions.filter(v=>v.projectId).length<2,versionCompareHint:st.versions.filter(v=>v.projectId).length<2?'현재 작업물에 저장된 버전이 두 개 이상 있어야 비교할 수 있습니다.':'현재 작업물의 저장 버전 비교', versionBusy:!!st.versionBusy, versionSaveLabel:st.versionBusy?'버전 저장 중…':'버전 저장',
+      vHint: st.versionStatus || '저장한 버전은 보관함에서 언제든 다시 불러올 수 있습니다. 현재 작업물의 버전 두 개 이상을 저장하면 비교할 수 있습니다.', versionCompareDisabled:!!st.versionBusy||st.versions.filter(v=>v.projectId).length<2,versionCompareHint:st.versions.filter(v=>v.projectId).length<2?'현재 작업물에 저장된 버전이 두 개 이상 있어야 비교할 수 있습니다.':'현재 작업물의 저장 버전 비교', versionBusy:!!st.versionBusy, versionSaveLabel:st.versionBusy&&st.versionOperation==='save'?'버전 저장 중…':'버전 저장',
       versionsView: st.versions.slice().reverse().map((v, i) => ({
         id: v.id, tag: 'v' + (v.sequence || st.versions.length - i), title: v.title || st.title, date: v.date, note: v.note,
         bg: i === 0 ? 'var(--color-bg-neutral-1)' : '#fff'
