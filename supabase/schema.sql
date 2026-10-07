@@ -99,6 +99,7 @@ create table public.mapstone_saved_versions (
  id text not null,
  sequence integer not null,
  created_at timestamptz not null default now(),
+ deleted_at timestamptz,
  note text not null default '',
  document jsonb not null,
  primary key(project_id,id), unique(project_id,sequence)

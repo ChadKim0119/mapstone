@@ -145,7 +145,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-tool-menu > summary { display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 9px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer;list-style:none;white-space:nowrap; }
     .ms-tool-menu > summary::-webkit-details-marker { display:none; }
     .ms-tool-menu[open] > summary { border-color:#181a1b; }
-    .ms-tool-popover { position:absolute;right:0;top:calc(100% + 6px);z-index:220;display:flex;min-width:164px;flex-direction:column;gap:2px;padding:4px;border:1px solid var(--color-border-neutral-2);border-radius:8px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.16); }
+    .ms-tool-popover { position:absolute;right:0;top:calc(100% + 4px);z-index:220;display:flex;width:max-content;max-width:calc(100vw - 24px);flex-direction:column;gap:1px;padding:3px;border:1px solid var(--color-border-neutral-2);border-radius:8px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.16); }
     .ms-tool-popover .ms-tool-button { width:100%;justify-content:flex-start;border-color:transparent; }
     @media (max-width:700px) { [data-properties] { position:fixed;left:0;right:0;bottom:0;z-index:200;width:100% !important;max-height:35dvh;border-left:0 !important;border-top:1px solid #dce0e5;border-radius:12px 12px 0 0;box-shadow:0 -8px 24px #0002; } [data-properties] .ms-panel-close { display:block;flex:none;min-width:44px;height:44px !important;min-height:44px;font-size:20px !important;border:0;background:#fff;cursor:pointer; } [data-toolbar] { padding:8px !important;max-height:44dvh;overflow-y:auto; } [data-toolbar] > div:first-child { flex-wrap:wrap; } [data-toolbar] > div:first-child > input { order:5;flex-basis:100% !important;margin-left:0 !important; } [data-toolbar] button, .ms-tool-menu > summary { min-height:44px; } .ms-toolbar-group { flex-wrap:wrap; } .ms-tool-menu[open] { flex-basis:100%; } .ms-tool-popover { position:static;margin-top:6px; } }
     @media (max-width:700px) { .ms-toolbar-row { flex-wrap:wrap; } [data-app]:has([data-properties]) [data-board] { scroll-padding-bottom:calc(35dvh + 8px); } }
@@ -252,7 +252,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       </div></details>
       <button class="ms-tool-button" onClick="{{ openWorkspace }}" aria-label="{{ L.shareBtn }} (⌘/Ctrl+L)" data-tip="{{ L.shareBtn }} · ⌘/Ctrl+L" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.4"></circle><circle cx="18" cy="6" r="2.4"></circle><circle cx="18" cy="18" r="2.4"></circle><path d="M8.2 11l7.6-4M8.2 13l7.6 4"></path></svg>{{ L.shareBtn }}</button>
       <span class="ms-toolbar-sep"></span>
-      <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg></button>
+      <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6"></path></svg></button>
       <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }} · ," onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
     </div>
   </div>
@@ -286,7 +286,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </sc-for>
           </div>
 
-          <div data-time-header="" style="display:flex;align-items:stretch;position:sticky;top:0;z-index:116;background:#fff">
+          <div data-time-header="" style="display:flex;align-items:stretch;position:sticky;top:0;z-index:6100;background:#fff">
             <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700">{{ L.category }}</div>
             <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
 <sc-for list="{{ subdivisions }}" as="q"><span style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
@@ -775,6 +775,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <span style="font-size:12px;line-height:1.6;white-space:pre-line;color:var(--color-text-neutral-4)">{{ v.note }}</span>
                 <div style="display:flex;gap:6px">
                   <button data-id="{{ v.id }}" onClick="{{ restoreVersion }}" style="flex:1;height:30px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.restoreBtn }}</button>
+                  <button data-id="{{ v.id }}" onClick="{{ deleteVersion }}" aria-label="버전 삭제" style="height:30px;padding:0 8px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;color:#b42318;cursor:pointer">{{ L.del }}</button>
 
                 </div>
               </div>
@@ -905,6 +906,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.68', agent: 'Codex', title: '메모 우선 계위·버전 삭제 및 복원 모션 개선', items: ['메모 > 월 헤더 > 일반 항목 순서로 표시 계위 고정', '개별 버전 삭제 버튼·확인창 및 소유권 검증 클라우드 삭제 추가', '버전 복원 시 변경 항목 이동·크기·등장·퇴장 애니메이션 적용, 동작 줄이기 설정 존중', '드롭다운 여백을 내용 너비로 축소하고 전체 지우기를 휴지통 아이콘으로 변경'] },
     { v: 'v9.67', agent: 'Codex', title: '확대 시 세션 보호·1일 마일스톤·분석 배치 개선', items: ['확대·가로 스크롤 시 일정과 메모가 세션 제목을 덮지 않도록 표시 순서 수정', '이미지·텍스트 분석에서 1일 작업을 마일스톤으로 변환하고 겹치는 일정은 별도 레인에 배치', '분석 안내에 1일 마일스톤·겹침 최소화 기준 명시', '마일스톤과 메모의 날짜 툴팁 및 마일스톤 속성을 일정으로 표기'] },
     { v: 'v9.66', agent: 'Codex', title: '프로젝트별 히스토리 격리·행 높이·메모 연결 안정화', items: ['작업물 ID를 문서에 보관하고 신규 가져오기·초기화 시 이전 버전 연결 분리', '혼합 저장된 DVT·CCB 버전을 보존하며 프로젝트별 복구', '행 높이 드래그를 눈금맞춤과 무관하게 레인 단위로 조절', '내용에 맞게 자동 버튼과 행 경계 더블클릭 동작 통일', '메모 닷 이동 중 연결선 실시간 미리보기 및 재연결 시 위치 보정의 단일 갱신'] },
     { v: 'v9.65', agent: 'Codex', title: '버전 불러오기·비교 UX 분리 및 인사이트 보고서', items: ['불러오기 팝업은 작업물·버전 탐색과 복원에 집중', '비교 팝업은 두 버전 선택·선택 개수·Gemini 보고서에 집중', '버전 카드·날짜·버튼 정렬 및 가독성 개선', '일정·항목 변화와 영향을 설명하는 보고서 및 마크다운 기호 제거'] },
@@ -982,7 +984,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.67';
+  APP_VER = 'v9.68';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1241,6 +1243,16 @@ class Component extends DCLogic {
     }
     this._ids = ids;
     const anim = this.animOn(), ease = 'cubic-bezier(.2,.8,.2,1)';
+    if (this._restoreMotion) {
+      const before = this._restoreMotion; this._restoreMotion = null;
+      if (anim) this.root.querySelectorAll('[data-id][role="button"]:not([data-resize]):not([data-link-dot])').forEach(el => {
+        const old = before.get(el.dataset.id), item = this.state.items.find(i => i.id === el.dataset.id);
+        if (!item) return;
+        const box = el.getBoundingClientRect();
+        if (old?.data === JSON.stringify(item) && ['left','top','width','height'].every(k => Math.abs(old.box[k]-box[k])<1)) return;
+        el.animate(old ? [{translate:(old.box.left-box.left)+'px '+(old.box.top-box.top)+'px',scale:(old.box.width/Math.max(1,box.width))+' '+(old.box.height/Math.max(1,box.height)),opacity:.6},{translate:'0px 0px',scale:'1 1',opacity:1}] : [{opacity:0,scale:'.94'},{opacity:1,scale:'1'}], {duration:420,easing:ease});
+      });
+    }
     if (anim && this._months !== undefined && this.state.cfg.months > this._months) this.root.querySelectorAll('[data-col]').forEach((el) => { if (+el.dataset.col >= this._months) el.animate([{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: ease }); });
     this._months = this.state.cfg.months;
     const rowIds = this.state.rows.map((r) => r.id);
@@ -1402,7 +1414,23 @@ class Component extends DCLogic {
   }
 
   snapshot() { const s = this.state; return JSON.stringify({ title: s.title, cfg: s.cfg, rows: s.rows, items: s.items, notes: s.notes, now: s.now, versionProjectId:s.versionProjectId || null }); }
-  applySnap(json) { const p = MapstoneCore.validate(JSON.parse(json)); this.setState({ title: p.title, cfg: p.cfg, rows: p.rows, items: p.items, notes: p.notes, now: p.now, sel: null, editing: null }); }
+  applySnap(json, motion = false) {
+    const p = MapstoneCore.validate(JSON.parse(json));
+    if (motion && this.animOn()) {
+      this._restoreMotion = new Map();
+      this.root.querySelectorAll('[data-id][role="button"]:not([data-resize]):not([data-link-dot])').forEach(el => {
+        const item = this.state.items.find(i => i.id === el.dataset.id); if (!item) return;
+        const box = el.getBoundingClientRect(); this._restoreMotion.set(item.id,{box,data:JSON.stringify(item)});
+        if (!p.items.some(i => i.id === item.id)) {
+          const ghost = el.cloneNode(true); ghost.inert = true; ghost.removeAttribute('id');
+          Object.assign(ghost.style,{position:'fixed',left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px',margin:'0',transform:'none',pointerEvents:'none',zIndex:'12000'});
+          document.body.append(ghost);
+          ghost.animate([{opacity:1},{opacity:0,scale:'.94'}],{duration:180,easing:'ease-out'}).finished.catch(()=>{}).finally(()=>ghost.remove());
+        }
+      });
+    }
+    this.setState({ title: p.title, cfg: p.cfg, rows: p.rows, items: p.items, notes: p.notes, now: p.now, sel: null, editing: null });
+  }
   mutate(fn, push) {
     if (this.state.readOnly) { this.setState({ saved: this.L().readOnlyMsg }); return false; }
     const snap = push === false ? null : this.snapshot();
@@ -2659,10 +2687,10 @@ class Component extends DCLogic {
     if (!v) return;
     if(v.projectId)return MapstoneUI.restoreCloudVersion(this,v);
     const cur = this.snapshot();
-    this.applySnap(v.snap);
+    this.applySnap(v.snap, true);
     this.setState((s) => ({ hist: s.hist.concat([cur]).slice(-60), future: [] }));
   };
-  deleteVersion = (e) => { if (this.state.readOnly) return; const id = e.currentTarget.dataset.id; this.setState((s) => ({ versions: s.versions.filter((v) => v.id !== id) })); };
+  deleteVersion = (e) => { if (this.state.readOnly || this.state.versionBusy) return; const v = this.state.versions.find(v => v.id === e.currentTarget.dataset.id); if (!v) return; return MapstoneUI.deleteSavedVersion(this,v); };
 
   // ── export ────────────────────────────────────
   capture() {
@@ -2811,7 +2839,7 @@ class Component extends DCLogic {
   };
   doPrint = () => window.print();
 
-  itemZ(id) { return 300 + this.state.items.findIndex(it=>it.id===id); }
+  itemZ(id) { const index = this.state.items.findIndex(it=>it.id===id); return (this.state.items[index]?.kind === 'flag' ? 6200 : 300) + index; }
 
   renderVals() {
     const st = this.state;

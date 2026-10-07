@@ -438,8 +438,18 @@
   async function restoreCloudVersion(app,v){
     if(app.state.readOnly||app.state.versionBusy)return;
     app.setState({versionBusy:true,versionStatus:'버전을 불러오고 있습니다…'});
-    try{const saved=await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode());const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document));app.setState(s=>({hist:s.hist.concat([cur]).slice(-60),future:[],versionProjectId:v.projectId,versionStatus:'v'+saved.sequence+' 불러오기 완료 · 실행 취소 가능'}));}
+    try{const saved=await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode());const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({hist:s.hist.concat([cur]).slice(-60),future:[],versionProjectId:v.projectId,versionStatus:'v'+saved.sequence+' 불러오기 완료 · 실행 취소 가능'}));}
     catch(e){app.setState({versionStatus:'불러오지 못했습니다. '+e.message});}finally{app.setState({versionBusy:false});}
+  }
+  async function deleteSavedVersion(app,v){
+    if(app.state.readOnly||app.state.versionBusy)return false;
+    if(!window.confirm((v.sequence?'v'+v.sequence:'선택한 버전')+'을 삭제할까요? 삭제한 버전은 다시 불러올 수 없습니다. 현재 일정은 유지됩니다.'))return false;
+    app.setState({versionBusy:true,versionStatus:'버전을 삭제하고 있습니다…'});
+    try{
+      if(v.projectId)await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode(),'DELETE');
+      app.setState(s=>({versions:s.versions.filter(x=>!(x.id===v.id && x.projectId===v.projectId)),versionStatus:'선택한 버전을 삭제했습니다.'}));return true;
+    }catch(e){app.setState({versionStatus:'삭제하지 못했습니다. 버전은 유지됩니다. '+e.message});return false;}
+    finally{app.setState({versionBusy:false});}
   }
   async function versionLibrary(app,compare=false){
     const body=createModal(compare?'버전 비교 · 변경 인사이트':'보관된 작업물 불러오기');body.closest('dialog').classList.add('ms-versions',compare?'ms-version-compare':'ms-version-library');
@@ -465,7 +475,7 @@
       try{const vs=await request(app.sync.endpoint,'/version-projects/'+project+'/versions',versionCode());if(mine!==generation)return;message.textContent=compare?(vs.length<2?'비교하려면 저장된 버전이 두 개 이상 필요합니다.':'이전 버전 → 이후 버전 순서로 비교합니다. 최대 두 개를 선택할 수 있습니다.'):(vs.length+'개 버전 · 클라우드 보관 중');
         for(const v of vs){const row=el('section',null,{className:'ms-version-card'}),info=el('div',null,{className:'ms-version-info'}),meta=el('div',null,{className:'ms-version-meta'});meta.append(el('strong','v'+v.sequence),el('time',new Date(v.created_at).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})));info.append(meta,el('p',v.note||'변경 내용 미기재'));
           if(compare){const label=el('label'),box=el('input',null,{type:'checkbox','aria-label':'v'+v.sequence+' 비교 선택'});boxes.push(box);box.addEventListener('change',()=>{if(box.checked)selected.add(v.id);else selected.delete(v.id);reportArea.hidden=true;report.textContent='';selection.textContent=selected.size+' / 2개 선택';generate.disabled=selected.size!==2;boxes.forEach(b=>b.disabled=!b.checked&&selected.size===2);row.classList.toggle('is-selected',box.checked);});label.append(box,info);row.append(label);}
-          else{const restore=button('불러오기',async()=>{if(app.state.readOnly)return;restore.disabled=true;const target=project,token=generation;try{const saved=await request(app.sync.endpoint,'/version-projects/'+target+'/versions/'+encodeURIComponent(v.id),versionCode());if(token!==generation)return;const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document));app.setState(s=>({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,target)),hist:s.hist.concat([cur]).slice(-60),future:[],tab:'ver',panel:true,versionProjectId:target,versionStatus:'클라우드 작업물 불러오기 완료'}));closeModal();}catch(e){message.textContent=e.message;restore.disabled=false;}});restore.disabled=!!app.state.readOnly;row.append(info,restore);}
+          else{const restore=button('불러오기',async()=>{if(app.state.readOnly||app.state.versionBusy)return;restore.disabled=true;const target=project,token=generation;try{const saved=await request(app.sync.endpoint,'/version-projects/'+target+'/versions/'+encodeURIComponent(v.id),versionCode());if(token!==generation)return;const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,target)),hist:s.hist.concat([cur]).slice(-60),future:[],tab:'ver',panel:true,versionProjectId:target,versionStatus:'클라우드 작업물 불러오기 완료'}));closeModal();}catch(e){message.textContent=e.message;restore.disabled=false;}}),remove=button('삭제',async()=>{const token=generation;restore.disabled=true;remove.disabled=true;const ok=await deleteSavedVersion(app,versionEntry(v,project));if(token!==generation)return;if(ok)await loadProject();else{message.textContent=app.state.versionStatus;restore.disabled=remove.disabled=!!app.state.readOnly;}});remove.setAttribute('aria-label','v'+v.sequence+' 삭제');remove.style.color='#b42318';restore.disabled=remove.disabled=!!app.state.readOnly;const actions=el('div');actions.style.cssText='display:flex;gap:6px;align-items:center';actions.append(restore,remove);row.append(info,actions);}
           list.append(row);
         }
       }catch(e){if(mine===generation)message.textContent='버전을 불러오지 못했습니다. '+e.message;}
@@ -500,5 +510,5 @@
     window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision,readOnly:app.sync.readOnly})};
     return ()=>{app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);document.removeEventListener('keydown',onSubmitKey,true);document.removeEventListener('keydown',onEnterKey,true);document.removeEventListener('keydown',onShareKey,true);document.removeEventListener('input',onGrow,true);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
   }
-  window.MapstoneUI={refreshVersionHistory,saveCloudVersion,restoreCloudVersion,versionLibrary,createShare,shareUrl,growAll,saveFile,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
+  window.MapstoneUI={refreshVersionHistory,saveCloudVersion,restoreCloudVersion,deleteSavedVersion,versionLibrary,createShare,shareUrl,growAll,saveFile,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
 })();

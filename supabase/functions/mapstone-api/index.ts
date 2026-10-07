@@ -4,7 +4,7 @@ import './mapstone-core.js';
 const Core = (globalThis as any).MapstoneCore;
 const url = Deno.env.get('SUPABASE_URL')!;
 const secret = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type,x-mapstone-code,x-mapstone-admin,x-mapstone-password,x-mapstone-edit-password', 'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,OPTIONS', 'Cache-Control': 'no-store', 'Vary':'Origin' };
+const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type,x-mapstone-code,x-mapstone-admin,x-mapstone-password,x-mapstone-edit-password', 'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS', 'Cache-Control': 'no-store', 'Vary':'Origin' };
 const hash = async (s: string) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))).map(v=>v.toString(16).padStart(2,'0')).join('');
 const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(24))).map(v=>v.toString(16).padStart(2,'0')).join('');
 const json = (body: unknown, status=200) => new Response(JSON.stringify(body), {status,headers:{...cors,'Content-Type':'application/json'}});
@@ -108,15 +108,21 @@ Deno.serve(async (req:Request)=>{
       }
       const projects=await db('mapstone_version_projects?id=eq.'+path[1]+'&owner_hash=eq.'+owner+'&select=id');
       if(!projects.length)return json({error:'보관된 작업물을 찾을 수 없습니다.'},404);
-      if(path.length===3 && path[2]==='versions' && req.method==='GET')return json(await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&select=id,sequence,created_at,note,title:document->>title&order=sequence.desc'));
+      if(path.length===3 && path[2]==='versions' && req.method==='GET')return json(await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&deleted_at=is.null&select=id,sequence,created_at,note,title:document->>title&order=sequence.desc'));
+      if(path.length===4 && path[2]==='versions' && req.method==='DELETE'){
+        if(!/^[A-Za-z0-9_-]{1,128}$/.test(path[3]))return json({error:'버전 ID를 확인하세요.'},400);
+        // Keep sequence reservations so deleting the latest version never reuses its number.
+        const removed=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&id=eq.'+path[3]+'&deleted_at=is.null','PATCH',{deleted_at:new Date().toISOString()});
+        return removed.length?json({id:path[3],deleted:true}):json({error:'버전을 찾을 수 없습니다.'},404);
+      }
       if(path.length===4 && path[2]==='versions' && req.method==='GET'){
         if(!/^[A-Za-z0-9_-]{1,128}$/.test(path[3]))return json({error:'버전 ID를 확인하세요.'},400);
-        const v=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&id=eq.'+path[3]);return v.length?json(v[0]):json({error:'버전을 찾을 수 없습니다.'},404);
+        const v=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&id=eq.'+path[3]+'&deleted_at=is.null');return v.length?json(v[0]):json({error:'버전을 찾을 수 없습니다.'},404);
       }
       if(path.length===3 && path[2]==='compare' && req.method==='POST'){
         if(!await allowAnonymous(req))return json({error:'요약 요청이 많습니다. 잠시 후 다시 시도하세요.'},429);
         const body=await readBody(req),ids=body.ids;if(!Array.isArray(ids)||ids.length!==2||new Set(ids).size!==2||ids.some(id=>!/^[A-Za-z0-9_-]{1,128}$/.test(id)))return json({error:'서로 다른 두 버전을 선택하세요.'},400);
-        const versions=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&id=in.('+ids.join(',')+')&order=sequence.asc');
+        const versions=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&deleted_at=is.null&id=in.('+ids.join(',')+')&order=sequence.asc');
         if(versions.length!==2)return json({error:'선택한 버전을 찾을 수 없습니다.'},404);
         const key=Deno.env.get('GEMINI_API_KEY');if(!key)throw new Error('ai_not_configured');
         const diff=Core.compareDocuments(versions[0].document,versions[1].document);
