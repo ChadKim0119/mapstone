@@ -47,7 +47,7 @@ test('App deletion confirmation works without browser confirm and cancellation p
 test('Text AI feedback prevents duplicate analysis and restores controls on success and error',async()=>{
   for(const fail of [false,true]){
     let release,calls=0;const gate=new Promise(r=>release=r),f=fixture(async()=>{calls++;await gate;if(fail)throw Error('offline');return {ok:true,json:async()=>({document:C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]})})};});
-    f.ui.open(f.app,'import');const input=f.nodes.find(n=>n.tagName==='textarea'),text=f.find('텍스트 분석'),image=f.find('이미지 분석'),status=f.byClass('ms-message');input.value='10월 1일 킥오프';
+    f.ui.open(f.app,'import');const input=f.byClass('ms-text-editor'),text=f.find('텍스트 분석'),image=f.find('이미지 분석'),status=f.byClass('ms-message');input.textContent='10월 1일 킥오프';
     const pending=text.click();assert.equal(text.textContent,'분석 중…');assert.equal(text.attrs['aria-busy'],'true');assert.equal(image.disabled,true);assert.equal(input.disabled,true);await text.click();assert.equal(calls,1);
     release();await pending;assert.equal(text.textContent,'텍스트 분석');assert.equal(text.attrs['aria-busy'],'false');assert.equal(status.attrs['aria-busy'],'false');assert.equal(image.disabled,false);assert.equal(input.disabled,false);assert.match(status.textContent,fail?/offline/:/완료되었습니다/);
   }

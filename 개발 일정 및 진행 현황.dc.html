@@ -91,6 +91,20 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-delete-confirm .ms-button { min-height:36px;padding:0 14px;margin:0; }
     [data-properties] input:is([type="date"],[type="month"])::-webkit-calendar-picker-indicator { position:absolute;right:4px;top:50%;transform:translateY(-50%);width:18px;height:18px;padding:4px;margin:0;background-size:18px 18px;background-position:center;cursor:pointer; }
     [data-properties] .ms-panel-close { display:flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px !important;min-height:36px;align-self:center;border:0;background:transparent;font-size:20px !important;cursor:pointer; }
+    [data-properties] .ms-month-step input[type="month"]:not(#_) { padding:0 2px !important;font-size:11px !important;cursor:pointer; }
+    [data-properties] .ms-month-step input[type="month"]::-webkit-calendar-picker-indicator { opacity:0;inset:0;width:100%;height:100%;padding:0;transform:none; }
+    [data-properties] .ms-timeline-range button[data-delta] { width:24px !important; }
+    .ms-file-sources { display:grid;grid-template-columns:minmax(0,4fr) minmax(120px,1fr);gap:12px;align-items:stretch; }
+    .ms-file-sources[hidden],.ms-dialog .ms-primary[hidden] { display:none !important; }
+    .ms-file-online { display:flex;flex-direction:column;align-items:stretch;justify-content:center;text-align:center;border:1px solid #dce0e5;border-radius:10px;padding:12px; }
+    .ms-file-sources h3 { font-size:14px;margin:0 0 12px; }
+    .ms-file-online .ms-button { margin:0;white-space:normal; }
+    .ms-dialog .ms-dialog-body > .ms-primary,.ms-dialog .ms-review > .ms-primary { display:block;margin-left:auto !important;margin-right:0 !important; }
+    .ms-dialog .ms-version-actions,.ms-dialog .ms-share-actions,.ms-dialog .ms-cmp-actions { justify-content:flex-end; }
+    .ms-dialog .ms-text-editor { min-height:100px;max-height:240px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;outline:none; }
+    .ms-text-editor:empty { display:none; }
+    .ms-dialog .ms-drop .ms-text-clear { position:static;margin-left:auto; }
+    @media(max-width:480px) { .ms-file-sources { grid-template-columns:minmax(0,1fr); } }
     .ms-dialog.ms-versions[open] { display:flex;flex-direction:column;box-sizing:border-box;height:min(760px,90dvh);overflow:hidden; }
     .ms-dialog.ms-versions header { flex:none;gap:16px; }
     .ms-dialog.ms-versions h2 { font-size:18px;line-height:1.4; }
@@ -716,18 +730,15 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <sc-if value="{{ showSet }}" hint-placeholder-val="{{ false }}">
           <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
             <span style="font-size:14px;font-weight:700">{{ L.timeline }}</span>
-            <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
+            <div class="ms-timeline-range" style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startMonth }}</span>
-                <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                <div class="ms-stepper ms-month-step" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                   <button data-cfg="startM" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
-                  <input type="month" value="{{ startMonthValue }}" min="1900-01" max="2200-12" aria-label="{{ L.startMonth }}" onChange="{{ onStartMonth }}" style="flex:1;min-width:0;border:none;padding:0 8px;font-size:13px;font-weight:600;outline:none;background:#fff">
+                  <input type="month" onClick="{{ openPropertyCalendar }}" value="{{ startMonthValue }}" min="1900-01" max="2200-12" aria-label="{{ L.startMonth }}" onChange="{{ onStartMonth }}" style="flex:1;min-width:0;border:none;padding:0 8px;font-size:13px;font-weight:600;outline:none;background:#fff">
                   <button data-cfg="startM" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
                 </div>
               </div>
-            </div>
-            <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.shiftHint }}</span>
-            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.monthsF }}</span>
                 <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
@@ -736,6 +747,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <button data-cfg="months" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
                 </div>
               </div>
+            </div>
+            <span data-visible-months="" style="font-size:12px;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-3)">{{ visibleMonthRange }}</span>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.laneHF }}</span>
                 <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
@@ -792,7 +806,6 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <span style="font-size:14px;font-weight:700">{{ L.verSave }}</span>
             <strong style="font-size:13px">{{ title }}</strong>
             <span style="font-size:12px;line-height:1.7">버전 탭에서 저장하면 이 작업물의 버전이 클라우드에 계속 보관됩니다. 저장 날짜와 시간은 자동으로 기록됩니다.</span>
-            <button onClick="{{ openVersionLibrary }}" style="display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;min-height:38px;padding:8px 12px;flex-shrink:0;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:#fff;font-size:13px;line-height:1.4;font-weight:600;cursor:pointer">보관된 작업물 불러오기</button>
             <button onClick="{{ openVersionCompare }}" disabled="{{ versionCompareDisabled }}" title="{{ versionCompareHint }}" style="display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;min-height:38px;padding:8px 12px;flex-shrink:0;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:#fff;font-size:13px;line-height:1.4;font-weight:600;cursor:pointer">버전 비교 · 변경 인사이트</button>
             <label style="display:flex;flex-direction:column;gap:6px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.changes }}</span>
@@ -945,6 +958,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.72', agent: 'Codex', title: '타임라인 설정·불러오기 팝업 간소화', items: ['시작 월·표시 개월 수를 한 줄로 배치하고 헤더 표시 기간을 숫자로 제공', '시작 월 달력 아이콘 제거 및 월 클릭으로 달력 열기', '불러오기 팝업에 로컬·온라인 영역을 통합하고 클라우드 보관함 연결', '버전 탭의 보관된 작업물 불러오기 버튼 제거', '텍스트 붙여넣기 별도 영역·드롭 영역 부연설명·복사 붙여넣기 단축키 문구 제거', '모달 주요 버튼 오른쪽 정렬'] },
     { v: 'v9.71', agent: 'Codex', title: 'Executive Summary 비교 보고서·펼침 표시 정렬 개선', items: ['비교 보고서 상단에 짧은 주요 변경점·인사이트 요약 카드 적용', '상세 내용을 소제목·목록·구분선으로 분리하고 복사 시 줄바꿈 유지', '작업물 선택 펼침 표시를 안쪽으로 정렬하고 고급 아코디언 표시를 제목 옆으로 이동', '좁은 화면에서 보고서 요약 카드 세로 배치 및 안전한 텍스트 렌더링'] },
     { v: 'v9.70', agent: 'Codex', title: '파일 불러오기·버전 동작 및 날짜 입력 개선', items: ['파일 불러오기 시 자동 백업 다운로드 제거, 실행 취소 복구 유지', '버전 이력·저장 완료 안내에 저장 시각 추가', '날짜 입력을 숫자 모드와 같은 2열 크기로 정리하고 아이콘 없이 날짜 클릭으로 달력 열기', '버전 삭제 확인을 앱 내부 창으로 변경하고 불러오기 진행·오류 안내 개선', '현재 작업물 버전만 비교하고 버전 부족 시 비교 비활성화 및 안내', '보관함 접근 키는 다른 브라우저 연결용 고급 영역 한 곳으로 통합'] },
     { v: 'v9.69', agent: 'Codex', title: '버전 창 UX 안정화·AI 분석 로딩 피드백 개선', items: ['버전 보관함·비교 창의 로딩 및 복구 코드 펼침 시 크기·위치 유지와 내부 스크롤 적용', '패널 닫기 버튼·버전 카드 동작·복구 코드 접힘 표시 정렬 및 버튼 위계 개선', '이미지·텍스트·버전 비교 AI 분석에 회전 로딩과 접근성 상태 적용, 완료·실패 시 상태 해제', '분석 중 중복 실행 방지 및 동작 줄이기 설정 존중'] },
@@ -1026,7 +1040,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.71';
+  APP_VER = 'v9.72';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1063,7 +1077,7 @@ class Component extends DCLogic {
       noVer: '저장된 버전이 없습니다.\n현재 상태를 클라우드에 저장하거나 보관된 작업물을 불러오세요.',
       verReady: '저장하면 현재 일정 상태가 스냅샷으로 보관됩니다.', verNeed: '제목과 저장 날짜가 자동으로 기록됩니다.',
       noSel: '선택된 항목이 없습니다', focusRowLbl: '포커스 행', none: '없음',
-      help: '· 행을 클릭하면 그 행이 포커스됩니다 — 추가 버튼은 포커스된 행에 만들어집니다\n· 블록 클릭 → 선택, 드래그 → 이동(행·레인 변경 포함)\n· 양끝 핸들 드래그 → 기간 조정, 핸들 더블클릭 → 옆 블록에 맞춰 자동 조정\n· 더블클릭 → 라벨 편집 / 빈 칸 더블클릭 → 블록 추가\n· Cmd(Ctrl) + C / X / V → 복사 · 잘라내기 · 붙여넣기\n· Cmd(Ctrl) + Z / Shift + Z → 되돌리기 · 다시 실행\n· 마우스 컨트롤 ON: 휠 = 확대 · 축소, 우클릭 드래그 = 패닝\n· 속성 패널에서 시작 · 종료를 날짜로 직접 지정할 수 있습니다',
+      help: '· 행을 클릭하면 그 행이 포커스됩니다 — 추가 버튼은 포커스된 행에 만들어집니다\n· 블록 클릭 → 선택, 드래그 → 이동(행·레인 변경 포함)\n· 양끝 핸들 드래그 → 기간 조정, 핸들 더블클릭 → 옆 블록에 맞춰 자동 조정\n· 더블클릭 → 라벨 편집 / 빈 칸 더블클릭 → 블록 추가\n· Cmd(Ctrl) + Z / Shift + Z → 되돌리기 · 다시 실행\n· 마우스 컨트롤 ON: 휠 = 확대 · 축소, 우클릭 드래그 = 패닝\n· 속성 패널에서 시작 · 종료를 날짜로 직접 지정할 수 있습니다',
       confReset: '원본 일정으로 되돌릴까요? 편집 내용이 사라집니다. (버전 히스토리는 유지)',
       confRowDel: '이 행의 항목이 함께 삭제됩니다. 계속할까요?', needAuthor: '작성자와 날짜는 필수 입력입니다.',
       confRestore: ' 버전으로 복원할까요? 현재 상태는 되돌리기(Cmd+Z)로 복구할 수 있습니다.',
@@ -1102,7 +1116,7 @@ class Component extends DCLogic {
       noVer: '保存されたバージョンがありません。\n現在の状態をクラウドに保存するか、保存済みの作業を読み込んでください。',
       verReady: '保存すると現在の日程がスナップショットとして残ります。', verNeed: 'タイトルと保存日時は自動で記録されます。',
       noSel: '選択された項目がありません', focusRowLbl: 'フォーカス行', none: 'なし',
-      help: '· 行をクリックするとその行がフォーカスされます — 追加ボタンはフォーカス行に作成されます\n· ブロックをクリック → 選択、ドラッグ → 移動（行・レーン変更も可）\n· 両端ハンドルをドラッグ → 期間調整、ダブルクリック → 隣に合わせて自動調整\n· ダブルクリック → ラベル編集 / 空白をダブルクリック → ブロック追加\n· Cmd(Ctrl) + C / X / V → コピー・切り取り・貼り付け\n· Cmd(Ctrl) + Z / Shift + Z → 元に戻す・やり直す\n· マウスコントロール ON：ホイール = 拡大・縮小、右ドラッグ = パン\n· プロパティパネルで開始・終了を日付で直接指定できます',
+      help: '· 行をクリックするとその行がフォーカスされます — 追加ボタンはフォーカス行に作成されます\n· ブロックをクリック → 選択、ドラッグ → 移動（行・レーン変更も可）\n· 両端ハンドルをドラッグ → 期間調整、ダブルクリック → 隣に合わせて自動調整\n· ダブルクリック → ラベル編集 / 空白をダブルクリック → ブロック追加\n· Cmd(Ctrl) + Z / Shift + Z → 元に戻す・やり直す\n· マウスコントロール ON：ホイール = 拡大・縮小、右ドラッグ = パン\n· プロパティパネルで開始・終了を日付で直接指定できます',
       confReset: '初期状態に戻しますか？編集内容は失われます（バージョン履歴は保持）。',
       confRowDel: 'この行の項目も削除されます。続行しますか？', needAuthor: '作成者と日付は必須です。',
       confRestore: ' のバージョンに戻しますか？現在の状態は Cmd+Z で復元できます。',
@@ -2559,7 +2573,7 @@ class Component extends DCLogic {
   };
   togglePropertyDates = () => this.setState({ propertyDates: !this.state.propertyDates });
   onPropertyTimeField = (e) => this.state.propertyDates ? this.onDateField(e) : this.onField(e);
-  openPropertyCalendar = (e) => { const input=e.currentTarget;if(input.type==='date'&&input.showPicker){try{input.showPicker();}catch{input.focus();}} };
+  openPropertyCalendar = (e) => { const input=e.currentTarget;if(['date','month'].includes(input.type)&&input.showPicker){try{input.showPicker();}catch{input.focus();}} };
   shiftDay(m, delta) {
     const date = new Date(this.isoOf(m) + 'T00:00:00Z');
     date.setUTCDate(date.getUTCDate() + delta);
@@ -3156,6 +3170,7 @@ class Component extends DCLogic {
       notesView: st.notes.map((n) => ({ id: n.id, text: n.text, editing: st.editNote === n.id, show: st.editNote !== n.id })),
       boardW: px(O[cfg.months] || 0),
       weekPx: cfg.weekPx, startY: cfg.startY, startM: cfg.startM, months: cfg.months, laneH: laneH,
+      visibleMonthRange:cfg.startY+'.'+String(cfg.startM).padStart(2,'0')+' ~ '+new Date(cfg.startY,cfg.startM+cfg.months-2,1).getFullYear()+'.'+String(new Date(cfg.startY,cfg.startM+cfg.months-2,1).getMonth()+1).padStart(2,'0'),
       startMonthValue:cfg.startY+'-'+String(cfg.startM).padStart(2,'0'), onStartMonth:this.onStartMonth, onNowHover:this.onNowHover, onNowKey:this.onNowKey,
       weekPxSlider: this.zoomToSlider(this.weekPxVal()),
       zoomPct: Math.round((this.weekPxVal() / 19) * 100) + '%',
