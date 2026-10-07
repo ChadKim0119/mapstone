@@ -8,6 +8,28 @@
   function el(tag,text,attrs={}) { const e=document.createElement(tag); if(text!==null)e.textContent=text;Object.assign(e,attrs);for(const [k,v] of Object.entries(attrs))if(k.startsWith('aria-')||k.startsWith('data-'))e.setAttribute(k,v);return e; }
   function button(text,fn){const e=el('button',text,{type:'button',className:'ms-button'});e.addEventListener('click',fn);return e;}
   function loading(node,on){node.classList.toggle('ms-loading',on);node.setAttribute('aria-busy',String(on));}
+  function renderVersionReport(node,r){
+    const sections=[];let current={title:'상세 변경 내용',lines:[]};
+    for(const raw of String(r.report||'').split('\n')){
+      const line=raw.trim().replace(/^#{1,6}\s*/,'').replace(/\*\*|__/g,''),title=line.replace(/^\d+[.)]\s*/,'').replace(/[:：]$/,'').trim();
+      if(/^(Executive Summary|변경 개요|핵심 변화|주요 변경점|주요 변경 사항|주요 인사이트|일정 영향|확인 필요 사항|상세 변경 내용|세부 변경 사항)$/i.test(title)){
+        if(current.lines.length)sections.push(current);current={title,lines:[]};
+      }else if(line)current.lines.push(line.replace(/^(?:[•*-]|\d+[.)])\s+/,''));
+    }
+    if(current.lines.length)sections.push(current);
+    const changes=sections.find(s=>/핵심|주요 변경/.test(s.title))||sections.find(s=>/개요|Executive/.test(s.title))||sections[0];
+    const insights=sections.find(s=>/인사이트|영향/.test(s.title));
+    const brief=s=>(s?.lines||[]).slice(0,3).map(t=>t.length>140?t.slice(0,140)+'…':t);
+    const summary=el('section',null,{className:'ms-report-summary'}),grid=el('div',null,{className:'ms-report-grid'});
+    summary.append(el('h3','Executive Summary'),el('p','핵심 변경과 영향을 먼저 확인하고, 아래에서 전체 내용을 검토하세요.',{className:'ms-report-caption'}));
+    for(const [title,lines] of [['주요 변경점',brief(changes)],['주요 인사이트',brief(insights)]]){
+      const card=el('section',null,{className:'ms-report-card'}),list=el('ul');card.append(el('h4',title));
+      for(const t of lines)list.append(el('li',t));if(lines.length)card.append(list);else card.append(el('p','별도 요약이 없습니다. 상세 내용을 확인하세요.'));grid.append(card);
+    }
+    summary.append(grid);node.replaceChildren(el('p','v'+r.from+' → v'+r.to,{className:'ms-report-meta'}),summary,el('h3','상세 보고서'));
+    for(const s of sections){const section=el('section',null,{className:'ms-report-detail'}),list=el('ul');section.append(el('h4',s.title));for(const t of s.lines)list.append(el('li',t));section.append(list);node.append(section);}
+    node._copyText='v'+r.from+' → v'+r.to+'\n\nExecutive Summary\n주요 변경점\n'+brief(changes).join('\n')+'\n\n주요 인사이트\n'+brief(insights).join('\n')+'\n\n상세 보고서\n'+r.report;
+  }
   function field(parent,label,type='text',value=''){const l=el('label',null,{className:'ms-field'});l.append(el('span',label));const i=el(type==='textarea'?'textarea':'input',null,{value});if(type!=='textarea')i.type=type;l.append(i);parent.append(l);return i;}
   function download(data,name){const blob=new Blob([typeof data==='string'?data:JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob);const a=el('a',null,{href:url,download:name});a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);}
   // 파일 저장: Chrome/Edge open the native "save as" (folder + name); other browsers ask for a name and download.
@@ -470,12 +492,12 @@
     const message=el('p','작업물을 불러오고 있습니다…',{className:'ms-version-status',role:'status'}),projects=el('select',null,{'aria-label':'작업물 선택'}),field=el('label',null,{className:'ms-field'}),list=el('div',null,{className:'ms-version-list'});
     field.append(el('span','작업물'),projects);
     body.append(el('p',compare?'현재 작업물의 버전 두 개를 선택하세요. Gemini가 일정과 항목의 변화, 영향을 설명합니다.':'작업물을 선택한 뒤 저장된 버전을 불러오세요. 현재 작업은 실행 취소로 되돌릴 수 있습니다.',{className:'ms-version-lead'}));if(!compare)body.append(field);else body.append(el('strong',app.state.title));body.append(message);
-    const toolbar=el('div',null,{className:'ms-version-toolbar'}),selection=el('span','0 / 2개 선택'),reportArea=el('section',null,{className:'ms-version-result'}),report=el('pre',null,{className:'ms-version-report'});
-    reportArea.hidden=true;reportArea.append(el('h3','변경 인사이트 보고서'),button('보고서 복사',async()=>{try{await navigator.clipboard.writeText(report.textContent);}catch{message.textContent='보고서 텍스트를 선택해 직접 복사하세요.';}}),report);
+    const toolbar=el('div',null,{className:'ms-version-toolbar'}),selection=el('span','0 / 2개 선택'),reportArea=el('section',null,{className:'ms-version-result'}),report=el('div',null,{className:'ms-version-report'});
+    reportArea.hidden=true;reportArea.append(el('h3','변경 인사이트 보고서'),button('보고서 복사',async()=>{try{await navigator.clipboard.writeText(report._copyText||report.textContent);}catch{message.textContent='보고서 텍스트를 선택해 직접 복사하세요.';}}),report);
     let project='',selected=new Set(),boxes=[],generation=0;
     const generate=button('선택한 버전 비교하기',async()=>{
-      if(selected.size!==2||generate.disabled)return;const ids=[...selected],target=project,token=generation;generate.disabled=true;projects.disabled=true;loading(generate,true);loading(report,true);boxes.forEach(b=>b.disabled=true);reportArea.hidden=false;report.textContent='Gemini가 일정 변화와 영향을 분석하고 있습니다…';
-      try{const r=await request(app.sync.endpoint,'/version-projects/'+target+'/compare',versionCode(),'POST',{ids},'code',150000);if(token===generation){report.textContent='v'+r.from+' → v'+r.to+'\n\n'+r.report;reportArea.scrollIntoView({block:'start',behavior:'smooth'});}}
+      if(selected.size!==2||generate.disabled)return;const ids=[...selected],target=project,token=generation;generate.disabled=true;projects.disabled=true;loading(generate,true);loading(report,true);boxes.forEach(b=>b.disabled=true);reportArea.hidden=false;report._copyText='';report.textContent='Gemini가 일정 변화와 영향을 분석하고 있습니다…';
+      try{const r=await request(app.sync.endpoint,'/version-projects/'+target+'/compare',versionCode(),'POST',{ids},'code',150000);if(token===generation){renderVersionReport(report,r);reportArea.scrollIntoView({block:'start',behavior:'smooth'});}}
       catch(e){if(token===generation)report.textContent='요약하지 못했습니다. '+e.message;}finally{if(token===generation){loading(generate,false);loading(report,false);projects.disabled=false;generate.disabled=selected.size!==2;boxes.forEach(b=>b.disabled=!b.checked&&selected.size===2);}}
     });generate.disabled=true;generate.classList.add('ms-primary');toolbar.append(selection,generate);
     if(compare)body.append(toolbar);body.append(el('h3',compare?'비교할 버전':'저장된 버전'),list);if(compare)body.append(reportArea);

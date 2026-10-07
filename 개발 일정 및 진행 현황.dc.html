@@ -107,6 +107,18 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-version-recovery summary::after { content:'⌄';font-size:18px;line-height:1;flex:none; }
     .ms-version-recovery[open] summary::after { content:'⌃'; }
     .ms-version-recovery[open] summary { border-bottom:1px solid #e0e5eb; }
+    .ms-dialog.ms-versions .ms-field select { appearance:none;padding-right:38px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2359636f' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; }
+    .ms-dialog.ms-versions .ms-version-recovery summary { justify-content:flex-start; }
+    .ms-version-recovery summary::after { order:-1; }
+    .ms-dialog.ms-versions .ms-version-report { white-space:normal; }
+    .ms-report-summary { padding:18px;border:1px solid #e6c6d8;border-radius:12px;background:#fff7fb;margin:14px 0 24px; }
+    .ms-report-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+    .ms-report-card { padding:14px;border:1px solid #e4e8ee;border-radius:8px;background:#fff; }
+    .ms-report-card h4,.ms-report-detail h4 { margin:0 0 8px;font-size:14px; }
+    .ms-report-caption,.ms-report-meta { margin:6px 0 14px;color:#697582;font-size:12px; }
+    .ms-report-detail { padding:16px 0;border-top:1px solid #e4e8ee; }
+    .ms-report-card li,.ms-report-detail li { margin:8px 0;line-height:1.75;white-space:pre-wrap; }
+    @media(max-width:540px) { .ms-report-grid { grid-template-columns:1fr; } }
     .ms-loading::before { content:'';display:inline-block;width:14px;height:14px;box-sizing:border-box;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:8px;vertical-align:-2px;flex:none;animation:ms-loading-spin .8s linear infinite; }
     .ms-button.ms-loading:disabled { opacity:1;cursor:progress; }
     @keyframes ms-loading-spin { to { transform:rotate(360deg); } }
@@ -933,6 +945,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.71', agent: 'Codex', title: 'Executive Summary 비교 보고서·펼침 표시 정렬 개선', items: ['비교 보고서 상단에 짧은 주요 변경점·인사이트 요약 카드 적용', '상세 내용을 소제목·목록·구분선으로 분리하고 복사 시 줄바꿈 유지', '작업물 선택 펼침 표시를 안쪽으로 정렬하고 고급 아코디언 표시를 제목 옆으로 이동', '좁은 화면에서 보고서 요약 카드 세로 배치 및 안전한 텍스트 렌더링'] },
     { v: 'v9.70', agent: 'Codex', title: '파일 불러오기·버전 동작 및 날짜 입력 개선', items: ['파일 불러오기 시 자동 백업 다운로드 제거, 실행 취소 복구 유지', '버전 이력·저장 완료 안내에 저장 시각 추가', '날짜 입력을 숫자 모드와 같은 2열 크기로 정리하고 아이콘 없이 날짜 클릭으로 달력 열기', '버전 삭제 확인을 앱 내부 창으로 변경하고 불러오기 진행·오류 안내 개선', '현재 작업물 버전만 비교하고 버전 부족 시 비교 비활성화 및 안내', '보관함 접근 키는 다른 브라우저 연결용 고급 영역 한 곳으로 통합'] },
     { v: 'v9.69', agent: 'Codex', title: '버전 창 UX 안정화·AI 분석 로딩 피드백 개선', items: ['버전 보관함·비교 창의 로딩 및 복구 코드 펼침 시 크기·위치 유지와 내부 스크롤 적용', '패널 닫기 버튼·버전 카드 동작·복구 코드 접힘 표시 정렬 및 버튼 위계 개선', '이미지·텍스트·버전 비교 AI 분석에 회전 로딩과 접근성 상태 적용, 완료·실패 시 상태 해제', '분석 중 중복 실행 방지 및 동작 줄이기 설정 존중'] },
     { v: 'v9.68', agent: 'Codex', title: '메모 우선 계위·버전 삭제 및 복원 모션 개선', items: ['메모 > 월 헤더 > 일반 항목 순서로 표시 계위 고정', '개별 버전 삭제 버튼·확인창 및 소유권 검증 클라우드 삭제 추가', '버전 복원 시 변경 항목 이동·크기·등장·퇴장 애니메이션 적용, 동작 줄이기 설정 존중', '드롭다운 여백을 내용 너비로 축소하고 전체 지우기를 휴지통 아이콘으로 변경'] },
@@ -1013,7 +1026,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.70';
+  APP_VER = 'v9.71';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a

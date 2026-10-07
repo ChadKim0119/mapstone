@@ -21,7 +21,7 @@ function fixture(fetch){
     click(){return this.events.click?.({target:this});}
   }
   const document={createElement:t=>new Element(t),body:new Element('body')},store=new Map(),ctx={MapstoneCore:C,window:{},document,crypto,AbortSignal,clearTimeout,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},fetch};
-  vm.runInNewContext(fs.readFileSync('mapstone-ui.js','utf8'),ctx);
+  vm.runInNewContext(fs.readFileSync('mapstone-ui.js','utf8').replace('window.MapstoneUI={','window.MapstoneUI={renderVersionReport,'),ctx);
   const app={state:{title:'QA'},sync:{endpoint:'https://example.test'}};
   return {ui:ctx.window.MapstoneUI,app,nodes,find:text=>nodes.find(n=>n.textContent===text),byClass:c=>nodes.find(n=>(n.className||'').split(' ').includes(c))};
 }
@@ -61,6 +61,12 @@ test('Version comparison disables changes while AI runs and clears feedback afte
     f.app.state.versions=[{id:'a',projectId:'project'},{id:'b',projectId:'project'}];f.app.state.versionProjectId='project';    await f.ui.versionLibrary(f.app,true);const boxes=f.nodes.filter(n=>n.type==='checkbox'),select=f.nodes.find(n=>n.tagName==='select'),generate=f.find('선택한 버전 비교하기'),report=f.byClass('ms-version-report');
     for(const b of boxes){b.checked=true;b.events.change();}assert.equal(generate.disabled,false);
     const pending=generate.click();assert.equal(select.disabled,true);assert.equal(generate.attrs['aria-busy'],'true');assert.ok(boxes.every(b=>b.disabled));
-    release();await pending;assert.equal(select.disabled,false);assert.equal(generate.disabled,false);assert.equal(generate.attrs['aria-busy'],'false');assert.equal(report.attrs['aria-busy'],'false');assert.match(report.textContent,fail?/offline/:/검수 완료/);
+    release();await pending;assert.equal(select.disabled,false);assert.equal(generate.disabled,false);assert.equal(generate.attrs['aria-busy'],'false');assert.equal(report.attrs['aria-busy'],'false');assert.match(fail?report.textContent:report._copyText,fail?/offline/:/검수 완료/);
   }
+});
+test('Executive summary stays brief while detailed report and copy retain every change safely',()=>{
+  const f=fixture(()=>{}),node=f.nodes[0],changes=Array.from({length:5},(_,i)=>'일정 변경 '+i),report='1. 변경 개요\n전체 변경 개요\n2. 핵심 변화\n'+changes.join('\n')+'\n3. 일정 영향\n검수 일정이 밀립니다.\n4. 확인 필요 사항\n<img src=x onerror=alert(1)> 담당자 확인';
+  f.ui.renderVersionReport(node,{from:1,to:2,report});assert.ok(f.find('Executive Summary'));assert.ok(f.find('주요 변경점'));assert.ok(f.find('주요 인사이트'));
+  const cards=f.nodes.filter(n=>n.className==='ms-report-card');assert.equal(cards[0].children[1].children.length,3);assert.equal(cards[1].children[1].children.length,1);
+  for(const t of changes)assert.ok(node._copyText.includes(t));assert.ok(f.find('<img src=x onerror=alert(1)> 담당자 확인'));assert.equal(f.nodes.filter(n=>n.tagName==='img').length,0);
 });
