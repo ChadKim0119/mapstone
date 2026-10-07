@@ -270,16 +270,19 @@
     body.append(el('details'));const api=body.lastChild;api.append(el('summary','외부 앱 · LLM 연동'),el('p','JSON 데이터 계약과 REST API를 제공합니다. GET /room으로 문서·revision을 읽고 PUT /room에 revision과 수정 문서를 전달합니다. 인증 헤더는 X-Mapstone-Code입니다. 409 응답은 최신 문서를 다시 읽고 병합해야 함을 뜻합니다.'),el('code',DEFAULT_ENDPOINT),button('현재 일정 JavaScript 다운로드',()=>download('const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';','mapstone-schedule.js')));
   }
   function loadFile(app,body){
-    const sources=el('div',null,{className:'ms-file-sources'}),local=el('section'),online=el('section',null,{className:'ms-file-online'}),library=el('section');library.hidden=true;local.append(el('h3','로컬 파일 불러오기'));online.append(el('h3','온라인 파일 불러오기'));
-    let libraryOpened=false;const openOnline=button('온라인 파일 불러오기',()=>{sources.hidden=true;input.parentElement.hidden=true;message.hidden=apply.hidden=true;library.hidden=false;if(!libraryOpened){libraryOpened=true;versionLibrary(app,false,library);} });
-    online.append(openOnline);sources.append(local,online);body.append(sources,library);
-    library.append(button('로컬 파일로 돌아가기',()=>{library.hidden=true;sources.hidden=false;input.parentElement.hidden=false;message.hidden=apply.hidden=false;}));
-    const message=el('p','',{className:'ms-message'});message.setAttribute('role','status');let pending=null;
+    const nav=el('div',null,{className:'ms-file-nav','aria-label':'불러오기 방식'}),local=el('section',null,{className:'ms-file-local'}),library=el('section',null,{className:'ms-file-library'}),json=el('section',null,{className:'ms-file-json'}),footer=el('div',null,{className:'ms-file-footer'});
+    body.append(el('p','저장된 일정을 불러옵니다. 파일, 온라인 보관함 또는 JSON 중에서 선택하세요.',{className:'ms-file-lead'}),nav,local,library,json,footer);
+    let libraryOpened=false;const panels=[local,library,json],tabs=[];
+    const switchSource=index=>{panels.forEach((panel,i)=>panel.hidden=i!==index);tabs.forEach((tab,i)=>tab.setAttribute('aria-pressed',String(i===index)));footer.hidden=index===1;if(!pending&&index!==1&&!input.value.trim())message.textContent=index===2?'JSON을 붙여넣으면 일정 이름과 항목 수를 확인할 수 있습니다.':'파일을 선택하면 일정 이름과 항목 수를 확인할 수 있습니다.';if(index===1&&!libraryOpened){libraryOpened=true;versionLibrary(app,false,library);}};
+    ['로컬 파일','온라인 파일','JSON 붙여넣기'].forEach((name,index)=>{const tab=button(name,()=>switchSource(index));tabs.push(tab);nav.append(tab);});
+    local.append(el('h3','로컬 파일 불러오기'),el('p','컴퓨터에 저장한 .mapstone 또는 .json 파일을 선택하세요.',{className:'ms-file-hint'}));
+    const message=el('p','파일을 선택하면 일정 이름과 항목 수를 확인할 수 있습니다.',{className:'ms-message',role:'status'});let pending=null;
     const apply=button('이 일정 불러오기',()=>{if(!pending||app.state.readOnly)return;app.importDocument(pending);closeModal();});apply.disabled=true;apply.classList.add('ms-primary');
-    const read=text=>{pending=null;apply.disabled=true;if(!text.trim()){message.textContent='';return;}try{if(text.length>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');try{pending=C.parseFile(text);}catch(e){pending=C.parseImport(text);}message.textContent=pending.title+' · '+summary(pending);apply.disabled=!!app.state.readOnly;}catch(e){message.textContent='맵스톤 데이터를 읽을 수 없습니다: '+e.message;}};
-    dropZone(local,'맵스톤 파일을 여기에 끌어다 놓으세요','.mapstone 또는 .json 파일','.mapstone,.json,application/json',async file=>{input.value=await file.text();read(input.value);});
-    const input=field(body,'JSON 붙여넣기','textarea');input.rows=6;input.placeholder='{"format":"mapstone","formatVersion":1,"document":{...}}';input.addEventListener('input',()=>read(input.value));
-    body.append(message,apply);
+    const read=text=>{pending=null;apply.disabled=true;if(!text.trim()){message.textContent='파일 또는 JSON을 선택하세요.';return;}try{if(text.length>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');try{pending=C.parseFile(text);}catch(e){pending=C.parseImport(text);}message.textContent=pending.title+' · '+summary(pending);apply.disabled=!!app.state.readOnly;}catch(e){message.textContent='맵스톤 데이터를 읽을 수 없습니다: '+e.message;}};
+    dropZone(local,'파일을 여기에 끌어다 놓으세요','.mapstone 또는 .json 파일','.mapstone,.json,application/json',async file=>{input.value=await file.text();read(input.value);});
+    json.append(el('h3','JSON 붙여넣기'),el('p','맵스톤에서 내보낸 JSON 파일을 텍스트 편집기로 열어 내용 전체를 복사한 뒤 아래에 붙여넣으세요. 일정 제목·행·항목이 포함된 데이터가 필요합니다. 일반 메모나 일정 설명은 상단 이미지 분석에서 변환할 수 있습니다.',{className:'ms-file-hint',id:'ms-file-json-help'}));
+    const input=field(json,'일정 JSON','textarea');input.rows=8;input.placeholder='맵스톤 JSON 데이터 전체를 붙여넣으세요';input.setAttribute('aria-describedby','ms-file-json-help');input.addEventListener('input',()=>read(input.value));
+    footer.append(message,apply);switchSource(0);
   }
   // 사용법: sections in task order, each with a capture from MapstoneHelp (see mapstone-help.js).
   const HELP=[
@@ -492,7 +495,7 @@
     if(compare && app.state.versions.length<2){toast(app,'현재 작업물에 저장된 버전이 두 개 이상 있어야 비교할 수 있습니다.');return;}
     const body=container||createModal(compare?'버전 비교 · 변경 인사이트':'보관된 작업물 불러오기','ms-versions '+(compare?'ms-version-compare':'ms-version-library'));
     const message=el('p','작업물을 불러오고 있습니다…',{className:'ms-version-status',role:'status'}),projects=el('select',null,{'aria-label':'작업물 선택'}),field=el('label',null,{className:'ms-field'}),list=el('div',null,{className:'ms-version-list'});
-    field.append(el('span','작업물'),projects);
+    const selectWrap=el('div',null,{className:'ms-select-wrap'});selectWrap.append(projects);field.append(el('span','작업물'),selectWrap);
     body.append(el('p',compare?'현재 작업물의 버전 두 개를 선택하세요. Gemini가 일정과 항목의 변화, 영향을 설명합니다.':'작업물을 선택한 뒤 저장된 버전을 불러오세요. 현재 작업은 실행 취소로 되돌릴 수 있습니다.',{className:'ms-version-lead'}));if(!compare)body.append(field);else body.append(el('strong',app.state.title));body.append(message);
     const toolbar=el('div',null,{className:'ms-version-toolbar'}),selection=el('span','0 / 2개 선택'),reportArea=el('section',null,{className:'ms-version-result'}),report=el('div',null,{className:'ms-version-report'});
     reportArea.hidden=true;reportArea.append(el('h3','변경 인사이트 보고서'),button('보고서 복사',async()=>{try{await navigator.clipboard.writeText(report._copyText||report.textContent);}catch{message.textContent='보고서 텍스트를 선택해 직접 복사하세요.';}}),report);
@@ -520,7 +523,7 @@
       }catch(e){if(mine===generation)message.textContent='버전을 불러오지 못했습니다. '+e.message;}
       finally{if(mine===generation){loading(message,false);list.setAttribute('aria-busy','false');projects.disabled=false;}}
     }
-    async function loadProjects(){projects.disabled=true;loading(message,true);message.textContent='작업물을 불러오고 있습니다…';try{const ps=await request(app.sync.endpoint,'/version-projects',versionCode());projects.replaceChildren(...ps.map(p=>el('option',p.title||'이름 없는 작업물',{value:p.id})));const current=app.state.versionProjectId || ps.find(p=>p.title===app.state.title)?.id;if(ps.some(p=>p.id===current))projects.value=current;message.textContent=ps.length?'':'보관된 작업물이 없습니다. 버전 탭에서 현재 작업을 저장하세요.';await loadProject();}catch(e){message.textContent='보관함을 열지 못했습니다. '+e.message;}finally{projects.disabled=false;loading(message,false);}}
+    async function loadProjects(){projects.disabled=true;loading(message,true);message.textContent='작업물을 불러오고 있습니다…';try{const ps=await request(app.sync.endpoint,'/version-projects',versionCode());projects.replaceChildren(...(ps.length?ps.map(p=>el('option',p.title||'이름 없는 작업물',{value:p.id})):[el('option','보관된 작업물 없음',{value:''})]));const current=app.state.versionProjectId || ps.find(p=>p.title===app.state.title)?.id;if(ps.some(p=>p.id===current))projects.value=current;message.textContent=ps.length?'':'보관된 작업물이 없습니다. 버전 탭에서 현재 작업을 저장하세요.';await loadProject();}catch(e){message.textContent='보관함을 열지 못했습니다. '+e.message;}finally{projects.disabled=false;loading(message,false);}}
     projects.addEventListener('change',loadProject);if(compare){if(app.state.versionProjectId||app.state.versions.find(v=>v.projectId)?.projectId)await loadProject();else{message.textContent='클라우드에 버전을 저장한 뒤 비교할 수 있습니다.';}}else await loadProjects();
   }
   function open(app,page){const body=createModal(page==='import'?'이미지/텍스트 분석':page==='file'?'맵스톤 파일':page==='help'?'사용법':page==='compare'?'버전 비교':page==='edit-gate'?'편집 모드 전환':'공유',page==='file'?'ms-versions ms-file-load':'');if(page==='import')imports(app,body);else if(page==='help')help(app,body);else if(page==='compare')compareDialog(app,body);else if(page==='file')loadFile(app,body);else if(page==='edit-gate')editGate(app,body);else if(page==='share-quick')workspace(app,body,{quick:true});else workspace(app,body);}
