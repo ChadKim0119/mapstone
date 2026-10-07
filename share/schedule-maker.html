@@ -857,7 +857,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
             <span style="font-size:14px;font-weight:700">{{ L.verSave }}</span>
             <div class="ms-named-value"><span>{{ L.titlePrefix }} :</span><strong>{{ title }}</strong></div>
-            <span style="font-size:12px;line-height:1.7">버전 탭에서 저장하면 이 작업물의 버전이 클라우드에 계속 보관됩니다. 저장 날짜와 시간은 자동으로 기록됩니다.</span>
+            <span style="font-size:12px;line-height:1.7">이 파일의 버전이 클라우드에 계속 보관됩니다.</span>
 
             <label style="display:flex;flex-direction:column;gap:6px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.changes }}</span>
@@ -867,7 +867,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ vHint }}</span>
 
             <div style="height:1px;background:var(--color-border-neutral-2)"></div>
-            <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><button class="ms-version-compare-button" onClick="{{ openVersionCompare }}" disabled="{{ versionCompareDisabled }}" title="{{ versionCompareHint }}">버전 비교 · 변경 인사이트</button></div>
+            <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><button class="ms-version-compare-button" onClick="{{ openVersionCompare }}" disabled="{{ versionCompareDisabled }}" title="{{ versionCompareHint }}">버전 비교</button></div>
             <sc-for list="{{ versionsView }}" as="v" hint-placeholder-count="2">
               <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:{{ v.bg }}">
                 <div style="display:flex;align-items:center;gap:8px">
@@ -1010,6 +1010,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.77', agent: 'Codex', title: '분석 안내·버전 화면 문구 간소화', items: ['이미지·텍스트 분석 안내를 일정 변환 설명 한 문장으로 간소화', '버전 보관 안내를 이 파일의 버전이 클라우드에 계속 보관됩니다로 변경', '버전 히스토리 빈 상태 안내와 버전 비교 버튼 문구 축약'] },
     { v: 'v9.76', agent: 'Codex', title: '선택 핸들 통일·설정 그룹과 버전 진행 상태 개선', items: ['일정·참고·공통 구간의 방향별 선택 핸들 크기와 색상 통일', '메모 삭제 아이콘을 SVG로 교체하고 중앙 정렬', '저장·복원·삭제의 진행 상태를 구분해 저장 버튼 문구 오류 수정', '타임라인 설정을 표시 기간·표시 방식·조작 및 효과·겹침 처리로 그룹화', '현재 표시된 월 구간 제목과 애니메이션 설명 추가', '보기 메뉴 안내 툴팁의 폭과 줄바꿈 개선'] },
     { v: 'v9.75', agent: 'Codex', title: '버전 히스토리 동작 배치·속성 명칭 정리', items: ['버전 비교 버튼을 버전 히스토리 제목 오른쪽으로 이동', '버전 화면의 작업물 제목 앞에 타이틀 라벨을 추가하고 형태를 구분', '선택 항목 속성에 항목 종류 라벨을 제공하고 행 이름 앞에 행 명칭 추가', '공통 구간 속성의 시작 행·끝 행 입력 영역 제거', '시작·종료 입력 방식 토글 순서를 일자 / 숫자로 변경'] },
     { v: 'v9.74', agent: 'Codex', title: '설정 입력 폭·속성 그룹·버전 저장 문구 정리', items: ['시작 월과 표시 개월 수 입력 그룹 전체의 가로 폭을 동일하게 조정', '시작·종료 설정을 하나의 영역으로 묶고 입력 방식 토글·설명·날짜 입력을 정렬', '행 설정을 기본 정보·행 크기·배경색·행 관리로 구분하고 높이 입력 두 가지를 같은 형태로 배치', '행 이동·삭제 버튼 스타일과 간격을 속성 패널에 맞춰 정리', '클라우드에 버전 저장 버튼 문구를 버전 저장으로 변경'] },
@@ -1096,7 +1097,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.76';
+  APP_VER = 'v9.77';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1130,7 +1131,7 @@ class Component extends DCLogic {
       overlapHint: '항목을 옮기거나 길이를 바꿔 겹치면 이 규칙으로 자동 정리됩니다. 핸들을 더블클릭하면 옆 항목에 딱 맞게 조정됩니다.',
       verSave: '버전 저장', author: '작성자', date: '날짜', changes: '변경 내용', phAuthor: '예: 김지훈', phChanges: '예: DCM 지연 반영, Pre-Prod E2E 3M 조정',
       saveBtn: '현재 상태를 버전으로 저장', history: '버전 히스토리', restoreBtn: '이 버전으로 복원',
-      noVer: '저장된 버전이 없습니다.\n현재 상태를 클라우드에 저장하거나 보관된 작업물을 불러오세요.',
+      noVer: '저장된 버전이 없습니다.',
       verReady: '저장하면 현재 일정 상태가 스냅샷으로 보관됩니다.', verNeed: '제목과 저장 날짜가 자동으로 기록됩니다.',
       noSel: '선택된 항목이 없습니다', focusRowLbl: '포커스 행', none: '없음',
       help: '· 행을 클릭하면 그 행이 포커스됩니다 — 추가 버튼은 포커스된 행에 만들어집니다\n· 블록 클릭 → 선택, 드래그 → 이동(행·레인 변경 포함)\n· 양끝 핸들 드래그 → 기간 조정, 핸들 더블클릭 → 옆 블록에 맞춰 자동 조정\n· 더블클릭 → 라벨 편집 / 빈 칸 더블클릭 → 블록 추가\n· Cmd(Ctrl) + Z / Shift + Z → 되돌리기 · 다시 실행\n· 마우스 컨트롤 ON: 휠 = 확대 · 축소, 우클릭 드래그 = 패닝\n· 속성 패널에서 시작 · 종료를 날짜로 직접 지정할 수 있습니다',

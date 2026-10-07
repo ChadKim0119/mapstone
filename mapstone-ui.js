@@ -137,7 +137,7 @@
     const busy=async(btn,fn)=>{if(analyzing)return;analyzing=true;input.contentEditable='false';const label=btn.textContent;analyzeImage.disabled=analyzeText.disabled=input.disabled=clearText.disabled=removeImage.disabled=true;btn.textContent='분석 중…';loading(btn,true);loading(message,true);try{await fn();}catch(e){reset(e.message);}finally{analyzing=false;input.contentEditable='plaintext-only';analyzeImage.disabled=analyzeText.disabled=input.disabled=clearText.disabled=removeImage.disabled=false;btn.textContent=label;loading(btn,false);loading(message,false);}};
     const ai=async(payload,what)=>{reset(what+'에서 일정·마일스톤을 분석하고 있습니다… 자료가 크면 1~2분 걸릴 수 있습니다.');const r=await request(app.sync.endpoint,'/analyze',app.sync.code||'','POST',payload,'code',180000);return C.analysisColors(C.validate(r.document));};
 
-    body.append(el('h3','1. 이미지 분석하기'),el('p','로드맵 이미지 또는 손그림 등을 분석하여 Mapstone 일정으로 변환합니다. 1일 항목은 마일스톤으로, 겹치는 일정은 별도 레인으로 배치합니다.'));
+    body.append(el('h3','1. 이미지 분석하기'),el('p','로드맵 이미지 또는 손그림 등을 분석하여 Mapstone 일정으로 변환합니다.'));
     let picked=null;const thumb=el('img',null,{alt:''});thumb.hidden=true;
     const preview=el('div',null,{className:'ms-image-preview'});preview.hidden=true;
     const syncImage=()=>{preview.hidden=thumb.hidden=!picked;if(picked)thumb.src=picked.src;else thumb.removeAttribute('src');};
@@ -149,7 +149,7 @@
     body.append(analyzeImage,imgSpot);
 
     const txtHead=el('h3','2. 텍스트 분석하기');
-    body.append(txtHead,el('p','회의록, 문서 또는 표의 텍스트를 분석하여 Mapstone 일정으로 변환합니다. 1일 항목은 마일스톤으로 반영합니다. 날짜와 소요 기간을 명시하면 더 정확하게 배치됩니다.'));
+    body.append(txtHead,el('p','회의록, 문서 또는 표의 텍스트를 분석하여 Mapstone 일정으로 변환합니다.'));
     const setText=async f=>{if(analyzing)return;try{if(f.type.startsWith('image/'))return setImage(f);if(f.size>8*1024*1024)throw new Error('텍스트 파일은 8MB 이하여야 합니다.');input.textContent=await f.text();syncText();reset(f.name+' 내용을 불러왔습니다.');}catch(e){reset(e.message);}};
     const textZone=dropZone(body,'텍스트 파일을 여기에 끌어다 놓거나 붙여넣으세요','복사한 내용은 이 영역이나 아래 입력칸을 누른 뒤 Ctrl/Cmd+V로 여기에 붙여넣으세요.','.txt,.md,.csv,.tsv,.json,.js,.html,.xml,text/*,application/json',setText);
     const input=el('div','',{className:'ms-text-editor',contentEditable:'plaintext-only',role:'textbox',tabIndex:0,'aria-label':'분석할 텍스트','aria-multiline':'true'});textZone.append(input);input.addEventListener('input',()=>{reset();syncText();});
