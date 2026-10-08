@@ -12,6 +12,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   location.replace(entry.href);
 }
 </script>
+<link rel="stylesheet" href="assets/design-system/tokens.css">
 <style>x-dc{display:none!important}html,body{background:#fff}</style>
 <script src="./mapstone-core.js"></script>
 <script src="./mapstone-ui.js"></script>
@@ -29,8 +30,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     <rect x="140" y="290" width="620" height="66" rx="8" fill="#5b3fd1"></rect>
     <rect x="140" y="400" width="470" height="66" rx="8" fill="#3b4040"></rect>
     <rect x="140" y="510" width="780" height="66" rx="8" fill="#5b3fd1"></rect>
-    <rect x="980" y="140" width="6" height="500" fill="#e30084"></rect>
-    <circle cx="983" cy="660" r="26" fill="#e30084"></circle>
+    <rect x="980" y="140" width="6" height="500" fill="#3568c5"></rect>
+    <circle cx="983" cy="660" r="26" fill="#3568c5"></circle>
   </svg>
 </template>
 <helmet>
@@ -45,9 +46,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   <script src="_ds/ucmp-design-system-ec5463fc-a92f-48a5-9f49-32417bbef2fc/_ds_bundle.js"></script>
   <script src="./vendor/html-to-image.js"></script>
   <script src="./vendor/pptxgen.js"></script>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'%3E%3Crect x='0' y='0' width='512' height='512' rx='116' fill='%23181A1B'/%3E%3Crect x='112' y='136' width='176' height='56' rx='28' fill='%23FFFFFF'/%3E%3Crect x='184' y='228' width='216' height='56' rx='28' fill='%23E30084'/%3E%3Crect x='112' y='320' width='104' height='56' rx='28' fill='%23FFFFFF'/%3E%3Cpath d='M296 320l28 28-28 28-28-28z' fill='%23FFFFFF'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="assets/design-system/mapstone-icon-flat.svg">
   <style>
-    .ms-row-add button{opacity:0}.ms-row-add:hover button{opacity:1}.ms-row-grip:focus-visible{outline:2px solid #e30084}
+    .ms-row-add button{opacity:0}.ms-row-add:hover button{opacity:1}.ms-row-grip:focus-visible{outline:2px solid var(--ms-color-action-primary)}
     @media(hover:none){.ms-row-add button{opacity:1}}
     html, body { margin: 0; background: #fff; }
     [data-app] { -webkit-user-select: none; user-select: none; }
@@ -57,9 +58,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
     [data-app] [data-resize]::after { content:""; position:absolute; inset:-5px; }
-    [data-app] [data-resize]:hover { background:rgba(227,0,132,.75) !important; }
+    [data-app] [data-resize]:hover { background:rgba(53,104,197,.75) !important; }
 
-    [data-app] [data-resize] { background:#e30084 !important;border:1px solid #fff;border-radius:3px !important;box-shadow:0 0 0 1px rgba(227,0,132,.18); }
+    [data-app] [data-resize] { background:var(--ms-color-action-primary) !important;border:1px solid #fff;border-radius:3px !important;box-shadow:0 0 0 1px rgba(53,104,197,.18); }
     [data-app] [data-resize]:is([data-mode="l"],[data-mode="r"]) { width:8px !important;height:16px !important;top:50% !important;margin-top:-8px !important; }
     [data-app] [data-resize]:is([data-mode="top"],[data-mode="bottom"],[data-mode="btop"],[data-mode="bbot"]) { width:16px !important;height:8px !important;left:50% !important;margin-left:-8px !important; }
     [data-app] [data-resize]:is([data-mode="top"],[data-mode="btop"]) { top:-4px !important; }
@@ -70,9 +71,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-settings-group h4 { margin:0;font-size:12px;font-weight:700;color:var(--color-text-neutral-5); }
     .ms-visible-months { display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:8px 10px;background:var(--color-bg-neutral-1);border-radius:6px;font-size:11px;color:var(--color-text-neutral-3); }
     .ms-visible-months strong { font-size:12px;color:var(--color-text-neutral-5);font-variant-numeric:tabular-nums; }
-    /* Session titles stay above the document's maximum 5,000 item layers. */
-    .ms-sticky-col[data-row] { z-index:6000 !important; }
-    .ms-sticky-col[data-row]:hover,.ms-sticky-col[data-row]:focus-within { z-index:6001 !important; }
+    /* Session titles shield the frozen column from memo layers; post-its remain above. */
+    .ms-sticky-col[data-row] { z-index:12000 !important; }
+    .ms-sticky-col[data-row]:hover,.ms-sticky-col[data-row]:focus-within { z-index:12001 !important; }
     /* motion: short and quiet; off via 설정 › 애니메이션 or the OS reduced-motion setting */
     @keyframes ms-panel-in { from { opacity:0; transform:translateX(16px); } }
     @keyframes ms-pop { from { opacity:0; transform:translateY(6px) scale(.98); } }
@@ -128,44 +129,44 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-version-recovery summary::before { content:'';display:block;width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);flex:none;margin:0 3px 0 0; }
     .ms-version-recovery[open] summary::before { transform:rotate(45deg);margin-top:-4px; }
     .ms-version-recovery summary::after { content:none; }
-    .ms-version-recovery[open] summary { border-bottom:1px solid #e0e5eb; }
+    .ms-version-recovery[open] summary { border-bottom:1px solid var(--ms-color-border-default); }
     .ms-select-wrap { position:relative;min-width:0; }
-    .ms-select-wrap::after { content:'';position:absolute;right:16px;top:50%;width:7px;height:7px;border-right:1.5px solid #59636f;border-bottom:1.5px solid #59636f;transform:translateY(-70%) rotate(45deg);pointer-events:none; }
+    .ms-select-wrap::after { content:'';position:absolute;right:16px;top:50%;width:7px;height:7px;border-right:1.5px solid var(--ms-color-text-secondary);border-bottom:1.5px solid var(--ms-color-text-secondary);transform:translateY(-70%) rotate(45deg);pointer-events:none; }
     .ms-dialog.ms-versions .ms-field select { appearance:none;padding-right:40px;background:#fff;background-image:none; }
     .ms-dialog.ms-file-load[open] { width:min(740px,94vw);height:min(620px,90dvh); }
     .ms-dialog.ms-file-load .ms-dialog-body { display:flex;flex-direction:column;gap:20px;padding:22px 24px; }
-    .ms-file-load .ms-file-lead { margin:0;color:#59636f;font-size:13px; }
-    .ms-file-nav { display:flex;gap:4px;padding:4px;border:1px solid #e0e5eb;border-radius:8px;background:#f5f7fa; }
-    .ms-dialog.ms-file-load .ms-file-nav .ms-button { flex:1;min-width:0;min-height:36px;border:1px solid transparent;background:transparent;color:#59636f;border-radius:6px;padding:6px 8px;white-space:nowrap; }
-    .ms-dialog.ms-file-load .ms-file-nav .ms-button[aria-pressed="true"] { background:#fff;color:#181a1b;border-color:#dce0e5;box-shadow:0 1px 2px #181a1b0a; }
+    .ms-file-load .ms-file-lead { margin:0;color:var(--ms-color-text-secondary);font-size:13px; }
+    .ms-file-nav { display:flex;gap:4px;padding:4px;border:1px solid var(--ms-color-border-default);border-radius:8px;background:var(--ms-color-surface-canvas); }
+    .ms-dialog.ms-file-load .ms-file-nav .ms-button { flex:1;min-width:0;min-height:36px;border:1px solid transparent;background:transparent;color:var(--ms-color-text-secondary);border-radius:6px;padding:6px 8px;white-space:nowrap; }
+    .ms-dialog.ms-file-load .ms-file-nav .ms-button[aria-pressed="true"] { background:#fff;color:var(--ms-color-text-primary);border-color:var(--ms-color-border-default);box-shadow:0 1px 2px #181a1b0a; }
     .ms-file-load section[hidden],.ms-file-load .ms-file-footer[hidden] { display:none !important; }
     .ms-dialog.ms-file-load h3 { font-size:15px;line-height:1.4;margin:0 0 8px; }
-    .ms-file-hint { color:#59636f;font-size:13px;line-height:1.7;margin:0 0 16px; }
+    .ms-file-hint { color:var(--ms-color-text-secondary);font-size:13px;line-height:1.7;margin:0 0 16px; }
     .ms-dialog.ms-file-load .ms-drop { min-height:160px;margin:0;padding:24px 16px;border-radius:10px;border-width:1px;gap:12px; }
     .ms-dialog.ms-file-load .ms-drop strong { font-size:15px; }
     .ms-dialog.ms-file-load .ms-field { margin:0;gap:8px; }
-    .ms-dialog.ms-file-load .ms-field > span { font-size:12px;font-weight:650;color:#59636f; }
+    .ms-dialog.ms-file-load .ms-field > span { font-size:12px;font-weight:650;color:var(--ms-color-text-secondary); }
     .ms-dialog.ms-file-load textarea { box-sizing:border-box;min-height:150px;font:12px/1.7 ui-monospace,monospace;padding:12px;border-radius:8px; }
-    .ms-dialog.ms-file-load .ms-file-footer { display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:auto;border-top:1px solid #e0e5eb;padding-top:16px; }
-    .ms-dialog.ms-file-load .ms-file-footer .ms-message { margin:0;font-size:12px;color:#59636f;overflow-wrap:anywhere; }
+    .ms-dialog.ms-file-load .ms-file-footer { display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:auto;border-top:1px solid var(--ms-color-border-default);padding-top:16px; }
+    .ms-dialog.ms-file-load .ms-file-footer .ms-message { margin:0;font-size:12px;color:var(--ms-color-text-secondary);overflow-wrap:anywhere; }
     .ms-file-load .ms-file-library .ms-version-lead { font-size:13px; }
     .ms-file-load .ms-version-status { font-size:13px; }
-    .ms-file-load .ms-version-recovery { border:1px solid #e0e5eb;border-radius:8px;background:#fafbfc; }
-    .ms-file-load .ms-version-recovery p { font-size:12px;color:#59636f; }
+    .ms-file-load .ms-version-recovery { border:1px solid var(--ms-color-border-default);border-radius:8px;background:var(--ms-color-surface-canvas); }
+    .ms-file-load .ms-version-recovery p { font-size:12px;color:var(--ms-color-text-secondary); }
     .ms-file-load .ms-version-recovery input { box-sizing:border-box;width:100%;min-width:0; }
-    .ms-dialog .ms-button:focus-visible,.ms-dialog summary:focus-visible { outline:2px solid #e30084;outline-offset:2px; }
+    .ms-dialog .ms-button:focus-visible,.ms-dialog summary:focus-visible { outline:2px solid var(--ms-color-action-primary);outline-offset:2px; }
     [data-properties] .ms-timeline-range button[data-delta] { width:30px !important;display:flex;align-items:center;justify-content:center; }
     [data-properties] .ms-month-step input[type="month"] { text-align:center; }
     [data-properties] .ms-month-step input[type="month"]::-webkit-datetime-edit { display:flex;justify-content:center;padding:0; }
     [data-properties] .ms-month-step input[type="month"]::-webkit-datetime-edit-fields-wrapper { padding:0; }
     @media(max-width:480px) { .ms-dialog.ms-file-load .ms-dialog-body { padding:16px;gap:16px; } .ms-dialog.ms-file-load .ms-file-nav .ms-button { font-size:12px;padding:6px 4px; } .ms-dialog.ms-file-load .ms-file-footer { flex-direction:column;align-items:stretch; } .ms-file-footer .ms-primary { align-self:flex-end; } }
     .ms-dialog.ms-versions .ms-version-report { white-space:normal; }
-    .ms-report-summary { padding:18px;border:1px solid #e6c6d8;border-radius:12px;background:#fff7fb;margin:14px 0 24px; }
+    .ms-report-summary { padding:18px;border:1px solid var(--ms-color-border-default);border-radius:12px;background:var(--ms-color-surface-subtle);margin:14px 0 24px; }
     .ms-report-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
-    .ms-report-card { padding:14px;border:1px solid #e4e8ee;border-radius:8px;background:#fff; }
+    .ms-report-card { padding:14px;border:1px solid var(--ms-color-border-default);border-radius:8px;background:#fff; }
     .ms-report-card h4,.ms-report-detail h4 { margin:0 0 8px;font-size:14px; }
-    .ms-report-caption,.ms-report-meta { margin:6px 0 14px;color:#697582;font-size:12px; }
-    .ms-report-detail { padding:16px 0;border-top:1px solid #e4e8ee; }
+    .ms-report-caption,.ms-report-meta { margin:6px 0 14px;color:var(--ms-color-text-muted);font-size:12px; }
+    .ms-report-detail { padding:16px 0;border-top:1px solid var(--ms-color-border-default); }
     .ms-report-card li,.ms-report-detail li { margin:8px 0;line-height:1.75;white-space:pre-wrap; }
     @media(max-width:540px) { .ms-report-grid { grid-template-columns:1fr; } }
     .ms-loading::before { content:'';display:inline-block;width:14px;height:14px;box-sizing:border-box;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:8px;vertical-align:-2px;flex:none;animation:ms-loading-spin .8s linear infinite; }
@@ -174,27 +175,27 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     html:has([data-anim="off"]) .ms-loading::before { animation:none; }
     @media (prefers-reduced-motion:reduce) { .ms-loading::before { animation:none; } }
     @media (max-width:480px) { .ms-dialog.ms-versions .ms-dialog-body { padding:12px 14px; } .ms-dialog.ms-versions header { padding:12px 14px; } .ms-dialog.ms-versions .ms-version-card { flex-wrap:wrap;gap:10px; } .ms-dialog.ms-versions .ms-version-card > .ms-version-info { flex-basis:100%; } .ms-dialog.ms-versions .ms-version-toolbar { flex-wrap:wrap; } }
-    [data-properties] .ms-time-properties { display:flex;flex-direction:column;gap:12px;margin:2px 0;padding:14px 0;border-top:1px solid #e4e8ed;border-bottom:1px solid #e4e8ed; }
+    [data-properties] .ms-time-properties { display:flex;flex-direction:column;gap:12px;margin:2px 0;padding:14px 0;border-top:1px solid var(--ms-color-border-default);border-bottom:1px solid var(--ms-color-border-default); }
     .ms-time-heading { display:flex;align-items:center;justify-content:space-between;gap:12px; }
-    .ms-time-heading > span { font-size:12px;font-weight:650;color:#59636f; }
+    .ms-time-heading > span { font-size:12px;font-weight:650;color:var(--ms-color-text-secondary); }
     [data-properties] .ms-time-heading button[role="switch"]:not(#_) { flex:none;height:28px !important;border-radius:6px !important; }
     .ms-time-help { display:flex;align-items:flex-start;gap:7px; }
     .ms-row-properties > div:first-child > span:last-child { max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-    .ms-property-group { display:flex;flex-direction:column;gap:10px;margin:0;padding:0 0 16px;border-bottom:1px solid #e4e8ed; }
-    .ms-property-group h4 { margin:0;font-size:12px;font-weight:700;color:#59636f; }
+    .ms-property-group { display:flex;flex-direction:column;gap:10px;margin:0;padding:0 0 16px;border-bottom:1px solid var(--ms-color-border-default); }
+    .ms-property-group h4 { margin:0;font-size:12px;font-weight:700;color:var(--ms-color-text-secondary); }
     .ms-row-size-grid { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px; }
     [data-properties] .ms-row-size-grid > div > span { font-size:11px !important; }
-    [data-properties] .ms-property-group > button,.ms-row-management button { border:1px solid #dce0e5;border-radius:6px;background:#fff;font-size:12px;font-weight:600;cursor:pointer; }
+    [data-properties] .ms-property-group > button,.ms-row-management button { border:1px solid var(--ms-color-border-default);border-radius:6px;background:#fff;font-size:12px;font-weight:600;cursor:pointer; }
     .ms-row-management { padding-bottom:0;border-bottom:0; }
-    .ms-row-management > button { margin-top:2px;color:#9f2520; }
+    .ms-row-management > button { margin-top:2px;color:var(--ms-color-status-error); }
     .ms-named-value { display:flex;align-items:baseline;gap:8px;min-width:0;font-size:13px; }
-    .ms-named-value > span { flex:none;font-size:12px;font-weight:600;color:#697582; }
+    .ms-named-value > span { flex:none;font-size:12px;font-weight:600;color:var(--ms-color-text-muted); }
     .ms-named-value > strong { min-width:0;overflow-wrap:anywhere;line-height:1.6; }
     .ms-version-history-heading { display:flex;align-items:center;justify-content:space-between;gap:10px; }
     .ms-version-history-heading > span { flex:none; }
-    [data-properties] .ms-version-compare-button { min-width:0;border:1px solid #dce0e5;background:#fff;font-size:11px !important;font-weight:600;white-space:nowrap;cursor:pointer; }
+    [data-properties] .ms-version-compare-button { min-width:0;border:1px solid var(--ms-color-border-default);background:#fff;font-size:11px !important;font-weight:600;white-space:nowrap;cursor:pointer; }
     .ms-duration { display:block;font-size:10.5px;font-weight:700;line-height:14px;white-space:nowrap; }
-    [data-app] [role="button"][data-id]:focus-visible { outline:3px solid #e30084; outline-offset:3px; }
+    [data-app] [role="button"][data-id]:focus-visible { outline:3px solid var(--ms-color-action-primary); outline-offset:3px; }
     [data-board] { isolation:isolate; }
     .ms-label-editor { display:flex;flex-direction:column;gap:8px; }
     .ms-text-toolbar,.ms-text-format { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
@@ -206,40 +207,40 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     @media print { .ms-link-drag-overlay { display:none !important; } }
     [data-app][data-focus="true"] > [data-toolbar], [data-app][data-focus="true"] [data-properties], [data-app][data-focus="true"] [data-noprint] { display:none !important; }
     [data-app][data-focus="true"] { position:fixed; inset:0; z-index:500; height:100dvh !important; }
-    .ms-button { height:32px; padding:0 11px; border:1px solid #dce0e5; border-radius:4px; background:#fff; font-size:13px; font-weight:600; cursor:pointer; }
+    .ms-button { height:32px; padding:0 11px; border:1px solid var(--ms-color-border-default); border-radius:4px; background:#fff; font-size:13px; font-weight:600; cursor:pointer; }
     .ms-toolbar-row { display:flex;flex-wrap:nowrap;min-width:0;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--color-border-neutral-1);border-radius:8px;background:var(--color-bg-neutral-1); }
     .ms-toolbar-group { display:inline-flex;align-items:center;gap:6px; }
-    .ms-link-target { outline:3px solid #e30084;outline-offset:3px;z-index:25; }
+    .ms-link-target { outline:3px solid var(--ms-color-action-primary);outline-offset:3px;z-index:25; }
     .ms-toolbar-label { flex:none;padding:3px 8px;border:1px solid var(--color-border-neutral-2);border-radius:9999px;background:var(--color-magenta-50);font-size:11px;font-weight:700;color:var(--color-text-neutral-4);letter-spacing:.02em; }
-    .ms-accent { border-color:#e30084 !important;color:#c2006f !important;background:#fff !important;box-shadow:0 0 0 3px rgba(227,0,132,.08); }
-    .ms-accent:hover { background:#fff5fa !important; }
-    .ms-review-panel { position:fixed;left:16px;bottom:16px;z-index:300;width:min(400px,calc(100vw - 32px));max-height:min(56vh,520px);display:flex;flex-direction:column;border:1px solid #dce0e5;border-radius:14px;background:#fff;box-shadow:0 12px 40px rgba(15,23,42,.18);overflow:hidden; }
-    .ms-review-panel header { display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #eef1f4;font-size:13.5px; }
-    [data-app] input[data-comparing="true"] { color:#5b3fd1 !important; background:#f3efff !important; border-color:#d9ccff !important; }
-    .ms-cmp-badge { flex:none;padding:3px 10px;border-radius:9999px;background:#5b3fd1;color:#fff;font-size:12px;font-weight:750;letter-spacing:.02em; }
-    .ms-cmp-end { flex:none;height:30px;padding:0 12px;border:1px solid #5b3fd1;border-radius:7px;background:#fff;color:#5b3fd1;font-size:13px;font-weight:700;cursor:pointer; } .ms-cmp-end:hover { background:#f3efff; }
+    .ms-accent { border-color:var(--ms-color-action-primary) !important;color:var(--ms-color-action-primary) !important;background:#fff !important;box-shadow:0 0 0 3px rgba(53,104,197,.08); }
+    .ms-accent:hover { background:var(--ms-color-surface-subtle) !important; }
+    .ms-review-panel { position:fixed;left:16px;bottom:16px;z-index:300;width:min(400px,calc(100vw - 32px));max-height:min(56vh,520px);display:flex;flex-direction:column;border:1px solid var(--ms-color-border-default);border-radius:14px;background:#fff;box-shadow:0 12px 40px rgba(15,23,42,.18);overflow:hidden; }
+    .ms-review-panel header { display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--ms-color-surface-subtle);font-size:13.5px; }
+    [data-app] input[data-comparing="true"] { color:var(--ms-color-action-primary) !important; background:var(--ms-color-surface-selected) !important; border-color:var(--ms-color-border-strong) !important; }
+    .ms-cmp-badge { flex:none;padding:3px 10px;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:750;letter-spacing:.02em; }
+    .ms-cmp-end { flex:none;height:30px;padding:0 12px;border:1px solid var(--ms-color-action-primary);border-radius:7px;background:#fff;color:var(--ms-color-action-primary);font-size:13px;font-weight:700;cursor:pointer; } .ms-cmp-end:hover { background:var(--ms-color-surface-selected); }
     .ms-review-tools { padding:8px 14px 2px; }
-    .ms-review-switch { display:inline-flex;align-items:center;gap:9px;height:28px;padding:0;border:0;background:transparent;font-size:12.5px;font-weight:700;color:#3b4044;cursor:pointer; }
-    .ms-review-knob { position:relative;width:34px;height:20px;border-radius:9999px;background:#c5cdd6;transition:background .15s; } .ms-review-knob::after { content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:9999px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s; }
-    .ms-review-switch[aria-checked="true"] .ms-review-knob { background:#5b3fd1; } .ms-review-switch[aria-checked="true"] .ms-review-knob::after { transform:translateX(14px); }
-    .ms-review-fab { position:fixed;left:16px;bottom:16px;z-index:300;height:36px;padding:0 14px;border:1px solid #5b3fd1;border-radius:9999px;background:#fff;color:#5b3fd1;font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(15,23,42,.16);cursor:pointer; } .ms-review-fab b { margin-left:6px;padding:1px 8px;border-radius:9999px;background:#5b3fd1;color:#fff;font-size:12px; }
-    .ms-rv-head { display:flex;align-items:center;gap:7px;flex-wrap:wrap; } .ms-rv-head strong { font-size:13px;font-weight:750;color:#181a1b;overflow-wrap:anywhere; }
+    .ms-review-switch { display:inline-flex;align-items:center;gap:9px;height:28px;padding:0;border:0;background:transparent;font-size:12.5px;font-weight:700;color:var(--ms-color-text-primary);cursor:pointer; }
+    .ms-review-knob { position:relative;width:34px;height:20px;border-radius:9999px;background:var(--ms-color-border-strong);transition:background .15s; } .ms-review-knob::after { content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:9999px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s; }
+    .ms-review-switch[aria-checked="true"] .ms-review-knob { background:var(--ms-color-action-primary); } .ms-review-switch[aria-checked="true"] .ms-review-knob::after { transform:translateX(14px); }
+    .ms-review-fab { position:fixed;left:16px;bottom:16px;z-index:300;height:36px;padding:0 14px;border:1px solid var(--ms-color-action-primary);border-radius:9999px;background:#fff;color:var(--ms-color-action-primary);font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(15,23,42,.16);cursor:pointer; } .ms-review-fab b { margin-left:6px;padding:1px 8px;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff;font-size:12px; }
+    .ms-rv-head { display:flex;align-items:center;gap:7px;flex-wrap:wrap; } .ms-rv-head strong { font-size:13px;font-weight:750;color:var(--ms-color-text-primary);overflow-wrap:anywhere; }
     .ms-review-panel li em { font-style:normal; }
-    .ms-rv-lines { display:grid;grid-template-columns:max-content 1fr;gap:3px 10px;margin:6px 0 0;font-size:12px;line-height:1.5; } .ms-rv-lines dt { font-weight:700;color:#8a95a1; } .ms-rv-lines dd { margin:0;overflow-wrap:anywhere;color:#3b4044; } .ms-rv-lines s { color:#98a2ad;text-decoration-color:#c5cdd6; } .ms-rv-lines i { color:#c5cdd6;font-style:normal; } .ms-rv-lines strong { color:#181a1b; }
-    .ms-readonly-bar { flex:none;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#fff5d9;border-bottom:1px solid #e7c75f;text-align:center;font-size:13px;font-weight:700;color:#5b4300; }
-    .ms-readonly-edit { height:28px;padding:0 12px;border:1px solid #5b4300;border-radius:7px;background:#fff;color:#5b4300;font-size:12.5px;font-weight:700;cursor:pointer; } .ms-readonly-edit:hover { background:#5b4300;color:#fff; }
-    .ms-review-count { padding:1px 8px;border-radius:9999px;background:#f3f5f6;font-size:12px;font-weight:700; }
-    .ms-review-x { margin-left:auto;width:26px;height:26px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#66707a; } .ms-review-x:hover { background:#f3f5f6; }
+    .ms-rv-lines { display:grid;grid-template-columns:max-content 1fr;gap:3px 10px;margin:6px 0 0;font-size:12px;line-height:1.5; } .ms-rv-lines dt { font-weight:700;color:var(--ms-color-text-muted); } .ms-rv-lines dd { margin:0;overflow-wrap:anywhere;color:var(--ms-color-text-primary); } .ms-rv-lines s { color:var(--ms-color-text-disabled);text-decoration-color:var(--ms-color-border-strong); } .ms-rv-lines i { color:var(--ms-color-border-strong);font-style:normal; } .ms-rv-lines strong { color:var(--ms-color-text-primary); }
+    .ms-readonly-bar { flex:none;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:var(--ms-color-status-warning-bg);border-bottom:1px solid var(--ms-color-border-strong);text-align:center;font-size:13px;font-weight:700;color:var(--ms-color-status-warning); }
+    .ms-readonly-edit { height:28px;padding:0 12px;border:1px solid var(--ms-color-status-warning);border-radius:7px;background:#fff;color:var(--ms-color-status-warning);font-size:12.5px;font-weight:700;cursor:pointer; } .ms-readonly-edit:hover { background:var(--ms-color-status-warning);color:#fff; }
+    .ms-review-count { padding:1px 8px;border-radius:9999px;background:var(--ms-color-surface-subtle);font-size:12px;font-weight:700; }
+    .ms-review-x { margin-left:auto;width:26px;height:26px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:var(--ms-color-text-muted); } .ms-review-x:hover { background:var(--ms-color-surface-subtle); }
     .ms-review-panel ol { list-style:none;margin:0;padding:6px;overflow:auto;display:flex;flex-direction:column;gap:2px; }
-    .ms-review-panel li button { width:100%;display:flex;flex-direction:column;gap:2px;align-items:stretch;text-align:left;padding:8px 9px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-size:12.5px;line-height:1.55;color:#2b3036; }
-    .ms-review-panel li button:hover, .ms-review-panel li button[aria-current="true"] { background:#fff0f7; }
+    .ms-review-panel li button { width:100%;display:flex;flex-direction:column;gap:2px;align-items:stretch;text-align:left;padding:8px 9px;border:0;border-radius:8px;background:transparent;cursor:pointer;font-size:12.5px;line-height:1.55;color:var(--ms-color-text-primary); }
+    .ms-review-panel li button:hover, .ms-review-panel li button[aria-current="true"] { background:var(--ms-color-surface-selected); }
     .ms-review-panel li b { flex:none;margin-top:2px;padding:1px 8px;border-radius:9999px;color:#fff;font-size:11px; }
-    .ms-review-panel li em { font-style:normal;font-weight:700;color:#66707a; }
-    .ms-review-panel footer { padding:8px 10px;border-top:1px solid #eef1f4; } .ms-review-panel footer button { width:100%;height:32px;border:1px solid #dce0e5;border-radius:8px;background:#fff;font-weight:600;font-size:12.5px;cursor:pointer; }
+    .ms-review-panel li em { font-style:normal;font-weight:700;color:var(--ms-color-text-muted); }
+    .ms-review-panel footer { padding:8px 10px;border-top:1px solid var(--ms-color-surface-subtle); } .ms-review-panel footer button { width:100%;height:32px;border:1px solid var(--ms-color-border-default);border-radius:8px;background:#fff;font-weight:600;font-size:12.5px;cursor:pointer; }
     @media print { .ms-review-panel { display:none !important; } }
     .ms-focus-exit { position:fixed;top:16px;right:16px;z-index:600;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 18px;border:0;border-radius:9999px;background:rgba(24,26,27,.88);color:#fff;font:600 14px/1 inherit;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer;backdrop-filter:blur(6px); }
-    .ms-focus-exit:hover { background:#181a1b; }
-    .ms-focus-exit kbd { font:700 12px ui-monospace,monospace;padding:4px 8px;border-radius:9999px;background:#e30084;color:#fff; }
+    .ms-focus-exit:hover { background:var(--ms-color-text-primary); }
+    .ms-focus-exit kbd { font:700 12px ui-monospace,monospace;padding:4px 8px;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff; }
     [data-app][data-anim="on"] .ms-focus-exit { animation:ms-pop .22s cubic-bezier(.2,.8,.2,1); }
     @media print { .ms-focus-exit { display:none !important; } }
     /* one-row toolbar: fitToolbar() adds c1..c4 in order while the row still overflows */
@@ -259,10 +260,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-icon-button { width:32px;padding:0 !important;justify-content:center; }
     .ms-tool-menu > summary { display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 9px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer;list-style:none;white-space:nowrap; }
     .ms-tool-menu > summary::-webkit-details-marker { display:none; }
-    .ms-tool-menu[open] > summary { border-color:#181a1b; }
+    .ms-tool-menu[open] > summary { border-color:var(--ms-color-text-primary); }
     .ms-tool-popover { position:absolute;right:0;top:calc(100% + 4px);z-index:220;display:flex;width:max-content;max-width:calc(100vw - 24px);flex-direction:column;gap:1px;padding:3px;border:1px solid var(--color-border-neutral-2);border-radius:8px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.16); }
     .ms-tool-popover .ms-tool-button { width:100%;justify-content:flex-start;border-color:transparent; }
-    @media (max-width:700px) { [data-properties] { position:fixed;left:0;right:0;bottom:0;z-index:200;width:100% !important;max-height:35dvh;border-left:0 !important;border-top:1px solid #dce0e5;border-radius:12px 12px 0 0;box-shadow:0 -8px 24px #0002; } [data-properties] .ms-panel-close { display:block;flex:none;min-width:44px;height:44px !important;min-height:44px;font-size:20px !important;border:0;background:#fff;cursor:pointer; } [data-toolbar] { padding:8px !important;max-height:44dvh;overflow-y:auto; } [data-toolbar] > div:first-child { flex-wrap:wrap; } [data-toolbar] > div:first-child > input { order:5;flex-basis:100% !important;margin-left:0 !important; } [data-toolbar] button, .ms-tool-menu > summary { min-height:44px; } .ms-toolbar-group { flex-wrap:wrap; } .ms-tool-menu[open] { flex-basis:100%; } .ms-tool-popover { position:static;margin-top:6px; } }
+    @media (max-width:700px) { [data-properties] { position:fixed;left:0;right:0;bottom:0;z-index:200;width:100% !important;max-height:35dvh;border-left:0 !important;border-top:1px solid var(--ms-color-border-default);border-radius:12px 12px 0 0;box-shadow:0 -8px 24px #0002; } [data-properties] .ms-panel-close { display:block;flex:none;min-width:44px;height:44px !important;min-height:44px;font-size:20px !important;border:0;background:#fff;cursor:pointer; } [data-toolbar] { padding:8px !important;max-height:44dvh;overflow-y:auto; } [data-toolbar] > div:first-child { flex-wrap:wrap; } [data-toolbar] > div:first-child > input { order:5;flex-basis:100% !important;margin-left:0 !important; } [data-toolbar] button, .ms-tool-menu > summary { min-height:44px; } .ms-toolbar-group { flex-wrap:wrap; } .ms-tool-menu[open] { flex-basis:100%; } .ms-tool-popover { position:static;margin-top:6px; } }
     @media (max-width:700px) { .ms-toolbar-row { flex-wrap:wrap; } [data-app]:has([data-properties]) [data-board] { scroll-padding-bottom:calc(35dvh + 8px); } }
     @media print {
       [data-noprint] { display: none !important; }
@@ -271,10 +272,11 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       @page { size: A3 landscape; margin: 8mm; }
     }
   </style>
+  <link rel="stylesheet" href="assets/design-system/product.css">
 </helmet>
 
 <div data-app="" data-anim="{{ animAttr }}" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
-  <sc-if value="{{ marquee }}"><div data-noprint="" style="position:fixed;left:{{ marquee.left }};top:{{ marquee.top }};width:{{ marquee.width }};height:{{ marquee.height }};border:1px solid #e30084;background:rgba(227,0,132,.08);pointer-events:none;z-index:1400"></div></sc-if>
+  <sc-if value="{{ marquee }}"><div data-noprint="" style="position:fixed;left:{{ marquee.left }};top:{{ marquee.top }};width:{{ marquee.width }};height:{{ marquee.height }};border:1px solid var(--ms-color-action-primary);background:rgba(53,104,197,.08);pointer-events:none;z-index:1400"></div></sc-if>
   <sc-if value="{{ focusMode }}" hint-placeholder-val="{{ false }}"><button class="ms-focus-exit" onClick="{{ toggleFocus }}" aria-label="{{ L.focusExit }} : ESC">{{ L.focusExit }} :<kbd>ESC</kbd></button></sc-if>
   <sc-if value="{{ reviewShown }}" hint-placeholder-val="{{ false }}">
     <aside data-noprint="" class="ms-review-panel" role="complementary" aria-label="{{ L_reviewTitle }}">
@@ -305,8 +307,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
     <div style="display:flex;align-items:center;gap:10px">
-      <button onClick="{{ openRel }}" title="{{ L.relTitle }}" style="flex:none;padding:5px 15px 5px 8px;display:inline-flex;align-items:center;gap:8px;border:none;border-radius:9999px;background:#181a1b;font-size:14px;font-weight:700;color:#fff;letter-spacing:.01em;cursor:pointer" aria-label="MapStone {{ appVer }}"><svg width="22" height="22" viewBox="0 0 512 512" aria-hidden="true" style="flex:none;display:block"><rect x="0" y="0" width="512" height="512" rx="116" fill="#181A1B"></rect><rect x="112" y="136" width="176" height="56" rx="28" fill="#FFFFFF"></rect><rect x="184" y="228" width="216" height="56" rx="28" fill="#E30084"></rect><rect x="112" y="320" width="104" height="56" rx="28" fill="#FFFFFF"></rect><path d="M296 320l28 28-28 28-28-28z" fill="#FFFFFF"></path><rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="1" vector-effect="non-scaling-stroke"></rect></svg>MapStone {{ appVer }}</button>
-      <span style="flex:none;padding:3px 8px;border-radius:9999px;background:var(--color-bg-neutral-2);font-size:12px;font-weight:700;color:var(--color-text-neutral-4)">{{ verLabel }}</span><sc-if value="{{ comparing }}" hint-placeholder-val="{{ false }}"><span class="ms-cmp-badge">비교 중</span></sc-if><input data-comparing="{{ comparing }}" value="{{ title }}" onChange="{{ onTitle }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" aria-label="{{ L.titleF }}" style="flex:1;min-width:0;border:1px solid transparent;border-radius:6px;padding:4px 8px;margin-left:-8px;font-size:20px;font-weight:700;color:var(--color-text-neutral-6);background:transparent;outline:none" style-hover="border-color:var(--color-border-neutral-2)" style-focus="border-color:#000"><sc-if value="{{ comparing }}" hint-placeholder-val="{{ false }}"><button type="button" class="ms-cmp-end" onClick="{{ endComparison }}">비교 끝내기</button></sc-if>
+      <button onClick="{{ openRel }}" title="{{ L.relTitle }}" style="flex:none;padding:5px 15px 5px 8px;display:inline-flex;align-items:center;gap:8px;border:none;border-radius:9999px;background:var(--ms-color-action-primary);font-size:14px;font-weight:700;color:#fff;letter-spacing:.01em;cursor:pointer" aria-label="MapStone {{ appVer }}"><svg width="22" height="22" viewBox="0 0 512 512" aria-hidden="true" style="flex:none;display:block"><rect x="0" y="0" width="512" height="512" rx="116" fill="#181A1B"></rect><rect x="112" y="136" width="176" height="56" rx="28" fill="#FFFFFF"></rect><rect x="184" y="228" width="216" height="56" rx="28" fill="#E30084"></rect><rect x="112" y="320" width="104" height="56" rx="28" fill="#FFFFFF"></rect><path d="M296 320l28 28-28 28-28-28z" fill="#FFFFFF"></path><rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="1" vector-effect="non-scaling-stroke"></rect></svg>MapStone {{ appVer }}</button>
+      <span style="flex:none;padding:3px 8px;border-radius:9999px;background:var(--color-bg-neutral-2);font-size:12px;font-weight:700;color:var(--color-text-neutral-4)">{{ verLabel }}</span><sc-if value="{{ comparing }}" hint-placeholder-val="{{ false }}"><span class="ms-cmp-badge">비교 중</span></sc-if><input data-comparing="{{ comparing }}" value="{{ title }}" onChange="{{ onTitle }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" aria-label="{{ L.titleF }}" style="flex:1;min-width:0;border:1px solid transparent;border-radius:6px;padding:4px 8px;margin-left:-8px;font-size:20px;font-weight:700;color:var(--color-text-neutral-6);background:transparent;outline:none" style-hover="border-color:var(--color-border-neutral-2)" style-focus="border-color:var(--ms-color-action-primary)"><sc-if value="{{ comparing }}" hint-placeholder-val="{{ false }}"><button type="button" class="ms-cmp-end" onClick="{{ endComparison }}">비교 끝내기</button></sc-if>
       
       <span style="flex:none;font-size:12px;font-weight:500;color:var(--color-text-neutral-3)">{{ savedLabel }}</span>
       <button class="ms-tool-button" onClick="{{ openHelp }}" title="{{ L.helpTip }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.6 9.4a2.5 2.5 0 114.3 1.8c-1 .8-1.9 1.2-1.9 2.4M12 16.6h.01"></path></svg>{{ L.helpT }}</button>
@@ -349,7 +351,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       <div class="ms-toolbar-group">
         <span class="ms-toolbar-label">{{ L.screenG }}</span>
         <span class="ms-zoom-word" style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.zoom }}</span>
-        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:#e30084">
+        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:var(--ms-color-action-primary)">
         <span style="min-width:42px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-4)">{{ zoomPct }}</span>
         <button class="ms-tool-button ms-icon-button" onClick="{{ fitWidth }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }} · Shift+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l3-3M4 12l3 3M20 12l-3-3M20 12l-3 3"></path></svg></button>
         <button class="ms-tool-button ms-icon-button" onClick="{{ toggleFocus }}" aria-label="{{ L.full }}" data-tip="{{ L.full }} · F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
@@ -390,18 +392,18 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <textarea rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};line-height:1.35;text-align:center;letter-spacing:-.01em;white-space:pre-wrap;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ k.showDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
+                  <div style="font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};line-height:1.35;text-align:center;letter-spacing:-.01em;white-space:pre-wrap;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ k.showDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:var(--ms-color-text-muted)">{{ k.dateLabel }}</span></sc-if></div>
                 </sc-if>
                 <div style="position:absolute;left:50%;top:100%;width:0;height:{{ k.stemH }};border-left:2px solid {{ k.color }};pointer-events:none"></div>
                 <div style="position:absolute;left:50%;top:100%;margin-left:-3px;margin-top:{{ k.stemH }};width:6px;height:6px;border-radius:9999px;background:{{ k.color }};pointer-events:none"></div>
                 <sc-if value="{{ k.sel }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:8px;pointer-events:none"></div>
+                  <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid var(--ms-color-action-primary);border-radius:8px;pointer-events:none"></div>
                 </sc-if>
               </div>
             </sc-for>
           </div>
 
-          <div data-time-header="" style="display:flex;align-items:stretch;position:sticky;top:0;z-index:6100;background:#fff">
+          <div data-time-header="" style="display:flex;align-items:stretch;position:sticky;top:0;z-index:12500;background:var(--ms-color-brand-navy)">
             <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700">{{ L.category }}</div>
             <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
 <sc-for list="{{ subdivisions }}" as="q"><span style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
@@ -427,7 +429,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     </div>
                   </sc-if>
                   <sc-if value="{{ editable }}">
-                    <button class="ms-row-grip" data-id="{{ row.id }}" onPointerDown="{{ onRowMoveDown }}" aria-label="{{ rowMoveTip }}" title="{{ rowMoveTip }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);width:22px;height:32px;padding:0;border:0;background:transparent;color:#66707a;cursor:grab;font-size:18px;touch-action:none">⠿</button>
+                    <button class="ms-row-grip" data-id="{{ row.id }}" onPointerDown="{{ onRowMoveDown }}" aria-label="{{ rowMoveTip }}" title="{{ rowMoveTip }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);width:22px;height:32px;padding:0;border:0;background:transparent;color:var(--ms-color-text-muted);cursor:grab;font-size:18px;touch-action:none">⠿</button>
                     <div class="ms-row-add" data-noprint="" style="position:absolute;left:0;right:0;bottom:-10px;height:20px;z-index:2;display:flex;justify-content:center">
                       <button data-id="{{ row.id }}" onClick="{{ addRow }}" aria-label="{{ L.rowAdd }}" title="{{ L.rowAdd }}" data-tip="{{ L.rowAdd }}" style="width:28px;height:20px;border:1px solid #cbd0d4;border-radius:10px;background:#fff;color:#59636c;cursor:pointer">+</button>
                     </div>
@@ -442,7 +444,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
                   <sc-for list="{{ row.chevs }}" as="b" hint-placeholder-count="4">
                     <div data-id="{{ b.id }}" role="button" tabindex="0" aria-label="{{ b.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ b.zIndex }};cursor:grab;left:{{ b.left }};width:{{ b.width }};top:{{ b.top }};height:{{ b.height }};transition:{{ b.trans }}">
-                      <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ b.dateLabel }}</span></sc-if>
+                      <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:var(--ms-color-text-primary);background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ b.dateLabel }}</span></sc-if>
                       <div style="position:absolute;left:0;top:0;right:0;bottom:0;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);background:{{ b.bg }}"></div>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
                         <textarea rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);min-width:60px;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};background:#fff;outline:none;resize:none;z-index:3"></textarea>
@@ -455,37 +457,37 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       </sc-if>
                       <sc-if value="{{ b.outRight }}" hint-placeholder-val="{{ false }}">
                         <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span></sc-if>
-                        <div style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:var(--ms-color-text-primary);cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.outLeft }}" hint-placeholder-val="{{ false }}">
                         <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;right:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span></sc-if>
-                        <div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:var(--ms-color-text-primary);cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.outStrip }}" hint-placeholder-val="{{ false }}">
                         <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:5px;width:0;border-left:1px dashed var(--color-border-neutral-3);pointer-events:none;top:{{ b.connTop }};height:{{ b.connH }}"></div></sc-if>
                       </sc-if>
                       <sc-if value="{{ b.outStrip }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:0;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6;top:{{ b.stripTop }}" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;left:0;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:var(--ms-color-text-primary);cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6;top:{{ b.stripTop }}" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:6px;pointer-events:none"></div>
+                        <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid var(--ms-color-action-primary);border-radius:6px;pointer-events:none"></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
-                        <div data-id="{{ b.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ b.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
-                        <div data-id="{{ b.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ b.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}">
-                        <div data-id="{{ b.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="작업 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:#e30084;cursor:ns-resize;z-index:14"></div>
-                        <div data-id="{{ b.id }}" data-resize="" data-mode="bottom" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="작업 아래쪽 높이 조절" role="button" style="position:absolute;bottom:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:#e30084;cursor:ns-resize;z-index:14"></div>
+                        <div data-id="{{ b.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="작업 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
+                        <div data-id="{{ b.id }}" data-resize="" data-mode="bottom" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="작업 아래쪽 높이 조절" role="button" style="position:absolute;bottom:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
                       </sc-if>
                     </div>
                   </sc-for>
 
                   <sc-for list="{{ row.plains }}" as="p" hint-placeholder-count="1">
                     <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
-                      <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ p.dateLabel }}</span></sc-if>
+                      <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:var(--ms-color-text-primary);background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ p.dateLabel }}</span></sc-if>
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
                         <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
                       </sc-if>
@@ -494,13 +496,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       </sc-if>
                       <div style="position:absolute;right:6px;bottom:2px;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ p.durFg }}">{{ p.dur }}</div>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:8px;pointer-events:none"></div>
+                        <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid var(--ms-color-action-primary);border-radius:8px;pointer-events:none"></div>
                       </sc-if>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
-                        <div data-id="{{ p.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" aria-label="참고 시작 조절" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
-                        <div data-id="{{ p.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
-                        <div data-id="{{ p.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:#e30084;cursor:ns-resize;z-index:14"></div>
-                        <div data-id="{{ p.id }}" data-resize="" data-mode="bottom" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 아래쪽 높이 조절" role="button" style="position:absolute;bottom:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:#e30084;cursor:ns-resize;z-index:14"></div>
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" aria-label="참고 시작 조절" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="bottom" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 아래쪽 높이 조절" role="button" style="position:absolute;bottom:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -514,7 +516,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ f.show }}">
-                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
+                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:var(--ms-color-text-muted)">{{ f.dateLabel }}</span></sc-if></div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -523,11 +525,11 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </sc-for>
 
             <sc-for list="{{ dragGuides }}" as="g">
-              <div data-drag-date="" data-noprint="" style="position:absolute;top:0;bottom:0;left:{{ g.left }};border-left:1px dashed #e30084;pointer-events:none;z-index:119"><span style="position:absolute;top:{{ g.top }};left:0;transform:translateX(-50%);white-space:nowrap;padding:4px 7px;border-radius:4px;background:#181a1b;color:#fff;font-size:12px;font-weight:700">{{ g.date }}</span></div>
+              <div data-drag-date="" data-noprint="" style="position:absolute;top:0;bottom:0;left:{{ g.left }};border-left:1px dashed var(--ms-color-action-primary);pointer-events:none;z-index:119"><span style="position:absolute;top:{{ g.top }};left:0;transform:translateX(-50%);white-space:nowrap;padding:4px 7px;border-radius:4px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700">{{ g.date }}</span></div>
             </sc-for>
             <sc-for list="{{ bandsView }}" as="d" hint-placeholder-count="2">
               <div data-id="{{ d.id }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
-                <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ d.dateLabel }}</span></sc-if>
+                <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:var(--ms-color-text-primary);background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ d.dateLabel }}</span></sc-if>
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
                   <textarea rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};outline:none;resize:none"></textarea>
                 </sc-if>
@@ -536,13 +538,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </sc-if>
                 <div style="position:absolute;left:0;right:0;bottom:3px;text-align:center;white-space:nowrap;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ d.durFg }}">{{ d.dur }}</div>
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:6px;pointer-events:none"></div>
+                  <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid var(--ms-color-action-primary);border-radius:6px;pointer-events:none"></div>
                 </sc-if>
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
-                  <div data-id="{{ d.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
-                  <div data-id="{{ d.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ew-resize;z-index:14"></div>
-                  <div data-id="{{ d.id }}" data-resize="" data-mode="btop" onPointerDown="{{ onItemDown }}" style="position:absolute;top:-4px;left:50%;margin-left:-12px;width:24px;height:8px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ns-resize;z-index:14"></div>
-                  <div data-id="{{ d.id }}" data-resize="" data-mode="bbot" onPointerDown="{{ onItemDown }}" style="position:absolute;bottom:-4px;left:50%;margin-left:-12px;width:24px;height:8px;border-radius:3px;background:rgba(227,0,132,.45);cursor:ns-resize;z-index:14"></div>
+                  <div data-id="{{ d.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                  <div data-id="{{ d.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                  <div data-id="{{ d.id }}" data-resize="" data-mode="btop" onPointerDown="{{ onItemDown }}" style="position:absolute;top:-4px;left:50%;margin-left:-12px;width:24px;height:8px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ns-resize;z-index:14"></div>
+                  <div data-id="{{ d.id }}" data-resize="" data-mode="bbot" onPointerDown="{{ onItemDown }}" style="position:absolute;bottom:-4px;left:50%;margin-left:-12px;width:24px;height:8px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ns-resize;z-index:14"></div>
                 </sc-if>
               </div>
             </sc-for>
@@ -551,8 +553,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ imagesView }}" as="im">
             <div data-id="{{ im.id }}" role="button" tabindex="0" aria-label="{{ im.label }}" onKeyDown="{{ onItemKey }}" data-sticky="" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ im.zIndex }};left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
               <img data-ms-src="{{ im.src }}" alt="{{ im.label }}" draggable="false" style="width:100%;height:100%;object-fit:contain;pointer-events:none">
-              <div style="position:absolute;top:100%;left:0;max-width:100%;font-size:{{ im.labelSize }};font-weight:{{ im.labelWeight }};text-decoration:{{ im.labelDecoration }};white-space:pre-wrap;background:#fff;color:#181a1b;padding:2px 5px;border-radius:4px">{{ im.label }}</div>
-              <sc-if value="{{ im.sel }}"><div data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(227,0,132,.45);cursor:nwse-resize"></div></sc-if>
+              <div style="position:absolute;top:100%;left:0;max-width:100%;font-size:{{ im.labelSize }};font-weight:{{ im.labelWeight }};text-decoration:{{ im.labelDecoration }};white-space:pre-wrap;background:#fff;color:var(--ms-color-text-primary);padding:2px 5px;border-radius:4px">{{ im.label }}</div>
+              <sc-if value="{{ im.sel }}"><div data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(53,104,197,.45);cursor:nwse-resize"></div></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
@@ -564,10 +566,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <div style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
               </sc-if>
               <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
-                <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:4px;pointer-events:none"></div>
+                <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid var(--ms-color-action-primary);border-radius:4px;pointer-events:none"></div>
               </sc-if>
               <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
-                <div data-id="{{ p.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:3px;background:rgba(227,0,132,.45);cursor:nwse-resize;z-index:42"></div>
+                <div data-id="{{ p.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:3px;background:rgba(53,104,197,.45);cursor:nwse-resize;z-index:42"></div>
               </sc-if>
             </div>
           </sc-for>
@@ -578,13 +580,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
 
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div style="position:absolute;bottom:0;width:2px;background:#e30084;pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
+            <div style="position:absolute;bottom:0;width:2px;background:var(--ms-color-action-primary);pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff;font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:-2px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:#e30084;color:#fff;font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:-2px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff;font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
         </div>
 
@@ -605,7 +607,6 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <button data-tab="prop" onClick="{{ onTab }}" style="flex:1;height:44px;border:none;background:transparent;font-size:13px;font-weight:700;cursor:pointer;color:{{ tabPropFg }};box-shadow:inset 0 -2px 0 {{ tabPropBar }}">{{ L.tabProp }}</button>
           <button data-tab="set" onClick="{{ onTab }}" style="flex:1;height:44px;border:none;background:transparent;font-size:13px;font-weight:700;cursor:pointer;color:{{ tabSetFg }};box-shadow:inset 0 -2px 0 {{ tabSetBar }}">{{ L.tabSet }}</button>
           <button data-tab="ver" onClick="{{ onTab }}" style="flex:1;height:44px;border:none;background:transparent;font-size:13px;font-weight:700;cursor:pointer;color:{{ tabVerFg }};box-shadow:inset 0 -2px 0 {{ tabVerBar }}">{{ L.tabVer }} {{ verCount }}</button>
-          <button class="ms-panel-close" type="button" onClick="{{ togglePanel }}" aria-label="{{ L.panelClose }}">×</button>
         </div>
 
         <sc-if value="{{ showProp }}" hint-placeholder-val="{{ true }}">
@@ -618,13 +619,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <button onClick="{{ deleteSel }}" style="height:30px;padding:0 10px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:600;color:#7c1712;cursor:pointer">{{ L.del }}</button>
                 </div>
                 <div class="ms-label-editor">
-                  <textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" aria-label="{{ L.labelF }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" aria-label="{{ L.labelF }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:var(--ms-color-action-primary)"></textarea>
                   <div class="ms-text-toolbar">
                     <sc-if value="{{ selHasText }}" hint-placeholder-val="{{ false }}">
                       <span class="ms-fontsize" style="display:inline-flex;align-items:center;gap:2px">
-                        <button type="button" data-delta="-1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelSmaller }}" data-tip="{{ L.labelSmaller }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:11px;font-weight:700;cursor:pointer">A−</button>
+                        <button type="button" data-delta="-1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelSmaller }}" data-tip="{{ L.labelSmaller }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:11px;font-weight:700;cursor:pointer"><span class="ms-font-small" aria-hidden="true">A</span></button>
                         <span style="min-width:34px;text-align:center;font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-5)">{{ selLabelSize }}</span>
-                        <button type="button" data-delta="1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelBigger }}" data-tip="{{ L.labelBigger }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:13px;font-weight:700;cursor:pointer">A+</button>
+                        <button type="button" data-delta="1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelBigger }}" data-tip="{{ L.labelBigger }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:13px;font-weight:700;cursor:pointer"><span class="ms-font-large" aria-hidden="true">A</span></button>
                       </span>
                     </sc-if>
                 <sc-if value="{{ selCanFormat }}"><div class="ms-text-format"><button type="button" data-format="labelBold" onClick="{{ onLabelFormat }}" aria-label="글씨 굵게" aria-pressed="{{ selBold }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selBoldBg }};color:{{ selBoldFg }};font-weight:700;cursor:pointer">B · 굵게</button><button type="button" data-format="labelStrike" onClick="{{ onLabelFormat }}" aria-label="취소선" aria-pressed="{{ selStrike }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selStrikeBg }};color:{{ selStrikeFg }};text-decoration:line-through;cursor:pointer">S · 취소선</button></div></sc-if>
@@ -633,7 +634,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button class="ms-memo-clear" onClick="{{ clearMemo }}" aria-label="{{ L.memoDel }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"></path></svg></button></span>
-                  <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" placeholder="{{ L.phMemo }}" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" placeholder="{{ L.phMemo }}" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:var(--ms-color-action-primary)"></textarea>
                 </label>
                 </sc-if>
                 <sc-if value="{{ selIsSticky }}" hint-placeholder-val="{{ false }}">
@@ -730,7 +731,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <section class="ms-property-group"><h4>{{ L.rowBasic }}</h4>
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowName }}</span>
-                  <input value="{{ rowPropName }}" data-id="{{ focusRowId }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 10px;font-size:13px;font-weight:600;outline:none" style-focus="border-color:#000">
+                  <input value="{{ rowPropName }}" data-id="{{ focusRowId }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 10px;font-size:13px;font-weight:600;outline:none" style-focus="border-color:var(--ms-color-action-primary)">
                 </label></section>
                 <section class="ms-property-group"><h4>{{ L.rowSize }}</h4>
                 <div class="ms-row-size-grid">
@@ -773,14 +774,14 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </section>
               </div>
             </sc-if>
-            <sc-if value="{{ noSelection }}"><span style="font-size:13px;color:var(--color-text-neutral-3)">{{ L.noSel }}</span></sc-if>
+            <sc-if value="{{ noSelection }}"><span class="ms-empty-selection" style="font-size:13px;color:var(--color-text-neutral-3)">{{ L.noSel }}</span></sc-if>
           </div>
         </sc-if>
 
         <sc-if value="{{ showSet }}" hint-placeholder-val="{{ false }}">
           <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
             <span style="font-size:14px;font-weight:700">{{ L.timeline }}</span>
-            <section class="ms-settings-group"><h4>{{ L.periodSettings }}</h4>
+            <section class="ms-settings-group">
             <div class="ms-timeline-range" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startMonth }}</span>
@@ -823,7 +824,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <div style="display:flex;flex-direction:column;gap:8px">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.durUnitF }}</span>
-                <button onClick="{{ toggleDurUnit }}" aria-label="{{ L.durUnitF }}" style="min-width:76px;height:30px;padding:0 12px;border:1px solid #181a1b;border-radius:6px;background:#181a1b;color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">{{ durUnit }}<span aria-hidden="true" style="opacity:.6">⇄</span></button>
+                <button onClick="{{ toggleDurUnit }}" aria-label="{{ L.durUnitF }}" style="min-width:76px;height:30px;padding:0 12px;border:1px solid var(--ms-color-action-primary);border-radius:6px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">{{ durUnit }}<span aria-hidden="true" style="opacity:.6">⇄</span></button>
               </div>
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.durUnitHint }}</span>
             </div>
@@ -835,7 +836,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.tipHoldF }}</span>
-              <button onClick="{{ toggleTipHold }}" aria-label="{{ L.tipHoldF }}" style="min-width:76px;height:30px;padding:0 12px;border:1px solid #181a1b;border-radius:6px;background:#181a1b;color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">{{ tipHoldLabel }}<span aria-hidden="true" style="opacity:.6">⇄</span></button>
+              <button onClick="{{ toggleTipHold }}" aria-label="{{ L.tipHoldF }}" style="min-width:76px;height:30px;padding:0 12px;border:1px solid var(--ms-color-action-primary);border-radius:6px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">{{ tipHoldLabel }}<span aria-hidden="true" style="opacity:.6">⇄</span></button>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
               <span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.animF }}</span><span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.animHint }}</span></span>
@@ -865,7 +866,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
             <label style="display:flex;flex-direction:column;gap:6px">
               <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.changes }}</span>
-              <textarea value="{{ vNote }}" data-v="note" onChange="{{ onVField }}" onFocus="{{ selectAll }}" rows="3" placeholder="{{ L.phChanges }}" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+              <textarea value="{{ vNote }}" data-v="note" onChange="{{ onVField }}" onFocus="{{ selectAll }}" rows="3" placeholder="{{ L.phChanges }}" style="width:100%;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:var(--ms-color-action-primary)"></textarea>
             </label>
             <button onClick="{{ saveVersion }}" disabled="{{ versionBusy }}" style="height:40px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ vSaveBorder }};background:{{ vSaveBg }};color:{{ vSaveFg }}">{{ versionSaveLabel }}</button>
             <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ vHint }}</span>
@@ -901,8 +902,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
 
   <sc-if value="{{ mouseTipOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ closeMouseTip }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.interact }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <div class="ms-modal-scrim" data-noprint="" onClick="{{ closeMouseTip }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" class="ms-template-dialog" role="dialog" aria-modal="true" aria-label="{{ L.interact }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;align-items:center;gap:9px">
           <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:{{ mouseTipBg }};color:{{ mouseTipFg }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"></path><circle cx="12" cy="12" r="2.4"></circle></svg></span>
           <span style="font-size:17px;font-weight:700">{{ L.interact }} {{ interactState }}</span>
@@ -910,24 +911,24 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <span style="font-size:13px;line-height:1.85;white-space:pre-line;color:var(--color-text-neutral-5)">{{ L.mouseTipMsg }}</span>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:4px;border-top:1px solid var(--color-border-neutral-1)">
           <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--color-text-neutral-4);cursor:pointer"><input type="checkbox" checked="{{ mouseTipMuted }}" onChange="{{ onMuteMouseTip }}" style="cursor:pointer">{{ L.dontShow }}</label>
-          <button onClick="{{ closeMouseTip }}" style="height:40px;padding:0 18px;border:1px solid #000;border-radius:4px;background:#000;font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.close }}</button>
+          <button class="ms-button ms-primary" onClick="{{ closeMouseTip }}" style="height:40px;padding:0 18px;border:1px solid var(--ms-color-action-primary);border-radius:4px;background:var(--ms-color-action-primary);font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.close }}</button>
         </div>
       </div>
     </div>
   </sc-if>
 
   <sc-if value="{{ relOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ closeRel }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.relTitle }}" style="width:100%;max-width:620px;max-height:82vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+    <div class="ms-modal-scrim" data-noprint="" onClick="{{ closeRel }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" class="ms-template-dialog" role="dialog" aria-modal="true" aria-label="{{ L.relTitle }}" style="width:100%;max-width:620px;max-height:82vh;overflow:auto;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-size:18px;font-weight:700">{{ L.relTitle }}</span>
-          <button onClick="{{ closeRel }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
+          <button class="ms-button" onClick="{{ closeRel }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
         </div>
         <sc-for list="{{ releases }}" as="r" hint-placeholder-count="4">
           <div style="display:flex;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--color-border-neutral-1)">
-            <span style="flex:none;width:56px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:9999px;background:#181a1b;color:#fff;font-size:12px;font-weight:700">{{ r.v }}</span>
+            <span style="flex:none;width:56px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700">{{ r.v }}</span>
             <div style="display:flex;flex-direction:column;gap:5px">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span data-agent="{{ r.agent }}" style="flex:none;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:.01em;background:{{ r.agentBg }};color:{{ r.agentFg }}">[{{ r.agent }}]</span><sc-if value="{{ r.title }}" hint-placeholder-val="{{ false }}"><strong style="font-size:13px;color:#181a1b">{{ r.title }}</strong></sc-if></div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span data-agent="{{ r.agent }}" style="flex:none;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:.01em;background:{{ r.agentBg }};color:{{ r.agentFg }}">[{{ r.agent }}]</span><sc-if value="{{ r.title }}" hint-placeholder-val="{{ false }}"><strong style="font-size:13px;color:var(--ms-color-text-primary)">{{ r.title }}</strong></sc-if></div>
               <sc-for list="{{ r.items }}" as="t" hint-placeholder-count="3">
                 <span style="font-size:13px;line-height:1.6;color:var(--color-text-neutral-5)">· {{ t }}</span>
               </sc-for>
@@ -939,58 +940,58 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   </sc-if>
 
   <sc-if value="{{ rowDelOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ cancelRowDelete }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.rowDelTitle }}" style="width:100%;max-width:420px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <div class="ms-modal-scrim" data-noprint="" onClick="{{ cancelRowDelete }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" class="ms-template-dialog" role="dialog" aria-modal="true" aria-label="{{ L.rowDelTitle }}" style="width:100%;max-width:420px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <span style="font-size:18px;font-weight:700">{{ L.rowDelTitle }}</span>
         <span style="font-size:13px;line-height:1.8;color:var(--color-text-neutral-4)">{{ rowDelName }} — {{ L.rowDelMsg }}</span>
         <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button onClick="{{ cancelRowDelete }}" style="height:40px;padding:0 16px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.cancel }}</button>
-          <button onClick="{{ confirmRowDelete }}" style="height:40px;padding:0 16px;border:1px solid #000;border-radius:4px;background:#000;font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.rowDel }}</button>
+          <button class="ms-button" onClick="{{ cancelRowDelete }}" style="height:40px;padding:0 16px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.cancel }}</button>
+          <button class="ms-button ms-primary" onClick="{{ confirmRowDelete }}" style="height:40px;padding:0 16px;border:1px solid var(--ms-color-action-primary);border-radius:4px;background:var(--ms-color-action-primary);font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.rowDel }}</button>
         </div>
       </div>
     </div>
   </sc-if>
 
   <sc-if value="{{ nowOutOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ closeNowOut }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.nowOutTitle }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <div class="ms-modal-scrim" data-noprint="" onClick="{{ closeNowOut }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" class="ms-template-dialog" role="dialog" aria-modal="true" aria-label="{{ L.nowOutTitle }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <span style="font-size:18px;font-weight:700">{{ L.nowOutTitle }}</span>
         <span style="font-size:13px;line-height:1.8;white-space:pre-line;color:var(--color-text-neutral-4)">{{ nowOutMsg }}</span>
         <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button onClick="{{ closeNowOut }}" style="height:40px;padding:0 16px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.cancel }}</button>
-          <button onClick="{{ nowExtend }}" style="height:40px;padding:0 16px;border:1px solid #000;border-radius:4px;background:#000;font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.nowOutYes }}</button>
+          <button class="ms-button" onClick="{{ closeNowOut }}" style="height:40px;padding:0 16px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.cancel }}</button>
+          <button class="ms-button ms-primary" onClick="{{ nowExtend }}" style="height:40px;padding:0 16px;border:1px solid var(--ms-color-action-primary);border-radius:4px;background:var(--ms-color-action-primary);font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.nowOutYes }}</button>
         </div>
       </div>
     </div>
   </sc-if>
 
   <sc-if value="{{ clearOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ closeClear }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.clearTitle }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+    <div class="ms-modal-scrim" data-noprint="" onClick="{{ closeClear }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" class="ms-template-dialog" role="dialog" aria-modal="true" aria-label="{{ L.clearTitle }}" style="width:100%;max-width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
         <span style="font-size:18px;font-weight:700">{{ L.clearTitle }}</span>
         <span style="font-size:13px;line-height:1.8;white-space:pre-line;color:var(--color-text-neutral-4)">{{ L.clearMsg }}</span>
         <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button onClick="{{ closeClear }}" style="height:40px;padding:0 16px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.cancel }}</button>
-          <button onClick="{{ doClearAll }}" style="height:40px;padding:0 16px;border:1px solid #000;border-radius:4px;background:#000;font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.clearAll }}</button>
+          <button class="ms-button" onClick="{{ closeClear }}" style="height:40px;padding:0 16px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.cancel }}</button>
+          <button class="ms-button ms-primary" onClick="{{ doClearAll }}" style="height:40px;padding:0 16px;border:1px solid var(--ms-color-action-primary);border-radius:4px;background:var(--ms-color-action-primary);font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.clearAll }}</button>
         </div>
       </div>
     </div>
   </sc-if>
 
   <sc-if value="{{ textOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-noprint="" onClick="{{ closeText }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
-      <div onClick="{{ stopClick }}" role="dialog" aria-modal="true" aria-label="{{ L.textTitle }}" style="width:100%;max-width:720px;max-height:84vh;overflow:hidden;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
+    <div class="ms-modal-scrim" data-noprint="" onClick="{{ closeText }}" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,11,17,.45)">
+      <div onClick="{{ stopClick }}" class="ms-template-dialog" role="dialog" aria-modal="true" aria-label="{{ L.textTitle }}" style="width:100%;max-width:720px;max-height:84vh;overflow:hidden;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-size:18px;font-weight:700">{{ L.textTitle }}</span>
-          <button onClick="{{ closeText }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
+          <button class="ms-button" onClick="{{ closeText }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.close }}</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.fmtF }}</span>
-          <button data-fmt="txt" onClick="{{ setTextFmt }}" style="height:32px;padding:0 14px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ fmtTxt.border }};background:{{ fmtTxt.bg }};color:{{ fmtTxt.fg }}">.txt</button>
-          <button data-fmt="md" onClick="{{ setTextFmt }}" style="height:32px;padding:0 14px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ fmtMd.border }};background:{{ fmtMd.bg }};color:{{ fmtMd.fg }}">.md</button>
+          <button class="ms-button" data-fmt="txt" onClick="{{ setTextFmt }}" style="height:32px;padding:0 14px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ fmtTxt.border }};background:{{ fmtTxt.bg }};color:{{ fmtTxt.fg }}">.txt</button>
+          <button class="ms-button" data-fmt="md" onClick="{{ setTextFmt }}" style="height:32px;padding:0 14px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ fmtMd.border }};background:{{ fmtMd.bg }};color:{{ fmtMd.fg }}">.md</button>
           <span style="flex:1"></span>
-          <button onClick="{{ copyText }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.copy }}</button>
-          <button onClick="{{ downloadText }}" style="height:32px;padding:0 14px;border:1px solid #000;border-radius:4px;background:#000;font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.dl }}</button>
+          <button class="ms-button" onClick="{{ copyText }}" style="height:32px;padding:0 12px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.copy }}</button>
+          <button class="ms-button ms-primary" onClick="{{ downloadText }}" style="height:32px;padding:0 14px;border:1px solid var(--ms-color-action-primary);border-radius:4px;background:var(--ms-color-action-primary);font-size:13px;font-weight:600;color:#fff;cursor:pointer">{{ L.dl }}</button>
         </div>
         <textarea value="{{ textPreview }}" readonly="true" style="width:100%;height:52vh;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--color-text-neutral-5);resize:none;outline:none"></textarea>
       </div>
@@ -1014,6 +1015,10 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.89', agent: 'Codex', title: '헤더·세션 고정과 공유 팝업 크기 안정화', items: ['가로 스크롤 시 헤더 세션 열 고정 복구 · 세션 제목을 메모와 연결선보다 위에 표시', '공유 권한·비밀번호 선택 시 입력 공간 유지 · 팝업 크기와 위치 안정화', '공유 상단 안내 삭제 · 열람 비밀번호 안내 문구 간소화 · 기존 일정과 공유 동작 유지'] },
+    { v: 'v9.88', agent: 'Codex', title: '팝업 공통 스타일과 컬러 적용 재점검', items: ['전체 지우기·행 삭제·날짜 범위·내보내기·리비전·조작 안내 팝업에 공통 패널/버튼 토큰 적용', '글자 크기 조절을 작은 A/큰 A로 변경 · 표시 기간 소제목 삭제 · 클라우드 파일 명칭 적용', '타임라인 좌측 여백/포커스 행 기본 배경을 블루 파운데이션에 맞춤', '공유 링크 만들기 우측 배치 · 비밀번호 두 영역 배경 제거 · 기존 데이터와 기능 유지'] },
+    { v: 'v9.87', agent: 'Codex', title: '전체 GUI 컬러 파운데이션 통합', items: ['툴바 칩·텍스트 서식·래핑·공유·비교·알림의 기본/선택/비활성 상태를 디자인 토큰으로 통일', '패널 닫기 X 제거 · 세 탭 균등 배치 · 기존 설정창 보기로 열기/닫기 유지', '동일 브랜드 아이콘 파비콘 적용 · NOW 날짜 배경 제거와 정렬 · 빈 상태 중앙 정렬', '공유 권한 카드와 주요 버튼 레이아웃 정리 · 기존 기능과 사용자 지정 일정 색상 유지'] },
+    { v: 'v9.86', agent: 'Codex', title: 'Blue Infographic B 디자인 시스템 적용', items: ['파스텔 블루·네이비 공통 토큰과 Pretendard 글꼴 적용', '버튼·아이콘 중앙 정렬, 입력·패널·모달·선택 상태 스타일 통합', '일정 방향성·사용자 색상·연결 닷·타임라인 치수와 기존 기능 유지', 'AI 유려한 모션과 3.2초 자료 스캔·정보 노드 결합 · 모션 감소 지원'] },
     { v: 'v9.85', agent: 'Codex', title: '항목 속성 텍스트 도구와 채우기 정리', items: ['글자 크기 조절을 텍스트 아래로 이동 · 굵게/취소선과 도구 행 통합', '모든 항목의 텍스트 필드 앞 반복 명칭 제거 · 접근성 라벨 유지', '시작·종료 표시 방식으로 명칭 변경 · 중복 설명 삭제', '진하게/연하게 채우기 토글 · 현재 선택 상태 표시'] },
     { v: 'v9.84', agent: 'Codex', title: '이미지 비교 구분선과 전체창 보기', items: ['슬라이드 비교 구분선 직접 드래그 · 좌우 파일명 · 채움 없는 선형 조절', '투명도 비교 배경/비교 파일과 불투명도 및 현재 표시 상태 안내', '이미지 비교 전체창 보기 · ESC 복귀 · 비교 상태 유지'] },
     { v: 'v9.83', agent: 'Codex', title: '버전 비교 보고서와 이미지 비교', items: ['보고서 복사 완료 토스트 · 추가/삭제/변경 상세 내역과 전후 값 표시', '이미지 비교 · V1/V2 기준 전환 · 변경 강조 · 슬라이드/투명도 비교', '클라우드 저장 버전 및 파일/이미지 비교에서 동일한 비교 도구 제공', '돋보기 마지막 위치 유지 · 보드 변경 시 이벤트 재연결'] },
@@ -1109,7 +1114,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.85';
+  APP_VER = 'v9.89';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1117,7 +1122,7 @@ class Component extends DCLogic {
      where the board is already unreadably wide — every useful setting was
      crammed into the first fifth. */
   ZMIN = 5; ZMAX = 480; ZTRACK = 1000;
-  PAL = [['그레이','#66707a'],['다크','#3b4040'],['퍼플','#5b3fd1'],['네이비','#1e3a8a'],['틸','#17a2a2'],['블루','#0078d4'],['오렌지','#f86800'],['레드','#e22a21'],['크림','#a8792a']];
+  PAL = [['그레이','#5e7694'],['다크','#16365d'],['퍼플','#6d5cce'],['네이비','#234770'],['틸','#087f95'],['블루','#3568c5'],['오렌지','#b87524'],['레드','#c83543'],['크림','#805400']];
   DICT = {
     ko: {
       weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 항목', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '점을 작업·참고 구간·공통 구간 위로 드래그하거나 아래에서 연결 대상을 선택하세요. 연결 해제 후에도 점은 남아 다시 연결할 수 있습니다. 연결된 항목을 이동하거나 기간을 바꾸면 메모도 함께 따라갑니다.', elementDates: '일자', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '메모 연결점', viewG: '보기', mmTip: '기간(MM) 표시', lang: '日本語', add: '항목 추가', chev: '일정', plain: '참고 블록', band: '공통 블록', marker: '마일스톤', flag: '메모', note: '상단 공지 메모', row: '행',
@@ -1499,7 +1504,7 @@ class Component extends DCLogic {
   exportJson = () => (MapstoneUI.saveFile ? (d, n) => MapstoneUI.saveFile(this, d, n) : MapstoneUI.download)(this._recoveryData ? this._recoveryData : MapstoneCore.serializeFile(this.dataDocument()), this.fileName(this._recoveryData ? 'json' : 'mapstone'));
   /* 검토 내용 → 화면: bring an item (or session) into view, select it and pulse it */
   /* 비교 표시: colours are display-only. With marks on, touched items use the comparison colours; off, the real ones. */
-  CMP_COLOR = { added: '#12805c', removed: '#d92d20', changed: '#d9730d' };
+  CMP_COLOR = { added: '#147447', removed: '#c83543', changed: '#805400' };
   marksOn() { return this.state.cmpMarks !== false; }
   hasComparison() { return this.state.items.some((i) => i.cmp) || this.state.rows.some((r) => r.cmp); }
   shownColor(it) { return it.cmp && this.marksOn() ? this.CMP_COLOR[it.cmp] : it.color; }
@@ -1528,7 +1533,7 @@ class Component extends DCLogic {
     }
     setTimeout(() => {
       node = node || Array.from(this.root.querySelectorAll('[data-id="' + CSS.escape(id) + '"]')).find((e) => !e.dataset.mode && !e.hasAttribute('data-link-dot'));
-      if (node && node.animate) node.animate([{ outline: '4px solid rgba(227,0,132,.9)', outlineOffset: '4px' }, { outline: '4px solid rgba(227,0,132,0)', outlineOffset: '12px' }], { duration: 1100, easing: 'ease-out', iterations: 2 });
+      if (node && node.animate) node.animate([{ outline: '4px solid rgba(53,104,197,.9)', outlineOffset: '4px' }, { outline: '4px solid rgba(53,104,197,0)', outlineOffset: '12px' }], { duration: 1100, easing: 'ease-out', iterations: 2 });
     }, 380);
     return true;
   }
@@ -2535,11 +2540,11 @@ class Component extends DCLogic {
     const L = this.L();
     const box = kind === 'chev' || kind === 'plain';
     const it = { id, kind, row, lane: box ? lanes : 0, s, e: box || kind==='band' ? end : s, span: 1, variant: box && kind === 'plain' ? 'tint' : 'solid', memo: '' };
-    if (kind === 'chev') { it.label = L.newChev; it.color = '#66707a'; }
-    if (kind === 'plain') { it.label = L.newPlain; it.color = '#66707a'; }
-    if (kind === 'band') { it.label = L.newBand; it.color = '#1e3a8a'; it.rowFrom = row; it.rowTo = row; it.row = row; }
-    if (kind === 'marker') { it.label = L.newMarker; it.color = '#66707a'; it.row = ''; }
-    if (kind === 'flag') { it.label = L.newFlag; it.color = '#e22a21'; it.targetId = ''; }
+    if (kind === 'chev') { it.label = L.newChev; it.color = '#234770'; }
+    if (kind === 'plain') { it.label = L.newPlain; it.color = '#315a88'; }
+    if (kind === 'band') { it.label = L.newBand; it.color = '#a4c4ef'; it.rowFrom = row; it.rowTo = row; it.row = row; }
+    if (kind === 'marker') { it.label = L.newMarker; it.color = '#3568c5'; it.row = ''; }
+    if (kind === 'flag') { it.label = L.newFlag; it.color = '#c83543'; it.targetId = ''; }
     this.mutate((d) => { d.items.push(it);this.ensureItemRoom(d,id);this.resolve(d, id); });
     this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   }
@@ -2633,7 +2638,7 @@ class Component extends DCLogic {
     e.preventDefault(); MapstoneUI.hideTip();
     this.setState({selection:[e.currentTarget.dataset.id],selectionAnchor:e.currentTarget.dataset.id,sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true, tab:'prop' });
     if (e.currentTarget.focus) e.currentTarget.focus();
-    this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY, snap:this.snapshot(), moved:false, badge:e.currentTarget.parentElement?.querySelector('[data-alert-label]')?.getBoundingClientRect(),color:this.state.items.find(i=>i.id===e.currentTarget.dataset.id)?.color || '#e30084' };
+    this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY, snap:this.snapshot(), moved:false, badge:e.currentTarget.parentElement?.querySelector('[data-alert-label]')?.getBoundingClientRect(),color:this.state.items.find(i=>i.id===e.currentTarget.dataset.id)?.color || '#3568c5' };
     this.bind();
   };
   onField = (e) => {
@@ -2977,7 +2982,7 @@ class Component extends DCLogic {
     if(view.showNow){
     const nx = X(LB + this.xOf(st.now));
     slide.addShape(S.line, { x: nx, y: Y(stripH - 8), w: 0, h: Y(totalH) - Y(stripH - 8), line: { color: 'E30084', width: 1.5 } });
-    slide.addText('NOW'+(view.showNowDate?' '+this.shortDate(st.now):''), { shape: S.roundRect, rectRadius: 0.06, x: nx - 0.3, y: Y(totalH) + 0.04, w:Sz(48+(view.showNowDate?this.measure(this.shortDate(st.now)):0)), h: 0.22, fill: { color: 'E30084' }, color: 'FFFFFF', fontSize:fs(cfg.nowLabelSize||12), bold: true, align: 'center', valign: 'middle', margin: 0, fontFace: 'Pretendard' });
+    slide.addText('NOW'+(view.showNowDate?' '+this.shortDate(st.now):''), { shape: S.roundRect, rectRadius: 0.06, x: nx - 0.3, y: Y(totalH) + 0.04, w:Sz(48+(view.showNowDate?this.measure(this.shortDate(st.now)):0)), h: 0.22, fill: { color: '2959AF' }, color: 'FFFFFF', fontSize:fs(cfg.nowLabelSize||12), bold: true, align: 'center', valign: 'middle', margin: 0, fontFace: 'Pretendard' });
     }
 
     const minX=Math.min(...objects.map(o=>o[2].x)),minY=Math.min(...objects.map(o=>o[2].y)),maxX=Math.max(...objects.map(o=>o[2].x+o[2].w)),maxY=Math.max(...objects.map(o=>o[2].y+o[2].h));
@@ -3107,7 +3112,7 @@ class Component extends DCLogic {
         targetId: target ? target.id : '', linkLabel: target ? this.L().linkedTo + ': ' + target.label : this.L().unlinked,
         badgeBg: '#fff',
         dotLeft:px(target ? -11 : labelLeft-23), dotTop:px(target ? 0 : labelTop+1),
-        badgeFocus: this.isSelected(it.id) && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #e30084' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #e30084' : this.isSelected(it.id) ? '0 0 0 2px #e30084' : 'none',
+        badgeFocus: this.isSelected(it.id) && st.selLinkDot !== it.id ? '0 0 0 2px #fff, 0 0 0 4px #3568c5' : 'none', dotFocus: st.selLinkDot === it.id ? '0 0 0 2px #fff, 0 0 0 5px #3568c5' : this.isSelected(it.id) ? '0 0 0 2px #3568c5' : 'none',
         show:!editing, connected:!!target,showConnector:!!target && st.linkDrag?.id!==it.id,dotOpacity:st.linkDrag?.id===it.id?0:1, labelLeft:px(labelLeft), labelTop:px(labelTop), connPath:'M 0 11 V '+edgeY+' H '+edgeX,
         left:px(left), top:px(top), sel: this.isSelected(it.id), editing: editing,
         inline: !editing && m.mode === 'inline', strip: !editing && m.mode === 'strip',
@@ -3122,9 +3127,9 @@ class Component extends DCLogic {
       const chevs = its.filter((i) => i.kind === 'chev').map((i) => chev(i, L[r.id]));
       return {
         id: r.id, name: r.name, displayName: r.name || this.L().rowNamePh, editing: st.editingRow===r.id && !st.readOnly, show: st.editingRow!==r.id || st.readOnly, height: px(this.rowHeight(r.id)),
-        labelBg: focused ? '#fff' : (r.color || 'var(--color-bg-neutral-1)'),
-        focusBar: focused ? '#e30084' : 'transparent',
-        trackBg: r.color || (focused ? 'var(--color-neutral-10)' : '#fff'),
+        labelBg: focused ? 'var(--ms-color-surface-canvas)' : (r.color || 'var(--ms-color-surface-subtle)'),
+        focusBar: focused ? '#3568c5' : 'transparent',
+        trackBg: r.color || 'var(--ms-color-surface-canvas)',
         chevs: chevs,
         plains: its.filter((i) => i.kind === 'plain').map(plain),
         flags: its.filter((i) => i.kind === 'flag').map((i) => flag(i, L[r.id]))
@@ -3201,12 +3206,12 @@ class Component extends DCLogic {
     const kindNames = { now:'NOW', image:'이미지', sticky:TT.sticky, chev: TT.chev, plain: TT.plain, band: TT.band, marker: TT.marker, flag: TT.kFlag };
     const focusRow = st.rows.find((r) => r.id === st.focusRow);
     const vReady = !st.versionBusy && !st.readOnly;
-    const tabC = (t) => (st.tab === t ? '#181a1b' : 'var(--color-text-neutral-3)');
-    const tabB = (t) => (st.tab === t ? '#e30084' : 'transparent');
+    const tabC = (t) => (st.tab === t ? '#3568c5' : 'var(--color-text-neutral-3)');
+    const tabB = (t) => (st.tab === t ? '#3568c5' : 'transparent');
 
     const T = this.L();
     const ov = cfg.overlap || 'shrink';
-    const ovBtn = (k) => ({ bg: ov === k ? '#181a1b' : '#fff', fg: ov === k ? '#fff' : 'var(--color-text-neutral-5)', border: ov === k ? '#181a1b' : 'var(--color-border-neutral-2)' });
+    const ovBtn = (k) => ({ bg: ov === k ? 'var(--ms-color-action-primary)' : '#fff', fg: ov === k ? '#fff' : 'var(--color-text-neutral-5)', border: ov === k ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' });
     const focusRowObj = st.rows.find((r) => r.id === st.focusRow);
     const rowColors = MapstoneCore.rowColors;
 
@@ -3217,29 +3222,29 @@ class Component extends DCLogic {
       readOnly: !!st.readOnly, editable: !st.readOnly, rowMoveTip: st.lang === 'ja' ? 'ドラッグで行の順序変更 · Ctrl/⌘ ↑ ↓' : '드래그로 행 순서 변경 · Ctrl/⌘ ↑ ↓',
       focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, openEditGate:this.openEditGate, canUnlockEdit: !!st.canUnlockEdit && !!st.readOnly, exportJson:this.exportJson, openFile:this.openFile,
       timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
-      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,zIndex:this.itemZ(it.id),src:it.src,label:it.label,labelSize:px(this.labelFont(it)),...this.labelStyle(it),left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
+      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,zIndex:this.itemZ(it.id),src:it.src,label:it.label,labelSize:px(this.labelFont(it)),...this.labelStyle(it),left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #3568c5':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       noSelection: !sel && !focusRowObj, showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
       rowPropH: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id)) : 0,
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
       rowColorOptions: rowColors.map((c) => ({ key: c[1], hex: c[1], name: c[0] === 'none' ? T.rowColorNone : c[0], border: focusRowObj && ((focusRowObj.color || 'none') === c[1]) ? '#000' : 'rgba(0,0,0,.14)', bg: c[1] === 'none' ? 'repeating-linear-gradient(45deg,#fff 0 5px,#f3f5f6 5px 10px)' : c[1] })),
       magnetOn: !!cfg.magnet, magnetState: cfg.magnet ? 'ON' : 'OFF', toggleMagnet: this.toggleMagnet,
-      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM') + '\n· M', onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, toggleTipHold: this.toggleTipHold, tipHoldLabel: st.tipHold ? this.L().tipHold : this.L().tip3s, interactChecked: st.interact ? 'true' : 'false', interactTrack: st.interact ? '#181a1b' : '#c5cdd6', interactKnob: st.interact ? '23px' : '3px', toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? '#181a1b' : '#c5cdd6', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
+      showMM: cfg.showMM !== false, toggleMM: this.toggleMM, durUnit: cfg.durUnit === 'MD' ? 'MD' : 'MM', mmToolTip: this.L().mmToolTip.replace('{unit}', cfg.durUnit === 'MD' ? 'MD' : 'MM') + '\n· M', onTipHover: this.onTipHover, onDurUnit: this.onDurUnit, onAnim: this.onAnim, toggleAnim: this.toggleAnim, toggleTipHold: this.toggleTipHold, tipHoldLabel: st.tipHold ? this.L().tipHold : this.L().tip3s, interactChecked: st.interact ? 'true' : 'false', interactTrack: st.interact ? 'var(--ms-color-action-primary)' : 'var(--ms-color-border-strong)', interactKnob: st.interact ? '23px' : '3px', toggleDurUnit: this.toggleDurUnit, animChecked: this.animOn(true) ? 'true' : 'false', animTrack: this.animOn(true) ? 'var(--ms-color-action-primary)' : 'var(--ms-color-border-strong)', animKnob: this.animOn(true) ? '23px' : '3px', animAttr: this.animOn(true) ? 'on' : 'off',
       showElementDates:!!cfg.showElementDates, toggleElementDates:this.toggleElementDates,
       showTooltip:cfg.showTooltip !== false, toggleTooltip:this.toggleTooltip,
-      tooltipBg:cfg.showTooltip !== false ? '#181a1b' : '#f3f5f6', tooltipFg:cfg.showTooltip !== false ? '#fff' : '#66707a', tooltipBorder:cfg.showTooltip !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
-      datesBg:cfg.showElementDates ? '#181a1b' : '#f3f5f6', datesFg:cfg.showElementDates ? '#fff' : '#66707a', datesBorder:cfg.showElementDates ? '#181a1b' : 'var(--color-border-neutral-2)',
+      tooltipBg:cfg.showTooltip !== false ? 'var(--ms-color-action-primary)' : 'var(--ms-color-surface-subtle)', tooltipFg:cfg.showTooltip !== false ? '#fff' : 'var(--ms-color-text-muted)', tooltipBorder:cfg.showTooltip !== false ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
+      datesBg:cfg.showElementDates ? 'var(--ms-color-action-primary)' : 'var(--ms-color-surface-subtle)', datesFg:cfg.showElementDates ? '#fff' : 'var(--ms-color-text-muted)', datesBorder:cfg.showElementDates ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       showWeek: cfg.showWeek !== false, toggleWeek: this.toggleWeek,
-      weekViewBg: cfg.showWeek !== false ? '#181a1b' : '#f3f5f6', weekViewFg: cfg.showWeek !== false ? '#fff' : '#66707a', weekViewBorder: cfg.showWeek !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
-      mmBg: cfg.showMM !== false ? '#181a1b' : '#f3f5f6', mmFg: cfg.showMM !== false ? '#fff' : '#66707a', mmBorder: cfg.showMM !== false ? '#181a1b' : 'var(--color-border-neutral-2)',
-      magnetOn: !!cfg.magnet, magnetBg: cfg.magnet ? '#181a1b' : '#fff', magnetFg: cfg.magnet ? '#fff' : 'var(--color-text-neutral-5)', magnetBorder: cfg.magnet ? '#181a1b' : 'var(--color-border-neutral-2)',
+      weekViewBg: cfg.showWeek !== false ? 'var(--ms-color-action-primary)' : 'var(--ms-color-surface-subtle)', weekViewFg: cfg.showWeek !== false ? '#fff' : 'var(--ms-color-text-muted)', weekViewBorder: cfg.showWeek !== false ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
+      mmBg: cfg.showMM !== false ? 'var(--ms-color-action-primary)' : 'var(--ms-color-surface-subtle)', mmFg: cfg.showMM !== false ? '#fff' : 'var(--ms-color-text-muted)', mmBorder: cfg.showMM !== false ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
+      magnetOn: !!cfg.magnet, magnetBg: cfg.magnet ? 'var(--ms-color-action-primary)' : '#fff', magnetFg: cfg.magnet ? '#fff' : 'var(--color-text-neutral-5)', magnetBorder: cfg.magnet ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       helpOpen: st.helpOpen, openHelp: this.openHelp, closeHelp: this.closeHelp, stopClick: this.stopClick,
       textOpen: st.textOpen, openText: this.openText, closeText: this.closeText,
       setTextFmt: this.setTextFmt, downloadText: this.downloadText, copyText: this.copyText,
       textPreview: st.textOpen ? this.buildText(st.textFmt) : '',
-      fmtTxt: { bg: st.textFmt === 'txt' ? '#181a1b' : '#fff', fg: st.textFmt === 'txt' ? '#fff' : 'var(--color-text-neutral-5)', border: st.textFmt === 'txt' ? '#181a1b' : 'var(--color-border-neutral-2)' },
-      fmtMd: { bg: st.textFmt === 'md' ? '#181a1b' : '#fff', fg: st.textFmt === 'md' ? '#fff' : 'var(--color-text-neutral-5)', border: st.textFmt === 'md' ? '#181a1b' : 'var(--color-border-neutral-2)' },
-      relOpen: st.relOpen, openCompare: this.openCompare, comparing: this.hasComparison(), reviewShown: this.hasComparison() && st.reviewOpen !== false, reviewClosed: this.hasComparison() && st.reviewOpen === false, openReview: this.openReview, toggleCmpMarks: this.toggleCmpMarks, marksLabel: this.marksOn() ? '비교 표시 숨기기' : '비교 표시 보이기', marksPressed: this.marksOn() ? 'true' : 'false', reviewItems: this.reviewList().map((r) => ({ ...r, hasLines: r.lines.length > 0, tag: { added: '추가', removed: '삭제', changed: '변경' }[r.type], tagBg: { added: '#12805c', removed: '#d92d20', changed: '#d9730d' }[r.type], on: st.sel === r.id })), reviewCount: this.reviewList().length, onReviewPick: this.onReviewPick, closeReview: this.closeReview, endComparison: this.endComparison, L_reviewTitle: '비교 검토 내용', openRel: this.openRel, closeRel: this.closeRel, releases: this.RELEASES.map((r) => ({ ...r, agentBg: { Codex: '#e7f4f1', 'Claude Code': '#fbe8df', 'Claude Design': '#f0ebfb' }[r.agent] || '#f3f5f6', agentFg: { Codex: '#0f6b57', 'Claude Code': '#a3461f', 'Claude Design': '#5b3fd1' }[r.agent] || '#3b4044' })),
+      fmtTxt: { bg: st.textFmt === 'txt' ? 'var(--ms-color-action-primary)' : '#fff', fg: st.textFmt === 'txt' ? '#fff' : 'var(--color-text-neutral-5)', border: st.textFmt === 'txt' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
+      fmtMd: { bg: st.textFmt === 'md' ? 'var(--ms-color-action-primary)' : '#fff', fg: st.textFmt === 'md' ? '#fff' : 'var(--color-text-neutral-5)', border: st.textFmt === 'md' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
+      relOpen: st.relOpen, openCompare: this.openCompare, comparing: this.hasComparison(), reviewShown: this.hasComparison() && st.reviewOpen !== false, reviewClosed: this.hasComparison() && st.reviewOpen === false, openReview: this.openReview, toggleCmpMarks: this.toggleCmpMarks, marksLabel: this.marksOn() ? '비교 표시 숨기기' : '비교 표시 보이기', marksPressed: this.marksOn() ? 'true' : 'false', reviewItems: this.reviewList().map((r) => ({ ...r, hasLines: r.lines.length > 0, tag: { added: '추가', removed: '삭제', changed: '변경' }[r.type], tagBg: { added: 'var(--ms-color-status-success)', removed: 'var(--ms-color-status-error)', changed: 'var(--ms-color-status-warning)' }[r.type], on: st.sel === r.id })), reviewCount: this.reviewList().length, onReviewPick: this.onReviewPick, closeReview: this.closeReview, endComparison: this.endComparison, L_reviewTitle: '비교 검토 내용', openRel: this.openRel, closeRel: this.closeRel, releases: this.RELEASES.map((r) => ({ ...r, agentBg: { Codex: 'var(--ms-color-status-success-bg)', 'Claude Code': 'var(--ms-color-status-warning-bg)', 'Claude Design': 'var(--ms-color-surface-selected)' }[r.agent] || 'var(--ms-color-surface-subtle)', agentFg: { Codex: 'var(--ms-color-status-success)', 'Claude Code': 'var(--ms-color-status-warning)', 'Claude Design': 'var(--ms-color-action-primary)' }[r.agent] || 'var(--ms-color-text-primary)' })),
       rowDelOpen: !!st.rowDelId, askRowDelete: this.askRowDelete, cancelRowDelete: this.cancelRowDelete, confirmRowDelete: this.confirmRowDelete,
       rowDelName: (st.rows.find((r) => r.id === st.rowDelId) || {}).name || '',
       duplicateSel: this.duplicateSel,
@@ -3254,8 +3259,8 @@ class Component extends DCLogic {
       ovShrink: ovBtn('shrink'), ovMoveOther: ovBtn('moveOther'), ovMoveSelf: ovBtn('moveSelf'), setOverlap: this.setOverlap, overlapName: this.L()[{ shrink: 'opShrink', moveOther: 'opMoveOther', moveSelf: 'opMoveSelf' }[cfg.overlap] || 'opShrink'], overlapDesc: this.L()['opDesc_' + (cfg.overlap || 'shrink')],
       addPlain: this.addPlain, onHandleDbl: this.onHandleDbl,
       title: st.title, savedLabel: st.saved, panel: st.panel, panelLabel: st.panel ? T.panelClose : T.panelOpen,
-      panelBorder: st.panel ? '#181a1b' : 'var(--color-border-neutral-2)',
-      panelBg: st.panel ? '#181a1b' : '#fff', panelFg: st.panel ? '#fff' : 'var(--color-text-neutral-5)',
+      panelBorder: st.panel ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
+      panelBg: st.panel ? 'var(--ms-color-action-primary)' : '#fff', panelFg: st.panel ? '#fff' : 'var(--color-text-neutral-5)',
       cols: cols, gridCols: gridCols, rowsView: rowsView, bandsView: bandsView,
       markersView: markersView, markerLines: markerLines, markerStripH: px(stripH),
       notesView: st.notes.map((n) => ({ id: n.id, text: n.text, editing: st.editNote === n.id, show: st.editNote !== n.id })),
@@ -3266,22 +3271,22 @@ class Component extends DCLogic {
       weekPxSlider: this.zoomToSlider(this.weekPxVal()),
       zoomPct: Math.round((this.weekPxVal() / 19) * 100) + '%',
       zoomTip: T.weekPx + ' ' + (Math.round(this.weekPxVal() * 10) / 10) + 'px',
-      nowVal: Math.round(st.now*100)/100, nowDate: this.dateOf(st.now), showNow, toggleNow:this.toggleNow,nowBg:cfg.showNow!==false?'#181a1b':'#f3f5f6',nowFg:cfg.showNow!==false?'#fff':'#66707a',onNowDbl:this.onNowDbl,
+      nowVal: Math.round(st.now*100)/100, nowDate: this.dateOf(st.now), showNow, toggleNow:this.toggleNow,nowBg:cfg.showNow!==false?'var(--ms-color-action-primary)':'var(--ms-color-surface-subtle)',nowFg:cfg.showNow!==false?'#fff':'var(--ms-color-text-muted)',onNowDbl:this.onNowDbl,
       nowLeft: px(192 + this.xOf(st.now)), nowLineLeft: px(172 + this.xOf(st.now)), nowTop: px((mplace.__now||0)*markerLaneH+this.labelBox(nowItem).height),nowTagTop:px((mplace.__now||0)*markerLaneH),nowLabelSize:px(cfg.nowLabelSize||12),showNowDate:!!cfg.showElementDates && !cfg.hideNowDate,
       interactState: st.interact ? 'ON' : 'OFF',
-      interactBg: st.interact ? '#181a1b' : '#fff', interactFg: st.interact ? '#fff' : 'var(--color-text-neutral-5)',
-      interactBorder: st.interact ? '#181a1b' : 'var(--color-border-neutral-2)',
+      interactBg: st.interact ? 'var(--ms-color-action-primary)' : '#fff', interactFg: st.interact ? '#fff' : 'var(--color-text-neutral-5)',
+      interactBorder: st.interact ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       mouseTipOpen: st.mouseTipOpen, closeMouseTip: this.closeMouseTip, onMuteMouseTip: this.onMuteMouseTip,
       mouseTipMuted: st.mouseTipMuted,
-      mouseTipBg: st.interact ? '#181a1b' : 'var(--color-bg-neutral-2)',
+      mouseTipBg: st.interact ? 'var(--ms-color-action-primary)' : 'var(--color-bg-neutral-2)',
       mouseTipFg: st.interact ? '#fff' : 'var(--color-text-neutral-4)',
       weekModeLabel: cfg.weekMode === 'actual' ? T.actualW : T.uniform4,
-      weekBg: cfg.weekMode === 'actual' ? '#181a1b' : '#fff', weekFg: cfg.weekMode === 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
-      weekBorder: cfg.weekMode === 'actual' ? '#181a1b' : 'var(--color-border-neutral-2)',
-      wmUniformBg: cfg.weekMode !== 'actual' ? '#181a1b' : '#fff', wmUniformFg: cfg.weekMode !== 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
-      wmUniformBorder: cfg.weekMode !== 'actual' ? '#181a1b' : 'var(--color-border-neutral-2)',
-      wmActualBg: cfg.weekMode === 'actual' ? '#181a1b' : '#fff', wmActualFg: cfg.weekMode === 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
-      wmActualBorder: cfg.weekMode === 'actual' ? '#181a1b' : 'var(--color-border-neutral-2)',
+      weekBg: cfg.weekMode === 'actual' ? 'var(--ms-color-action-primary)' : '#fff', weekFg: cfg.weekMode === 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
+      weekBorder: cfg.weekMode === 'actual' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
+      wmUniformBg: cfg.weekMode !== 'actual' ? 'var(--ms-color-action-primary)' : '#fff', wmUniformFg: cfg.weekMode !== 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
+      wmUniformBorder: cfg.weekMode !== 'actual' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
+      wmActualBg: cfg.weekMode === 'actual' ? 'var(--ms-color-action-primary)' : '#fff', wmActualFg: cfg.weekMode === 'actual' ? '#fff' : 'var(--color-text-neutral-5)',
+      wmActualBorder: cfg.weekMode === 'actual' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       clipLabel: st.clip ? '(1)' : '',
       paletteExpanded: st.paletteExpanded, togglePalette: this.togglePalette, paletteToggleLabel: st.paletteExpanded ? T.paletteCollapse : T.paletteExpand,
       palette: (st.paletteExpanded ? [0,-.55,-.3,.3,.55] : [0]).flatMap(tone=>this.PAL.map(([name,base])=>{const hex=tone ? this.paletteTone(base,tone) : base;return {name:name+(tone ? ' · '+(tone<0 ? T.shadeDark : T.shadeLight)+' '+(Math.abs(tone)>.4 ? 2 : 1) : ''),hex,border:sel && sel.color===hex ? '#000' : 'rgba(0,0,0,.12)'};})),
@@ -3296,12 +3301,12 @@ class Component extends DCLogic {
       selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
       linkOptions: st.items.filter(i=>this.linkKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===(i.rowFrom||i.row))?.name || '')+' · '+i.label})),
       marquee:st.marquee, linkDrag: st.linkDrag, linking:!!st.linkDrag,
-      selBoldBg:sel && this.labelBold(sel)?'#fff0f7':'#fff',selBoldFg:sel && this.labelBold(sel)?'#c2006f':'#525c66',selStrikeBg:sel?.labelStrike?'#fff0f7':'#fff',selStrikeFg:sel?.labelStrike?'#c2006f':'#525c66',selCanFormat:!!sel && sel.kind!=='now',selBold:sel?this.labelBold(sel):false,selStrike:!!sel?.labelStrike,onLabelFormat:this.onLabelFormat,selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
+      selBoldBg:sel && this.labelBold(sel)?'var(--ms-color-surface-selected)':'var(--ms-color-surface-default)',selBoldFg:sel && this.labelBold(sel)?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)',selStrikeBg:sel?.labelStrike?'var(--ms-color-surface-selected)':'var(--ms-color-surface-default)',selStrikeFg:sel?.labelStrike?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)',selCanFormat:!!sel && sel.kind!=='now',selBold:sel?this.labelBold(sel):false,selStrike:!!sel?.labelStrike,onLabelFormat:this.onLabelFormat,selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
       selS: sel ? Math.round(sel.s*100)/100 : 0, selE: sel ? Math.round(sel.e*100)/100 : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? this.boxKind(sel.kind)?Math.round((this.trackBox(sel,L).height+12)/laneH*100)/100:sel.span||1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
       propertyDates: !!st.propertyDates, togglePropertyDates: this.togglePropertyDates, openPropertyCalendar:this.openPropertyCalendar, onPropertyTimeField: this.onPropertyTimeField,
       propertyTimeType: st.propertyDates ? 'date' : 'number', propertyTimeStep: st.propertyDates ? 1 : this.timeStep(),
-      propertyNumberColor: st.propertyDates ? 'var(--color-text-neutral-3)' : '#e30084', propertyDateColor: st.propertyDates ? '#e30084' : 'var(--color-text-neutral-3)',
+      propertyNumberColor: st.propertyDates ? 'var(--color-text-neutral-3)' : 'var(--ms-color-action-primary)', propertyDateColor: st.propertyDates ? 'var(--ms-color-action-primary)' : 'var(--color-text-neutral-3)',
       propertySValue: sel ? (st.propertyDates ? this.isoOf(sel.s) : Math.round(sel.s*100)/100) : '', propertyEValue: sel ? (st.propertyDates ? this.isoOf(sel.e) : Math.round(sel.e*100)/100) : '',
       propertyDateHint: st.propertyDates ? T.dayHint : T.dateHint,
       selSISO: sel ? this.isoOf(sel.s) : '', selEISO: sel ? this.isoOf(sel.e) : '', onDateField: this.onDateField,
@@ -3311,8 +3316,8 @@ class Component extends DCLogic {
       verCount: st.versions.length ? '(' + st.versions.length + ')' : '',
       verLabel: st.versions.length ? 'v' + st.versions.length + ' · ' + st.versions[st.versions.length - 1].date : T.verNone,
       vAuthor: st.vAuthor, vDate: st.vDate, vNote: st.vNote,
-      vSaveBg: vReady ? '#000' : 'var(--color-bg-neutral-2)', vSaveFg: vReady ? '#fff' : 'var(--color-text-neutral-2)',
-      vSaveBorder: vReady ? '#000' : 'var(--color-border-neutral-2)',
+      vSaveBg: vReady ? 'var(--ms-color-action-primary)' : 'var(--color-bg-neutral-2)', vSaveFg: vReady ? '#fff' : 'var(--color-text-neutral-2)',
+      vSaveBorder: vReady ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       vHint: st.versionStatus || '저장한 버전은 보관함에서 언제든 다시 불러올 수 있습니다. 현재 작업물의 버전 두 개 이상을 저장하면 비교할 수 있습니다.', versionCompareDisabled:!!st.versionBusy||st.versions.filter(v=>v.projectId).length<2,versionCompareHint:st.versions.filter(v=>v.projectId).length<2?'현재 작업물에 저장된 버전이 두 개 이상 있어야 비교할 수 있습니다.':'현재 작업물의 저장 버전 비교', versionBusy:!!st.versionBusy, versionSaveLabel:st.versionBusy&&st.versionOperation==='save'?'버전 저장 중…':'버전 저장',
       versionsView: st.versions.slice().reverse().map((v, i) => ({
         id: v.id, tag: 'v' + (v.sequence || st.versions.length - i), title: v.title || st.title, date: v.date, note: v.note,
@@ -3323,9 +3328,9 @@ class Component extends DCLogic {
       onTitle: this.onTitle, onWeekPx: this.onWeekPx, togglePanel: this.togglePanel, onTab: this.onTab,
       addChev: this.addChev, addBand: this.addBand, addMarker: this.addMarker, addFlag: this.addFlag, addNote: this.addNote, addRow: this.addRow,
       stickies: stickies, addSticky: this.addSticky, onRowLanes: this.onRowLanes,
-      stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1], border: sel && sel.color === p[1] ? '#181a1b' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
-      stickyOpaque: { bg: sel && sel.variant !== 'tint' ? '#181a1b' : '#fff', fg: sel && sel.variant !== 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant !== 'tint' ? '#181a1b' : 'var(--color-border-neutral-2)' },
-      stickyTint: { bg: sel && sel.variant === 'tint' ? '#181a1b' : '#fff', fg: sel && sel.variant === 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant === 'tint' ? '#181a1b' : 'var(--color-border-neutral-2)' },
+      stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1], border: sel && sel.color === p[1] ? 'var(--ms-color-action-primary)' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
+      stickyOpaque: { bg: sel && sel.variant !== 'tint' ? 'var(--ms-color-action-primary)' : '#fff', fg: sel && sel.variant !== 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant !== 'tint' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
+      stickyTint: { bg: sel && sel.variant === 'tint' ? 'var(--ms-color-action-primary)' : '#fff', fg: sel && sel.variant === 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant === 'tint' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
       selNotSticky: !!sel && !['sticky','image','now'].includes(sel.kind),
       rowPropLanes: focusRowObj ? Math.max(1, Math.round((this.rowHeight(focusRowObj.id) - 14) / cfg.laneH)) : 1,
       selIsSticky: !!sel && sel.kind === 'sticky',
@@ -3334,7 +3339,7 @@ class Component extends DCLogic {
       onHover: this.onHover, onOutLabelEnter: this.onOutLabelEnter, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,
-      onField: this.onField, onStep: this.onStep, onColor: this.onColor, onVariant: this.onVariant, toggleFill:this.toggleFill, selFillTint:!!sel && sel.variant==='tint', fillSolidColor:sel?.variant==='tint'?'var(--color-text-neutral-3)':'#e30084', fillTintColor:sel?.variant==='tint'?'#e30084':'var(--color-text-neutral-3)', onCfg: this.onCfg,
+      onField: this.onField, onStep: this.onStep, onColor: this.onColor, onVariant: this.onVariant, toggleFill:this.toggleFill, selFillTint:!!sel && sel.variant==='tint', fillSolidColor:sel?.variant==='tint'?'var(--color-text-neutral-3)':'var(--ms-color-action-primary)', fillTintColor:sel?.variant==='tint'?'var(--ms-color-action-primary)':'var(--color-text-neutral-3)', onCfg: this.onCfg,
       onWeekMode: this.onWeekMode, toggleWeekMode: this.toggleWeekMode, toggleInteract: this.toggleInteract, nowToday: this.nowToday,
       copySel: this.copySel, cutSel: this.cutSel, pasteClip: this.pasteClip,
       openVersionLibrary:this.openVersionLibrary,openVersionCompare:this.openVersionCompare,onVField: this.onVField, saveVersion: this.saveVersion, restoreVersion: this.restoreVersion, deleteVersion: this.deleteVersion,
