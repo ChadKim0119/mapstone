@@ -47,7 +47,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   <script src="./vendor/pptxgen.js"></script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'%3E%3Crect x='0' y='0' width='512' height='512' rx='116' fill='%23181A1B'/%3E%3Crect x='112' y='136' width='176' height='56' rx='28' fill='%23FFFFFF'/%3E%3Crect x='184' y='228' width='216' height='56' rx='28' fill='%23E30084'/%3E%3Crect x='112' y='320' width='104' height='56' rx='28' fill='%23FFFFFF'/%3E%3Cpath d='M296 320l28 28-28 28-28-28z' fill='%23FFFFFF'/%3E%3C/svg%3E">
   <style>
-    .ms-row-add button{opacity:0}.ms-row-add:hover button,.ms-row-add:focus-within button{opacity:1}.ms-row-grip:focus-visible{outline:2px solid #e30084}
+    .ms-row-add button{opacity:0}.ms-row-add:hover button{opacity:1}.ms-row-grip:focus-visible{outline:2px solid #e30084}
     @media(hover:none){.ms-row-add button{opacity:1}}
     html, body { margin: 0; background: #fff; }
     [data-app] { -webkit-user-select: none; user-select: none; }
@@ -1010,6 +1010,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.78', agent: 'Codex', title: '세션 생성·행 축소 시 항목 재배치 개선', items: ['세션 안내를 새로운 세션 입력으로 변경', '마우스가 벗어난 뒤 행 추가 버튼이 계속 표시되는 포커스 상태 수정', '신규 행에 2레인 높이를 명시해 생성 직후와 재표시 높이 통일', '레인 수·픽셀 높이·경계 드래그로 행 축소 시 아래 항목을 행 안으로 재배치', '행 높이 조절·행간 이동·실행 취소 및 파일 저장 복원 검증'] },
     { v: 'v9.77', agent: 'Codex', title: '분석 안내·버전 화면 문구 간소화', items: ['이미지·텍스트 분석 안내를 일정 변환 설명 한 문장으로 간소화', '버전 보관 안내를 이 파일의 버전이 클라우드에 계속 보관됩니다로 변경', '버전 히스토리 빈 상태 안내와 버전 비교 버튼 문구 축약'] },
     { v: 'v9.76', agent: 'Codex', title: '선택 핸들 통일·설정 그룹과 버전 진행 상태 개선', items: ['일정·참고·공통 구간의 방향별 선택 핸들 크기와 색상 통일', '메모 삭제 아이콘을 SVG로 교체하고 중앙 정렬', '저장·복원·삭제의 진행 상태를 구분해 저장 버튼 문구 오류 수정', '타임라인 설정을 표시 기간·표시 방식·조작 및 효과·겹침 처리로 그룹화', '현재 표시된 월 구간 제목과 애니메이션 설명 추가', '보기 메뉴 안내 툴팁의 폭과 줄바꿈 개선'] },
     { v: 'v9.75', agent: 'Codex', title: '버전 히스토리 동작 배치·속성 명칭 정리', items: ['버전 비교 버튼을 버전 히스토리 제목 오른쪽으로 이동', '버전 화면의 작업물 제목 앞에 타이틀 라벨을 추가하고 형태를 구분', '선택 항목 속성에 항목 종류 라벨을 제공하고 행 이름 앞에 행 명칭 추가', '공통 구간 속성의 시작 행·끝 행 입력 영역 제거', '시작·종료 입력 방식 토글 순서를 일자 / 숫자로 변경'] },
@@ -1097,7 +1098,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.77';
+  APP_VER = 'v9.78';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1139,12 +1140,12 @@ class Component extends DCLogic {
       confRowDel: '이 행의 항목이 함께 삭제됩니다. 계속할까요?', needAuthor: '작성자와 날짜는 필수 입력입니다.',
       confRestore: ' 버전으로 복원할까요? 현재 상태는 되돌리기(Cmd+Z)로 복구할 수 있습니다.',
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
-      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 메모', newRow: '신규 세션', newNote: '공지 메모를 입력하세요',
+      newChev: '새 작업', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 메모', newRow: '새로운 세션 입력', newNote: '공지 메모를 입력하세요',
       zoom: '배율', magnetF: '눈금 맞춤', magnetHint: '5개월 미만은 0.125개월(월 8단계), 그 외에는 0.25개월 단위와 인접 블록 끝에 맞춥니다. 끄면 자유롭게 조정합니다.',
       helpT: '사용법', rowProp: '행 설정', rowName: '행 이름', rowHF: '행 높이 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '행 배경색', rowColorNone: '없음', rowDel: '행 삭제', rowAdd: '아래에 행 추가',
       rowHint: '행 경계선을 마우스로 드래그해도 높이를 바꿀 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
-      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '모든 항목(일정·참고·공통·마일스톤·메모·포스트잇)과 구분 행이 삭제되고, 빈 행 하나만 남습니다.\n타임라인 설정은 유지되고 새 작업물로 시작합니다. 기존 버전은 클라우드에 보관되며 Cmd(Ctrl)+Z로 되돌릴 수 있어요.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '전체보기 종료', rowNamePh: '세션 이름을 입력해주세요', importShort: '이미지 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipSchedule: '일정', tipMemo: '메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
+      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 항목의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearMsg: '모든 항목(일정·참고·공통·마일스톤·메모·포스트잇)과 구분 행이 삭제되고, 빈 행 하나만 남습니다.\n타임라인 설정은 유지되고 새 작업물로 시작합니다. 기존 버전은 클라우드에 보관되며 Cmd(Ctrl)+Z로 되돌릴 수 있어요.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '전체보기 종료', rowNamePh: '새로운 세션 입력', importShort: '이미지 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipSchedule: '일정', tipMemo: '메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
       weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: 'メモの接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考ブロック', band: '共通ブロック', marker: 'マイルストーン', flag: 'メモ', note: '上部お知らせメモ', row: '行',
@@ -1633,6 +1634,22 @@ class Component extends DCLogic {
     this.mutate((d) => { d.items.push(it); });
     this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   };
+  setRowHeight(d,id,height) {
+    const r=d.rows.find(x=>x.id===id);if(!r)return;
+    const old=this.rowLayout(d)[id].height;
+    r.h=Math.max(this.rowMinHeight(),height);
+    if(r.h>=old)return;
+    const layout=this.rowLayout(d)[id],baseH=layout.height-layout.strips*layout.stripH,laneH=d.cfg.laneH;
+    const cap=Math.max(1,Math.floor((baseH-14)/laneH));
+    d.items.forEach(it=>{
+      if(it.row!==id || it.kind==='band' || it.kind==='marker')return;
+      if(this.boxKind(it.kind)){
+        const h=it.trackH??(it.span||1)*laneH-12,y=it.trackY??6+it.lane*laneH;
+        const nextH=Math.min(h,baseH-12),nextY=Math.max(6,Math.min(y,6+(cap-1)*laneH,baseH-6-nextH));
+        if(nextY!==y || nextH!==h){it.trackY=nextY;it.trackH=nextH;it.lane=Math.max(0,Math.floor((nextY-6)/laneH));it.span=Math.max(1,Math.ceil((nextH+12)/laneH));}
+      }else it.lane=Math.min(it.lane,cap-1);
+    });
+  }
   onRowLanes = (e) => {
     const id = this.state.focusRow;
     const el = e.currentTarget;
@@ -1645,7 +1662,7 @@ class Component extends DCLogic {
       const cur = Math.max(1, Math.round(((r.h || this.rowHeight(id)) - 14) / laneH));
       const next = delta ? cur + delta : val;
       if (next === null || isNaN(next)) return;
-      r.h = Math.max(this.rowMinHeight(), Math.max(1, Math.round(next)) * laneH + 14);
+      this.setRowHeight(d,id,Math.max(1, Math.round(next)) * laneH + 14);
     });
   };
   onRowResizeDown = (e) => {
@@ -1653,7 +1670,7 @@ class Component extends DCLogic {
     const id=e.currentTarget.dataset.row,h0=this.rowHeight(id),y0=e.clientY,laneH=this.laneH(),layout=this.rowLayout()[id],snap0=this.snapshot();
     const min=Math.ceil((this.rowMinHeight()+layout.strips*layout.stripH-14)/laneH)*laneH+14;
     let moved=false,current=h0;
-    const mv=ev=>{const h=Math.max(min,Math.round((h0+ev.clientY-y0-14)/laneH)*laneH+14);if(h===current)return;current=h;moved=true;this.mutate(d=>{const r=d.rows.find(x=>x.id===id);if(r)r.h=h;},false);};
+    const mv=ev=>{const h=Math.max(min,Math.round((h0+ev.clientY-y0-14)/laneH)*laneH+14);if(h===current)return;current=h;moved=true;this.mutate(d=>{const r=d.rows.find(x=>x.id===id);if(r)this.setRowHeight(d,id,h);},false);};
     const finish=commit=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);if(!moved)return;if(commit)this.setState(s=>({hist:s.hist.concat([snap0]).slice(-60),future:[]}));else this.applySnap(snap0);};
     const up=()=>finish(true),cancel=()=>finish(false);
     window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);
@@ -1669,7 +1686,7 @@ class Component extends DCLogic {
       const cur = r.h || this.rowHeight(id);
       const next = delta ? cur + delta : val;
       if (next === null || isNaN(next)) return;
-      r.h = Math.max(this.rowMinHeight(), Math.round(next));
+      this.setRowHeight(d,id,Math.round(next));
     });
   };
   fitRow(id) {
@@ -2485,7 +2502,7 @@ class Component extends DCLogic {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault();
       const dy = e.key === 'ArrowUp' ? -1 : 1;
-      this.mutate((d) => { const it = d.items.find((i) => i.id === this.state.sel); if (it) it.lane = Math.max(0, it.lane + dy); });
+      this.mutate((d) => { const it = d.items.find((i) => i.id === this.state.sel); if (it) { it.lane = Math.max(0, it.lane + dy); if(this.boxKind(it.kind)){if(it.trackY!==undefined)it.trackY=6+it.lane*this.laneH();this.ensureItemRoom(d,it.id);} } });
     }
   };
 
@@ -2518,7 +2535,7 @@ class Component extends DCLogic {
   addFlag = () => this.addAt('flag');
   deleteSel = () => { if(this.state.readOnly)return;if(this.state.sel==='__now'){this.mutate(d=>{d.cfg.showNow=false;});this.clearSelection();return;}const ids=this.selectedIds(),chosen=new Set(ids);if(!ids.length)return;this.animateOut(ids,()=>{this.mutate(d=>{d.items=d.items.filter(i=>!chosen.has(i.id));});this.clearSelection();}); };
 
-  addRow = (e) => { e.stopPropagation(); if (this.state.readOnly) return; const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow }); }); this.clearSelection(); this.setState({ focusRow: id }); };
+  addRow = (e) => { e.stopPropagation(); if (this.state.readOnly) return; const after = e.currentTarget.dataset.id; const id = this.uid(); this.mutate((d) => { d.rows.splice(d.rows.findIndex((r) => r.id === after) + 1, 0, { id, name: this.L().newRow, h: 2*d.cfg.laneH+14 }); }); this.clearSelection(); this.setState({ focusRow: id }); };
   beginRowEdit = (e) => {
     e.stopPropagation(); if(this.state.readOnly)return;const id=e.currentTarget.dataset.id;
     this.setState({editingRow:id,focusRow:id});
