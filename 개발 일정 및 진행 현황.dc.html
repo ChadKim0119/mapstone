@@ -196,6 +196,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-duration { display:block;font-size:10.5px;font-weight:700;line-height:14px;white-space:nowrap; }
     [data-app] [role="button"][data-id]:focus-visible { outline:3px solid #e30084; outline-offset:3px; }
     [data-board] { isolation:isolate; }
+    @media print { .ms-link-drag-overlay { display:none !important; } }
     [data-app][data-focus="true"] > [data-toolbar], [data-app][data-focus="true"] [data-properties], [data-app][data-focus="true"] [data-noprint] { display:none !important; }
     [data-app][data-focus="true"] { position:fixed; inset:0; z-index:500; height:100dvh !important; }
     .ms-button { height:32px; padding:0 11px; border:1px solid #dce0e5; border-radius:4px; background:#fff; font-size:13px; font-weight:600; cursor:pointer; }
@@ -293,7 +294,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   <sc-if value="{{ reviewClosed }}" hint-placeholder-val="{{ false }}">
     <button data-noprint="" type="button" class="ms-review-fab" onClick="{{ openReview }}">비교 검토 내용 <b>{{ reviewCount }}</b></button>
   </sc-if>
-  <sc-if value="{{ linking }}"><svg data-noprint="" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"><path d="{{ linkDrag.path }}" fill="none" stroke="{{ linkDrag.color }}" stroke-width="1.5" stroke-linejoin="round"></path><circle cx="{{ linkDrag.x }}" cy="{{ linkDrag.y }}" r="5" fill="{{ linkDrag.color }}" stroke="#fff" stroke-width="2"></circle></svg></sc-if>
+  <sc-if value="{{ linking }}"><svg class="ms-link-drag-overlay" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"><path d="{{ linkDrag.path }}" fill="none" stroke="{{ linkDrag.color }}" stroke-width="1.5" stroke-linejoin="round"></path><circle cx="{{ linkDrag.x }}" cy="{{ linkDrag.y }}" r="5" fill="{{ linkDrag.color }}" stroke="#fff" stroke-width="2"></circle></svg></sc-if>
 
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
     <div style="display:flex;align-items:center;gap:10px">
@@ -1011,6 +1012,8 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.83', agent: 'Codex', title: '버전 비교 보고서와 이미지 비교', items: ['보고서 복사 완료 토스트 · 추가/삭제/변경 상세 내역과 전후 값 표시', '이미지 비교 · V1/V2 기준 전환 · 변경 강조 · 슬라이드/투명도 비교', '클라우드 저장 버전 및 파일/이미지 비교에서 동일한 비교 도구 제공', '돋보기 마지막 위치 유지 · 보드 변경 시 이벤트 재연결'] },
+    { v: 'v9.82', agent: 'Codex', title: '전체보기 기본 설정과 메모·포인터 개선', items: ['전체보기 NOW만 기본 표시 · 단축키 유지 · 종료 및 저장 시 기존 보기 설정 보존', '포스트잇 직접 입력 · 모든 일정 위에 표시', '메모 점 드래그 연결선 실시간 표시', '레이저 버튼 중앙 정렬 · 누른 채 이동 시 짧은 잔상', '돋보기 화면 크기 작게·보통·크게 선택'] },
     { v: 'v9.81', agent: 'Codex', title: 'AI 버전 비교와 전체보기 발표 도구', items: ['버전 비교 AI 분석 애니메이션 · 완료/오류 상태 복구', '전체보기 원형·사각형 돋보기 · 2배/3배 확대', '빨강·녹색 레이저 포인터 · 메모/포스트잇 추가', '발표 도구 접기 · 돋보기 고정 · 단축키 안내 · 종료 시 이전 배율 복원'] },
     { v: 'v9.80', agent: 'Codex', title: '콘텐츠 위 AI 분석과 글자 서식', items: ['파일 분석 GUI 유지 · 붙여넣은 이미지/텍스트 위 AI 분석 애니메이션', '이미지 삭제 버튼 중앙 정렬', '분석 서버 원본 색상 보존 반영 · 넘치는 일정 라벨 외부 배치 개선', '글자 크기 최소 6px · 굵게/취소선 서식과 저장·복원 지원'] },
     { v: 'v9.79', agent: 'Codex', title: '이미지·텍스트 분석 AI 흐름 애니메이션', items: ['분석 진행 중 스피너 대신 유기적 형태와 빛이 흐르는 AI 비주얼 제공', '이미지·텍스트 분석에 공통 애니메이션 및 내용 해석·관계 연결·일정 구성 안내 적용', '작은 화면과 모션 감소 설정 지원 및 성공·실패 시 진행 화면 정리'] },
@@ -1102,7 +1105,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.81';
+  APP_VER = 'v9.83';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1432,7 +1435,7 @@ class Component extends DCLogic {
     setTimeout(this._onScroll, 60);
   };
   setRoot = (el) => { this.root = el; };
-  dataDocument() { return MapstoneCore.documentOf(this.state.readOnly && this._viewBaseCfg ? {...this.state,cfg:this._viewBaseCfg} : this.state); }
+  dataDocument() { const cfg=this.state.readOnly && this._viewBaseCfg ? this._viewBaseCfg : this.state.cfg;return MapstoneCore.documentOf({...this.state,cfg:this._focusView ? {...cfg,...this._focusView.cfg} : cfg}); }
   save() {
     if(this.state.readOnly)return;
     if (this._saveBlocked) return;
@@ -1701,8 +1704,9 @@ class Component extends DCLogic {
   onRowFit = e => {e.stopPropagation();this.fitRow(e.currentTarget.dataset.row);};
   onRowAuto = () => this.fitRow(this.state.focusRow);
   onRowColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.focusRow; this.mutate((d) => { const r = d.rows.find((x) => x.id === id); if (r) { if (c === 'none') delete r.color; else r.color = c; } }); };
-  toggleMagnet = () => { this.mutate((d) => { d.cfg.magnet = !d.cfg.magnet; }); };
+  toggleMagnet = () => { this.viewCfg((d) => { d.cfg.magnet = !d.cfg.magnet; }); };
   viewCfg(fn,push) {
+    if(this.state.focusMode){const d={cfg:{...this.state.cfg}};fn(d);this.setState({cfg:d.cfg});return true;}
     if(!this.state.readOnly)return this.mutate(fn,push);
     this._viewBaseCfg=this._viewBaseCfg || this.state.cfg;
     const d={cfg:{...this.state.cfg}};fn(d);this._viewCfg=this._viewCfg || {};
@@ -2432,8 +2436,9 @@ class Component extends DCLogic {
     const id = e.currentTarget.dataset.id, it = this.state.items.find(i => i.id === id);
     if (!it) return;
     MapstoneUI.hideTip();
-    this._focusProperties = true;
-    this.setState({ selection:[id], selectionAnchor:id, editing: null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
+    const inline=!this.state.readOnly && (it.kind==='sticky' || (this.state.focusMode && it.kind!=='image'));
+    this._focusProperties = !inline;
+    this.setState({ selection:[id], selectionAnchor:id, editing: inline?id:null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
   };
   onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return;if(e.metaKey||e.shiftKey){this.pickItem(id,e);return;} this.setState({selection:[id],selectionAnchor:id,selLinkDot:null,sel:id,panel:this.narrowScreen() || this.state.panel,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
   /* tooltips belong to the shape: entering its detached/outside label closes the tooltip and keeps it from re-opening */
@@ -2977,7 +2982,7 @@ class Component extends DCLogic {
   };
   doPrint = () => window.print();
 
-  itemZ(id) { const index = this.state.items.findIndex(it=>it.id===id); return (this.state.items[index]?.kind === 'flag' ? 6200 : 300) + index; }
+  itemZ(id) { const index = this.state.items.findIndex(it=>it.id===id); return (this.state.items[index]?.kind === 'sticky' ? 13000 : this.state.items[index]?.kind === 'flag' ? 6200 : 300) + index; }
 
   renderVals() {
     const st = this.state;
