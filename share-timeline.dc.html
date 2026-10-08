@@ -379,10 +379,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
               <div data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
-                  <textarea rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:700;outline:none;resize:none"></textarea>
+                  <textarea rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size:{{ k.labelSize }};font-weight:700;line-height:1.35;text-align:center;letter-spacing:-.01em;white-space:pre-wrap;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ k.showDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
+                  <div style="font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};line-height:1.35;text-align:center;letter-spacing:-.01em;white-space:pre-wrap;pointer-events:none;color:{{ k.ink }}">{{ k.label }}<sc-if value="{{ k.showDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;color:#66707a">{{ k.dateLabel }}</span></sc-if></div>
                 </sc-if>
                 <div style="position:absolute;left:50%;top:100%;width:0;height:{{ k.stemH }};border-left:2px solid {{ k.color }};pointer-events:none"></div>
                 <div style="position:absolute;left:50%;top:100%;margin-left:-3px;margin-top:{{ k.stemH }};width:6px;height:6px;border-radius:9999px;background:{{ k.color }};pointer-events:none"></div>
@@ -437,27 +437,27 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ b.dateLabel }}</span></sc-if>
                       <div style="position:absolute;left:0;top:0;right:0;bottom:0;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);background:{{ b.bg }}"></div>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);min-width:60px;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;background:#fff;outline:none;resize:none;z-index:3"></textarea>
+                        <textarea rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;transform:translateY(-50%);min-width:60px;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};background:#fff;outline:none;resize:none;z-index:3"></textarea>
                       </sc-if>
                       <sc-if value="{{ b.inside }}" hint-placeholder-val="{{ true }}">
-                        <div style="position:absolute;left:4px;right:16px;top:50%;transform:translateY(-50%);font-size:{{ b.labelSize }};font-weight:600;line-height:1.3;text-align:center;letter-spacing:-.01em;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;left:4px;right:16px;top:50%;transform:translateY(-50%);font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};line-height:1.3;text-align:center;letter-spacing:-.01em;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.leader }}" hint-placeholder-val="{{ false }}">
                         <svg data-leader="" aria-hidden="true" style="position:absolute;overflow:visible;pointer-events:none;z-index:5;{{ b.leaderBox }}"><path d="{{ b.leaderPath }}" fill="none" stroke="{{ b.leaderColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ b.outRight }}" hint-placeholder-val="{{ false }}">
                         <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span></sc-if>
-                        <div style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.outLeft }}" hint-placeholder-val="{{ false }}">
                         <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;right:100%;top:50%;width:8px;border-top:1.5px solid {{ b.bg }};pointer-events:none"></span></sc-if>
-                        <div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:8px;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.outStrip }}" hint-placeholder-val="{{ false }}">
                         <sc-if value="{{ b.stub }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:5px;width:0;border-left:1px dashed var(--color-border-neutral-3);pointer-events:none;top:{{ b.connTop }};height:{{ b.connH }}"></div></sc-if>
                       </sc-if>
                       <sc-if value="{{ b.outStrip }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;left:0;white-space:pre;font-size:{{ b.labelSize }};font-weight:600;letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6;top:{{ b.stripTop }}" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
+                        <div style="position:absolute;left:0;white-space:pre;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};letter-spacing:-.01em;padding:1px 6px;border-radius:4px;background:#fff;border:1px solid var(--color-border-neutral-2);color:#181a1b;cursor:grab;translate:{{ b.outDx }} {{ b.outDy }};z-index:6;top:{{ b.stripTop }}" data-id="{{ b.id }}" data-mode="outlabel" onPointerDown="{{ onItemDown }}" onMouseEnter="{{ onOutLabelEnter }}">{{ b.label }}<sc-if value="{{ b.dur }}"><span class="ms-duration">{{ b.dur }}</span></sc-if></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
                         <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:6px;pointer-events:none"></div>
@@ -479,10 +479,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
                       <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ p.dateLabel }}</span></sc-if>
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
+                        <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
-                        <div style="font-size:{{ p.labelSize }};font-weight:500;line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
+                        <div style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
                       </sc-if>
                       <div style="position:absolute;right:6px;bottom:2px;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ p.durFg }}">{{ p.dur }}</div>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
@@ -500,13 +500,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
                       <span data-link-dot="" data-id="{{ f.id }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2;opacity:{{ f.dotOpacity }}"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:700;outline:none;resize:none"></textarea>
+                        <textarea rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};outline:none;resize:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ f.showConnector }}">
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ f.show }}">
-                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:700;padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
+                        <div data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};padding:2px 7px;border-radius:999px;background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span>{{ f.label }}<sc-if value="{{ f.showDate }}"><span data-element-date="" style="font-size:10px;color:#66707a">{{ f.dateLabel }}</span></sc-if></div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -521,10 +521,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div data-id="{{ d.id }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
                 <sc-if value="{{ showElementDates }}"><span data-element-date="" style="position:absolute;top:100%;left:0;white-space:nowrap;font-size:10px;line-height:12px;font-weight:600;color:#3b4044;background:#fff;padding:0 3px;border-radius:3px;pointer-events:none;z-index:12">{{ d.dateLabel }}</span></sc-if>
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
-                  <textarea rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:700;outline:none;resize:none"></textarea>
+                  <textarea rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ d.show }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size:13px;font-weight:700;line-height:1.4;text-align:center;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div>
+                  <div style="font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};line-height:1.4;text-align:center;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div>
                 </sc-if>
                 <div style="position:absolute;left:0;right:0;bottom:3px;text-align:center;white-space:nowrap;font-size:10.5px;font-weight:700;pointer-events:none;color:{{ d.durFg }}">{{ d.dur }}</div>
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
@@ -543,17 +543,17 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ imagesView }}" as="im">
             <div data-id="{{ im.id }}" role="button" tabindex="0" aria-label="{{ im.label }}" onKeyDown="{{ onItemKey }}" data-sticky="" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ im.zIndex }};left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
               <img data-ms-src="{{ im.src }}" alt="{{ im.label }}" draggable="false" style="width:100%;height:100%;object-fit:contain;pointer-events:none">
-              <div style="position:absolute;top:100%;left:0;max-width:100%;font-size:{{ im.labelSize }};white-space:pre-wrap;background:#fff;color:#181a1b;padding:2px 5px;border-radius:4px">{{ im.label }}</div>
+              <div style="position:absolute;top:100%;left:0;max-width:100%;font-size:{{ im.labelSize }};font-weight:{{ im.labelWeight }};text-decoration:{{ im.labelDecoration }};white-space:pre-wrap;background:#fff;color:#181a1b;padding:2px 5px;border-radius:4px">{{ im.label }}</div>
               <sc-if value="{{ im.sel }}"><div data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(227,0,132,.45);cursor:nwse-resize"></div></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
             <div data-id="{{ p.id }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
+                <textarea value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
               </sc-if>
               <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
-                <div style="font-size:{{ p.labelSize }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
+                <div style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
               </sc-if>
               <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
                 <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:2px solid #e30084;border-radius:4px;pointer-events:none"></div>
@@ -621,6 +621,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </span>
                   <textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
                 </label>
+                <sc-if value="{{ selCanFormat }}"><div style="display:flex;gap:6px"><button type="button" data-format="labelBold" onClick="{{ onLabelFormat }}" aria-label="글씨 굵게" aria-pressed="{{ selBold }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selBoldBg }};color:{{ selBoldFg }};font-weight:700;cursor:pointer">B · 굵게</button><button type="button" data-format="labelStrike" onClick="{{ onLabelFormat }}" aria-label="취소선" aria-pressed="{{ selStrike }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selStrikeBg }};color:{{ selStrikeFg }};text-decoration:line-through;cursor:pointer">S · 취소선</button></div></sc-if>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button class="ms-memo-clear" onClick="{{ clearMemo }}" aria-label="{{ L.memoDel }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"></path></svg></button></span>
@@ -1010,6 +1011,9 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.81', agent: 'Codex', title: 'AI 버전 비교와 전체보기 발표 도구', items: ['버전 비교 AI 분석 애니메이션 · 완료/오류 상태 복구', '전체보기 원형·사각형 돋보기 · 2배/3배 확대', '빨강·녹색 레이저 포인터 · 메모/포스트잇 추가', '발표 도구 접기 · 돋보기 고정 · 단축키 안내 · 종료 시 이전 배율 복원'] },
+    { v: 'v9.80', agent: 'Codex', title: '콘텐츠 위 AI 분석과 글자 서식', items: ['파일 분석 GUI 유지 · 붙여넣은 이미지/텍스트 위 AI 분석 애니메이션', '이미지 삭제 버튼 중앙 정렬', '분석 서버 원본 색상 보존 반영 · 넘치는 일정 라벨 외부 배치 개선', '글자 크기 최소 6px · 굵게/취소선 서식과 저장·복원 지원'] },
+    { v: 'v9.79', agent: 'Codex', title: '이미지·텍스트 분석 AI 흐름 애니메이션', items: ['분석 진행 중 스피너 대신 유기적 형태와 빛이 흐르는 AI 비주얼 제공', '이미지·텍스트 분석에 공통 애니메이션 및 내용 해석·관계 연결·일정 구성 안내 적용', '작은 화면과 모션 감소 설정 지원 및 성공·실패 시 진행 화면 정리'] },
     { v: 'v9.78', agent: 'Codex', title: '세션 생성·행 축소 시 항목 재배치 개선', items: ['세션 안내를 새로운 세션 입력으로 변경', '마우스가 벗어난 뒤 행 추가 버튼이 계속 표시되는 포커스 상태 수정', '신규 행에 2레인 높이를 명시해 생성 직후와 재표시 높이 통일', '레인 수·픽셀 높이·경계 드래그로 행 축소 시 아래 항목을 행 안으로 재배치', '행 높이 조절·행간 이동·실행 취소 및 파일 저장 복원 검증'] },
     { v: 'v9.77', agent: 'Codex', title: '분석 안내·버전 화면 문구 간소화', items: ['이미지·텍스트 분석 안내를 일정 변환 설명 한 문장으로 간소화', '버전 보관 안내를 이 파일의 버전이 클라우드에 계속 보관됩니다로 변경', '버전 히스토리 빈 상태 안내와 버전 비교 버튼 문구 축약'] },
     { v: 'v9.76', agent: 'Codex', title: '선택 핸들 통일·설정 그룹과 버전 진행 상태 개선', items: ['일정·참고·공통 구간의 방향별 선택 핸들 크기와 색상 통일', '메모 삭제 아이콘을 SVG로 교체하고 중앙 정렬', '저장·복원·삭제의 진행 상태를 구분해 저장 버튼 문구 오류 수정', '타임라인 설정을 표시 기간·표시 방식·조작 및 효과·겹침 처리로 그룹화', '현재 표시된 월 구간 제목과 애니메이션 설명 추가', '보기 메뉴 안내 툴팁의 폭과 줄바꿈 개선'] },
@@ -1098,7 +1102,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.78';
+  APP_VER = 'v9.81';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1349,7 +1353,7 @@ class Component extends DCLogic {
     if(this.state.readOnly && this._viewCfg && this.state.cfg!==this._viewAppliedCfg){this._viewBaseCfg=this.state.cfg;this._viewAppliedCfg={...this.state.cfg,...this._viewCfg};this.setState({cfg:this._viewAppliedCfg});return;}
     if(!this.state.readOnly){this._viewCfg=null;this._viewBaseCfg=null;this._viewAppliedCfg=null;}
     if (this._zoomFix && this._board) { const z = this._zoomFix; this._zoomFix = null; this._board.scrollLeft = Math.max(0, 192 + z.content * z.ratio - z.ax); }
-    this.save(); this.syncScrollMetrics(); this.clipSessionTitles(); this.fitToolbar(); if (this.root && MapstoneUI.growAll) MapstoneUI.growAll(this.root);
+    MapstoneUI.refreshPresentation?.(this);this.save(); this.syncScrollMetrics(); this.clipSessionTitles(); this.fitToolbar(); if (this.root && MapstoneUI.growAll) MapstoneUI.growAll(this.root);
     const ids = new Set(this.state.items.map((i) => i.id));
     if (this._ids && this.animOn()) {
       const fresh = [...ids].filter((id) => !this._ids.has(id));
@@ -1715,6 +1719,8 @@ class Component extends DCLogic {
     MapstoneUI.toast(this, this.state.cfg.showTooltip ? this.L().tooltipOn : this.L().tooltipOff);
   };
   durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
+  labelBold(it) {return it.labelBold ?? !['plain','sticky','image'].includes(it.kind);}
+  labelStyle(it) {return {labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none'};}
   labelFont(it) {return it.labelSize || (['marker','flag','now'].includes(it.kind)?12:it.kind==='sticky'?13:12.5);}
   labelBox(it,extra=24) {const size=this.labelFont(it),lines=String(it.label||'').split('\n');return {width:Math.max(...lines.map(l=>this.measure(l)))*size/12.5+extra,height:Math.max(24,lines.length*size*1.35+8)};}
   stopClick = (e) => e.stopPropagation();
@@ -1881,8 +1887,8 @@ class Component extends DCLogic {
         for (const char of word) { if (line && this.measure(line+char)>width) { lines++; line=''; } line+=char; }
       }
     }
-    /* a label may overhang the shape by up to 6px per side; staying inside beats moving it outside */
-    return lines*16.25*k<=height+12;
+    /* Move overflowing labels outside before they spill beyond the shape. */
+    return lines*16.25*k<=height;
   }
   lum(hex) { const h = hex.replace('#', ''); return (0.299 * parseInt(h.slice(0, 2), 16) + 0.587 * parseInt(h.slice(2, 4), 16) + 0.114 * parseInt(h.slice(4, 6), 16)) / 255; }
   dark(hex) { const h = hex.replace('#', ''); const f = (i) => Math.round(parseInt(h.slice(i, i + 2), 16) * 0.55).toString(16).padStart(2, '0'); return '#' + f(0) + f(2) + f(4); }
@@ -2675,12 +2681,13 @@ class Component extends DCLogic {
       this.resolve(d, id);
     });
   };
-  /* 글자 크기: one step = 1px, 9–40px; resets to default (12.5) when set back to it */
+  /* 글자 크기: one step = 1px, 6–40px; resets to default (12.5) when set back to it */
+  onLabelFormat = (e) => {const field=e.currentTarget.dataset.format;if(!['labelBold','labelStrike'].includes(field))return;this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it)it[field]=field==='labelBold'?!this.labelBold(it):!it.labelStrike;});};
   onLabelSize = (e) => {
     const id = this.state.sel, delta = parseFloat(e.currentTarget.dataset.delta);
     if(!Number.isFinite(delta))return;
-    if(id==='__now'){this.mutate(d=>{d.cfg.nowLabelSize=Math.max(9,Math.min(40,(d.cfg.nowLabelSize||12)+delta));});return;}
-    this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (!it) return; const size=Math.max(9,Math.min(40,this.labelFont(it)+delta));if(size===this.labelFont({...it,labelSize:undefined}))delete it.labelSize;else it.labelSize=size; });
+    if(id==='__now'){this.mutate(d=>{d.cfg.nowLabelSize=Math.max(6,Math.min(40,(d.cfg.nowLabelSize||12)+delta));});return;}
+    this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (!it) return; const size=Math.max(6,Math.min(40,this.labelFont(it)+delta));if(size===this.labelFont({...it,labelSize:undefined}))delete it.labelSize;else it.labelSize=size; });
   };
   onStep = (e) => {
     const d0 = e.currentTarget.dataset;
@@ -2912,7 +2919,7 @@ class Component extends DCLogic {
         shape: S.rect, x: X(LB + this.xOf(it.s)), y: Y(t1 + 6), w: Sz(this.wOf(it.s, it.e)), h: Sz(Math.max(40, t2 - t1 - 14)),
         fill: { color: tint ? 'FFFFFF' : hex(it.color) }, line: { color: hex(it.color), width: 1 },
         color: tint ? hex(this.dark(it.color)) : (this.lum(it.color) > 0.62 ? '181A1B' : 'FFFFFF'),
-        fontSize: fs(this.labelFont(it)), bold: true, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
+        fontSize: fs(this.labelFont(it)), bold: this.labelBold(it), strike:it.labelStrike?'sngStrike':undefined, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
       });
     });
 
@@ -2927,7 +2934,7 @@ class Component extends DCLogic {
         w: Sz(this.wOf(it.s, it.e)), h: Sz(this.trackBox(it).height),
         fill: { color: tint ? 'FFFFFF' : hex(it.color) }, line: { color: hex(it.color), width: 1 },
         color: tint ? hex(this.dark(it.color)) : (this.lum(it.color) > 0.62 ? '181A1B' : 'FFFFFF'),
-        fontSize: fs(this.labelFont(it)), bold: false, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
+        fontSize: fs(this.labelFont(it)), bold: this.labelBold(it), strike:it.labelStrike?'sngStrike':undefined, align: 'center', valign: 'middle', margin: 2, fontFace: 'Pretendard'
       });
     });
 
@@ -2937,10 +2944,10 @@ class Component extends DCLogic {
       const x=LB+parseFloat(f.left),y=rowTopPx[row.id]+parseFloat(f.top),lx=x+parseFloat(f.labelLeft),ly=y+parseFloat(f.labelTop);
       if(f.connected){const coords=f.connPath.match(/-?[\d.]+/g).map(Number);line(x,y+11,x,y+coords[2],f.color);line(x,y+coords[2],x+coords[3],y+coords[2],f.color);}
       slide.addShape(S.ellipse,{x:X(x+parseFloat(f.dotLeft)+5.5),y:Y(y+parseFloat(f.dotTop)+5.5),w:Sz(11),h:Sz(11),fill:{color:hex(f.color)},line:{color:'FFFFFF',width:.75}});
-      slide.addText(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''),{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''))+32),h:Sz(this.labelBox({kind:'flag',label:f.label,labelSize:parseFloat(f.labelSize)}).height),fontSize:fs(parseFloat(f.labelSize)),bold:true,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
+      slide.addText(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''),{shape:S.roundRect,x:X(lx),y:Y(ly),w:Sz(this.measure(f.label+(cfg.showElementDates && f.showDate ? ' '+f.dateLabel : ''))+32),h:Sz(this.labelBox({kind:'flag',label:f.label,labelSize:parseFloat(f.labelSize)}).height),fontSize:fs(parseFloat(f.labelSize)),bold:f.labelWeight===700,strike:f.labelDecoration==='line-through'?'sngStrike':undefined,color:hex(f.ink),fill:{color:'FFFFFF'},line:{color:hex(f.color),width:1},margin:1});
     }));
-    st.items.filter(i=>i.kind==='sticky').forEach(it=>slide.addText(it.label,{shape:S.rect,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||220),h:Sz(it.h||120),fontSize:fs(this.labelFont(it)),color:'181A1B',fill:{color:hex(it.color)},margin:3,breakLine:false}));
-    st.items.filter(i=>i.kind==='image').forEach(it=>{slide.addImage({data:it.src,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||320),h:Sz(it.h||200)});slide.addText(it.label,{x:X(LB+this.xOf(it.s)),y:Y((it.y||0)+(it.h||200)),w:Sz(it.w||320),h:Sz(this.labelBox(it).height),fontSize:fs(this.labelFont(it)),color:'181A1B',fill:{color:'FFFFFF'},margin:1});});
+    st.items.filter(i=>i.kind==='sticky').forEach(it=>slide.addText(it.label,{shape:S.rect,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||220),h:Sz(it.h||120),fontSize:fs(this.labelFont(it)),bold:this.labelBold(it),strike:it.labelStrike?'sngStrike':undefined,color:'181A1B',fill:{color:hex(it.color)},margin:3,breakLine:false}));
+    st.items.filter(i=>i.kind==='image').forEach(it=>{slide.addImage({data:it.src,x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||320),h:Sz(it.h||200)});slide.addText(it.label,{x:X(LB+this.xOf(it.s)),y:Y((it.y||0)+(it.h||200)),w:Sz(it.w||320),h:Sz(this.labelBox(it).height),fontSize:fs(this.labelFont(it)),bold:this.labelBold(it),strike:it.labelStrike?'sngStrike':undefined,color:'181A1B',fill:{color:'FFFFFF'},margin:1});});
     if(cfg.showWeek!==false)view.subdivisions.forEach(q=>slide.addText(q.label,{x:X(LB+parseFloat(q.left)),y:Y(stripH+HDR-14),w:Sz(this.measure(q.label)+4),h:Sz(12),fontSize:fs(9),color:'FFFFFF',align:'left',margin:0}));
     if(cfg.showElementDates)st.items.filter(i=>['chev','plain','band','marker'].includes(i.kind) && !i.hideDate && this.visibleItem(i)).forEach(it=>{
       const x=LB+this.xOf(it.s),y=it.kind==='marker'?parseFloat(view.markersView.find(m=>m.id===it.id)?.top||0)+this.labelBox(it).height:it.kind==='band'?rowTopPx[it.rowFrom]+6+Math.max(40,rowTopPx[it.rowTo]+this.rowHeight(it.rowTo)-rowTopPx[it.rowFrom]-14):rowTopPx[it.row]+this.trackBox(it).localTop+this.trackBox(it).height;
@@ -2953,7 +2960,7 @@ class Component extends DCLogic {
       slide.addText(it.label, {
         shape: S.roundRect, rectRadius: 0.02, x: x-Sz(this.labelBox(it).width)/2, y: Y(parseFloat(view.markersView.find(m=>m.id===it.id)?.top)||0), w: Sz(this.labelBox(it).width), h: Sz(this.labelBox(it).height),
         fill: { color: 'FFFFFF' }, line: { color: hex(it.color), width: 0.75 },
-        color: hex(this.dark(it.color)), fontSize: fs(this.labelFont(it)), bold: true, align: 'center', valign: 'middle', margin: 1, fontFace: 'Pretendard'
+        color: hex(this.dark(it.color)), fontSize: fs(this.labelFont(it)), bold: this.labelBold(it), strike:it.labelStrike?'sngStrike':undefined, align: 'center', valign: 'middle', margin: 1, fontFace: 'Pretendard'
       });
     });
 
@@ -3029,7 +3036,7 @@ class Component extends DCLogic {
       const drag = !!(this.drag && (this.drag.id === it.id || this.drag.ids?.includes(it.id)));
       const fillBg = solid ? it.color : this.rgba(it.color, 0.16);
       return {
-        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), memo: it.memo || '', left: px(this.xOf(it.s)), width: px(w), top: px(top), height: px(h),
         bg: solid ? it.color : this.rgba(it.color, 0.16),
         fg: solid ? (this.lum(it.color) > 0.62 ? '#181a1b' : '#ffffff') : this.dark(it.color),
         labelSize: px(it.labelSize || 12.5), outDx: px(it.labelDx || 0), outDy: px(it.labelDy || 0),
@@ -3066,7 +3073,7 @@ class Component extends DCLogic {
       const box=this.trackBox(it,L),h=box.height;
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), memo: it.memo || '', dur: this.durationHidden(it) ? '' : this.durOf(it.s, it.e),
         left: px(this.xOf(it.s)), width: px(this.wOf(it.s, it.e)), top: px(box.localTop), height: px(h),
         bg: tint ? this.rgba(it.color, 0.1) : it.color,
         border: tint ? this.rgba(it.color, 0.5) : it.color,
@@ -3086,7 +3093,7 @@ class Component extends DCLogic {
       const edgeY=labelTop > 11 ? labelTop : labelTop+badgeHeight < 11 ? labelTop+badgeHeight : labelTop+badgeHeight/2;
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '', color: it.color, ink: this.dark(it.color),
+        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), memo: it.memo || '', color: it.color, ink: this.dark(it.color),
         targetId: target ? target.id : '', linkLabel: target ? this.L().linkedTo + ': ' + target.label : this.L().unlinked,
         badgeBg: '#fff',
         dotLeft:px(target ? -11 : labelLeft-23), dotTop:px(target ? 0 : labelTop+1),
@@ -3124,7 +3131,7 @@ class Component extends DCLogic {
       const sel = this.isSelected(it.id);
       const hov = st.hover === it.id;
       return {
-        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)), memo: it.memo || '',
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), memo: it.memo || '',
         left: px(172 + this.xOf(it.s)), width: px(this.wOf(it.s, it.e)),
         top: px(t1 + 6), height: px(Math.max(40, t2 - t1 - 14)),
         bg: it.variant === 'tint' ? this.rgba(it.color, 0.16) : it.color,
@@ -3159,7 +3166,7 @@ class Component extends DCLogic {
       const editing = st.editing === it.id;
       const k = mplace[it.id] || 0;
       return {
-        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)), color: it.color, ink: this.dark(it.color),
+        dateLabel: this.shortDate(it.s), showDate: cfg.showElementDates && !it.hideDate, id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), color: it.color, ink: this.dark(it.color),
         left: px(this.xOf(it.s)), top: px(k * markerLaneH), stemH: px(Math.max(0,stripH-k*markerLaneH-this.labelBox(it).height)),
         sel: this.isSelected(it.id), editing: editing, show: !editing
       };
@@ -3171,7 +3178,7 @@ class Component extends DCLogic {
       const alpha = it.variant === 'tint' ? 0.55 : 1;
       const base = it.color || '#fdf3d0';
       return {
-        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
+        dateLabel: this.shortDate(it.s)+' ~ '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
         width: px(it.w || 210), height: px(it.h || 120),
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
@@ -3200,7 +3207,7 @@ class Component extends DCLogic {
       readOnly: !!st.readOnly, editable: !st.readOnly, rowMoveTip: st.lang === 'ja' ? 'ドラッグで行の順序変更 · Ctrl/⌘ ↑ ↓' : '드래그로 행 순서 변경 · Ctrl/⌘ ↑ ↓',
       focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth, openImport:this.openImport, openWorkspace:this.openWorkspace, openEditGate:this.openEditGate, canUnlockEdit: !!st.canUnlockEdit && !!st.readOnly, exportJson:this.exportJson, openFile:this.openFile,
       timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
-      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,zIndex:this.itemZ(it.id),src:it.src,label:it.label,labelSize:px(this.labelFont(it)),left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
+      imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,zIndex:this.itemZ(it.id),src:it.src,label:it.label,labelSize:px(this.labelFont(it)),...this.labelStyle(it),left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #e30084':'none'})),
       onRowResizeDown: this.onRowResizeDown, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       noSelection: !sel && !focusRowObj, showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
       rowPropH: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id)) : 0,
@@ -3279,7 +3286,7 @@ class Component extends DCLogic {
       selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
       linkOptions: st.items.filter(i=>this.linkKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===(i.rowFrom||i.row))?.name || '')+' · '+i.label})),
       marquee:st.marquee, linkDrag: st.linkDrag, linking:!!st.linkDrag,
-      selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
+      selBoldBg:sel && this.labelBold(sel)?'#fff0f7':'#fff',selBoldFg:sel && this.labelBold(sel)?'#c2006f':'#525c66',selStrikeBg:sel?.labelStrike?'#fff0f7':'#fff',selStrikeFg:sel?.labelStrike?'#c2006f':'#525c66',selCanFormat:!!sel && sel.kind!=='now',selBold:sel?this.labelBold(sel):false,selStrike:!!sel?.labelStrike,onLabelFormat:this.onLabelFormat,selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
       selS: sel ? Math.round(sel.s*100)/100 : 0, selE: sel ? Math.round(sel.e*100)/100 : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? this.boxKind(sel.kind)?Math.round((this.trackBox(sel,L).height+12)/laneH*100)/100:sel.span||1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
       propertyDates: !!st.propertyDates, togglePropertyDates: this.togglePropertyDates, openPropertyCalendar:this.openPropertyCalendar, onPropertyTimeField: this.onPropertyTimeField,

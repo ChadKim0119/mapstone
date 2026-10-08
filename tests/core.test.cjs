@@ -24,9 +24,9 @@ test('AI analysis output becomes a repaired, validated document',()=>{const d=C.
   assert.equal(m.kind,'marker');assert.equal(m.row,'');assert.equal(m.s,m.e);assert.equal(f.row,'r1');assert.deepEqual([band.rowFrom,band.rowTo],['r1','r2']);assert.equal(st.kind,'sticky');assert.ok(st.w>0);assert.equal(d.now,1+15/30);
   assert.equal(new Set(d.items.map(i=>i.id)).size,6);assert.throws(()=>C.fromAnalysis({items:[{start:'?'}]}));});
 
-test('Analysis colors follow the row block and are stable on repeated client normalization',()=>{
+test('Analysis preserves source item colors and are stable on repeated client normalization',()=>{
  const d=C.fromAnalysis({rangeStart:'2026-01-01',rows:[{id:'a',name:'A'},{id:'b',name:'B'}],items:[{type:'flag',row:'a',start:'2026-01-01',label:'memo'},{type:'chev',row:'a',start:'2026-01-01',end:'2026-02-01',label:'base',color:'#0078d4'},{type:'plain',row:'a',start:'2026-01-02',end:'2026-02-01',label:'ref',color:'#ff0000'},{type:'chev',row:'b',start:'2026-01-01',end:'2026-02-01',label:'B',color:'#5b3fd1'}]});
- assert.equal(d.items[1].color,'#0078d4');assert.equal(d.items[0].color,'#006abb');assert.equal(d.items[2].color,'#1f88d9');assert.equal(d.items[3].color,'#5b3fd1');const before=JSON.stringify(d);C.analysisColors(d);assert.equal(JSON.stringify(d),before);
+ assert.equal(d.items[1].color,'#0078d4');assert.equal(d.items[0].color,'#e22a21');assert.equal(d.items[2].color,'#ff0000');assert.equal(d.items[3].color,'#5b3fd1');const before=JSON.stringify(d);C.analysisColors(d);assert.equal(JSON.stringify(d),before);
 });
 
 test('Analysis converts one-day ranges to milestones and separates overlapping ranges',()=>{

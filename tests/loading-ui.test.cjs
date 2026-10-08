@@ -3,11 +3,12 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 function fixture(fetch){
   const nodes=[];
   class Element{
-    constructor(tag){this.tagName=tag;this.children=[];this.attrs={};this.style={};this.textContent='';this.value='';this.events={};nodes.push(this);this.classList={add:(...c)=>{this.className=[this.className||'',...c].join(' ');},toggle:(c,on)=>{const s=new Set((this.className||'').split(' '));on?s.add(c):s.delete(c);this.className=[...s].join(' ');}};}
+    constructor(tag){this.tagName=tag;this.children=[];this.attrs={};this.style={};this.dataset={};this.textContent='';this.value='';this.events={};nodes.push(this);this.classList={remove:(c)=>this.classList.toggle(c,false),add:(...c)=>{this.className=[this.className||'',...c].join(' ');},toggle:(c,on)=>{const s=new Set((this.className||'').split(' '));on?s.add(c):s.delete(c);this.className=[...s].join(' ');}};}
     append(...ns){for(const n of ns){n.parentElement=this;this.children.push(n);}}
     replaceChildren(...ns){this.children=[];this.append(...ns);if(this.tagName==='select')this.value=ns[0]?.value||'';}
     set value(v){this._value=this.tagName==='select'&&!this.children.some(n=>n.value===v)?'':v;}
     get value(){return this._value;}
+    getAttribute(k){return this.attrs[k]??null;}
     setAttribute(k,v){this.attrs[k]=v;}
     removeAttribute(k){delete this.attrs[k];}
     addEventListener(k,f){this.events[k]=f;}
@@ -15,12 +16,16 @@ function fixture(fetch){
     before(n){this.parentElement.append(n);}
     showModal(){this.open=true;this.initialClass=this.className;}
     close(){this.open=false;}
-    remove(){}
+    remove(){this.removed=true;}
+    querySelectorAll(selector){return this.children.flatMap(n=>[...(selector==='button'&&n.tagName==='button'?[n]:[]),...n.querySelectorAll(selector)]);}
+    cloneNode(){const c=new Element(this.tagName);c.textContent=this.textContent;c.append(...this.children.map(n=>n.cloneNode(true)));return c;}
+    getBoundingClientRect(){return {left:0,top:0};}
+    removeEventListener(k,f){if(this.events[k]===f)delete this.events[k];}
     scrollIntoView(){}
     focus(){this.focused=true;}
     click(){return this.events.click?.({target:this});}
   }
-  const document={createElement:t=>new Element(t),body:new Element('body')},store=new Map(),ctx={MapstoneCore:C,window:{},document,crypto,AbortSignal,clearTimeout,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},fetch};
+  const document={createElement:t=>new Element(t),body:new Element('body'),addEventListener(){},removeEventListener(){}},store=new Map(),ctx={MapstoneCore:C,window:{innerWidth:1000,innerHeight:800,addEventListener(){},removeEventListener(){}},requestAnimationFrame:f=>{f();return 0;},cancelAnimationFrame(){},document,crypto,AbortSignal,clearTimeout,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},fetch};
   vm.runInNewContext(fs.readFileSync('mapstone-ui.js','utf8').replace('window.MapstoneUI={','window.MapstoneUI={renderVersionReport,'),ctx);
   const app={state:{title:'QA'},sync:{endpoint:'https://example.test'}};
   return {ui:ctx.window.MapstoneUI,app,nodes,find:text=>nodes.find(n=>n.textContent===text),byClass:c=>nodes.find(n=>(n.className||'').split(' ').includes(c))};
@@ -48,8 +53,8 @@ test('Text AI feedback prevents duplicate analysis and restores controls on succ
   for(const fail of [false,true]){
     let release,calls=0;const gate=new Promise(r=>release=r),f=fixture(async()=>{calls++;await gate;if(fail)throw Error('offline');return {ok:true,json:async()=>({document:C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]})})};});
     f.ui.open(f.app,'import');const input=f.byClass('ms-text-editor'),text=f.find('텍스트 분석'),image=f.find('이미지 분석'),status=f.byClass('ms-message');input.textContent='10월 1일 킥오프';
-    const pending=text.click();assert.equal(text.textContent,'분석 중…');assert.equal(text.attrs['aria-busy'],'true');assert.equal(image.disabled,true);assert.equal(input.disabled,true);await text.click();assert.equal(calls,1);
-    release();await pending;assert.equal(text.textContent,'텍스트 분석');assert.equal(text.attrs['aria-busy'],'false');assert.equal(status.attrs['aria-busy'],'false');assert.equal(image.disabled,false);assert.equal(input.disabled,false);assert.match(status.textContent,fail?/offline/:/완료되었습니다/);
+    const pending=text.click();assert.equal(f.byClass('ms-ai-analysis').hidden,false);assert.doesNotMatch(text.className,/ms-loading/);assert.equal(text.textContent,'분석 중…');assert.equal(text.attrs['aria-busy'],'true');assert.equal(image.disabled,true);assert.equal(input.disabled,true);await text.click();assert.equal(calls,1);
+    release();await pending;assert.equal(f.byClass('ms-ai-analysis').hidden,true);assert.equal(text.textContent,'텍스트 분석');assert.equal(text.attrs['aria-busy'],'false');assert.equal(status.attrs['aria-busy'],'false');assert.equal(image.disabled,false);assert.equal(input.disabled,false);assert.match(status.textContent,fail?/offline/:/완료되었습니다/);
   }
 });
 test('Version comparison disables changes while AI runs and clears feedback after success or error',async()=>{
@@ -60,8 +65,8 @@ test('Version comparison disables changes while AI runs and clears feedback afte
     });
     f.app.state.versions=[{id:'a',projectId:'project'},{id:'b',projectId:'project'}];f.app.state.versionProjectId='project';    await f.ui.versionLibrary(f.app,true);const boxes=f.nodes.filter(n=>n.type==='checkbox'),select=f.nodes.find(n=>n.tagName==='select'),generate=f.find('선택한 버전 비교하기'),report=f.byClass('ms-version-report');
     for(const b of boxes){b.checked=true;b.events.change();}assert.equal(generate.disabled,false);
-    const pending=generate.click();assert.equal(select.disabled,true);assert.equal(generate.attrs['aria-busy'],'true');assert.ok(boxes.every(b=>b.disabled));
-    release();await pending;assert.equal(select.disabled,false);assert.equal(generate.disabled,false);assert.equal(generate.attrs['aria-busy'],'false');assert.equal(report.attrs['aria-busy'],'false');assert.match(fail?report.textContent:report._copyText,fail?/offline/:/검수 완료/);
+    const pending=generate.click();assert.equal(select.disabled,true);assert.equal(generate.attrs['aria-busy'],'true');assert.equal(f.byClass('ms-ai-analysis').hidden,false);assert.doesNotMatch(generate.className,/ms-loading/);assert.ok(boxes.every(b=>b.disabled));
+    release();await pending;assert.equal(select.disabled,false);assert.equal(generate.disabled,false);assert.equal(generate.attrs['aria-busy'],'false');assert.equal(report.attrs['aria-busy'],'false');assert.equal(f.byClass('ms-ai-analysis').hidden,true);assert.match(fail?report.textContent:report._copyText,fail?/offline/:/검수 완료/);
   }
 });
 test('Executive summary stays brief while detailed report and copy retain every change safely',()=>{
@@ -69,4 +74,22 @@ test('Executive summary stays brief while detailed report and copy retain every 
   f.ui.renderVersionReport(node,{from:1,to:2,report});assert.ok(f.find('Executive Summary'));assert.ok(f.find('주요 변경점'));assert.ok(f.find('주요 인사이트'));
   const cards=f.nodes.filter(n=>n.className==='ms-report-card');assert.equal(cards[0].children[1].children.length,3);assert.equal(cards[1].children[1].children.length,1);
   for(const t of changes)assert.ok(node._copyText.includes(t));assert.ok(f.find('<img src=x onerror=alert(1)> 담당자 확인'));assert.equal(f.nodes.filter(n=>n.tagName==='img').length,0);
+});
+
+test('Pasted text gets analysis overlay on its content while file analysis keeps the card',async()=>{
+ for(const pasted of [true,false]){let release;const gate=new Promise(r=>release=r),f=fixture(async()=>{await gate;return {ok:true,json:async()=>({document:C.fromAnalysis({rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]})})};});f.ui.open(f.app,'import');const input=f.byClass('ms-text-editor');input.textContent='10월 1일 킥오프';if(pasted)input.events.input();const pending=f.find('텍스트 분석').click(),motion=f.byClass('ms-ai-analysis');assert.equal((motion.className||'').includes('ms-ai-overlay'),pasted);if(pasted)assert.equal(motion.parentElement,input.parentElement);release();await pending;assert.equal(motion.hidden,true);}
+});
+
+test('Presentation lenses preserve data, pin the last pointer position, and dispose on exit',()=>{
+ const f=fixture(()=>{}),board=new f.nodes[0].constructor('div');Object.assign(board,{scrollWidth:1200,scrollHeight:900,scrollLeft:40,scrollTop:20});f.app._board=board;f.app.state.focusMode=true;const before=JSON.stringify(f.app.state);
+ f.ui.refreshPresentation(f.app);f.find('◯').click();board.events.pointermove({clientX:200,clientY:150});const lens=f.byClass('ms-present-lens'),content=f.byClass('ms-lens-content');assert.equal(lens.hidden,false);assert.match(content.style.transform,/translate\(-360px,-220px\) scale\(2\)/);
+ board.events.pointerleave();assert.equal(lens.hidden,true);f.find('고정').click();assert.equal(lens.hidden,false);assert.equal(lens.style.left,'200px');board.events.pointermove({clientX:600,clientY:400});assert.equal(lens.style.left,'200px');
+ f.find('3×').click();board.events.pointermove({clientX:200,clientY:150});assert.match(content.style.transform,/scale\(3\)/);assert.equal(JSON.stringify(f.app.state),before);
+ f.app.state.focusMode=false;f.ui.refreshPresentation(f.app);assert.equal(f.app._presentation,null);assert.equal(f.byClass('ms-presentation').removed,true);assert.equal(board.events.pointermove,undefined);
+});
+
+test('Leaving full view restores the previous zoom and scroll position',()=>{
+ const f=fixture(()=>{}),board=new f.nodes[0].constructor('div');Object.assign(board,{clientWidth:800,scrollWidth:1200,scrollHeight:900,scrollLeft:120,scrollTop:70});f.app._board=board;f.app.state.cfg={months:12,weekPx:19};f.app.weeksIn=()=>4;f.app.setState=p=>Object.assign(f.app.state,p);f.app.viewCfg=fn=>fn(f.app.state);
+ f.ui.toggleFocus(f.app);assert.equal(f.app.state.focusMode,true);assert.notEqual(f.app.state.cfg.weekPx,19);assert.equal(board.scrollLeft,0);
+ f.ui.toggleFocus(f.app);assert.equal(f.app.state.focusMode,false);assert.equal(f.app.state.cfg.weekPx,19);assert.equal(board.scrollLeft,120);assert.equal(board.scrollTop,70);assert.equal(f.app._presentation,null);
 });
