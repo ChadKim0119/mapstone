@@ -196,6 +196,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-duration { display:block;font-size:10.5px;font-weight:700;line-height:14px;white-space:nowrap; }
     [data-app] [role="button"][data-id]:focus-visible { outline:3px solid #e30084; outline-offset:3px; }
     [data-board] { isolation:isolate; }
+    .ms-label-editor { display:flex;flex-direction:column;gap:8px; }
+    .ms-text-toolbar,.ms-text-format { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+    .ms-text-toolbar .ms-fontsize { border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden; }
+    [data-properties] .ms-text-toolbar .ms-fontsize button { border:0;border-radius:0 !important;background:var(--color-bg-neutral-1); }
+    .ms-fill-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3); }
+    .ms-fill-toggle { border:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer; }
+    .ms-toggle-divider { padding:0 8px;color:var(--color-text-neutral-3); }
     @media print { .ms-link-drag-overlay { display:none !important; } }
     [data-app][data-focus="true"] > [data-toolbar], [data-app][data-focus="true"] [data-properties], [data-app][data-focus="true"] [data-noprint] { display:none !important; }
     [data-app][data-focus="true"] { position:fixed; inset:0; z-index:500; height:100dvh !important; }
@@ -610,8 +617,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <span style="font-size:14px;font-weight:700">{{ selKindLabel }}</span>
                   <button onClick="{{ deleteSel }}" style="height:30px;padding:0 10px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:600;color:#7c1712;cursor:pointer">{{ L.del }}</button>
                 </div>
-                <label style="display:flex;flex-direction:column;gap:6px">
-                  <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)"><span>{{ selKindLabel }} :</span>
+                <div class="ms-label-editor">
+                  <textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" aria-label="{{ L.labelF }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
+                  <div class="ms-text-toolbar">
                     <sc-if value="{{ selHasText }}" hint-placeholder-val="{{ false }}">
                       <span class="ms-fontsize" style="display:inline-flex;align-items:center;gap:2px">
                         <button type="button" data-delta="-1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelSmaller }}" data-tip="{{ L.labelSmaller }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:11px;font-weight:700;cursor:pointer">A−</button>
@@ -619,10 +627,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <button type="button" data-delta="1" onClick="{{ onLabelSize }}" aria-label="{{ L.labelBigger }}" data-tip="{{ L.labelBigger }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="width:26px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:5px;background:#fff;font-size:13px;font-weight:700;cursor:pointer">A+</button>
                       </span>
                     </sc-if>
-                  </span>
-                  <textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:#000"></textarea>
-                </label>
-                <sc-if value="{{ selCanFormat }}"><div style="display:flex;gap:6px"><button type="button" data-format="labelBold" onClick="{{ onLabelFormat }}" aria-label="글씨 굵게" aria-pressed="{{ selBold }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selBoldBg }};color:{{ selBoldFg }};font-weight:700;cursor:pointer">B · 굵게</button><button type="button" data-format="labelStrike" onClick="{{ onLabelFormat }}" aria-label="취소선" aria-pressed="{{ selStrike }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selStrikeBg }};color:{{ selStrikeFg }};text-decoration:line-through;cursor:pointer">S · 취소선</button></div></sc-if>
+                <sc-if value="{{ selCanFormat }}"><div class="ms-text-format"><button type="button" data-format="labelBold" onClick="{{ onLabelFormat }}" aria-label="글씨 굵게" aria-pressed="{{ selBold }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selBoldBg }};color:{{ selBoldFg }};font-weight:700;cursor:pointer">B · 굵게</button><button type="button" data-format="labelStrike" onClick="{{ onLabelFormat }}" aria-label="취소선" aria-pressed="{{ selStrike }}" style="height:28px;padding:0 10px;border:1px solid #cbd2da;border-radius:5px;background:{{ selStrikeBg }};color:{{ selStrikeFg }};text-decoration:line-through;cursor:pointer">S · 취소선</button></div></sc-if>
+                  </div>
+                </div>
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button class="ms-memo-clear" onClick="{{ clearMemo }}" aria-label="{{ L.memoDel }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"></path></svg></button></span>
@@ -658,8 +665,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <sc-if value="{{ selNotFlag }}">
                 <section class="ms-time-properties">
                 <div class="ms-time-heading"><span>{{ L.timeMode }}</span>
-                <button type="button" role="switch" aria-checked="{{ propertyDates }}" aria-label="{{ L.timeMode }}" onClick="{{ togglePropertyDates }}" title="{{ L.timeModeHint }}" style="align-self:flex-start;border:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer"><span style="color:{{ propertyDateColor }}">{{ L.timeDate }}</span><span style="padding:0 8px;color:var(--color-text-neutral-3)">/</span><span style="color:{{ propertyNumberColor }}">{{ L.timeNumber }}</span></button></div>
-                <span style="font-size:11px;line-height:1.5;color:var(--color-text-neutral-3)">{{ L.timeModeHint }}</span>
+                <button type="button" role="switch" aria-checked="{{ propertyDates }}" aria-label="{{ L.timeMode }}" onClick="{{ togglePropertyDates }}" style="align-self:flex-start;border:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer"><span style="color:{{ propertyDateColor }}">{{ L.timeDate }}</span><span style="padding:0 8px;color:var(--color-text-neutral-3)">/</span><span style="color:{{ propertyNumberColor }}">{{ L.timeNumber }}</span></button></div>
                 <div style="display:grid;grid-template-columns:{{ selDateColumns }};gap:10px">
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ selStartLabel }}</span>
@@ -709,11 +715,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </div>
                 <div style="display:flex;flex-direction:column;gap:8px">
                   <sc-if value="{{ selNotFlag }}">
-                  <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.fillF }}</span>
-                  <div style="display:flex;gap:6px">
-                    <button data-variant="solid" onClick="{{ onVariant }}" style="flex:1;height:34px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;cursor:pointer">{{ L.solid }}</button>
-                    <button data-variant="tint" onClick="{{ onVariant }}" style="flex:1;height:34px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:13px;font-weight:600;cursor:pointer">{{ L.tint }}</button>
-                  </div>
+                  <div class="ms-fill-heading"><span>{{ L.fillF }}</span><button type="button" class="ms-fill-toggle" role="switch" aria-label="{{ L.fillF }}" aria-checked="{{ selFillTint }}" onClick="{{ toggleFill }}"><span style="color:{{ fillSolidColor }}">{{ L.solid }}</span><span class="ms-toggle-divider">/</span><span style="color:{{ fillTintColor }}">{{ L.tint }}</span></button></div>
                   </sc-if>
                 </div>
                 </sc-if>
@@ -1012,6 +1014,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v9.85', agent: 'Codex', title: '항목 속성 텍스트 도구와 채우기 정리', items: ['글자 크기 조절을 텍스트 아래로 이동 · 굵게/취소선과 도구 행 통합', '모든 항목의 텍스트 필드 앞 반복 명칭 제거 · 접근성 라벨 유지', '시작·종료 표시 방식으로 명칭 변경 · 중복 설명 삭제', '진하게/연하게 채우기 토글 · 현재 선택 상태 표시'] },
     { v: 'v9.84', agent: 'Codex', title: '이미지 비교 구분선과 전체창 보기', items: ['슬라이드 비교 구분선 직접 드래그 · 좌우 파일명 · 채움 없는 선형 조절', '투명도 비교 배경/비교 파일과 불투명도 및 현재 표시 상태 안내', '이미지 비교 전체창 보기 · ESC 복귀 · 비교 상태 유지'] },
     { v: 'v9.83', agent: 'Codex', title: '버전 비교 보고서와 이미지 비교', items: ['보고서 복사 완료 토스트 · 추가/삭제/변경 상세 내역과 전후 값 표시', '이미지 비교 · V1/V2 기준 전환 · 변경 강조 · 슬라이드/투명도 비교', '클라우드 저장 버전 및 파일/이미지 비교에서 동일한 비교 도구 제공', '돋보기 마지막 위치 유지 · 보드 변경 시 이벤트 재연결'] },
     { v: 'v9.82', agent: 'Codex', title: '전체보기 기본 설정과 메모·포인터 개선', items: ['전체보기 NOW만 기본 표시 · 단축키 유지 · 종료 및 저장 시 기존 보기 설정 보존', '포스트잇 직접 입력 · 모든 일정 위에 표시', '메모 점 드래그 연결선 실시간 표시', '레이저 버튼 중앙 정렬 · 누른 채 이동 시 짧은 잔상', '돋보기 화면 크기 작게·보통·크게 선택'] },
@@ -1106,7 +1109,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v9.84';
+  APP_VER = 'v9.85';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1124,7 +1127,7 @@ class Component extends DCLogic {
       sticky: '포스트잇', stickyNew: '메모', rowLanesF: '행 높이 (레인 수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
       importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장 [JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', timeModeHint: '일자: 하루씩 · 숫자: 개월 단위로 조정', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '행', rowBasic: '기본 정보', rowSize: '행 크기', rowOrder: '행 관리', timeMode: '시작·종료 입력 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      selectedCount: '개 항목 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 항목 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '행', rowBasic: '기본 정보', rowSize: '행 크기', rowOrder: '행 관리', timeMode: '시작·종료 표시 방식', dayHint: '일자 모드에서는 화살표로 하루씩 조정합니다.', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '행 삭제', rowDelMsg: '이 행과 행 안의 모든 바·메모 표시가 삭제됩니다. Cmd(Ctrl)+Z 로 되돌릴 수 있어요.', nowTip: '클릭: NOW 속성 / 드래그: 기준선 이동 / 더블클릭·Enter: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
@@ -1163,7 +1166,7 @@ class Component extends DCLogic {
       sticky: '付箋メモ', stickyNew: 'メモ', rowLanesF: '行の高さ（レーン数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存 [PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
       importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存 [JSON]', panelF: '設定パネル表示', helpTip: 'ショートカットと操作方法を見る',
-      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: '日付を非表示', timeModeHint: '日付：1日ずつ · 数値：月単位で調整', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', titlePrefix: 'タイトル', rowNamePrefix: '行', rowBasic: '基本情報', rowSize: '行のサイズ', rowOrder: '行の管理', timeMode: '開始・終了の入力方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
+      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: '日付を非表示', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', titlePrefix: 'タイトル', rowNamePrefix: '行', rowBasic: '基本情報', rowSize: '行のサイズ', rowOrder: '行の管理', timeMode: '開始・終了の表示方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: '行を削除', rowDelMsg: 'この行と行内のすべてのブロック・メモが削除されます。Cmd(Ctrl)+Z で元に戻せます。', nowTip: 'クリック：NOW設定 / ドラッグ：基準線を移動 / ダブルクリック・Enter：今日へ移動', dup: '複製',
       tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
@@ -2791,6 +2794,7 @@ class Component extends DCLogic {
   }
   onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{if(id==='__now'){d.cfg.hideNowDate=!!e.currentTarget.checked;return;}const it=d.items.find(i=>i.id===id);if(it && ['flag','marker'].includes(it.kind))it.hideDate=!!e.currentTarget.checked;});};
   onColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.color = c; }); };
+  toggleFill = () => { const it=this.state.items.find(i=>i.id===this.state.sel);if(it)this.onVariant({currentTarget:{dataset:{variant:it.variant==='tint'?'solid':'tint'}}}); };
   onVariant = (e) => { const v = e.currentTarget.dataset.variant; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.variant = v; }); };
   onTitle = (e) => { const v = e.currentTarget.value; this.editText((d) => { d.title = v; }); };
   togglePanel = () => {
@@ -3330,7 +3334,7 @@ class Component extends DCLogic {
       onHover: this.onHover, onOutLabelEnter: this.onOutLabelEnter, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,
-      onField: this.onField, onStep: this.onStep, onColor: this.onColor, onVariant: this.onVariant, onCfg: this.onCfg,
+      onField: this.onField, onStep: this.onStep, onColor: this.onColor, onVariant: this.onVariant, toggleFill:this.toggleFill, selFillTint:!!sel && sel.variant==='tint', fillSolidColor:sel?.variant==='tint'?'var(--color-text-neutral-3)':'#e30084', fillTintColor:sel?.variant==='tint'?'#e30084':'var(--color-text-neutral-3)', onCfg: this.onCfg,
       onWeekMode: this.onWeekMode, toggleWeekMode: this.toggleWeekMode, toggleInteract: this.toggleInteract, nowToday: this.nowToday,
       copySel: this.copySel, cutSel: this.cutSel, pasteClip: this.pasteClip,
       openVersionLibrary:this.openVersionLibrary,openVersionCompare:this.openVersionCompare,onVField: this.onVField, saveVersion: this.saveVersion, restoreVersion: this.restoreVersion, deleteVersion: this.deleteVersion,
