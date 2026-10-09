@@ -156,3 +156,57 @@ html:has([data-anim=off]) .ms-ai-analysis *,html:has([data-anim=off]) .ms-ai-ana
 /* Round the actual last month cell inside the generated column wrapper. */
 [data-time-header]>div:last-child>div:last-child{border-top-right-radius:12px}
 .ms-fill-heading{justify-content:flex-end}
+
+[data-track]{border-right:1px solid var(--ms-color-border-default);box-sizing:border-box}
+.ms-welcome{position:absolute;left:172px;right:0;top:55%;transform:translateY(-50%);z-index:30;pointer-events:none;text-align:center;color:var(--ms-color-text-secondary);font-size:15px;line-height:1.9;text-shadow:0 1px 5px #fff,0 0 10px #fff}
+.ms-welcome>div:first-child{font-weight:700}.ms-welcome>div:last-child{font-size:12px;letter-spacing:.08em}.ms-welcome span{display:inline-block;white-space:pre}
+@keyframes ms-analysis-spark{0%,100%{box-shadow:none}45%{box-shadow:0 0 0 3px #a4c4ef66,0 0 14px #3568c533;background:#edf5ff}}
+.ms-analysis-spark{animation:ms-analysis-spark 1.4s ease-in-out 3}
+@media(prefers-reduced-motion:reduce){.ms-analysis-spark{animation:none}}
+
+[data-schedule-shape]{filter:drop-shadow(0 2px 3px rgb(22 54 93 / 12%))}
+[data-track]>[data-id][role=button]:not(:has([data-schedule-shape])){box-shadow:0 2px 5px rgb(22 54 93 / 9%)}
+[data-alert-label]{filter:drop-shadow(0 2px 3px rgb(22 54 93 / 9%))}
+
+[data-marker-item],[data-item-surface]{box-shadow:0 2px 5px rgb(22 54 93 / 9%)}
+
+.ms-welcome{font-size:20px;line-height:1.9;padding:0 20px;box-sizing:border-box}.ms-welcome>img{display:block;margin:0 auto 12px;opacity:.65}.ms-welcome>div:last-child{font-size:14px}.ms-welcome>img+div{font-weight:700}
+
+/* Counter-scale text only; timeline geometry keeps the independent vertical fit. */
+[data-capture] [data-text-ratio]{scale:1 var(--ms-text-ratio,1)}
+
+[data-capture] [data-link-dot]>span{scale:1 var(--ms-text-ratio,1)}
+.ms-modal-scrim{inset:0!important;width:100vw!important;height:100dvh!important;z-index:1000000!important}
+dialog::backdrop{background:rgb(22 54 93 / 30%);backdrop-filter:blur(2px)}
+
+.ms-view-dock{position:absolute;left:0;right:0;min-height:0!important;padding:0;background:transparent;pointer-events:none}.ms-view-pill{pointer-events:auto}
+[data-sticky] [data-text-ratio]{height:auto!important;transform-origin:top center}
+.ms-drop-btns[hidden]{display:none!important}
+.ms-dialog .ms-image-remove{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;min-width:30px;max-width:30px;min-height:30px;max-height:30px;top:8px!important}
+.ms-image-remove svg{display:block;flex:none}
+.ms-ai-analysis.ms-ai-overlay{inset:0!important;border-radius:10px;background:linear-gradient(120deg,#EAF2FCEB,#F5F8FDEB)!important;backdrop-filter:blur(2px);box-shadow:inset 0 0 0 2px #3568c5;overflow:hidden}
+.ms-ai-overlay .ms-ai-visual{filter:drop-shadow(0 3px 8px #3568c533)}
+
+[data-sticky] [data-text-ratio]{overflow-wrap:anywhere;word-break:normal}
+
+.ms-view-dock>.ms-view-pill{position:relative;left:auto;bottom:auto;transform:none}
+
+.ms-analysis-actions{display:flex;align-items:center;gap:12px;margin:12px 0 8px}.ms-analysis-actions .ms-message{flex:1;min-width:0;margin:0!important;overflow-wrap:anywhere}.ms-analysis-actions>.ms-button{flex:none;margin:0!important}
+@media(max-width:480px){.ms-analysis-actions{gap:8px;align-items:flex-start}.ms-analysis-actions .ms-message{font-size:11px}}
+
+/* Attachment identity and analysis controls share the same treatment across dialogs. */
+.ms-attached-file{padding:10px 12px;margin:10px 0;border:1px solid #bfd3ef;border-radius:8px;background:#eaf2fb;color:#17375e;font-weight:600;overflow-wrap:anywhere;text-align:left}
+.ms-dialog .ms-text-clear-all{margin:0;padding:6px 10px;border-radius:7px;white-space:nowrap;font-size:11px}
+.ms-dialog .ms-text-editor{scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:#8daed9 #eaf2fb;overflow-y:scroll;padding-right:8px}
+.ms-text-editor::-webkit-scrollbar{width:8px}.ms-text-editor::-webkit-scrollbar-thumb{background:#8daed9;border-radius:6px}.ms-text-editor::-webkit-scrollbar-track{background:#eaf2fb}
+.ms-analysis-progress{font-variant-numeric:tabular-nums;color:#315b91;font-size:11px;white-space:nowrap}
+.ms-analysis-actions{flex-wrap:wrap}.ms-analysis-actions>.ms-message{flex-basis:40%}
+
+.ms-attached-file[hidden],.ms-analysis-progress[hidden],.ms-dialog .ms-text-clear-all[hidden]{display:none!important}
+.ms-dialog .ms-drop>.ms-attached-file{box-sizing:border-box;align-self:stretch;width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ms-dialog .ms-attached-file>span{min-width:0;overflow-wrap:anywhere}
+.ms-dialog .ms-text-editor{box-sizing:border-box;width:100%;align-self:stretch}
+
+.ms-analysis-actions>.ms-button[hidden]{display:none!important}
+
+.ms-ai-copy>.ms-analysis-progress{display:block;margin-top:10px;text-align:center;font-size:12px;font-weight:600}
