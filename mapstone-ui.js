@@ -73,7 +73,7 @@
       range.style.background=mode==='opacity'?'linear-gradient(to right,var(--ms-color-action-primary) '+n+'%,var(--ms-color-border-default) '+n+'%)':'transparent';
       opacityInfo.textContent='배경: '+first.name+' · 밝기 100% / 겹쳐 보기: '+second.name+' · 불투명도 '+n+'% — '+(n===0?first.name+'만 표시':n===100?second.name+'만 표시':n===50?'두 파일이 같은 비율로 겹쳐 보입니다':n>50?second.name+'이 더 선명하게 보입니다':first.name+'이 더 선명하게 보입니다');
       if(mode==='changes'){const offset=(docs[0].cfg.startY-docs[1].cfg.startY)*12+docs[0].cfg.startM-docs[1].cfg.startM,removed=docs[0].items.filter(i=>diff.byId[i.id]==='removed').map(i=>({...i,s:i.s+offset,e:i.e+offset}));over.src=versionImage({...docs[1],items:[...docs[1].items,...removed]},docs,diff.byId);}
-      caption.textContent=first.name+' 기준 → '+second.name+(mode==='wipe'?' · 선을 끌면 왼쪽은 비교 파일, 오른쪽은 기준 파일로 나뉩니다.':mode==='opacity'?' · 배경은 그대로 유지하고 비교 파일의 불투명도만 조절합니다.':' · 비교 버전의 변경사항과 삭제된 항목을 표시합니다.');
+      caption.textContent=first.name+' 기준 → '+second.name+(mode==='wipe'?' · 선을 끌면 왼쪽은 비교 파일, 오른쪽은 기준 파일로 나뉩니다.':mode==='opacity'?' · 배경은 그대로 유지하고 비교 파일의 불투명도만 조절합니다.':' · 비교 버전의 변경사항과 삭제된 아이템을 표시합니다.');
     }
     const slide=e=>{const r=frame.getBoundingClientRect();range.value=String(Math.max(0,Math.min(100,Math.round((e.clientX-r.left)/r.width*100))));update();};
     divider.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();divider.setPointerCapture?.(e.pointerId);slide(e);});divider.addEventListener('pointermove',e=>{if(divider.hasPointerCapture?.(e.pointerId))slide(e);});divider.addEventListener('pointerup',e=>{if(divider.hasPointerCapture?.(e.pointerId))divider.releasePointerCapture(e.pointerId);});divider.addEventListener('keydown',e=>{const next={ArrowLeft:-1,ArrowRight:1,Home:-100,End:100}[e.key];if(next===undefined)return;e.preventDefault();range.value=String(Math.max(0,Math.min(100,Number(range.value)+next)));update();});
@@ -97,7 +97,7 @@
     let prior=null;if(app._presentation&&app._presentation.board!==app._board){prior=app._presentation.snapshot();app._presentation.dispose();app._presentation=null;}
     if(app._presentation){app._presentation.refresh();return;}
     const board=app._board;if(!board)return;
-    const host=el('div',null,{className:'ms-presentation'}),bar=el('div',null,{className:'ms-present-tools',role:'toolbar','aria-label':'전체보기 발표 도구'}),lens=el('div',null,{className:'ms-present-lens','aria-hidden':'true'}),content=el('div',null,{className:'ms-lens-content'}),laser=el('div',null,{className:'ms-present-laser','aria-hidden':'true'}),hint=el('span','G 돋보기 · P 포인터 · H 도구 · Space 고정',{className:'ms-present-hint'});
+    const host=el('div',null,{className:'ms-presentation'}),bar=el('div',null,{className:'ms-present-tools',role:'toolbar','aria-label':'발표모드 발표 도구'}),lens=el('div',null,{className:'ms-present-lens','aria-hidden':'true'}),content=el('div',null,{className:'ms-lens-content'}),laser=el('div',null,{className:'ms-present-laser','aria-hidden':'true'}),hint=el('span','G 돋보기 · P 포인터 · H 도구 · Space 고정',{className:'ms-present-hint'});
     lens.append(content);host.append(bar,lens,laser);document.body.append(host);
     let mode='none',shape='circle',zoom=2,color='red',frozen=false,hidden=false,point=null,lastPoint=null,frame=0,dirty=true,lensSize='medium',pressed=false;
     if(prior){({mode,shape,zoom,color,frozen,hidden,point,lastPoint,lensSize}=prior);}
@@ -113,10 +113,10 @@
     const sizeSelect=el('select',null,{'aria-label':'돋보기 화면 크기',className:'ms-lens-size'});for(const [value,text] of [['small','작게'],['medium','보통'],['large','크게']])sizeSelect.append(el('option',text,{value}));sizeSelect.value=lensSize;sizeSelect.addEventListener('change',()=>{lensSize=sizeSelect.value;draw();});bar.append(sizeSelect);
     const trails=[];let lastTrail=null;
     function trail(p){if(lastTrail&&Math.hypot(p.x-lastTrail.x,p.y-lastTrail.y)<4)return;lastTrail=p;const dot=el('span',null,{className:'ms-laser-trail','aria-hidden':'true'});dot.style.left=p.x+'px';dot.style.top=p.y+'px';dot.style.background=color==='red'?'#ff616a':'#65ee99';host.append(dot);trails.push(dot);if(trails.length>36)trails.shift().remove();dot.addEventListener('animationend',()=>{dot.remove();const i=trails.indexOf(dot);if(i>=0)trails.splice(i,1);});}
-    const memo=control('메모','전체보기 메모 추가',()=>{choose('none');app.addFlag();});
-    const sticky=control('포스트잇','전체보기 포스트잇 추가 · N',()=>{choose('none');app.addSticky();});
+    const memo=control('연결 메모','발표모드 연결 메모 추가',()=>{choose('none');app.addFlag();});
+    const sticky=control('포스트잇','발표모드 포스트잇 추가 · N',()=>{choose('none');app.addSticky();});
     memo.disabled=sticky.disabled=!!app.state.readOnly;
-    const fit=control('화면 맞춤','전체보기 화면 맞춤 · Shift+F',()=>{choose('none');fitWidth(app);});
+    const fit=control('폭 맞춤','발표모드 폭 맞춤 · Shift+F',()=>{choose('none');app.fitHorizontal();});
     const hide=control('접기','발표 도구 접기 · H',()=>{hidden=!hidden;sync();});bar.append(hint);
     function sync(){
       host.dataset.mode=mode;host.dataset.shape=shape;host.dataset.color=color;host.dataset.zoom=zoom;lens.setAttribute('data-magnification',zoom+'×');
@@ -183,7 +183,7 @@
     if(app.drag||(app.state.cfg.showTooltip===false&&!help))return;
     if(help&&((node.dataset.tipIf==='icon'&&!node.closest('.c4'))||(node.dataset.tipIf==='panel'&&!node.closest('.c6'))))return;
     const L=app.L(),it=help ? {kind:'tip',memo:help} : node.hasAttribute('data-now-tag') ? {kind:'tip',memo:L.nowTip} : app.state.items.find(i=>i.id===node.dataset.id);
-    if(!it||app.state.editing===it.id)return;
+    if(!it||it.kind==='sticky'||app.state.editing===it.id)return;
     const range=['chev','plain','band'].includes(it.kind);
     const targetId=it.kind==='flag' ? (it.targetId ?? app.rowLayout()[it.row]?.modes[it.id]?.targetId) : '';
     const target=it.kind==='flag'&&app.state.items.find(i=>i.id===targetId);
@@ -251,7 +251,7 @@
       let scale=Math.min(1,3000/max);for(let n=0;n<8;n++,scale*=.8){const c=el('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));const g=c.getContext('2d');g.drawImage(img,0,0,c.width,c.height);let src=c.toDataURL('image/png');if(src.length>2700000){g.globalCompositeOperation='destination-over';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);src=c.toDataURL('image/jpeg',.9);}if(src.length<=2700000)return {src,width:c.width,height:c.height};}
       throw new Error('이미지가 너무 커서 줄일 수 없습니다.');}finally{URL.revokeObjectURL(url);}
   }
-  function summary(d){const n=k=>d.items.filter(i=>i.kind===k).length;return [d.cfg.startY+'.'+String(d.cfg.startM).padStart(2,'0')+'부터 '+d.cfg.months+'개월',d.rows.length+'개 구분',n('chev')+n('plain')+'개 블록',n('marker')+n('flag')+'개 마일스톤·알림',n('band')+'개 구간',n('sticky')+'개 메모'].join(' · ');}
+  function summary(d){const n=k=>d.items.filter(i=>i.kind===k).length;return [d.cfg.startY+'.'+String(d.cfg.startM).padStart(2,'0')+'부터 '+d.cfg.months+'개월',d.rows.length+'개 구분',n('chev')+n('plain')+'개 블록',n('marker')+'개 마일스톤',n('flag')+'개 연결 메모',n('band')+'개 구간',n('sticky')+'개 포스트잇'].join(' · ');}
   function dropZone(parent,label,hint,accept,onFile){const zone=el('div',null,{className:'ms-drop',tabIndex:0});const input=el('input',null,{type:'file',accept,hidden:true});zone.btns=el('div',null,{className:'ms-drop-btns'});zone.btns.append(button('파일 불러오기…',()=>input.click()));zone.append(el('strong',label),zone.btns,input);input.addEventListener('change',()=>{if(input.files[0])onFile(input.files[0]);input.value='';});
     zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('on');});zone.addEventListener('dragleave',()=>zone.classList.remove('on'));zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('on');const f=e.dataTransfer.files[0];if(f)onFile(f);});parent.append(zone);return zone;}
   // Steps mix plain text with key names: odd entries render as <kbd>.
@@ -286,7 +286,7 @@
     const syncText=()=>{clearText.hidden=!input.textContent;};syncText();
     const analyzeText=button('텍스트 분석',()=>busy(analyzeText,async()=>{const text=input.textContent.trim();if(!text)throw new Error('텍스트를 붙여넣거나 파일을 추가하세요.');if(text.length>200000)throw new Error('텍스트는 200,000자 이하여야 합니다.');let doc=null;try{doc=C.parseImport(text);}catch{}if(doc)return show(doc,'Mapstone 데이터를 읽었습니다.');show(await ai({text},'텍스트'),'텍스트 분석이 완료되었습니다.');}));analyzeText.classList.add('ms-primary');
     body.append(analyzeText,txtSpot);
-    const help=el('details');help.append(el('summary','외부 LLM용 요청문 · 데이터 예제'));const prompt='PRD를 분석해 아래 형식의 const schedule 데이터만 작성해 줘. 시작 월을 0으로 하고 s/e는 개월 단위(5개월 미만은 0.125 단위)로 지정해. rows의 id와 items의 row를 일치시키고 블록 id는 고유하게 지정해. 1일 소요 작업과 특정 날짜의 항목은 kind: marker, s와 e를 같은 값, row는 빈 문자열로 지정해. 같은 행에서 날짜가 겹치는 일정·참고 블록은 lane을 분리하고 마일스톤이나 메모로 중복 생성하지 마. 실행 함수나 계산식 없이 데이터 리터럴로 출력해.\n\nconst schedule = '+JSON.stringify(example,null,2)+';';help.append(el('pre',prompt));help.append(button('요청문 복사',async()=>{try{await navigator.clipboard.writeText(prompt);}catch{download(prompt,'mapstone-llm-prompt.txt');}}));
+    const help=el('details');help.append(el('summary','외부 LLM용 요청문 · 데이터 예제'));const prompt='PRD를 분석해 아래 형식의 const schedule 데이터만 작성해 줘. 시작 월을 0으로 하고 s/e는 개월 단위(5개월 미만은 0.125 단위)로 지정해. rows의 id와 items의 row를 일치시키고 블록 id는 고유하게 지정해. 1일 소요 작업과 특정 날짜의 아이템은 kind: marker, s와 e를 같은 값, row는 빈 문자열로 지정해. 같은 세션에서 날짜가 겹치는 일정·참고 구간은 lane을 분리하고 마일스톤이나 메모로 중복 생성하지 마. 실행 함수나 계산식 없이 데이터 리터럴로 출력해.\n\nconst schedule = '+JSON.stringify(example,null,2)+';';help.append(el('pre',prompt));help.append(button('요청문 복사',async()=>{try{await navigator.clipboard.writeText(prompt);}catch{download(prompt,'mapstone-llm-prompt.txt');}}));
     body.append(help);imgSpot.append(review,message);
     const dialog=body.closest('dialog');for(const t of ['pointerdown','drop','input','change'])dialog.addEventListener(t,e=>{if(!analyzing)spot=txtHead.compareDocumentPosition(e.target)&Node.DOCUMENT_POSITION_FOLLOWING?txtSpot:imgSpot;},true);
     // Paste anywhere in the dialog: images go to section 1, text outside the textarea goes into it.
@@ -401,14 +401,14 @@
     const nav=el('div',null,{className:'ms-file-nav','aria-label':'불러오기 방식'}),local=el('section',null,{className:'ms-file-local'}),library=el('section',null,{className:'ms-file-library'}),json=el('section',null,{className:'ms-file-json'}),footer=el('div',null,{className:'ms-file-footer'});
     body.append(el('p','저장된 일정을 불러옵니다. 파일, 클라우드 보관함 또는 JSON 중에서 선택하세요.',{className:'ms-file-lead'}),nav,local,library,json,footer);
     let libraryOpened=false;const panels=[local,library,json],tabs=[];
-    const switchSource=index=>{panels.forEach((panel,i)=>panel.hidden=i!==index);tabs.forEach((tab,i)=>tab.setAttribute('aria-pressed',String(i===index)));footer.hidden=index===1;if(!pending&&index!==1&&!input.value.trim())message.textContent=index===2?'JSON을 붙여넣으면 일정 이름과 항목 수를 확인할 수 있습니다.':'파일을 선택하면 일정 이름과 항목 수를 확인할 수 있습니다.';if(index===1&&!libraryOpened){libraryOpened=true;versionLibrary(app,false,library);}};
+    const switchSource=index=>{panels.forEach((panel,i)=>panel.hidden=i!==index);tabs.forEach((tab,i)=>tab.setAttribute('aria-pressed',String(i===index)));footer.hidden=index===1;if(!pending&&index!==1&&!input.value.trim())message.textContent=index===2?'JSON을 붙여넣으면 일정 이름과 아이템 수를 확인할 수 있습니다.':'파일을 선택하면 일정 이름과 아이템 수를 확인할 수 있습니다.';if(index===1&&!libraryOpened){libraryOpened=true;versionLibrary(app,false,library);}};
     ['로컬 파일','클라우드 파일','JSON 붙여넣기'].forEach((name,index)=>{const tab=button(name,()=>switchSource(index));tabs.push(tab);nav.append(tab);});
     local.append(el('h3','로컬 파일 불러오기'),el('p','컴퓨터에 저장한 .mapstone 또는 .json 파일을 선택하세요.',{className:'ms-file-hint'}));
-    const message=el('p','파일을 선택하면 일정 이름과 항목 수를 확인할 수 있습니다.',{className:'ms-message',role:'status'});let pending=null;
+    const message=el('p','파일을 선택하면 일정 이름과 아이템 수를 확인할 수 있습니다.',{className:'ms-message',role:'status'});let pending=null;
     const apply=button('이 일정 불러오기',()=>{if(!pending||app.state.readOnly)return;app.importDocument(pending);closeModal();});apply.disabled=true;apply.classList.add('ms-primary');
     const read=text=>{pending=null;apply.disabled=true;if(!text.trim()){message.textContent='파일 또는 JSON을 선택하세요.';return;}try{if(text.length>8*1024*1024+100)throw Error('파일은 8MB 이하여야 합니다.');try{pending=C.parseFile(text);}catch(e){pending=C.parseImport(text);}message.textContent=pending.title+' · '+summary(pending);apply.disabled=!!app.state.readOnly;}catch(e){message.textContent='맵스톤 데이터를 읽을 수 없습니다: '+e.message;}};
     dropZone(local,'파일을 여기에 끌어다 놓으세요','.mapstone 또는 .json 파일','.mapstone,.json,application/json',async file=>{input.value=await file.text();read(input.value);});
-    json.append(el('h3','JSON 붙여넣기'),el('p','맵스톤에서 내보낸 JSON 파일을 텍스트 편집기로 열어 내용 전체를 복사한 뒤 아래에 붙여넣으세요. 일정 제목·행·항목이 포함된 데이터가 필요합니다. 일반 메모나 일정 설명은 상단 이미지 분석에서 변환할 수 있습니다.',{className:'ms-file-hint',id:'ms-file-json-help'}));
+    json.append(el('h3','JSON 붙여넣기'),el('p','맵스톤에서 내보낸 JSON 파일을 텍스트 편집기로 열어 내용 전체를 복사한 뒤 아래에 붙여넣으세요. 일정 제목·세션·아이템이 포함된 데이터가 필요합니다. 일반 메모나 일정 설명은 상단 이미지 분석에서 변환할 수 있습니다.',{className:'ms-file-hint',id:'ms-file-json-help'}));
     const input=field(json,'일정 JSON','textarea');input.rows=8;input.placeholder='맵스톤 JSON 데이터 전체를 붙여넣으세요';input.setAttribute('aria-describedby','ms-file-json-help');input.addEventListener('input',()=>read(input.value));
     footer.append(message,apply);switchSource(0);
   }
@@ -418,57 +418,57 @@
       '상단의 분홍색 [이미지/텍스트 분석] 버튼을 누릅니다.',
       '이미지: 간트 차트, 로드맵, 표, 슬라이드·화면 캡처, 손그림 모두 됩니다. 크거나 PNG/JPEG/WebP가 아닌 이미지도 자동으로 변환합니다.',
       '텍스트: 회의록, 메일, PRD, 엑셀·스프레드시트에서 복사한 표를 넣습니다. Mapstone JSON 데이터는 분석 없이 바로 읽습니다.',
-      '구분 행, 일정, 마일스톤, 메모, 공통 구간, 포스트잇, 색상과 줄 나눔까지 가져옵니다. 연도가 없으면 2026년으로 해석합니다.',
+      '구분 세션, 일정, 마일스톤, 메모, 공통 구간, 포스트잇, 색상과 줄 나눔까지 가져옵니다. 연도가 없으면 2026년으로 해석합니다.',
       '분석 결과를 확인한 뒤 적용합니다. 현재 일정은 자동 백업됩니다.',
       '접속 코드 없이 사용할 수 있습니다(시간당 횟수 제한). 공동 편집 접속 코드로 연결하면 제한이 없습니다.']],
-    ['edit','일정 조작','항목을 만들고, 옮기고, 기간과 높이를 바꾸는 기본 동작입니다.',['edit'],[
-      '[항목 추가]의 일정 · 마일스톤 · 메모, [더보기]의 참고 · 공통 · 포스트잇으로 만듭니다. 선택(포커스)한 행에 생깁니다.',
-      '이동: 블록을 끌어 옮깁니다. 다른 행으로도 옮길 수 있습니다. 키보드 ← → 는 0.5개월, ↑ ↓ 는 한 레인씩 움직입니다.',
-      '여러 항목: ⌘+클릭으로 선택을 추가·해제하고 Shift+클릭으로 범위를 선택합니다. 빈 영역을 드래그해도 여러 항목을 선택할 수 있으며 방향키·드래그·복사·잘라내기·삭제는 선택 전체에 적용됩니다.',
+    ['edit','일정 조작','아이템을 만들고, 옮기고, 기간과 높이를 바꾸는 기본 동작입니다.',['edit'],[
+      '[아이템 추가]의 일정 · 마일스톤 · 메모, [더보기]의 참고 · 공통 · 포스트잇으로 만듭니다. 선택(포커스)한 세션에 생깁니다.',
+      '이동: 블록을 끌어 옮깁니다. 다른 세션으로도 옮길 수 있습니다. 키보드 ← → 는 하루, Shift+← → 는 1주, ↑ ↓ 는 한 칸씩 움직입니다.',
+      '여러 아이템: ⌘+클릭으로 선택을 추가·해제하고 Shift+클릭으로 범위를 선택합니다. 빈 영역을 드래그해도 여러 아이템을 선택할 수 있으며 방향키·드래그·복사·잘라내기·삭제는 선택 전체에 적용됩니다.',
       '기간: 블록 왼쪽·오른쪽 끝을 끌면 시작·종료일이 바뀌고, 끄는 동안 날짜 안내선이 보입니다.',
-      '높이: 블록 위·아래 끝을 끌어 높이를 바꿉니다. 행 경계를 넘어 여러 행에 걸칠 수도 있습니다.',
-      '공통: 선택한 행 안에 만들어집니다. 끌어서 좌우·위아래(다른 행)로 옮기고, 위·아래 손잡이로 여러 행에 걸치게 늘립니다.',
+      '높이: 블록 위·아래 끝을 끌어 높이를 바꿉니다. 세션 경계를 넘어 여러 세션에 걸칠 수도 있습니다.',
+      '공통: 선택한 세션 안에 만들어집니다. 끌어서 좌우·위아래(다른 세션)로 옮기고, 위·아래 손잡이로 여러 세션에 걸치게 늘립니다.',
       '편집: 블록을 더블클릭하면 설정창이 열리고 라벨 입력칸으로 이동합니다. 날짜, 색상, 채우기, 메모를 바꿀 수 있습니다.',
-      '같은 행에서 겹치면 [설정 › 같은 행에서 겹칠 때] 규칙(줄이기 · 위치변경)으로 자동 정리됩니다.']],
+      '같은 세션에서 겹치면 [설정 › 같은 세션에서 겹칠 때] 규칙(줄이기 · 위치변경)으로 자동 정리됩니다.']],
     ['','눈금 맞춤','[보기]의 [눈금 맞춤]이 켜져 있으면 깔끔하게 정렬되고, 끄면 자유롭게 세부 조정할 수 있습니다.',[],[
       '가로: 0.25개월 눈금(5개월 미만 일정은 0.125개월)과 이웃 블록의 끝에 맞춰집니다.',
       '세로: 높이를 바꿀 때 레인 눈금에 맞춰집니다.',
-      '행 경계: 눈금 맞춤과 상관없이 항목 끝이 행 경계에 닿으면 살짝 걸려 정확히 맞출 수 있습니다.',
+      '세션 경계: 눈금 맞춤과 상관없이 아이템 끝이 세션 경계에 닿으면 살짝 걸려 정확히 맞출 수 있습니다.',
       '하루 단위처럼 세밀하게 맞추려면 눈금 맞춤을 끄거나 설정창에서 날짜를 직접 입력하세요.']],
     ['edit','메모 연결','메모는 일정 · 참고 · 공통 구간의 특정 시점에 붙는 짧은 알림입니다.',[],[
       '[메모]로 만든 뒤 앞쪽의 점을 일정 위로 끌어다 놓으면 연결됩니다. 놓은 위치(가로·세로)가 그대로 유지됩니다.',
       '연결된 일정을 옮기거나 기간을 바꾸면 메모도 함께 따라갑니다.',
       '라벨은 자유롭게 옮길 수 있고, 점을 선택한 뒤 Delete를 누르면 연결만 해제됩니다.',
       '마우스를 올리면 연결 대상과 메모 내용이 툴팁으로 보입니다.']],
-    ['now','마일스톤 · NOW','모든 행에 공통으로 걸리는 기준 날짜를 표시합니다.',['now'],[
+    ['now','마일스톤 · NOW','모든 세션에 공통으로 걸리는 기준 날짜를 표시합니다.',['now'],[
       '마일스톤은 상단 태그와 세로 기준선으로 표시되며 끌어서 날짜를 옮깁니다.',
       'NOW 태그를 클릭하면 속성을 편집하고, 끌면 기준선을 옮깁니다. 더블클릭 또는 Enter·Space를 누르면 오늘 날짜로 이동합니다.',
-      '오늘이 일정 기간 밖이면 기간을 넓힐지 먼저 물어봅니다. 넓혀도 항목의 날짜는 바뀌지 않습니다.']],
-    ['rows','세션 관리','세션(행)은 팀 · 트랙 · 시스템 단위로 일정을 묶습니다.',['rows'],[
-      '세션 이름 텍스트를 클릭하면 입력창이 열립니다. Enter·Esc로 입력을 마치고 Shift+Enter로 줄바꿈합니다. 행 경계에 마우스를 올리면 +로 아래에 행을 추가합니다. 왼쪽 ⠿ 핸들을 끌면 행이 실시간으로 움직입니다. Esc로 취소할 수 있고, 행 선택 후 Ctrl/⌘ ↑ ↓로 순서를 바꿉니다. 행만 선택하고 Delete를 누르면 확인 후 삭제합니다. 행 설정에서도 이동·삭제할 수 있으며 마지막 행은 보호됩니다.',
-      '행 아래 구분선을 끌면 행 높이가 바뀝니다.',
-      '구분선을 더블클릭하면 행 높이를 안의 항목에 맞추고, 빈 행은 기본 높이로 돌아갑니다.',
-      '행 배경색과 레인 수는 설정창 [속성]에서 바꿉니다.']],
+      '오늘이 일정 기간 밖이면 기간을 넓힐지 먼저 물어봅니다. 넓혀도 아이템의 날짜는 바뀌지 않습니다.']],
+    ['rows','세션 관리','세션은 팀 · 트랙 · 시스템 단위로 일정을 묶습니다.',['rows'],[
+      '세션 이름 텍스트를 클릭하면 입력창이 열립니다. Enter·Esc로 입력을 마치고 Shift+Enter로 줄바꿈합니다. 세션 경계에 마우스를 올리면 +로 아래에 세션을 추가합니다. 왼쪽 ⠿ 핸들을 끌면 세션이 실시간으로 움직입니다. Esc로 취소할 수 있고, 세션 선택 후 Ctrl/⌘ ↑ ↓로 순서를 바꿉니다. 세션만 선택하고 Delete를 누르면 확인 후 삭제합니다. 세션 설정에서도 이동·삭제할 수 있으며 마지막 세션은 보호됩니다.',
+      '세션 아래 구분선을 끌면 세션 높이가 바뀝니다.',
+      '구분선을 더블클릭하면 세션 높이를 안의 아이템에 맞추고, 빈 세션은 기본 높이로 돌아갑니다.',
+      '세션 배경색과 레인 수는 설정창 [속성]에서 바꿉니다.']],
     ['toolbar','보기 · 화면','표시 방식과 확대 비율을 바꿉니다. 일정 데이터는 바뀌지 않습니다.',['toolbar'],[
       'MM / MD: 블록 기간 표시를 켜고 끕니다. 단위는 설정에서 MM ⇄ MD로 바꿉니다.',
       '일자: 블록 아래에 시작 ~ 종료 날짜를 표시합니다. 툴팁: 마우스를 올리면 이름 · 기간 · 메모를 나눠 보여 주고 3초 뒤 사라집니다(설정 › 툴팁 표시 시간에서 계속 표시로 변경).',
       'Week: 월 아래에 주차(5개월 미만은 일자)를 표시합니다. 공간이 부족하면 뒤쪽부터 숨기고 …로 표시합니다.',
-      '데스크톱에서 화면이 좁으면 메뉴바가 한 줄을 유지하도록 아이콘 숨김 → 보기 항목을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 화면 맞춤 · 전체 화면이 아이콘으로 순서대로 바뀝니다. 모바일에서는 보기 옵션을 메뉴로 접고 도구를 여러 줄로 표시합니다. Esc는 열린 도구 메뉴부터 닫습니다.',
+      '데스크톱에서 화면이 좁으면 메뉴바가 한 줄을 유지하도록 아이콘 숨김 → 보기 아이템을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 화면 맞춤 · 발표모드이 아이콘으로 순서대로 바뀝니다. 모바일에서는 보기 옵션을 메뉴로 접고 도구를 여러 줄로 표시합니다. Esc는 열린 도구 메뉴부터 닫습니다.',
       '배율: 슬라이더로 확대·축소합니다. 핸들을 더블클릭하거나 [화면 맞춤]을 누르면 전체 기간이 화면에 맞춰집니다.',
-      '단축키: D 일자 · M 기간 · T 툴팁 · W Week · F 전체 화면 · Shift+F 화면 맞춤 · S 눈금 맞춤 · , 설정창. 버튼에 마우스를 올리면 단축키가 함께 보입니다.',
-      '[전체 화면]은 도구와 설정창을 숨기고 일정만 보여 줍니다. 오른쪽 위 [전체보기 종료 : ESC] 버튼이나 Esc · F 키로 돌아옵니다.',
+      '단축키: D 일자 · M 기간 · T 툴팁 · W 주차 · F 발표모드 · Shift+F 폭 맞춤 · S 눈금 맞춤 · , 설정창. 버튼에 마우스를 올리면 단축키가 함께 보입니다.',
+      '[발표모드]은 도구와 설정창을 숨기고 일정만 보여 줍니다. 오른쪽 위 [발표모드 종료 : ESC] 버튼이나 Esc · F 키로 돌아옵니다.',
       '처음 기본 보기는 MD · 툴팁 · 눈금 맞춤만 켜져 있습니다.']],
-    ['settings','설정창','[설정창 보기]로 열고 닫습니다. 속성 · 설정 · 버전 세 탭으로 구성됩니다. 모바일에서는 처음에 닫혀 있고, 항목을 선택하면 하단에 열립니다. × 버튼으로 닫아 일정으로 돌아갑니다.',['props','settings'],[
+    ['settings','설정창','[설정창 보기]로 열고 닫습니다. 속성 · 설정 · 버전 세 탭으로 구성됩니다. 모바일에서는 처음에 닫혀 있고, 아이템을 선택하면 하단에 열립니다. × 버튼으로 닫아 일정으로 돌아갑니다.',['props','settings'],[
       '공유: 상단 [공유]에서 보기만 가능 / 함께 편집 권한과 열람·편집 전환 비밀번호를 설정합니다. 보기만 가능한 링크는 생성 시점의 사본이며 이후 변경은 새 링크로 전달합니다.',
-      '속성: 선택한 항목(라벨, 메모, 시작·종료, 높이, 색상, 채우기) 또는 선택한 행(이름, 높이, 배경색)을 편집합니다.',
-      '설정: 시작 월(항목 날짜는 유지), 표시 개월 수, 레인 높이, 기간 단위(1MM = 22MD, KOSA 기준), 애니메이션, 마우스 조작(휠 확대 · 우클릭 이동), 월 간격 기준, 겹칠 때 규칙을 정합니다.',
+      '속성: 선택한 아이템(라벨, 메모, 시작·종료, 높이, 색상, 채우기) 또는 선택한 세션(이름, 높이, 배경색)을 편집합니다.',
+      '설정: 시작 월(아이템 날짜는 유지), 표시 개월 수, 레인 높이, 기간 단위(1MM = 22MD, KOSA 기준), 애니메이션, 마우스 조작(휠 확대 · 우클릭 이동), 월 간격 기준, 겹칠 때 규칙을 정합니다.',
       '버전: 현재 상태를 이름을 붙여 저장하고 언제든 되돌립니다.']],
     ['','불러오기 · 내보내기 · 공유','작업을 파일로 주고받거나 다른 사람과 함께 봅니다.',[],[
       '[불러오기]: 저장한 맵스톤 파일이나 JSON을 파일로 가져오거나 붙여넣습니다.',
       '[내보내기]: 파일 저장[JSON] · PNG · 편집 가능한 PPT · 인쇄/PDF를 만들고, [공유]로 접속 암호가 있는 보기/편집 링크를 만듭니다.',
-      '↻ 버튼은 모든 항목과 구분 행을 지우고 빈 행 하나만 남깁니다(설정 · 버전은 유지).']]
+      '↻ 버튼은 모든 아이템과 구분 세션을 지우고 빈 세션 하나만 남깁니다(설정 · 버전은 유지).']]
   ];
-  const KEYS=[['__','보기 · 화면'],['D','일자 켜기 · 끄기'],['M','기간(MD / MM) 켜기 · 끄기'],['T','툴팁 켜기 · 끄기'],['W','Week 켜기 · 끄기'],['F','전체 화면 켜기 · 끄기 (Esc로도 종료)'],['Shift F','화면 맞춤'],['S','눈금 맞춤 켜기 · 끄기'],[',','설정창 보기 · 닫기'],['Ctrl + 드래그','눈금 무시 · 24px마다 하루씩 세밀 조정'],['__','편집'],['⌘+클릭','선택 추가 · 해제'],['Shift+클릭','항목 범위 선택'],['빈 영역 드래그','여러 항목 선택'],['⌘/Ctrl D','선택 항목 복제'],['Delete · Backspace','선택 항목 삭제 (메모 점 선택 시 연결 해제)'],['← →','0.5개월 이동'],['↑ ↓','한 레인 이동 (메모는 라벨 이동)'],['Enter','텍스트 입력 완료'],['Shift Enter','입력칸 안에서 줄바꿈'],['⌘/Ctrl Enter','설정창 · 팝업: 다음 칸으로 이동, 마지막 칸이면 입력 끝내기']];
+  const KEYS=[['__','보기 · 화면'],['D','일자 켜기 · 끄기'],['M','기간(MD / MM) 켜기 · 끄기'],['T','툴팁 켜기 · 끄기'],['W','주차 켜기 · 끄기'],['F','발표모드 켜기 · 끄기 (Esc로도 종료)'],['Shift F','폭 맞춤'],['S','눈금 맞춤 켜기 · 끄기'],[',','설정창 보기 · 닫기'],['Ctrl + 드래그','눈금 무시 · 24px마다 하루씩 세밀 조정'],['__','편집'],['⌘+클릭','선택 추가 · 해제'],['Shift+클릭','아이템 범위 선택'],['빈 영역 드래그','여러 아이템 선택'],['⌘/Ctrl D','선택 아이템 복제'],['Delete · Backspace','선택 아이템 삭제 (메모 점 선택 시 연결 해제)'],['← →','하루 이동'],['Shift ← →','1주 이동'],['↑ ↓','한 레인 이동 (메모는 라벨 이동)'],['Enter','텍스트 입력 완료'],['Shift Enter','입력칸 안에서 줄바꿈'],['⌘/Ctrl Enter','설정창 · 팝업: 다음 칸으로 이동, 마지막 칸이면 입력 끝내기']];
   function help(app,body){
     body.closest('dialog').classList.add('ms-help');const shots=window.MapstoneHelp||{};
     const nav=el('nav',null,{className:'ms-help-nav'});const main=el('div',null,{className:'ms-help-main'});
@@ -490,7 +490,7 @@
   const CMP_KIND={chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
   function compareDialog(app,body){
     body.closest('dialog').classList.add('ms-compare');
-    body.append(el('p','비교할 두 버전을 넣으세요. 맵스톤 파일(.mapstone / .json) 또는 일정표 이미지(파일 · 캡처 붙여넣기)를 쓸 수 있습니다. 이미지는 AI가 읽어 일정으로 바꾼 뒤 비교하며, 이름 · 세션이 같은 항목끼리 짝지어 추가 · 삭제 · 변경을 색으로 표시합니다. 현재 작업 중인 일정은 바뀌지 않습니다.'));
+    body.append(el('p','비교할 두 버전을 넣으세요. 맵스톤 파일(.mapstone / .json) 또는 일정표 이미지(파일 · 캡처 붙여넣기)를 쓸 수 있습니다. 이미지는 AI가 읽어 일정으로 바꾼 뒤 비교하며, 이름 · 세션이 같은 아이템끼리 짝지어 추가 · 삭제 · 변경을 색으로 표시합니다. 현재 작업 중인 일정은 바뀌지 않습니다.'));
     const slots={a:null,b:null},grid=el('div',null,{className:'ms-cmp-slots'}),result=el('div',null,{className:'ms-cmp-result'});
     const message=el('p','',{className:'ms-message'});message.setAttribute('role','status');
     const readDoc=text=>{try{return C.parseFile(text);}catch(e){return C.parseImport(text);}};
@@ -512,14 +512,14 @@
       for(const k of ['added','removed','changed']){const c=el('span',CMP_NAME[k]+' '+sm[k],{className:'ms-cmp-chip'});c.style.setProperty('--c',CMP_COLOR[k]);bar.append(c);}bar.append(el('span','동일 '+sm.same,{className:'ms-cmp-chip same'}));if(sm.doc)bar.append(el('span','제목 · 기간 '+sm.doc,{className:'ms-cmp-chip same'}));
       const edit=button('비교 화면 편집하기',()=>confirmEdit(cmp));edit.classList.add('ms-primary');edit.disabled=!cmp.changes.length;bar.append(edit);
       if(!cmp.changes.length){result.append(bar,el('p','두 파일의 내용이 같습니다. 달라진 점이 없어요.',{className:'ms-cmp-empty'}));return;}
-      const tl=timeline(cmp);result.append(bar,el('h3','비교 타임라인'),tl,el('h3','검토 내용'),el('p','항목을 누르면 위 타임라인의 해당 구간으로 이동합니다.',{className:'ms-cmp-hint'}));
+      const tl=timeline(cmp);result.append(bar,el('h3','비교 타임라인'),tl,el('h3','검토 내용'),el('p','아이템을 누르면 위 타임라인의 해당 구간으로 이동합니다.',{className:'ms-cmp-hint'}));
       const wrapList=el('div',null,{className:'ms-cmp-groups'});
       for(const type of ['changed','added','removed']){const items=cmp.changes.filter(c=>c.type===type);if(!items.length)continue;
         const group=el('section',null,{className:'ms-cmp-group'});group.style.setProperty('--c',CMP_COLOR[type]);
         const head=el('h4');head.append(el('span',CMP_NAME[type],{className:'ms-cmp-gtag'}),el('span',items.length+'건',{className:'ms-cmp-gcount'}));group.append(head);
         const list=el('ol',null,{className:'ms-cmp-list'});
         for(const c of items){const li=el('li');li.dataset.type=c.type;const btn=el('button',null,{type:'button',className:'ms-cmp-pick'});
-          const top=el('div',null,{className:'ms-cmp-itemhead'});if(c.kind)top.append(el('em',CMP_KIND[c.kind]||'항목',{className:'ms-cmp-kind'}));top.append(el('strong',c.name||'(이름 없음)'));
+          const top=el('div',null,{className:'ms-cmp-itemhead'});if(c.kind)top.append(el('em',CMP_KIND[c.kind]||'아이템',{className:'ms-cmp-kind'}));top.append(el('strong',c.name||'(이름 없음)'));
           if(c.type==='added'){const m=/\((.+)\)\s*$/.exec(c.text);if(m)top.append(el('span',m[1],{className:'ms-cmp-when'}));}
           btn.append(top);
           const rows=c.lines&&c.lines.length?c.lines:(c.fields||[]).map(f=>({label:f.name||(f.key==='name'?'이름':f.key==='title'?'제목':f.key),from:f.from,to:f.to}));
@@ -625,7 +625,7 @@
     const body=container||createModal(compare?'버전 비교 · 변경 인사이트':'보관된 작업물 불러오기','ms-versions '+(compare?'ms-version-compare':'ms-version-library'));
     const message=el('p','작업물을 불러오고 있습니다…',{className:'ms-version-status',role:'status'}),projects=el('select',null,{'aria-label':'작업물 선택'}),field=el('label',null,{className:'ms-field'}),list=el('div',null,{className:'ms-version-list'});
     const selectWrap=el('div',null,{className:'ms-select-wrap'});selectWrap.append(projects);field.append(el('span','작업물'),selectWrap);
-    body.append(el('p',compare?'현재 작업물의 버전 두 개를 선택하세요. Gemini가 일정과 항목의 변화, 영향을 설명합니다.':'작업물을 선택한 뒤 저장된 버전을 불러오세요. 현재 작업은 실행 취소로 되돌릴 수 있습니다.',{className:'ms-version-lead'}));if(!compare)body.append(field);else body.append(el('strong',app.state.title));body.append(message);
+    body.append(el('p',compare?'현재 작업물의 버전 두 개를 선택하세요. Gemini가 일정과 아이템의 변화, 영향을 설명합니다.':'작업물을 선택한 뒤 저장된 버전을 불러오세요. 현재 작업은 실행 취소로 되돌릴 수 있습니다.',{className:'ms-version-lead'}));if(!compare)body.append(field);else body.append(el('strong',app.state.title));body.append(message);
     const toolbar=el('div',null,{className:'ms-version-toolbar'}),selection=el('span','0 / 2개 선택'),reportArea=el('section',null,{className:'ms-version-result'}),report=el('div',null,{className:'ms-version-report'});
     const compareMotion=aiAnimation('두 버전의 변화와 영향을 분석하고 있습니다');reportArea.hidden=true;reportArea.append(compareMotion);reportArea.append(el('h3','변경 인사이트 보고서'),button('보고서 복사',async()=>{try{if(!report._copyText)return;await navigator.clipboard.writeText(report._copyText);toast(app,'보고서를 복사했습니다.');}catch{message.textContent='보고서 텍스트를 선택해 직접 복사하세요.';}}),report);
     let project='',selected=new Set(),boxes=[],generation=0;
@@ -671,7 +671,7 @@
     document.addEventListener('keydown',onSubmitKey,true);
     const onShareKey=e=>{if(!(e.metaKey||e.ctrlKey)||e.altKey||e.shiftKey||e.code!=='KeyL')return;e.preventDefault();e.stopPropagation();if(app.sync.isShare&&app.sync.readOnly)return open(app,'workspace');if(modal&&modal.querySelector('.ms-share-perms'))return;open(app,'share-quick');};
     document.addEventListener('keydown',onShareKey,true);
-    const onKey=e=>{if(e.defaultPrevented||modal)return;if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='Escape'&&app.state.focusMode){e.preventDefault();toggleFocus(app);return;}/* single-key shortcuts use e.code so they also work while a Korean/Japanese IME is active */const act=e.shiftKey?{KeyF:()=>fitWidth(app)}[e.code]:{KeyF:()=>toggleFocus(app),KeyD:app.toggleElementDates,KeyM:app.toggleMM,KeyT:app.toggleTooltip,KeyW:app.toggleWeek,KeyS:app.toggleMagnet,Comma:app.togglePanel}[e.code];if(act){e.preventDefault();act();}};
+    const onKey=e=>{if(e.defaultPrevented||modal)return;if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='Escape'&&app.state.focusMode){e.preventDefault();toggleFocus(app);return;}/* single-key shortcuts use e.code so they also work while a Korean/Japanese IME is active */const act=e.shiftKey?{KeyF:()=>app.fitHorizontal()}[e.code]:{KeyF:()=>toggleFocus(app),KeyD:app.toggleElementDates,KeyM:app.toggleMM,KeyT:app.toggleTooltip,KeyW:app.toggleWeek,KeyS:app.toggleMagnet,Comma:app.togglePanel}[e.code];if(act){e.preventDefault();act();}};
     const warn=e=>{if(app.sync.base&&!C.equal(app.sync.base,app.dataDocument())){e.preventDefault();e.returnValue='';}};
     document.addEventListener('keydown',onKey);window.addEventListener('beforeunload',warn);document.addEventListener('scroll',hideTip,true);
     let code=null;try{code=sessionStorage.getItem('mapstone.connection');}catch{}const shareId=new URLSearchParams(location.search).get('share');

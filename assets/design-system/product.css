@@ -55,7 +55,7 @@ input::placeholder,textarea::placeholder{color:var(--ms-color-text-muted);opacit
 [data-time-header]>div:last-child{border-top-right-radius:12px}
 [data-time-header]>.ms-sticky-col{background:var(--ms-color-brand-navy)!important}
 [data-time-header]>div:last-child{background:var(--ms-gradient-header)!important}
-[data-time-header]>div:last-child>div{background:transparent!important}
+[data-time-header]>div:last-child>div{background:var(--ms-year-header,var(--ms-color-brand-navy))!important}
 [data-element-date]{color:var(--ms-color-text-secondary)!important;background:var(--ms-color-surface-canvas)!important}
 [data-resize]{background:var(--ms-color-focus-ring)!important}
 .ms-empty-selection{min-height:260px;padding-top:140px!important;text-align:center;background:url('./empty-selection.svg') center 32px/120px auto no-repeat;color:var(--ms-color-text-muted)!important}
@@ -147,3 +147,12 @@ html:has([data-anim=off]) .ms-ai-analysis *,html:has([data-anim=off]) .ms-ai-ana
 .ms-dialog .ms-share-opt[hidden]{display:block!important;visibility:hidden;pointer-events:none}
 .ms-dialog .ms-share-pw[hidden]{display:block!important;visibility:hidden;pointer-events:none}
 .ms-dialog .ms-share-err{display:block!important;min-height:18px;margin:4px 0 0}
+
+/* Quiet line geometry stays outside the solid timeline surface. */
+[data-board],[data-capture]{background-image:url('./canvas-lines.svg')!important;background-position:right top!important;background-repeat:repeat-y!important;background-size:600px 420px!important;background-blend-mode:normal}
+[data-row-surface]{background:var(--ms-color-surface-canvas)}
+@media print{[data-board],[data-capture]{background-image:none!important}}
+
+/* Round the actual last month cell inside the generated column wrapper. */
+[data-time-header]>div:last-child>div:last-child{border-top-right-radius:12px}
+.ms-fill-heading{justify-content:flex-end}
