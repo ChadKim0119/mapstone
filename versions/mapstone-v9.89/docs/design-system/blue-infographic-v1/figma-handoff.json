@@ -1,0 +1,377 @@
+{
+  "date": "2026-10-08",
+  "concept": "B / Blue Infographic",
+  "fileKey": "zCKU8rRC44Fnke43JcNdon",
+  "fileUrl": "https://www.figma.com/design/zCKU8rRC44Fnke43JcNdon?node-id=5-858",
+  "team": "Connected Car",
+  "pages": {
+    "Overview": "0:1",
+    "Foundations": "2:2",
+    "Components": "2:3",
+    "Screens": "2:4",
+    "Controls & Patterns": "22:13",
+    "Canvas & AI Assets": "23:13"
+  },
+  "overviewNode": "7:2",
+  "foundationsNode": "2:109",
+  "componentShowcaseNode": "3:252",
+  "brandIconNode": "3:142",
+  "componentSets": {
+    "Button": "3:110",
+    "IconButton": "3:158",
+    "Field": "3:175",
+    "Tab": "3:183",
+    "Toggle": "3:191",
+    "Badge": "3:201",
+    "Schedule": "3:213",
+    "Milestone": "3:228",
+    "Issue": "3:235",
+    "Note": "3:242",
+    "Period": "3:249",
+    "Reference": "16:125",
+    "Checkbox": "22:34",
+    "Radio": "22:79",
+    "Stepper": "22:117",
+    "DateField": "22:156",
+    "TextArea": "22:193",
+    "Select": "22:234",
+    "SegmentedControl": "22:282",
+    "ColorSwatch": "22:315",
+    "Slider": "22:345",
+    "MenuItem": "22:380",
+    "Accordion": "22:415",
+    "Tooltip": "22:438",
+    "Toast": "22:457",
+    "InlineMessage": "22:480",
+    "Keycap": "22:501",
+    "Scrollbar": "22:520",
+    "SettingRow": "25:155",
+    "SessionHeader": "25:184",
+    "MonthHeader": "25:212",
+    "NowMarker": "25:233",
+    "ResizeHandle": "25:250",
+    "ConnectionPoint": "25:269",
+    "LeaderLine": "25:290",
+    "DropZone": "25:348",
+    "ImagePreview": "25:449",
+    "AnalysisStatus": "25:514",
+    "AnalysisResult": "25:554",
+    "PermissionCard": "25:583",
+    "VersionCard": "25:606",
+    "CompareRow": "25:632",
+    "DialogHeader": "25:668",
+    "ReadOnlyBar": "25:693",
+    "ContextMenu": "25:718",
+    "HelpNavigation": "25:741",
+    "RevisionEntry": "25:760",
+    "ConnectedAnnotation": "58:214",
+    "ItemConnection": "58:258",
+    "ActionBar": "67:1977"
+  },
+  "componentSetCount": 50,
+  "variantCount": 158,
+  "prototypeLinks": 9,
+  "validation": {
+    "tokenCount": 93,
+    "semanticAliases": 38,
+    "invalidVariables": [],
+    "collections": [
+      {
+        "name": "MapStone Metrics",
+        "count": 30,
+        "modes": [
+          "Light"
+        ]
+      },
+      {
+        "name": "MapStone Primitives",
+        "count": 25,
+        "modes": [
+          "Light"
+        ]
+      },
+      {
+        "name": "MapStone Semantic",
+        "count": 38,
+        "modes": [
+          "Light"
+        ]
+      }
+    ],
+    "screens": [
+      {
+        "id": "5:858",
+        "name": "Editor / selected",
+        "instanceCount": 62,
+        "linkedInstances": 62,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "5:1080",
+        "name": "Editor / empty",
+        "instanceCount": 57,
+        "linkedInstances": 57,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "5:1284",
+        "name": "Editor / settings",
+        "instanceCount": 68,
+        "linkedInstances": 68,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "5:1502",
+        "name": "Editor / versions",
+        "instanceCount": 61,
+        "linkedInstances": 61,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "45:2105",
+        "name": "Editor / versions",
+        "instanceCount": 61,
+        "linkedInstances": 61,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "8:296",
+        "name": "Editor / Mobile 390",
+        "instanceCount": 15,
+        "linkedInstances": 15,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "8:375",
+        "name": "Feedback / Dialog · Menu · Error · Loading",
+        "instanceCount": 9,
+        "linkedInstances": 9,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:810",
+        "name": "AI 분석 / Empty",
+        "instanceCount": 9,
+        "linkedInstances": 9,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:873",
+        "name": "AI 분석 / Ready",
+        "instanceCount": 10,
+        "linkedInstances": 10,
+        "wrongFonts": [],
+        "imageCount": 1,
+        "images": [
+          "I34:877;33:399"
+        ]
+      },
+      {
+        "id": "34:918",
+        "name": "AI 분석 / Loading",
+        "instanceCount": 12,
+        "linkedInstances": 12,
+        "wrongFonts": [],
+        "imageCount": 1,
+        "images": [
+          "I34:922;33:400"
+        ]
+      },
+      {
+        "id": "34:964",
+        "name": "AI 분석 / Error",
+        "instanceCount": 11,
+        "linkedInstances": 11,
+        "wrongFonts": [],
+        "imageCount": 1,
+        "images": [
+          "I34:968;33:401"
+        ]
+      },
+      {
+        "id": "34:1010",
+        "name": "AI 분석 / Review",
+        "instanceCount": 12,
+        "linkedInstances": 12,
+        "wrongFonts": [],
+        "imageCount": 1,
+        "images": [
+          "I34:1014;33:399"
+        ]
+      },
+      {
+        "id": "34:1064",
+        "name": "공유 / 권한과 비밀번호",
+        "instanceCount": 8,
+        "linkedInstances": 8,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1091",
+        "name": "보관된 작업물 / 선택과 불러오기",
+        "instanceCount": 7,
+        "linkedInstances": 7,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1117",
+        "name": "버전 비교 / 변경 인사이트",
+        "instanceCount": 8,
+        "linkedInstances": 8,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1148",
+        "name": "맵스톤 파일 / 불러오기",
+        "instanceCount": 6,
+        "linkedInstances": 6,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1178",
+        "name": "사용법 / 목차와 조작 안내",
+        "instanceCount": 13,
+        "linkedInstances": 13,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1219",
+        "name": "전체 지우기 / 확인",
+        "instanceCount": 4,
+        "linkedInstances": 4,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1240",
+        "name": "메뉴 / 더보기와 내보내기",
+        "instanceCount": 8,
+        "linkedInstances": 8,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      },
+      {
+        "id": "34:1271",
+        "name": "설정창 / 전체 항목 명세",
+        "instanceCount": 16,
+        "linkedInstances": 16,
+        "wrongFonts": [],
+        "imageCount": 0,
+        "images": []
+      }
+    ],
+    "alignment": {
+      "componentParents": 200,
+      "controlAndPatternParents": 404,
+      "screenParents": 588,
+      "centerOrOverflowIssues": 0,
+      "screenCount": 20,
+      "linkedInstances": 457,
+      "unlinkedInstances": 0,
+      "wrongFonts": 0,
+      "checkedCheckboxMark": {
+        "box": 18,
+        "markX": 4.5,
+        "markY": 5.5,
+        "markWidth": 9,
+        "markHeight": 7
+      },
+      "primaryTrailingRows": 17
+    }
+  },
+  "productTests": {
+    "total": 145,
+    "passed": 145,
+    "failed": 0
+  },
+  "productApplied": false,
+  "designVersion": "1.2.0",
+  "chevronNode": "16:132",
+  "buttonChevronProperty": "HasChevron#16:3",
+  "referenceVariants": {
+    "Default": "16:123",
+    "Selected": "16:124"
+  },
+  "shapeRevision": {
+    "schedule": "Flat left edge, right-pointing arrow; no circular endpoint",
+    "reference": "Rounded rectangle, radius 6, left-aligned label",
+    "moreButton": "Separate 16px down chevron, centered auto layout, gap 8px, minimum width 96px"
+  },
+  "assets": {
+    "ai-analysis": "23:17",
+    "empty-selection": "23:43",
+    "canvas-orbits": "23:65",
+    "icon/openHelp": "23:80",
+    "icon/toggleLang": "23:90",
+    "icon/addChev": "23:100",
+    "icon/addMarker": "23:108",
+    "icon/addFlag": "23:116",
+    "icon/addPlain": "23:126",
+    "icon/addBand": "23:136",
+    "icon/addSticky": "23:144",
+    "icon/toggleMagnet": "23:152",
+    "icon/fitWidth": "23:160",
+    "icon/toggleFocus": "23:168",
+    "icon/openImport": "23:176",
+    "icon/openFile": "23:186",
+    "icon/openCompare": "23:196",
+    "icon/openWorkspace": "23:204",
+    "icon/openClear": "23:218",
+    "icon/togglePanel": "23:226"
+  },
+  "flowFrames": {
+    "AI 분석 / Empty": "34:810",
+    "AI 분석 / Ready": "34:873",
+    "AI 분석 / Loading": "34:918",
+    "AI 분석 / Error": "34:964",
+    "AI 분석 / Review": "34:1010",
+    "공유 / 권한과 비밀번호": "34:1064",
+    "보관된 작업물 / 선택과 불러오기": "34:1091",
+    "버전 비교 / 변경 인사이트": "34:1117",
+    "맵스톤 파일 / 불러오기": "34:1148",
+    "사용법 / 목차와 조작 안내": "34:1178",
+    "전체 지우기 / 확인": "34:1219",
+    "메뉴 / 더보기와 내보내기": "34:1240",
+    "설정창 / 전체 항목 명세": "34:1271"
+  },
+  "motion": {
+    "component": "58:259",
+    "preview": "58:274",
+    "durationSeconds": 3.2,
+    "video": "ai-processing-motion.mp4",
+    "verifiedFrames": [
+      0,
+      0.8,
+      1.6,
+      2.4
+    ]
+  }
+}

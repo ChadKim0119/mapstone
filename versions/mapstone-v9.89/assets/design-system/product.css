@@ -1,0 +1,149 @@
+/* Blue Infographic B: visual layer only. Geometry, saved colours and event handlers stay in the editor. */
+@font-face{font-family:'Pretendard Variable';src:url('./PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+:root{
+ --color-bg-neutral-1:var(--ms-color-surface-canvas);--color-bg-neutral-2:var(--ms-color-surface-subtle);
+ --color-text-neutral-3:var(--ms-color-text-muted);--color-text-neutral-4:var(--ms-color-text-secondary);--color-text-neutral-5:var(--ms-color-text-primary);--color-text-neutral-6:var(--ms-color-text-primary);
+ --color-border-neutral-1:#EAF2FC;--color-border-neutral-2:var(--ms-color-border-default);
+ --color-neutral-10:var(--ms-color-surface-canvas);--color-neutral-100:#fff;--color-neutral-700:var(--ms-color-action-primary);--color-neutral-800:var(--ms-color-brand-navy);
+}
+html,body,[data-app],.ms-dialog,.ms-tooltip,.ms-presentation{font-family:var(--ms-font-family);color:var(--ms-color-text-primary)}
+html,body,[data-app],[data-board],[data-capture]{background:var(--ms-color-surface-canvas)!important}
+[data-toolbar]{background:var(--ms-gradient-shell);border-color:var(--ms-color-border-default)!important}
+[data-toolbar]>div:first-child>button:first-child{background:transparent!important;color:var(--ms-color-brand-navy)!important;padding-left:0!important}
+[data-toolbar]>div:first-child>button:first-child>svg{display:none}
+[data-toolbar]>div:first-child>button:first-child::before{content:'';width:30px;height:30px;flex:none;background:url('./mapstone-icon-flat.svg') center/contain no-repeat}
+.ms-toolbar-row{background:#fff!important;border-radius:var(--ms-radius-control)!important}
+[data-properties]{background:#fff!important}
+[data-properties]>div{border-color:var(--ms-color-border-default)!important}
+.ms-button,.ms-tool-button,.ms-tool-menu>summary,[data-properties] button:not([data-color]),.ms-dialog button{
+ display:inline-flex;align-items:center;justify-content:center;gap:6px;vertical-align:middle;line-height:20px;font-family:var(--ms-font-family);font-weight:600;
+ border-radius:var(--ms-radius-control)!important;box-sizing:border-box;
+}
+button>svg,summary>svg{display:block;flex:none;margin:0}
+.ms-toolbar-label:empty{display:none}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--ms-color-focus-ring)!important;outline-offset:2px}
+.ms-button,.ms-tool-button,.ms-tool-menu>summary{border-color:var(--ms-color-border-default);color:var(--ms-color-text-primary)}
+.ms-button:hover:not(:disabled),.ms-tool-button:hover:not(:disabled),.ms-tool-menu>summary:hover{border-color:var(--ms-color-border-strong);box-shadow:0 2px 8px rgb(22 54 93 / 6%)}
+.ms-tool-popover,.ms-tooltip,.ms-dialog,.ms-review-panel,.ms-present-tools{border-color:var(--ms-color-border-default)!important;box-shadow:var(--ms-shadow-floating)!important}
+.ms-tool-popover .ms-tool-button{justify-content:flex-start}
+.ms-tool-popover{border-radius:var(--ms-radius-control)!important}
+.ms-dialog{border-radius:var(--ms-radius-panel)!important;color:var(--ms-color-text-primary)!important;font-family:var(--ms-font-family)!important}
+.ms-dialog::backdrop{background:rgb(22 54 93 / 30%);backdrop-filter:blur(2px)}
+.ms-dialog header{background:#fff;border-color:var(--ms-color-border-default)!important}
+.ms-dialog .ms-button{min-height:36px;color:var(--ms-color-text-primary);border:1px solid var(--ms-color-border-default)}
+.ms-dialog .ms-primary{color:#fff!important;background:var(--ms-color-action-primary)!important;border-color:var(--ms-color-action-primary)!important}
+.ms-dialog .ms-primary:hover:not(:disabled){background:var(--ms-color-action-hover)!important}
+.ms-dialog :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select),[data-properties] :is(textarea,input:not([type=checkbox]):not([type=range]),select){border-color:var(--ms-color-border-default)!important;border-radius:var(--ms-radius-control)!important;color:var(--ms-color-text-primary);font-family:var(--ms-font-family)}
+.ms-dialog :is(input,textarea,select):focus,[data-properties] :is(input,textarea,select):focus{outline:2px solid var(--ms-color-focus-ring);outline-offset:1px}
+input:is([type=checkbox],[type=radio],[type=range]){accent-color:var(--ms-color-action-primary)!important}
+input::placeholder,textarea::placeholder{color:var(--ms-color-text-muted);opacity:1}
+.ms-stepper,.ms-fontsize{border-color:var(--ms-color-border-default)!important;border-radius:var(--ms-radius-control)!important;overflow:hidden}
+[data-properties] .ms-stepper>:is(button,input,select):not(#_),[data-properties] .ms-fontsize button{border-radius:0!important}
+[data-properties] button[data-color]{display:block}
+.ms-time-properties,.ms-property-group,.ms-settings-group{border-color:var(--ms-color-border-default)!important}
+.ms-time-heading>span,.ms-property-group h4,.ms-settings-group h4,.ms-fill-heading,.ms-named-value>span{color:var(--ms-color-text-secondary)}
+.ms-drop{background:var(--ms-color-surface-canvas)!important;border-color:var(--ms-color-border-strong)!important;border-radius:var(--ms-radius-card)!important;color:var(--ms-color-text-secondary)!important}
+.ms-drop strong,.ms-dialog h2,.ms-dialog h3{color:var(--ms-color-text-primary)!important}
+.ms-drop.on,.ms-review,.ms-report-summary,.ms-version-card.is-selected{background:var(--ms-color-surface-selected)!important;border-color:var(--ms-color-action-primary)!important}
+.ms-dialog .ms-image-remove,.ms-dialog .ms-text-clear{padding:0!important;border-radius:50%!important;gap:0;line-height:1;min-height:30px}
+.ms-dialog .ms-message,.ms-sync-label{color:var(--ms-color-text-secondary)}
+.ms-version-card,.ms-version-toolbar,.ms-report-card,.ms-cmp-slot,.ms-dialog details{border-color:var(--ms-color-border-default)!important;border-radius:var(--ms-radius-control)!important}
+.ms-version-toolbar,.ms-file-nav,.ms-visible-months{background:var(--ms-color-surface-subtle)!important}
+.ms-tooltip{background:#fff!important;color:var(--ms-color-text-primary)!important;font-family:var(--ms-font-family)!important}
+[data-time-header]{border-radius:12px 12px 0 0;overflow:visible}
+[data-time-header]>.ms-sticky-col{border-top-left-radius:12px}
+[data-time-header]>div:last-child{border-top-right-radius:12px}
+[data-time-header]>.ms-sticky-col{background:var(--ms-color-brand-navy)!important}
+[data-time-header]>div:last-child{background:var(--ms-gradient-header)!important}
+[data-time-header]>div:last-child>div{background:transparent!important}
+[data-element-date]{color:var(--ms-color-text-secondary)!important;background:var(--ms-color-surface-canvas)!important}
+[data-resize]{background:var(--ms-color-focus-ring)!important}
+.ms-empty-selection{min-height:260px;padding-top:140px!important;text-align:center;background:url('./empty-selection.svg') center 32px/120px auto no-repeat;color:var(--ms-color-text-muted)!important}
+/* Keep the fluid AI mark; add Figma's scan and semantic extraction without fake progress. */
+.ms-ai-analysis{background:linear-gradient(120deg,#EAF2FC,#F5F8FD)!important;border-color:var(--ms-color-border-default)!important;font-family:var(--ms-font-family)}
+.ms-ai-analysis.ms-ai-overlay{background:linear-gradient(120deg,#EAF2FC99,#F5F8FD99)!important}
+.ms-ai-fluid-a{background:linear-gradient(140deg,#A4C4EFaa,#87D0DF99)!important}
+.ms-ai-fluid-b{background:linear-gradient(35deg,#87D0DF88,#6D5CCE88)!important}
+.ms-ai-fluid-c{background:linear-gradient(140deg,#fff9,#DFF7FBaa)!important}
+.ms-ai-copy>strong{color:var(--ms-color-text-primary)!important}.ms-ai-copy p,.ms-ai-eyebrow{color:var(--ms-color-text-secondary)!important}
+.ms-ai-visual .ms-ai-document{left:22%;top:23%;width:52%;height:60%;border:1px solid #A4C4EF;background:#ffffffdd;border-radius:12px;box-shadow:var(--ms-shadow-card);z-index:2}
+.ms-ai-document i{position:absolute;height:3px;left:14%;width:65%;background:#D2E2F7;animation:ms-ds-line 3.2s ease-in-out infinite}
+.ms-ai-document i:nth-child(1){top:20%}.ms-ai-document i:nth-child(2){top:38%;width:58%;animation-delay:.3s}.ms-ai-document i:nth-child(3){top:56%;width:50%;animation-delay:.6s}.ms-ai-document i:nth-child(4){top:74%;width:42%;animation-delay:.9s}
+.ms-ai-visual .ms-ai-scan{left:19%;top:28%;width:58%;height:3px;background:#87D0DF;border-radius:2px;box-shadow:0 0 12px #87D0DF;z-index:3;animation:ms-ds-scan 3.2s ease-in-out infinite}
+.ms-ai-visual .ms-ai-semantic{right:8%;top:36%;width:8px;height:8px;border-radius:50%;background:#3568C5;z-index:3;box-shadow:10px 24px #6D5CCE,16px 48px #3568C5;animation:ms-ds-node 3.2s ease-in-out infinite}
+.ms-ai-core{z-index:4;width:28px!important;height:28px!important;font-size:10px!important;right:15%;top:12%;background:#3568C5!important;color:#fff!important}
+@keyframes ms-ds-scan{0%{transform:translateY(0);opacity:.3}16%{opacity:1}50%,69%{transform:translateY(68px)}69%{opacity:.2}100%{transform:translateY(0);opacity:.3}}
+@keyframes ms-ds-node{0%,100%{opacity:.3;transform:scale(.85)}22%,75%{opacity:1}47%{transform:scale(1)}}
+@keyframes ms-ds-line{0%,100%{background:#D2E2F7}45%{background:#87D0DF}}
+html:has([data-anim=off]) .ms-ai-analysis *,html:has([data-anim=off]) .ms-ai-analysis *::before{animation:none!important}
+@media(prefers-reduced-motion:reduce){.ms-ai-analysis *,.ms-ai-analysis *::before{animation:none!important;transition:none!important}}
+@media(hover:none){.ms-button,.ms-tool-button,.ms-tool-menu>summary{min-height:44px}}
+@media print{html,body,[data-app],[data-board],[data-capture]{background:#fff!important}}
+[data-toolbar]>div:first-child>button:first-child>svg{display:none!important}
+.ms-accent{color:var(--ms-color-action-primary)!important}
+[data-properties] button[data-tab]{border-radius:0!important}
+[data-properties] .ms-panel-close{padding:0!important;border-radius:0!important}
+.ms-dialog .ms-button:disabled{background:var(--ms-color-action-disabled);color:var(--ms-color-text-disabled);opacity:.55}
+.ms-present-tools,.ms-focus-exit,.ms-focus-hint{background:var(--ms-color-brand-navy)!important;color:#fff!important;font-family:var(--ms-font-family)!important}
+.ms-dialog .ms-message{color:var(--ms-color-text-secondary)!important}
+/* v9.87: complete semantic colours, including product-only components. */
+:root{--color-text-neutral-1:var(--ms-color-text-inverse);--color-text-neutral-2:var(--ms-color-text-disabled);--color-neutral-500:var(--ms-palette-slate-300);--color-magenta-50:var(--ms-color-surface-subtle)}
+.ms-toolbar-label{background:var(--ms-color-surface-subtle);border-color:var(--ms-color-border-default);color:var(--ms-color-action-hover)}
+.ms-text-format button,[data-properties] button[data-format]{background:var(--ms-color-surface-default)!important;color:var(--ms-color-text-secondary)!important;border-color:var(--ms-color-border-default)!important}
+.ms-text-format button[aria-pressed=true],[data-properties] button[data-format][aria-pressed=true]{background:var(--ms-color-surface-selected)!important;color:var(--ms-color-action-primary)!important;border-color:var(--ms-color-border-strong)!important}
+[data-properties] button:not([data-color]):disabled{background:var(--ms-color-action-disabled)!important;color:var(--ms-color-text-disabled)!important;border-color:var(--ms-color-border-default)!important}
+[data-now-tag]{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;line-height:1.3;background:var(--ms-color-timeline-today)!important;color:var(--ms-color-text-inverse)!important}
+[data-now-tag] [data-element-date]{background:transparent!important;color:inherit!important;margin-left:0!important;line-height:inherit;font-variant-numeric:tabular-nums;opacity:.92}
+[data-properties]>div:has(>.ms-empty-selection){flex:1;min-height:0;height:calc(100% - 36px);box-sizing:border-box;justify-content:center}
+.ms-empty-selection{display:flex;align-items:center;justify-content:center;flex:none;min-height:220px;height:220px;box-sizing:border-box;padding:136px 12px 28px!important;background-position:center 28px}
+.ms-dialog .ms-share-perm{flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;padding:16px!important;gap:8px;background:var(--ms-color-surface-default);border:1px solid var(--ms-color-border-default)!important;color:var(--ms-color-text-primary)!important;border-radius:var(--ms-radius-card)!important;box-shadow:none}
+.ms-dialog .ms-share-perm[aria-checked=true]{background:var(--ms-color-surface-selected)!important;border-color:var(--ms-color-action-primary)!important;box-shadow:0 0 0 2px var(--ms-color-surface-subtle)}
+.ms-dialog .ms-share-perm strong{color:var(--ms-color-text-primary)!important}
+.ms-dialog .ms-share-perm[aria-checked=true] strong{color:var(--ms-color-action-primary)!important}
+.ms-dialog .ms-share-perm span,.ms-share-hint,.ms-share-key{color:var(--ms-color-text-secondary)!important}
+.ms-dialog .ms-share-opt,.ms-share-result{background:var(--ms-color-surface-subtle)!important;border-color:var(--ms-color-border-default)!important;border-radius:var(--ms-radius-card)!important}
+.ms-dialog .ms-share-actions{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;justify-content:stretch;gap:12px;margin:18px 0}
+.ms-share-actions>.ms-button{margin:0!important;min-width:112px;min-height:40px;justify-self:start}
+.ms-share-key{line-height:1.6}.ms-share-key kbd{background:var(--ms-color-surface-default);border-color:var(--ms-color-border-strong);color:var(--ms-color-text-secondary)}
+.ms-dialog .ms-button[aria-pressed=true]{background:var(--ms-color-surface-selected);color:var(--ms-color-action-primary);border-color:var(--ms-color-border-strong)}
+.ms-dialog .ms-button.ms-danger{background:var(--ms-color-status-error-bg)!important;color:var(--ms-color-status-error)!important;border-color:var(--ms-color-status-error)!important}
+.ms-toast{background:var(--ms-color-brand-navy)!important;color:var(--ms-color-text-inverse)!important;border-color:var(--ms-color-border-strong)!important}
+.ms-image-opacity-info{background:var(--ms-color-surface-selected)!important;border-color:var(--ms-color-border-strong)!important;color:var(--ms-color-text-primary)!important}
+.ms-image-divider>span{color:var(--ms-color-action-primary)!important}
+.ms-review,.ms-review-panel,.ms-cmp-slot,.ms-report-detail{background:var(--ms-color-surface-canvas)!important;color:var(--ms-color-text-primary)!important}
+.ms-change-added{border-color:var(--ms-color-status-success)!important}.ms-change-removed{border-color:var(--ms-color-status-error)!important}.ms-change-changed{border-color:var(--ms-color-status-warning)!important}
+.ms-present-tools button[aria-pressed=true]{border-color:var(--ms-color-brand-cyan)!important}
+.ms-lens-size option{background:var(--ms-color-brand-navy)!important}.ms-present-hint{color:var(--ms-palette-blue-200)!important}
+@media(max-width:700px){.ms-empty-selection{height:170px;min-height:170px;padding:108px 12px 16px!important;background-size:88px auto;background-position:center 12px}.ms-share-actions{grid-template-columns:1fr!important}.ms-share-actions>.ms-button{justify-self:stretch;width:100%}.ms-share-key{text-align:center}}
+/* c6 hides panel text: keep its toggle icon visible after the X is removed. */
+.ms-toolbar-row.c6 .ms-panel-btn>svg{display:block!important}
+[data-mode=outlabel]{background:var(--ms-color-surface-default)!important;color:var(--ms-color-text-primary)!important;border-color:var(--ms-color-border-default)!important;box-shadow:0 2px 6px rgb(22 54 93 / 5%)}
+[data-id] textarea{background:var(--ms-color-surface-default)!important;color:var(--ms-color-text-primary)!important;border-color:var(--ms-color-action-primary)!important;caret-color:var(--ms-color-action-primary)}
+.ms-report-summary,.ms-cmp-groups,.ms-exact-changes{color:var(--ms-color-text-primary)}
+::selection{background:var(--ms-color-surface-selected);color:var(--ms-color-text-primary)}
+.ms-fontsize,[data-properties] .ms-fontsize button,[data-properties] .ms-stepper button{color:var(--ms-color-text-primary)!important}
+[data-properties] button[data-color]{border-color:var(--ms-color-border-strong)}
+.ms-dialog .ms-share-err{color:var(--ms-color-status-error)!important}
+:root{--color-border-neutral-3:var(--ms-color-border-strong)}
+.ms-ai-steps span{background:var(--ms-color-surface-default)!important;color:var(--ms-color-text-secondary)!important;border-color:var(--ms-color-border-strong)!important}
+.ms-ai-halo{border-color:var(--ms-color-border-strong)!important}
+/* v9.88: template modals use the same primitives as native dialog modals. */
+.ms-modal-scrim{background:rgb(22 54 93 / 30%)!important;backdrop-filter:blur(2px)}
+.ms-template-dialog{background:var(--ms-color-surface-default)!important;color:var(--ms-color-text-primary);border:1px solid var(--ms-color-border-default);border-radius:var(--ms-radius-panel)!important;box-shadow:var(--ms-shadow-floating);font-family:var(--ms-font-family);box-sizing:border-box}
+.ms-template-dialog .ms-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:0 14px!important;border:1px solid var(--ms-color-border-default)!important;border-radius:var(--ms-radius-control)!important;background:var(--ms-color-surface-default);color:var(--ms-color-text-primary);font-family:var(--ms-font-family);font-weight:600;line-height:20px}
+.ms-template-dialog .ms-primary{background:var(--ms-color-action-primary)!important;color:var(--ms-color-text-inverse)!important;border-color:var(--ms-color-action-primary)!important}
+.ms-template-dialog .ms-primary:hover{background:var(--ms-color-action-hover)!important;border-color:var(--ms-color-action-hover)!important}
+.ms-template-dialog textarea{border-color:var(--ms-color-border-default)!important;border-radius:var(--ms-radius-control)!important;color:var(--ms-color-text-primary)!important;background:var(--ms-color-surface-canvas)!important}
+.ms-sticky-col{box-shadow:-24px 0 0 var(--ms-color-surface-canvas)!important}
+[data-properties] .ms-fontsize .ms-font-small{font-size:10px!important;line-height:1;font-weight:700}
+[data-properties] .ms-fontsize .ms-font-large{font-size:17px!important;line-height:1;font-weight:700}
+.ms-dialog .ms-share-opt{background:transparent!important}
+.ms-dialog .ms-share-actions{grid-template-columns:minmax(0,1fr) auto}
+.ms-share-actions>.ms-button{grid-column:2;grid-row:1;justify-self:end}
+.ms-share-actions>.ms-share-key{grid-column:1;grid-row:1}
+@media(max-width:700px){.ms-share-actions>.ms-button{grid-column:1;grid-row:2;width:auto;min-width:112px;justify-self:end}.ms-share-actions>.ms-share-key{grid-column:1;grid-row:1;text-align:left}}
+
+/* v9.89: preserve share option geometry without exposing inactive inputs. */
+.ms-dialog .ms-share-opt[hidden]{display:block!important;visibility:hidden;pointer-events:none}
+.ms-dialog .ms-share-pw[hidden]{display:block!important;visibility:hidden;pointer-events:none}
+.ms-dialog .ms-share-err{display:block!important;min-height:18px;margin:4px 0 0}

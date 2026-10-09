@@ -1,0 +1,8 @@
+/* Pretendard Variable — the single UCMP typeface. Binary copied from
+   UCMP-FE-2.0/packages/style/fonts/resources/PretendardVariable.woff2 */
+@font-face{font-family:'Pretendard Variable';font-style:normal;font-weight:45 920;font-display:swap;src:url('../assets/fonts/PretendardVariable.woff2') format('woff2-variations')}
+:root{
+  --font-pretendard:'Pretendard Variable',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue',sans-serif;
+  --font-sans:var(--font-pretendard);
+  /* No separate display or mono face exists in the source. */
+}

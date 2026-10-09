@@ -1,0 +1,44 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const C=require('../mapstone-core.js');
+const doc=()=>C.validate({title:'테스트',cfg:{months:2},rows:[{id:'r',name:'개발'}],items:[{id:'a',kind:'chev',row:'r',s:0,e:.5,label:'A'},{id:'b',kind:'chev',row:'r',s:.5,e:1,label:'B'}]});
+test('Mapstone file round trip retains all content and rejects invalid versions',()=>{const d=doc();d.items.push({id:'memo',kind:'flag',row:'r',s:0,e:0,label:'메모',targetId:'a',linkOffset:.5,labelDx:30,labelDy:20},{id:'img',kind:'image',s:0,e:0,src:'data:image/png;base64,AA==',w:20,h:20});d.cfg.showElementDates=true;d.notes=[{id:'n',text:'공지'}];d.versions=[{id:'v',snap:JSON.stringify(d)}];const valid=C.validate(d);assert.deepEqual(C.parseFile(C.serializeFile(valid)),valid);assert.deepEqual(C.parseFile(JSON.stringify(valid)),valid);assert.throws(()=>C.parseFile('{"format":"mapstone","formatVersion":2,"document":{}}'));assert.throws(()=>C.parseFile('null'));assert.throws(()=>C.parseFile('alert(1)'));assert.throws(()=>C.parseFile(C.serializeFile(valid).replace('"row":"r"','"row":"missing"')));});
+test('JavaScript data literal supports comments, single quotes, trailing commas and eighth months',()=>{const d=C.parseImport("export const schedule = {title:'일정',cfg:{months:2},rows:[{id:'r',name:'개발'},],items:[{id:'a',kind:'chev',row:'r',s:.0,e:0.125,label:'A'}]};".replace('s:.0','s:0'));assert.equal(d.items[0].e,.125);});
+test('JSON round trip retains hideDuration and image data',()=>{const d=doc();d.items[0].hideDuration=true;d.items.push({id:'img',kind:'image',row:'',s:0,e:0,label:'image',src:'data:image/png;base64,AA==',w:20,h:20});assert.equal(C.parseImport(JSON.stringify(d)).items[0].hideDuration,true);});
+test('Executable JavaScript is never imported',()=>{for(const v of ['const schedule = fetch("https://example.com")','const schedule = {rows:[], items:[]}; alert(1)','({get title(){return 1}})','const schedule = { __proto__: {} }','const schedule = {a: 1+2}'])assert.throws(()=>C.parseImport(v));});
+test('Malformed values and references rejected',()=>{for(const mutate of [d=>d.cfg.months=0,d=>d.cfg.months=2.5,d=>d.items[0].s=NaN,d=>d.items[0].row='missing',d=>d.items[1].id='a',d=>d.items[0].e=-1,d=>d.items[0].color='url(x)',d=>d.items[0].kind='script',d=>d.rows=[],d=>d.items[0].hideDuration='yes']){const d=doc();mutate(d);assert.throws(()=>C.validate(d));}});
+test('Two users editing different blocks merge',()=>{const b=doc(),l=C.clone(b),r=C.clone(b);l.items[0].label='L';r.items[1].label='R';const m=C.merge(b,l,r);assert.deepEqual(m.conflicts,[]);assert.equal(m.document.items[0].label,'L');assert.equal(m.document.items[1].label,'R');});
+test('Two users editing different fields of same block merge',()=>{const b=doc(),l=C.clone(b),r=C.clone(b);l.items[0].label='L';r.items[0].hideDuration=true;const m=C.merge(b,l,r);assert.deepEqual(m.conflicts,[]);assert.equal(m.document.items[0].hideDuration,true);});
+test('Same field conflicting writes and delete/edit conflict are explicit',()=>{const b=doc(),l=C.clone(b),r=C.clone(b);l.items[0].label='L';r.items[0].label='R';assert.deepEqual(C.merge(b,l,r).conflicts,['items[a].label']);l.items.shift();assert.deepEqual(C.merge(b,l,r).conflicts,['items[a]']);});
+test('Concurrent additions retained',()=>{const b=doc(),l=C.clone(b),r=C.clone(b);l.items.push({...b.items[0],id:'c'});r.items.push({...b.items[0],id:'d'});const m=C.merge(b,l,r);assert.deepEqual(m.conflicts,[]);assert.equal(m.document.items.length,4);});
+test('Merged cross-field invalid dates fail rather than corrupt room',()=>{const b=doc(),l=C.clone(b),r=C.clone(b);l.items[0].s=.4;r.items[0].e=.25;assert.match(C.merge(b,l,r).conflicts[0],/구조/);});
+test('Snapshot limit protects browser storage',()=>{const d=doc();d.versions=Array.from({length:31},(_,i)=>({id:String(i),snap:'{}'}));assert.throws(()=>C.validate(d),/30/);});
+module.exports={doc};
+test('AI analysis output becomes a repaired, validated document',()=>{const d=C.fromAnalysis({title:'로드맵',rangeStart:'2026-03',rangeEnd:'2026-06-30',now:'2026-04-16',rows:[{id:'dev',name:'개발',color:'bad'},{id:'qa',name:'QA',color:'#eaf2fb'}],items:[
+  {type:'chev',row:'dev',start:'2026-03-01',end:'2026-04-16',label:'구현',lane:0,color:'#5B3FD1'},
+  {type:'chev',row:'개발',start:'2026-05-01',end:'2026-05-01',label:'역전',lane:1.6},
+  {type:'marker',start:'2026-06-30',label:'오픈',color:''},
+  {type:'flag',row:'nowhere',start:'2026-04-10',label:'이슈'},
+  {type:'band',row:'qa',rowTo:'dev',start:'2026-05-01',end:'2026-06-01',label:'프리즈'},
+  {type:'sticky',start:'2026-03-01',label:'범례'},{type:'chev',row:'dev',start:'날짜없음',label:'skip'}]},'2030-01-01');
+  assert.deepEqual([d.cfg.startY,d.cfg.startM,d.cfg.months],[2026,3,4]);assert.equal(d.rows[0].color,undefined);assert.equal(d.rows[1].color,'#eaf2fb');
+  const [a,b,m,f,band,st]=d.items;assert.equal(d.items.length,6);assert.equal(a.s,0);assert.equal(a.e,1+15/30);assert.equal(b.kind,'marker');assert.equal(b.row,'');assert.equal(b.lane,2);assert.equal(b.e,b.s);
+  assert.equal(m.kind,'marker');assert.equal(m.row,'');assert.equal(m.s,m.e);assert.equal(f.row,'r1');assert.deepEqual([band.rowFrom,band.rowTo],['r1','r2']);assert.equal(st.kind,'sticky');assert.ok(st.w>0);assert.equal(d.now,1+15/30);
+  assert.equal(new Set(d.items.map(i=>i.id)).size,6);assert.throws(()=>C.fromAnalysis({items:[{start:'?'}]}));});
+
+test('Analysis preserves source item colors and are stable on repeated client normalization',()=>{
+ const d=C.fromAnalysis({rangeStart:'2026-01-01',rows:[{id:'a',name:'A'},{id:'b',name:'B'}],items:[{type:'flag',row:'a',start:'2026-01-01',label:'memo'},{type:'chev',row:'a',start:'2026-01-01',end:'2026-02-01',label:'base',color:'#0078d4'},{type:'plain',row:'a',start:'2026-01-02',end:'2026-02-01',label:'ref',color:'#ff0000'},{type:'chev',row:'b',start:'2026-01-01',end:'2026-02-01',label:'B',color:'#5b3fd1'}]});
+ assert.equal(d.items[1].color,'#0078d4');assert.equal(d.items[0].color,'#e22a21');assert.equal(d.items[2].color,'#ff0000');assert.equal(d.items[3].color,'#5b3fd1');const before=JSON.stringify(d);C.analysisColors(d);assert.equal(JSON.stringify(d),before);
+});
+
+test('Analysis converts one-day ranges to milestones and separates overlapping ranges',()=>{
+ const d=C.fromAnalysis({rangeStart:'2026-10-01',rows:[{id:'r',name:'개발'}],items:[
+ {type:'chev',row:'r',start:'2026-10-19',end:'2026-10-23',label:'A'},
+ {type:'plain',row:'r',start:'2026-10-20',end:'2026-10-24',label:'B'},
+ {type:'chev',row:'r',start:'2026-10-24',end:'2026-10-28',label:'C'},
+ ...['chev','plain','band'].map(type=>({type,row:'r',start:'2026-10-23',end:'2026-10-23',label:type})),
+ {type:'chev',start:'2026-10-29',label:'날짜만 지정'},
+ {type:'chev',row:'r',start:'2026-10-28',end:'2026-10-20',label:'역전'}
+ ]});
+ assert.deepEqual(d.items.slice(0,3).map(i=>i.lane),[0,1,0]);
+ for(const i of d.items.slice(3,7)){assert.equal(i.kind,'marker');assert.equal(i.s,i.e);assert.equal(i.row,'');}
+ assert.equal(d.items[7].kind,'chev');assert.ok(d.items[7].e>d.items[7].s);
+ });

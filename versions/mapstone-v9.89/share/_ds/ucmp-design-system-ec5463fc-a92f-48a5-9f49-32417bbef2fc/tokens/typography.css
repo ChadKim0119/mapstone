@@ -1,0 +1,26 @@
+/* Type scale is a fixed 9-step ladder — no other sizes are permitted.
+   Values verbatim from packages/tailwind-config/tailwind.config.ts. */
+:root{
+  --text-xs:12px;   --leading-xs:14px;
+  --text-sm:14px;   --leading-sm:16px;
+  --text-base:16px; --leading-base:20px;
+  --text-lg:18px;   --leading-lg:22px;
+  --text-xl:20px;   --leading-xl:24px;
+  --text-2xl:24px;  --leading-2xl:28px;
+  --text-3xl:28px;  --leading-3xl:34px;
+  --text-4xl:32px;  --leading-4xl:38px;
+  --text-5xl:36px;  --leading-5xl:44px;
+
+  --font-weight-base:400;
+  --font-weight-medium:500;
+  --font-weight-semibold:600;
+  --font-weight-bold:700;
+
+  --leading-normal:1.2;
+  --leading-relaxed:1.5;
+  --tracking-normal:0;
+
+  /* Marketing/home surface only — the console never uses these. */
+  --tracking-hero:-0.055em;
+  --tracking-tight:-0.02em;
+}

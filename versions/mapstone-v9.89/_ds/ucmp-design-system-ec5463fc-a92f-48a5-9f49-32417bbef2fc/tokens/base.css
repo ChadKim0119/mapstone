@@ -1,0 +1,13 @@
+/* Minimal resets carried over from packages/style/globals.css. */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:var(--font-pretendard);background-color:var(--color-bg-neutral-0);color:var(--color-text-neutral-6);font-size:var(--text-sm);line-height:var(--leading-sm)}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--color-primary)}
+::selection{background-color:rgba(var(--color-primary-rgb),.7);color:#fff}
+/* Scrollbars are hidden globally; opt back in with .show-scrollbar. */
+*{scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{display:none}
+.show-scrollbar{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.2) transparent}
+.show-scrollbar::-webkit-scrollbar{display:block;width:4px}
+.show-scrollbar::-webkit-scrollbar-track{background:transparent}
+.show-scrollbar::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.2);border-radius:9999px}
