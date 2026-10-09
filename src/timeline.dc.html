@@ -956,22 +956,21 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-if value="{{ vHint }}"><span role="status" style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ vHint }}</span></sc-if>
 
             <div style="height:1px;background:var(--color-border-neutral-2)"></div>
-            <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><button class="ms-version-compare-button" onClick="{{ openVersionCompare }}" disabled="{{ versionCompareDisabled }}" title="{{ versionCompareHint }}">버전 비교</button></div>
+            <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><button class="ms-version-compare-button" onClick="{{ onVersionCompareAction }}" disabled="{{ versionCompareDisabled }}" data-ready="{{ versionCompareReady }}" title="{{ versionCompareHint }}">{{ versionCompareActionLabel }}</button></div>
             <sc-if value="{{ versionCompareUnavailable }}"><p class="ms-compare-guide">{{ L.versionCompareGuide }}</p></sc-if>
+            <sc-if value="{{ versionCompareSelecting }}"><div class="ms-panel-compare-controls"><span role="status">{{ versionCompareCount }} / 2개 선택</span></div><p class="ms-compare-guide">첫 번째 선택은 기준 버전, 두 번째 선택은 비교 버전입니다.</p></sc-if>
             <sc-for list="{{ versionsView }}" as="v" hint-placeholder-count="2">
-              <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:{{ v.bg }}">
+              <div class="ms-history-card" data-selecting="{{ versionCompareSelecting }}" data-selected="{{ v.compareChecked }}" data-id="{{ v.id }}" onClick="{{ onVersionCompareCard }}" onKeyDown="{{ onVersionCompareCardKey }}" tabindex="{{ v.compareTabIndex }}" role="{{ v.compareRole }}" aria-label="{{ v.cardLabel }}" aria-pressed="{{ v.compareChecked }}" style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:{{ v.bg }}">
                 <div style="display:flex;align-items:center;gap:8px">
-                  <span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:9999px;background:var(--color-neutral-800);color:#fff">{{ v.tag }}</span>
-                  <span style="font-size:13px;font-weight:700">{{ v.title }}</span>
-                  <span style="flex:1"></span>
-                  <span style="flex-basis:100%;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--color-text-neutral-3)">{{ v.date }}</span>
+                  <sc-if value="{{ versionCompareSelecting }}"><input type="checkbox" data-id="{{ v.id }}" checked="{{ v.compareChecked }}" disabled="{{ v.compareDisabled }}" onChange="{{ onVersionComparePick }}" aria-label="{{ v.compareLabel }}"></sc-if><span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:9999px;background:var(--color-neutral-800);color:#fff">{{ v.tag }}</span>
+                  <div class="ms-history-title"><span>{{ v.title }}</span><time>{{ v.date }}</time><sc-if value="{{ v.compareChecked }}"><strong>{{ v.compareOrder }}</strong></sc-if></div>
                 </div>
                 <span style="font-size:12px;line-height:1.6;white-space:pre-line;color:var(--color-text-neutral-4)">{{ v.note }}</span>
-                <div style="display:flex;gap:6px">
+                <sc-if value="{{ versionCompareNormal }}"><div style="display:flex;gap:6px">
                   <button data-id="{{ v.id }}" onClick="{{ restoreVersion }}" disabled="{{ versionBusy }}" style="flex:1;height:30px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.restoreBtn }}</button>
                   <button data-id="{{ v.id }}" onClick="{{ deleteVersion }}" disabled="{{ versionBusy }}" aria-label="버전 삭제" style="height:30px;padding:0 8px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;color:#b42318;cursor:pointer">{{ L.del }}</button>
 
-                </div>
+                </div></sc-if>
               </div>
             </sc-for>
             <sc-if value="{{ noVersions }}" hint-placeholder-val="{{ true }}">
@@ -1100,6 +1099,10 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.19', agent: 'Codex', title: '선택 순서 기반 버전 비교와 가독성 개선', items: ['비교 선택 시 카드 전체 선택 · 복원/삭제 숨김 · 제목 아래 날짜 배치', '첫 선택을 기준 버전으로 유지하고 기준/비교 역할 명시', '비교 버전 불투명도 라벨과 실제 합성 동작에 맞는 설명 제공', '버전 비교 화면의 작은 안내문과 조작 텍스트를 14px 이상으로 개선'] },
+    { v: 'v0.9.18', agent: 'Codex', title: '버전 비교 하단 조작과 컬러 범례 개선', items: ['슬라이드 구분선 핸들을 기준선 하단에 배치', '변경 범례의 색상 텍스트를 굵기와 실제 색상으로 표현', '오버랩 불투명도 슬라이더를 일정표 우하단에 배치 · 최초 진입 코치마크 제공'] },
+    { v: 'v0.9.17', agent: 'Codex', title: '버전 비교 조작과 분석 프롬프트 개선', items: ['두 버전 선택 시 기존 버튼을 파란 비교 진행 버튼으로 전환', '비교 이미지의 월/연도 헤더를 일정표 형태로 유지', '이미지 구분선 조작 · 첫 진입 코치마크 · 비교 전환 애니메이션', '오버랩 슬라이더 축소 · 변경 표시를 별도 체크박스로 제공 · 전체창 버튼 제거', '수정 가능한 분석 프롬프트와 안내 · 보고서 산출 후 복사 버튼 제공'] },
+    { v: 'v0.9.16', agent: 'Codex', title: '버전 비교 전용 화면과 Gemini 이미지 보고서', items: ['아이템 드래그 시 설정창 탭 유지', '버전 탭에서 두 버전 선택 후 비교 진행', '넓은 비교 화면 · 슬라이드/오버랩 · 추가/삭제/변경 간략 보고서', 'Gemini 분석에 비교 이미지와 작업 기준 프롬프트 전달', 'AI 분석 멈춤·예상 진행률 및 Executive Summary/상세 보고서 제공'] },
     { v: 'v0.9.15', agent: 'Codex', title: '동작 툴팁과 분석 진행률 위치 정리', items: ['눈금 맞춤 툴팁을 snap 기능 설명으로 수정', '마우스 · 이미지/텍스트 분석 버튼 명칭 통일', '이미지와 텍스트 분석 진행률을 분석 애니메이션 아래로 이동'] },
     { v: 'v0.9.14', agent: 'Codex', title: '새 일정표 기본값과 분석·첨부 상태 개선', items: ['새 일정표 3개월 · 블루/그레이 세션 3개 및 하단 여백', '하단 기하학 배경 요소 추가', '파일 불러오기와 분석의 파일명 · 첨부 완료 표시 통일', '전체 텍스트 비우기 버튼과 우측 스크롤 표시', '분석 멈춤 · 예상 진행률 표시 · 완료 후 분석 버튼 우선순위 완화'] },
     { v: 'v0.9.13', agent: 'Codex', title: '분석 입력 상태와 안내 행 정리', items: ['텍스트 입력 시 파일 불러오기 버튼 숨김 · 비우면 복원', '이미지 · 텍스트 안내 문구를 각 분석 버튼과 같은 행으로 배치', '두 입력 영역의 준비 상태 안내를 독립적으로 유지'] },
@@ -1225,7 +1228,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.15';
+  APP_VER = 'v0.9.19';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1627,7 +1630,7 @@ class Component extends DCLogic {
   openImport = () => MapstoneUI.open(this, 'import');
   openWorkspace = () => MapstoneUI.open(this, 'workspace');
   openEditGate = () => MapstoneUI.open(this, 'edit-gate');
-  openCompare = () => MapstoneUI.open(this, 'compare');
+  openCompare = () => this.openVersionCompare();
   onReviewPick = (e) => this.focusItem(e.currentTarget.dataset.id);
   closeReview = () => this.setState({ reviewOpen: false });
   /* 비교 화면 편집하기 done: leave the compare view for the plain editor (markers and colours removed) */
@@ -2045,7 +2048,7 @@ class Component extends DCLogic {
   }
   isSelected(id) { this.selectedIds();return this._selectionCache.set.has(id); }
   selectItems(ids, primary=ids[ids.length-1], anchor=this.state.selectionAnchor) {
-    this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null,tab:'prop'});
+    this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null});
   }
   pickItem(id, e={}) {
     const current=this.selectedIds();
@@ -2278,7 +2281,7 @@ class Component extends DCLogic {
     MapstoneUI.hideTip();
     if (!this.pickItem(d.id,e)) return;
     this.setState({ selLinkDot:null });
-    this.setState({ sel: d.id, editing: null, editNote: null, tab: 'prop', panel: it.kind === 'flag' || this.narrowScreen() ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
+    this.setState({ sel: d.id, editing: null, editNote: null, panel: it.kind === 'flag' || this.narrowScreen() ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
     if (this.state.readOnly) return;
     this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), moved: false };
     if (!d.mode && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
@@ -2289,7 +2292,7 @@ class Component extends DCLogic {
   onNowDown = (e) => {
     e.stopPropagation();
     MapstoneUI.hideTip();
-    this.setState({sel:'__now',selection:[],focusRow:null,editing:null,tab:'prop',panel:true});
+    this.setState({sel:'__now',selection:[],focusRow:null,editing:null,panel:true});
     if (this.state.readOnly) return;
     this.drag = { id: '__now', mode: 'now', x0: e.clientX, y0: e.clientY, s: this.state.now, e: 0, snap: this.snapshot(), moved: false };
     this.bind();this.setState({});
@@ -2845,7 +2848,7 @@ class Component extends DCLogic {
   onLinkDown = (e) => {
     e.stopPropagation(); if (e.button !== 0 || this.state.readOnly) return;
     e.preventDefault(); MapstoneUI.hideTip();
-    this.setState({selection:[e.currentTarget.dataset.id],selectionAnchor:e.currentTarget.dataset.id,sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true, tab:'prop' });
+    this.setState({selection:[e.currentTarget.dataset.id],selectionAnchor:e.currentTarget.dataset.id,sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true });
     if (e.currentTarget.focus) e.currentTarget.focus();
     this.drag = { id:e.currentTarget.dataset.id, mode:'link', x0:e.clientX, y0:e.clientY, snap:this.snapshot(), moved:false, badge:e.currentTarget.parentElement?.querySelector('[data-alert-label]')?.getBoundingClientRect(),color:this.state.items.find(i=>i.id===e.currentTarget.dataset.id)?.color || '#3568c5' };
     this.bind();
@@ -3058,7 +3061,12 @@ class Component extends DCLogic {
   onVField = (e) => { const k = e.currentTarget.dataset.v; const v = e.currentTarget.value; const p = {}; p['v' + k.charAt(0).toUpperCase() + k.slice(1)] = v; this.setState(p); };
   saveVersion = () => MapstoneUI.saveCloudVersion(this);
   openVersionLibrary = () => MapstoneUI.versionLibrary(this);
-  openVersionCompare = () => MapstoneUI.versionLibrary(this,true);
+  openVersionCompare = () => this.setState({tab:'ver',panel:true,versionCompareSelecting:!this.state.versionCompareSelecting,versionCompareIds:[]});
+  onVersionComparePick = (e) => {const ids=new Set(this.state.versionCompareIds||[]),id=e.currentTarget.dataset.id;if(e.currentTarget.checked){if(ids.size<2)ids.add(id);}else ids.delete(id);this.setState({versionCompareIds:[...ids]});};
+  onVersionCompareCard = (e) => {if(!this.state.versionCompareSelecting||e.target.closest?.('input,button'))return;const id=e.currentTarget.dataset.id,ids=this.state.versionCompareIds||[];if(ids.includes(id))this.setState({versionCompareIds:ids.filter(v=>v!==id)});else if(ids.length<2&&this.state.versions.find(v=>v.id===id)?.projectId)this.setState({versionCompareIds:[...ids,id]});};
+  onVersionCompareCardKey = (e) => {if(e.target!==e.currentTarget||!['Enter',' '].includes(e.key))return;e.preventDefault();this.onVersionCompareCard(e);};
+  onVersionCompareAction = () => {if(this.state.versionCompareSelecting&&(this.state.versionCompareIds||[]).length===2)this.runVersionCompare();else this.openVersionCompare();};
+  runVersionCompare = () => MapstoneUI.versionComparePage(this,this.state.versionCompareIds||[]);
   restoreVersion = (e) => {
     if (this.state.readOnly) return;
     const id = e.currentTarget.dataset.id;
@@ -3550,8 +3558,9 @@ class Component extends DCLogic {
       vSaveBg: vReady ? 'var(--ms-color-action-primary)' : 'var(--color-bg-neutral-2)', vSaveFg: vReady ? '#fff' : 'var(--color-text-neutral-2)',
       vSaveBorder: vReady ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       vHint: st.versionStatus || '',versionCompareUnavailable:st.versions.filter(v=>v.projectId).length<2, versionCompareDisabled:!!st.versionBusy||st.versions.filter(v=>v.projectId).length<2,versionCompareHint:st.versions.filter(v=>v.projectId).length<2?'두개 이상의 버전이 있어야 버전 비교가 가능합니다.':'현재 작업물의 저장 버전 비교', versionBusy:!!st.versionBusy, versionSaveLabel:st.versionBusy&&st.versionOperation==='save'?'버전 저장 중…':'버전 저장',
+      onVersionCompareAction:this.onVersionCompareAction,versionCompareReady:!!st.versionCompareSelecting&&(st.versionCompareIds||[]).length===2,versionCompareActionLabel:st.versionCompareSelecting&&(st.versionCompareIds||[]).length===2?'비교 진행':'버전 비교',versionCompareSelecting:!!st.versionCompareSelecting,versionCompareNormal:!st.versionCompareSelecting,onVersionCompareCard:this.onVersionCompareCard,onVersionCompareCardKey:this.onVersionCompareCardKey,versionCompareCount:(st.versionCompareIds||[]).length,versionCompareRunDisabled:(st.versionCompareIds||[]).length!==2||!!st.versionBusy,onVersionComparePick:this.onVersionComparePick,runVersionCompare:this.runVersionCompare,
       versionsView: st.versions.slice().reverse().map((v, i) => ({
-        id: v.id, tag: 'v' + (v.sequence || st.versions.length - i), title: v.title || st.title, date: v.date, note: v.note,
+        id: v.id,compareTabIndex:st.versionCompareSelecting?0:-1,compareRole:st.versionCompareSelecting?'button':'group',cardLabel:'v'+(v.sequence||st.versions.length-i)+' '+(v.title||st.title),compareOrder:(st.versionCompareIds||[]).indexOf(v.id)===0?'기준 버전':'비교 버전',compareChecked:(st.versionCompareIds||[]).includes(v.id),compareDisabled:!v.projectId||((st.versionCompareIds||[]).length===2&&!(st.versionCompareIds||[]).includes(v.id)),compareLabel:'v'+(v.sequence||st.versions.length-i)+' 비교 선택', tag: 'v' + (v.sequence || st.versions.length - i), title: v.title || st.title, date: v.date, note: v.note,
         bg: i === 0 ? 'var(--color-bg-neutral-1)' : '#fff'
       })),
       noVersions: st.versions.length === 0,
