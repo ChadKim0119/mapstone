@@ -2,7 +2,7 @@
 
 Saved from Git commit `7ca8223` (release `989`) on 2026-10-09.
 
-This folder contains the v9.89 sources and rebuilt distribution. The snapshot was saved while the main checkout was v0.9.22. The main product was subsequently restored to v9.89 at the user's request; later revisions remain recoverable in Git history.
+This folder contains the v9.89 sources and rebuilt distribution. This historical snapshot remains v9.89. The main product uses the newer code from cc4d1b5, including the updated help guide and seven actual UI captures (display version v0.9.22).
 
 Validation: `npm run build` succeeded; `npm test` passed all 163 tests.
 
