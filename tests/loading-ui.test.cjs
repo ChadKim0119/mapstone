@@ -73,7 +73,7 @@ test('Version comparison disables changes while AI runs and clears feedback afte
 });
 test('Executive summary stays brief while detailed report and copy retain every change safely',()=>{
   const f=fixture(()=>{}),node=f.nodes[0],changes=Array.from({length:5},(_,i)=>'일정 변경 '+i),report='1. 변경 개요\n전체 변경 개요\n2. 핵심 변화\n'+changes.join('\n')+'\n3. 일정 영향\n검수 일정이 밀립니다.\n4. 확인 필요 사항\n<img src=x onerror=alert(1)> 담당자 확인';
-  f.ui.renderVersionReport(node,{from:1,to:2,report});assert.ok(f.find('Executive Summary'));assert.ok(f.find('주요 변경점'));assert.ok(f.find('주요 인사이트'));
+  f.ui.renderVersionReport(node,{from:1,to:2,report});assert.ok(f.find('Executive Summary'));assert.ok(f.find('핵심 변화 · 영향 · 확인'));assert.ok(f.find('일정 영향'));assert.ok(f.find('상세 보고서 펼치기'));
   const cards=f.nodes.filter(n=>n.className==='ms-report-card');assert.equal(cards[0].children[1].children.length,3);assert.equal(cards[1].children[1].children.length,1);
   for(const t of changes)assert.ok(node._copyText.includes(t));assert.ok(f.find('<img src=x onerror=alert(1)> 담당자 확인'));assert.equal(f.nodes.filter(n=>n.tagName==='img').length,0);
 });

@@ -1,6 +1,6 @@
 {
   "name": "mapstone",
-  "version": "0.9.19",
+  "version": "0.9.20",
   "private": true,
   "scripts": {
     "build": "python3 scripts/build.py",

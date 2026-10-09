@@ -1099,6 +1099,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.20', agent: 'Codex', title: '한눈에 보는 버전 비교와 편집기 배치 일치', items: ['편집기의 배치/높이/쉐이프/텍스트 정렬 계산을 비교 이미지와 AI 이미지에 공통 적용', '일정표 전체 맞춤과 원본 크기 조작 · 변경 요약을 옆에 배치', '변경 표시 기본 활성화 · 빈 변경 카테고리 축소 · 보고서 요약과 상세를 분리', '큰 화면과 일반 화면에서 일정표 전체와 핵심 변경을 동시에 확인'] },
     { v: 'v0.9.19', agent: 'Codex', title: '선택 순서 기반 버전 비교와 가독성 개선', items: ['비교 선택 시 카드 전체 선택 · 복원/삭제 숨김 · 제목 아래 날짜 배치', '첫 선택을 기준 버전으로 유지하고 기준/비교 역할 명시', '비교 버전 불투명도 라벨과 실제 합성 동작에 맞는 설명 제공', '버전 비교 화면의 작은 안내문과 조작 텍스트를 14px 이상으로 개선'] },
     { v: 'v0.9.18', agent: 'Codex', title: '버전 비교 하단 조작과 컬러 범례 개선', items: ['슬라이드 구분선 핸들을 기준선 하단에 배치', '변경 범례의 색상 텍스트를 굵기와 실제 색상으로 표현', '오버랩 불투명도 슬라이더를 일정표 우하단에 배치 · 최초 진입 코치마크 제공'] },
     { v: 'v0.9.17', agent: 'Codex', title: '버전 비교 조작과 분석 프롬프트 개선', items: ['두 버전 선택 시 기존 버튼을 파란 비교 진행 버튼으로 전환', '비교 이미지의 월/연도 헤더를 일정표 형태로 유지', '이미지 구분선 조작 · 첫 진입 코치마크 · 비교 전환 애니메이션', '오버랩 슬라이더 축소 · 변경 표시를 별도 체크박스로 제공 · 전체창 버튼 제거', '수정 가능한 분석 프롬프트와 안내 · 보고서 산출 후 복사 버튼 제공'] },
@@ -1228,7 +1229,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.19';
+  APP_VER = 'v0.9.20';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -3078,6 +3079,17 @@ class Component extends DCLogic {
     this.setState((s) => ({ hist: s.hist.concat([cur]).slice(-60), future: [] }));
   };
   deleteVersion = (e) => { if (this.state.readOnly || this.state.versionBusy) return; const v = this.state.versions.find(v => v.id === e.currentTarget.dataset.id); if (!v) return; return MapstoneUI.deleteSavedVersion(this,v); };
+
+  comparisonLayout(doc,pair) {
+    const month=d=>d.cfg.startY*12+d.cfg.startM-1,start=Math.min(...pair.map(month)),end=Math.max(...pair.map(d=>month(d)+d.cfg.months));
+    const fork=Object.create(this);fork.drag=null;fork._L=null;fork._cmp=null;
+    const shift=month(doc)-start,ids=[...new Set(pair.flatMap(d=>d.rows.map(r=>r.id)))];
+    fork.state={...this.state,...MapstoneCore.clone(doc),sel:null,selection:[],focusRow:null,editing:null,editingRow:null,hover:null,readOnly:true,canvasScale:1,verticalScale:1,versions:[],notes:[],cfg:{...doc.cfg,startY:Math.floor(start/12),startM:start%12+1,months:end-start,weekPx:pair[0].cfg.weekPx||19},items:doc.items.map(i=>({...i,s:i.s+shift,e:i.e+shift})),now:doc.now+shift};
+    const heights=new Map();for(const d of pair){const probe=Object.create(this);probe.drag=null;probe._cmp=null;probe.state={...fork.state,...MapstoneCore.clone(d),sel:null,selection:[],focusRow:null,editing:null,hover:null};const layout=probe.rowLayout();for(const r of d.rows)heights.set(r.id,Math.max(heights.get(r.id)||0,layout[r.id].height));}
+    fork.state.rows=ids.map(id=>({...doc.rows.find(r=>r.id===id)||pair.flatMap(d=>d.rows).find(r=>r.id===id),h:heights.get(id)}));
+    const view=fork.renderVals(),width=172+parseFloat(view.boardW),rowTop=parseFloat(view.markerStripH)+58;
+    return {view,width,rowTop,height:Math.max(rowTop+view.rowsView.reduce((n,r)=>n+parseFloat(r.height)+1,0)+36,...view.stickies.map(i=>parseFloat(i.top)+parseFloat(i.height)+36),...view.imagesView.map(i=>parseFloat(i.top)+parseFloat(i.height)+36)),measure:text=>fork.measure(text)};
+  }
 
   // ── export ────────────────────────────────────
   capture() {
