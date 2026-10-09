@@ -93,13 +93,3 @@ const schedule = {...}; 형식의 데이터 리터럴만 출력해.
 ```
 
 가져오기 화면은 JavaScript를 실행하지 않습니다. 함수 호출, 계산식, getter, 중복 키와 잘못된 참조는 거부합니다.
-
-## 버전 이미지 분석 (v0.9.16)
-
-`POST /version-projects/{projectId}/compare`는 같은 작업물의 `ids` 두 개와 선택적으로 `images`(이전/이후 PNG data URL 두 개), `prompt`(현재 작업물 기준 비교 요청문)를 받습니다. 복구 코드 인증과 저장된 버전 데이터로 소유권 및 변경 사실을 확인합니다. 이미지는 개별 4MB 이내, 요청 전체는 9MB 이내입니다.
-
-Gemini 응답에는 `report`, `from`, `to`, `imageCompared`가 포함됩니다. `imageCompared: true`일 때 두 이미지를 Gemini에 전달한 분석입니다. UI는 이전 서버의 텍스트 분석 결과를 이미지 분석으로 표시하지 않습니다.
-
-이 변경은 Edge Function 배포가 필요합니다. Supabase CLI 로그인 후 프로젝트를 확인하고 `supabase functions deploy mapstone-api --project-ref mffysunppwqscbljooda`로 배포합니다. 기존 `GEMINI_API_KEY` 및 `GEMINI_MODEL` 환경 설정을 사용합니다.
-
-분석 멈춤은 브라우저 요청을 취소하고 늦게 도착한 결과를 무시합니다. 서버나 Gemini의 진행 중 연산 중단은 보장하지 않습니다. 예상 진행률은 실제 서버 처리율이 아닙니다.

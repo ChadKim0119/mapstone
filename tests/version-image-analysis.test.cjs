@@ -1,9 +1,0 @@
-const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),C=require('../mapstone-core.js'),crypto=require('node:crypto').webcrypto;
-test('Version AI sends two validated PNGs and a bounded prompt to Gemini with rule data',async()=>{
- let handler,sent;const doc=C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]});
- const source=require('node:module').stripTypeScriptTypes(fs.readFileSync('supabase/functions/mapstone-api/index.ts','utf8').replace("import './mapstone-core.js';",''));
- vm.runInNewContext(source,{MapstoneCore:C,crypto,TextEncoder,TextDecoder,URL,Response,Date,Error,AbortSignal,Deno:{env:{get:()=> 'mock'},serve:fn=>handler=fn},fetch:async(url,o)=>{if(url.includes('generativelanguage')){sent=JSON.parse(o.body);return Response.json({candidates:[{content:{parts:[{text:'Executive Summary\n변경 없음\n상세 변경 내용\n변경 없음'}]}}]});}if(url.includes('mapstone_take_rate_limit'))return Response.json(true);if(url.includes('mapstone_version_projects?'))return Response.json([{id:'project'}]);return Response.json([{sequence:1,document:doc},{sequence:2,document:doc}]);}});
- const url='http://local/mapstone-api/version-projects/11111111-1111-4111-8111-111111111111/compare',call=body=>handler(new Request(url,{method:'POST',headers:{'X-Mapstone-Code':'a'.repeat(48)},body:JSON.stringify(body)}));
- const res=await call({ids:['a','b'],images:['data:image/png;base64,YQ==','data:image/png;base64,Yg=='],prompt:'current project'});assert.equal(res.status,200);assert.equal((await res.json()).imageCompared,true);const parts=sent.contents[0].parts;assert.equal(parts[0].inlineData.data,'YQ==');assert.equal(parts[1].inlineData.data,'Yg==');assert.match(parts[2].text,/current project/);assert.match(parts[3].text,/diff/);
- sent=null;assert.equal((await call({ids:['a','b'],images:['https://external/image','bad']})).status,400);assert.equal(sent,null);
-});
