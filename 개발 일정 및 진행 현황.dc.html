@@ -772,17 +772,17 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ selStartLabel }}</span>
                     <div class="ms-date-step ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
-                      <button data-field="s" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
+                      <button data-field="s" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" aria-label="시작 앞당기기" title="시작 앞당기기" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
                       <input type="{{ propertyTimeType }}" step="{{ propertyTimeStep }}" value="{{ propertySValue }}" aria-label="{{ selStartLabel }}" data-field="s" onChange="{{ onPropertyTimeField }}" onFocus="{{ selectAll }}" onClick="{{ openPropertyCalendar }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
-                      <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
+                      <button data-field="s" data-delta="{{ timeStep }}" onClick="{{ onStep }}" aria-label="시작 늦추기" title="시작 늦추기" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
                   </div>
                   <sc-if value="{{ selRange }}"><div style="display:flex;flex-direction:column;gap:6px">
                     <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.endF }}</span>
                     <div class="ms-date-step ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
-                      <button data-field="e" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" title="{{ L.startF }}" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
+                      <button data-field="e" data-delta="{{ negativeTimeStep }}" onClick="{{ onStep }}" aria-label="종료 앞당기기" title="종료 앞당기기" style="width:32px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">‹</button>
                       <input type="{{ propertyTimeType }}" step="{{ propertyTimeStep }}" value="{{ propertyEValue }}" aria-label="{{ L.endF }}" data-field="e" onChange="{{ onPropertyTimeField }}" onFocus="{{ selectAll }}" onClick="{{ openPropertyCalendar }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
-                      <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" title="{{ L.endF }}" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
+                      <button data-field="e" data-delta="{{ timeStep }}" onClick="{{ onStep }}" aria-label="종료 늦추기" title="종료 늦추기" style="width:32px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">›</button>
                     </div>
                   </div></sc-if>
                 </div>
@@ -960,7 +960,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-if value="{{ versionCompareUnavailable }}"><p class="ms-compare-guide">{{ L.versionCompareGuide }}</p></sc-if>
             <sc-if value="{{ versionCompareSelecting }}"><div class="ms-panel-compare-controls"><span role="status">{{ versionCompareCount }} / 2개 선택</span></div><p class="ms-compare-guide">첫 번째 선택은 기준 버전, 두 번째 선택은 비교 버전입니다.</p></sc-if>
             <sc-for list="{{ versionsView }}" as="v" hint-placeholder-count="2">
-              <div class="ms-history-card" data-selecting="{{ versionCompareSelecting }}" data-selected="{{ v.compareChecked }}" data-id="{{ v.id }}" onClick="{{ onVersionCompareCard }}" onKeyDown="{{ onVersionCompareCardKey }}" tabindex="{{ v.compareTabIndex }}" role="{{ v.compareRole }}" aria-label="{{ v.cardLabel }}" aria-pressed="{{ v.compareChecked }}" style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:{{ v.bg }}">
+              <div class="ms-history-card" data-selecting="{{ versionCompareSelecting }}" data-selected="{{ v.compareChecked }}" data-id="{{ v.id }}" onClick="{{ onVersionCompareCard }}" onKeyDown="{{ onVersionCompareCardKey }}" tabindex="{{ v.compareTabIndex }}" role="{{ v.compareRole }}" aria-label="{{ v.cardLabel }}" aria-checked="{{ v.compareChecked }}" style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--color-border-neutral-2);border-radius:6px;background:{{ v.bg }}">
                 <div style="display:flex;align-items:center;gap:8px">
                   <sc-if value="{{ versionCompareSelecting }}"><input type="checkbox" data-id="{{ v.id }}" checked="{{ v.compareChecked }}" disabled="{{ v.compareDisabled }}" onChange="{{ onVersionComparePick }}" aria-label="{{ v.compareLabel }}"></sc-if><span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:9999px;background:var(--color-neutral-800);color:#fff">{{ v.tag }}</span>
                   <div class="ms-history-title"><span>{{ v.title }}</span><time>{{ v.date }}</time><sc-if value="{{ v.compareChecked }}"><strong>{{ v.compareOrder }}</strong></sc-if></div>
@@ -1099,7 +1099,9 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
-    { v: 'v0.9.20', agent: 'Codex', title: '한눈에 보는 버전 비교와 편집기 배치 일치', items: ['편집기의 배치/높이/쉐이프/텍스트 정렬 계산을 비교 이미지와 AI 이미지에 공통 적용', '일정표 전체 맞춤과 원본 크기 조작 · 변경 요약을 옆에 배치', '변경 표시 기본 활성화 · 빈 변경 카테고리 축소 · 보고서 요약과 상세를 분리', '큰 화면과 일반 화면에서 일정표 전체와 핵심 변경을 동시에 확인'] },
+    { v: 'v0.9.22', agent: 'Codex', title: '공유 비밀번호 설정 정리', items: ['열람·편집 전환 비밀번호 역할과 설정 영역 재구성', '비활성 비밀번호 빈 공간 제거 · 입력 가능 상태와 권한 연동', '공유 창의 기존 접속 코드·DB 관리자·외부 연동 메뉴 제거'] },
+    { v: 'v0.9.21', agent: 'Codex', title: '1.0 준비 · 웰컴 메시지와 실제 화면 사용법 개편', items: ['웰컴 헤드·서브·With MapStone 문구 변경 · 기존 로고와 흩날림 효과 유지', '일정 자료 파편화 문제와 이미지/텍스트 분석 중심의 사용법 전면 개편', '가상 프로젝트 실제 캡처로 버전 비교·아이템 관리·공유·발표모드 안내', '현재 동작과 단축키 대조 · 출시 전 소스·디자인·조작 검증 기록', '비교 화면 잔여 높이 맞춤 · 날짜 조절 툴팁과 버전 선택 접근성 수정'] },
+    { v: 'v0.9.20', agent: 'Codex', title: '한눈에 보는 버전 비교와 편집기 배치 일치', items: ['편집기의 배치/높이/쉐이프/텍스트 정렬 계산을 비교 이미지와 AI 이미지에 공통 적용', '일정표 전체 맞춤과 원본 크기 조작 · 변경 요약을 옆에 배치', '변경 표시 기본 활성화 · 빈 변경 카테고리 축소 · 보고서 요약과 상세를 분리', '큰 화면과 일반 화면에서 일정표 전체와 핵심 변경을 동시에 확인', '자동 맞춤의 ResizeObserver 반복 경고 수정 · 폭 변경만 감지하고 다음 프레임에서 크기 반영'] },
     { v: 'v0.9.19', agent: 'Codex', title: '선택 순서 기반 버전 비교와 가독성 개선', items: ['비교 선택 시 카드 전체 선택 · 복원/삭제 숨김 · 제목 아래 날짜 배치', '첫 선택을 기준 버전으로 유지하고 기준/비교 역할 명시', '비교 버전 불투명도 라벨과 실제 합성 동작에 맞는 설명 제공', '버전 비교 화면의 작은 안내문과 조작 텍스트를 14px 이상으로 개선'] },
     { v: 'v0.9.18', agent: 'Codex', title: '버전 비교 하단 조작과 컬러 범례 개선', items: ['슬라이드 구분선 핸들을 기준선 하단에 배치', '변경 범례의 색상 텍스트를 굵기와 실제 색상으로 표현', '오버랩 불투명도 슬라이더를 일정표 우하단에 배치 · 최초 진입 코치마크 제공'] },
     { v: 'v0.9.17', agent: 'Codex', title: '버전 비교 조작과 분석 프롬프트 개선', items: ['두 버전 선택 시 기존 버튼을 파란 비교 진행 버튼으로 전환', '비교 이미지의 월/연도 헤더를 일정표 형태로 유지', '이미지 구분선 조작 · 첫 진입 코치마크 · 비교 전환 애니메이션', '오버랩 슬라이더 축소 · 변경 표시를 별도 체크박스로 제공 · 전체창 버튼 제거', '수정 가능한 분석 프롬프트와 안내 · 보고서 산출 후 복사 버튼 제공'] },
@@ -1229,7 +1231,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.20';
+  APP_VER = 'v0.9.22';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1939,7 +1941,7 @@ class Component extends DCLogic {
     const capture=this.root?.querySelector('[data-capture]');if(!capture)return;this._welcomeCleanup?.();
     const box=document.createElement('div');box.className='ms-welcome';box.style.transform='translateY(-50%) scaleY('+(1/this.verticalScale())+')';box.setAttribute('data-noprint','');
     const logo=document.createElement('img');logo.src='assets/design-system/mapstone-welcome-mono.svg';logo.alt='MapStone';logo.width=52;logo.height=52;box.append(logo);
-    const lines=['더블클릭 또는 아이템을 추가하여 새로운 일정 관리를 시작해보세요.','편리하고 새로운 일정관리 경험을 선사합니다.','with MapStone'];
+    const lines=['편리하고 새로운 일정관리 경험을 누려보세요.','이미지 또는 회의록을 분석하여 마일스톤을 수립합니다.','With MapStone'];
     for(const text of lines){const line=document.createElement('div');for(const char of text){const span=document.createElement('span');span.textContent=char;line.append(span);}box.append(line);}capture.append(box);
     const dismiss=()=>{document.removeEventListener('pointerdown',dismiss,true);document.removeEventListener('keydown',dismiss,true);this._welcomeCleanup=null;if(!this.animOn()){box.remove();return;}logo.animate([{opacity:.65,transform:'translateY(0) scale(1)'},{opacity:0,transform:'translateY(-28px) scale(.85) rotate(-8deg)'}],{duration:780,fill:'forwards',easing:'ease-out'});Array.from(box.querySelectorAll('span')).forEach((el,i)=>{const a=el.animate([{opacity:1,transform:'translate(0,0)'},{opacity:0,transform:`translate(${(i%7-3)*12}px,${-25-i%5*8}px) rotate(${i%2?12:-12}deg)`}],{duration:624,delay:i%11*14.4,fill:'forwards',easing:'ease-out'});a.onfinish=()=>{if(i===0)setTimeout(()=>box.remove(),216);};});};
     document.addEventListener('pointerdown',dismiss,true);document.addEventListener('keydown',dismiss,true);this._welcomeCleanup=()=>{document.removeEventListener('pointerdown',dismiss,true);document.removeEventListener('keydown',dismiss,true);box.remove();};

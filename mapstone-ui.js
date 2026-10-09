@@ -97,7 +97,7 @@
     }
     const slide=e=>{const r=frame.getBoundingClientRect();range.value=String(Math.max(0,Math.min(100,Math.round((e.clientX-r.left)/r.width*100))));update();};
     divider.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();dismissCoach();box.dataset.dragging='true';divider.setPointerCapture?.(e.pointerId);slide(e);});divider.addEventListener('pointermove',e=>{if(divider.hasPointerCapture?.(e.pointerId))slide(e);});divider.addEventListener('pointercancel',()=>{box.dataset.dragging='false';});divider.addEventListener('pointerup',e=>{box.dataset.dragging='false';if(divider.hasPointerCapture?.(e.pointerId))divider.releasePointerCapture(e.pointerId);});divider.addEventListener('keydown',e=>{const next={ArrowLeft:-1,ArrowRight:1,Home:-100,End:100}[e.key];if(next===undefined)return;e.preventDefault();dismissCoach();range.value=String(Math.max(0,Math.min(100,Number(range.value)+next)));update();});
-    let nativeSize=false;const fitButton=button('원본 크기',()=>{nativeSize=!nativeSize;fitButton.textContent=nativeSize?'전체 맞춤':'원본 크기';fitImage();});toolbar.append(fitButton);function fitImage(){if(!base.naturalWidth)return;stage.style.height=Math.min(Math.max(240,(stage.clientWidth-16)*base.naturalHeight/base.naturalWidth+16),Math.max(240,window.innerHeight-350))+'px';const w=nativeSize?base.naturalWidth:Math.min(stage.clientWidth-16,(stage.clientHeight-16)*base.naturalWidth/base.naturalHeight);frame.style.width=Math.max(100,w)+'px';frame.style.margin='auto';}base.addEventListener('load',fitImage);if(typeof ResizeObserver!=='undefined'){const ro=new ResizeObserver(fitImage);ro.observe(stage);box._resizeObserver=ro;}box.baseline=baseline;baseline.addEventListener('change',()=>{update();box.onBaselineChange?.(baseline.value);});range.addEventListener('input',()=>{dismissOverlapCoach();update();});update();return box;
+    let nativeSize=false;const fitButton=button('원본 크기',()=>{nativeSize=!nativeSize;fitButton.textContent=nativeSize?'전체 맞춤':'원본 크기';fitImage();});toolbar.append(fitButton);function fitImage(){if(!base.naturalWidth)return;const available=Math.max(100,stage.clientWidth-18),height=Math.round(Math.min(Math.max(240,available*base.naturalHeight/base.naturalWidth+18),Math.max(180,window.innerHeight-stage.getBoundingClientRect().top-40))),w=Math.round(nativeSize?base.naturalWidth:Math.min(available,(height-18)*base.naturalWidth/base.naturalHeight));if(stage.style.height!==height+'px')stage.style.height=height+'px';if(frame.style.width!==w+'px')frame.style.width=w+'px';frame.style.margin='auto';}let fitFrame=0;const scheduleFit=()=>{if(fitFrame)return;fitFrame=requestAnimationFrame(()=>{fitFrame=0;fitImage();});};base.addEventListener('load',scheduleFit);window.addEventListener('resize',scheduleFit);let ro; if(typeof ResizeObserver!=='undefined'){let width=-1;ro=new ResizeObserver(entries=>{const next=entries[0]?.contentRect.width;if(next===width)return;width=next;scheduleFit();});ro.observe(stage);}box._resizeObserver={disconnect(){ro?.disconnect();window.removeEventListener('resize',scheduleFit);base.removeEventListener('load',scheduleFit);cancelAnimationFrame(fitFrame);fitFrame=0;}};box.baseline=baseline;baseline.addEventListener('change',()=>{update();box.onBaselineChange?.(baseline.value);});range.addEventListener('input',()=>{dismissOverlapCoach();update();});update();return box;
   }
   function field(parent,label,type='text',value=''){const l=el('label',null,{className:'ms-field'});l.append(el('span',label));const i=el(type==='textarea'?'textarea':'input',null,{value});if(type!=='textarea')i.type=type;l.append(i);parent.append(l);return i;}
   function download(data,name){const blob=new Blob([typeof data==='string'?data:JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob);const a=el('a',null,{href:url,download:name});a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);}
@@ -335,11 +335,11 @@
       const c=el('button',null,{type:'button',className:'ms-share-perm',role:'radio'});c.append(el('strong',title),el('span',desc));c.addEventListener('click',()=>{state.permission=key;sync();});perms.append(c);cards[key]=c;}
     body.append(perms);
     // 비밀번호 (열람) — 기본 꺼짐, 켜면 입력칸이 보임
-    const secure=el('div',null,{className:'ms-share-opts'});
-    const mk=(title,hint,key,flag)=>{const row=el('section',null,{className:'ms-share-opt'});const head=el('label',null,{className:'ms-share-check'});const cb=el('input',null,{type:'checkbox'});head.append(cb,el('span',title));const h=el('p',hint,{className:'ms-share-hint'});const wrap=el('div',null,{className:'ms-share-pw'});const input=el('input',null,{type:'text',placeholder:PW_MIN+'자 이상',autocomplete:'off',spellcheck:false,maxLength:128});input.setAttribute('aria-label',title);const bad=el('p','',{className:'ms-share-err'});wrap.append(input,bad);row.append(head,h,wrap);
+    const secure=el('div',null,{className:'ms-share-opts ms-share-security'});secure.append(el('h3','비밀번호 설정'),el('p','필요한 보호만 선택하세요. 비밀번호는 링크와 별도로 전달합니다.',{className:'ms-share-security-lead'}));
+    const mk=(title,hint,key,flag)=>{const row=el('section',null,{className:'ms-share-opt'});const head=el('label',null,{className:'ms-share-check'});const cb=el('input',null,{type:'checkbox'});head.append(cb,el('span',title));const h=el('p',hint,{className:'ms-share-hint'});const wrap=el('div',null,{className:'ms-share-pw'});const input=el('input',null,{type:'text',placeholder:PW_MIN+'자 이상',autocomplete:'off',spellcheck:false,maxLength:128});input.setAttribute('aria-label',title);input.disabled=true;const bad=el('p','',{className:'ms-share-err'});wrap.append(input,bad);row.append(head,h,wrap);
       cb.addEventListener('change',()=>{state[flag]=cb.checked;sync();if(cb.checked)input.focus();});input.addEventListener('input',()=>{state[key]=input.value;sync();});secure.append(row);return {row,cb,input,bad,wrap};};
-    const view=mk('열람 비밀번호 설정','링크를 연 사람이 비밀번호를 입력해야 일정을 볼 수 있어요. 끄면 링크만으로 열려요.','password','usePw');
-    const edit=mk('편집 전환 비밀번호 설정','보기 링크에서 [편집 모드 전환]을 눌러 이 비밀번호를 입력하면 편집할 수 있어요. 열람 비밀번호와 따로 정합니다.','editPassword','useEditPw');
+    const view=mk('열람 비밀번호 설정','일정을 열 때 입력하는 비밀번호입니다. 설정하지 않으면 링크만으로 열립니다.','password','usePw');
+    const edit=mk('편집 전환 비밀번호 설정','보기 전용으로 연 사람이 편집 모드로 전환할 때 사용합니다. 열람 비밀번호와 별개입니다.','editPassword','useEditPw');
     body.append(secure);
     const message=el('p','',{className:'ms-message'});message.setAttribute('role','status');
     const create=button('링크 만들기',()=>make());create.classList.add('ms-primary');const keyHint=el('kbd','⌘/Ctrl L');
@@ -350,7 +350,7 @@
     function sync(){
       for(const [k,c] of Object.entries(cards)){const on=state.permission===k;c.setAttribute('aria-checked',on);c.classList.toggle('on',on);}
       edit.row.hidden=state.permission==='edit';
-      for(const [o,flag,key] of [[view,'usePw','password'],[edit,'useEditPw','editPassword']]){o.cb.checked=state[flag];o.wrap.hidden=!state[flag];const short=state[flag]&&state[key].length>0&&state[key].trim().length<PW_MIN;o.bad.textContent=short?PW_MIN+'자 이상 입력하세요.':'';o.input.classList.toggle('bad',short);}
+      for(const [o,flag,key] of [[view,'usePw','password'],[edit,'useEditPw','editPassword']]){o.cb.checked=state[flag];o.wrap.hidden=!state[flag];o.input.disabled=!state[flag]||(o===edit&&state.permission==='edit');const short=state[flag]&&state[key].length>0&&state[key].trim().length<PW_MIN;o.bad.textContent=short?PW_MIN+'자 이상 입력하세요.':'';o.input.classList.toggle('bad',short);}
       create.disabled=invalid().length>0;
     }
     let busy=false;
@@ -406,19 +406,8 @@
     if(shareId&&!sync.isShare){shareGate(app,body,shareId);return;}
     if(!sync.isShare){shareDialog(app,body,opt);}
     else{body.append(el('p','지금 공유된 일정을 보고 있어요.',{className:'ms-share-lead'}));if(sync.readOnly&&sync.canUnlock){const b=button('편집 모드로 전환',()=>{closeModal();open(app,'edit-gate');});b.classList.add('ms-primary');body.append(b);}else if(!sync.readOnly&&sync.sharePermission==='view'){body.append(button('보기 모드로 돌아가기',()=>{sync.lockEdit();closeModal();}));}body.append(button('새 공유 링크 만들기',()=>{body.replaceChildren();shareDialog(app,body,{});}));}
-    const legacy=el('details');legacy.append(el('summary','기존 접속 코드 · DB 관리'));const legacyBody=el('div');legacy.append(legacyBody);body.append(legacy);body=legacyBody;
-    body.append(el('p','기존 편집 코드로 공동 편집하거나 관리자 기능을 사용합니다.'));
-    const code=field(body,'편집용 접속 코드','password',sync.code);code.autocomplete='off';
-    body.append(button('접속',async()=>{try{message.textContent='접속 중…';await sync.join(code.value.trim());message.textContent='연결했습니다.';closeModal();}catch(e){message.textContent=e.message;}}),button('연결 종료',()=>{try{sync.leave();if(!sync.code)closeModal();}catch(e){message.textContent=e.message;}}),button('코드 표시 / 숨김',()=>{code.type=code.type==='password'?'text':'password';}),message);
-    if(sync.conflict){const box=el('section',null,{className:'ms-conflict'});box.append(el('h3','같은 데이터가 동시에 수정되었습니다'),el('p',sync.conflict.paths.join(', ')),button('내 변경을 우선 반영',()=>{sync.resolve(true);closeModal();}),button('서버 내용을 사용 (내 변경 백업)',()=>{sync.resolve(false);closeModal();}));body.append(box);}
-    const admin=el('details');admin.append(el('summary','DB 관리 · 관리자 전용'));const area=el('div');admin.append(area);body.append(admin);area.append(el('p','관리자 키로 일정 생성·목록·변경 이력·복원·접속 코드 재발급·보관을 관리합니다. 관리자 키는 브라우저에 저장하지 않습니다.'));
-    const key=field(area,'관리자 키','password');key.autocomplete='off';const name=field(area,'새 일정 이름','text',app.state.title);const list=el('div',null,{className:'ms-room-list'});
-    const run=async fn=>{try{message.textContent='처리 중…';await fn();message.textContent='완료';}catch(e){message.textContent=e.message;}};
-    const reveal=(result)=>{const b=el('div',null,{className:'ms-secret'});b.append(el('strong','발급된 편집 코드 (복사해 참여자에게 전달)'),el('code',result.code));b.append(button('코드 복사',()=>navigator.clipboard.writeText(result.code).catch(()=>{})));list.prepend(b);};
-    async function load(){const rooms=await request(sync.endpoint,'/rooms',key.value,'GET',undefined,true);list.replaceChildren();for(const r of rooms){const row=el('section');row.append(el('strong',r.title),el('p','r'+r.revision+' · '+new Date(r.updated_at).toLocaleString()+(r.archived?' · 보관됨':'')));row.append(button('접속 코드 재발급',()=>run(async()=>{if(!confirm('기존 접속 코드는 즉시 사용할 수 없게 됩니다. 재발급할까요?'))return;reveal(await request(sync.endpoint,'/rooms/'+r.id+'/rotate',key.value,'POST',{},true));})),button(r.archived?'보관 해제':'보관',()=>run(async()=>{if(!confirm('이 일정의 보관 상태를 변경할까요?'))return;await request(sync.endpoint,'/rooms/'+r.id,key.value,'PATCH',{archived:!r.archived},true);await load();})),button('변경 이력',()=>run(async()=>{const history=await request(sync.endpoint,'/rooms/'+r.id+'/history',key.value,'GET',undefined,true);const historyBox=el('div');row.append(historyBox);for(const h of history){historyBox.append(button('r'+h.revision+' · '+new Date(h.created_at).toLocaleString()+' 복원',()=>run(async()=>{if(!confirm('선택 버전으로 복원할까요? 현재 상태도 서버 이력에 보관됩니다.'))return;await request(sync.endpoint,'/rooms/'+r.id+'/restore',key.value,'POST',{revision:h.revision,expectedRevision:r.revision},true);await load();})));}})));list.append(row);}}
-    area.append(button('일정 목록 불러오기',()=>run(load)),button('현재 일정으로 새 공유방 생성',()=>run(async()=>{const document=app.dataDocument();document.title=name.value||document.title;const result=await request(sync.endpoint,'/rooms',key.value,'POST',{document:C.validate(document)},true);await load();reveal(result);})),list);
-    body.append(el('details'));const api=body.lastChild;api.append(el('summary','외부 앱 · LLM 연동'),el('p','JSON 데이터 계약과 REST API를 제공합니다. GET /room으로 문서·revision을 읽고 PUT /room에 revision과 수정 문서를 전달합니다. 인증 헤더는 X-Mapstone-Code입니다. 409 응답은 최신 문서를 다시 읽고 병합해야 함을 뜻합니다.'),el('code',DEFAULT_ENDPOINT),button('현재 일정 JavaScript 다운로드',()=>download('const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';','mapstone-schedule.js')));
   }
+
   function loadFile(app,body){
     const nav=el('div',null,{className:'ms-file-nav','aria-label':'불러오기 방식'}),local=el('section',null,{className:'ms-file-local'}),library=el('section',null,{className:'ms-file-library'}),json=el('section',null,{className:'ms-file-json'}),footer=el('div',null,{className:'ms-file-footer'});
     body.append(el('p','저장된 일정을 불러옵니다. 파일, 클라우드 보관함 또는 JSON 중에서 선택하세요.',{className:'ms-file-lead'}),nav,local,library,json,footer);
@@ -435,69 +424,117 @@
     const input=field(json,'일정 JSON','textarea');input.rows=8;input.placeholder='맵스톤 JSON 데이터 전체를 붙여넣으세요';input.setAttribute('aria-describedby','ms-file-json-help');input.addEventListener('input',()=>read(input.value));
     footer.append(message,apply);switchSource(0);
   }
-  // 사용법: sections in task order, each with a capture from MapstoneHelp (see mapstone-help.js).
+  // Current product guide. Captures use fictional project data in an isolated browser origin.
   const HELP=[
-    ['analyze','이미지 · 텍스트 분석','가장 빠른 시작 방법입니다. 이미 가진 일정 자료를 넣으면 편집 가능한 Mapstone 일정으로 바꿔 줍니다.',['analyze'],[
-      '상단의 분홍색 [이미지/텍스트 분석] 버튼을 누릅니다.',
-      '이미지: 간트 차트, 로드맵, 표, 슬라이드·화면 캡처, 손그림 모두 됩니다. 크거나 PNG/JPEG/WebP가 아닌 이미지도 자동으로 변환합니다.',
-      '텍스트: 회의록, 메일, PRD, 엑셀·스프레드시트에서 복사한 표를 넣습니다. Mapstone JSON 데이터는 분석 없이 바로 읽습니다.',
-      '구분 세션, 일정, 마일스톤, 메모, 공통 구간, 포스트잇, 색상과 줄 나눔까지 가져옵니다. 연도가 없으면 2026년으로 해석합니다.',
-      '분석 결과를 확인한 뒤 적용합니다. 현재 일정은 자동 백업됩니다.',
-      '접속 코드 없이 사용할 수 있습니다(시간당 횟수 제한). 공동 편집 접속 코드로 연결하면 제한이 없습니다.']],
-    ['edit','일정 조작','아이템을 만들고, 옮기고, 기간과 높이를 바꾸는 기본 동작입니다.',['edit'],[
-      '[아이템 추가]의 일정 · 마일스톤 · 메모, [더보기]의 참고 · 공통 · 포스트잇으로 만듭니다. 선택(포커스)한 세션에 생깁니다.',
-      '이동: 블록을 끌어 옮깁니다. 다른 세션으로도 옮길 수 있습니다. 키보드 ← → 는 하루, Shift+← → 는 1주, ↑ ↓ 는 한 칸씩 움직입니다.',
-      '여러 아이템: ⌘+클릭으로 선택을 추가·해제하고 Shift+클릭으로 범위를 선택합니다. 빈 영역을 드래그해도 여러 아이템을 선택할 수 있으며 방향키·드래그·복사·잘라내기·삭제는 선택 전체에 적용됩니다.',
-      '기간: 블록 왼쪽·오른쪽 끝을 끌면 시작·종료일이 바뀌고, 끄는 동안 날짜 안내선이 보입니다.',
-      '높이: 블록 위·아래 끝을 끌어 높이를 바꿉니다. 세션 경계를 넘어 여러 세션에 걸칠 수도 있습니다.',
-      '공통: 선택한 세션 안에 만들어집니다. 끌어서 좌우·위아래(다른 세션)로 옮기고, 위·아래 손잡이로 여러 세션에 걸치게 늘립니다.',
-      '편집: 블록을 더블클릭하면 설정창이 열리고 라벨 입력칸으로 이동합니다. 날짜, 색상, 채우기, 메모를 바꿀 수 있습니다.',
-      '같은 세션에서 겹치면 [설정 › 같은 세션에서 겹칠 때] 규칙(줄이기 · 위치변경)으로 자동 정리됩니다.']],
-    ['','눈금 맞춤','[보기]의 [눈금 맞춤]이 켜져 있으면 깔끔하게 정렬되고, 끄면 자유롭게 세부 조정할 수 있습니다.',[],[
-      '가로: 0.25개월 눈금(5개월 미만 일정은 0.125개월)과 이웃 블록의 끝에 맞춰집니다.',
-      '세로: 높이를 바꿀 때 레인 눈금에 맞춰집니다.',
-      '세션 경계: 눈금 맞춤과 상관없이 아이템 끝이 세션 경계에 닿으면 살짝 걸려 정확히 맞출 수 있습니다.',
-      '하루 단위처럼 세밀하게 맞추려면 눈금 맞춤을 끄거나 설정창에서 날짜를 직접 입력하세요.']],
-    ['edit','메모 연결','메모는 일정 · 참고 · 공통 구간의 특정 시점에 붙는 짧은 알림입니다.',[],[
-      '[메모]로 만든 뒤 앞쪽의 점을 일정 위로 끌어다 놓으면 연결됩니다. 놓은 위치(가로·세로)가 그대로 유지됩니다.',
-      '연결된 일정을 옮기거나 기간을 바꾸면 메모도 함께 따라갑니다.',
-      '라벨은 자유롭게 옮길 수 있고, 점을 선택한 뒤 Delete를 누르면 연결만 해제됩니다.',
-      '마우스를 올리면 연결 대상과 메모 내용이 툴팁으로 보입니다.']],
-    ['now','마일스톤 · NOW','모든 세션에 공통으로 걸리는 기준 날짜를 표시합니다.',['now'],[
-      '마일스톤은 상단 태그와 세로 기준선으로 표시되며 끌어서 날짜를 옮깁니다.',
-      'NOW 태그를 클릭하면 속성을 편집하고, 끌면 기준선을 옮깁니다. 더블클릭 또는 Enter·Space를 누르면 오늘 날짜로 이동합니다.',
-      '오늘이 일정 기간 밖이면 기간을 넓힐지 먼저 물어봅니다. 넓혀도 아이템의 날짜는 바뀌지 않습니다.']],
-    ['rows','세션 관리','세션은 팀 · 트랙 · 시스템 단위로 일정을 묶습니다.',['rows'],[
-      '세션 이름 텍스트를 클릭하면 입력창이 열립니다. Enter·Esc로 입력을 마치고 Shift+Enter로 줄바꿈합니다. 세션 경계에 마우스를 올리면 +로 아래에 세션을 추가합니다. 왼쪽 ⠿ 핸들을 끌면 세션이 실시간으로 움직입니다. Esc로 취소할 수 있고, 세션 선택 후 Ctrl/⌘ ↑ ↓로 순서를 바꿉니다. 세션만 선택하고 Delete를 누르면 확인 후 삭제합니다. 세션 설정에서도 이동·삭제할 수 있으며 마지막 세션은 보호됩니다.',
-      '세션 아래 구분선을 끌면 세션 높이가 바뀝니다.',
-      '구분선을 더블클릭하면 세션 높이를 안의 아이템에 맞추고, 빈 세션은 기본 높이로 돌아갑니다.',
-      '세션 배경색과 레인 수는 설정창 [속성]에서 바꿉니다.']],
-    ['toolbar','보기 · 화면','표시 방식과 확대 비율을 바꿉니다. 일정 데이터는 바뀌지 않습니다.',['toolbar'],[
-      'MM / MD: 블록 기간 표시를 켜고 끕니다. 단위는 설정에서 MM ⇄ MD로 바꿉니다.',
-      '일자: 블록 아래에 시작 ~ 종료 날짜를 표시합니다. 툴팁: 마우스를 올리면 이름 · 기간 · 메모를 나눠 보여 주고 3초 뒤 사라집니다(설정 › 툴팁 표시 시간에서 계속 표시로 변경).',
-      'Week: 월 아래에 주차(5개월 미만은 일자)를 표시합니다. 공간이 부족하면 뒤쪽부터 숨기고 …로 표시합니다.',
-      '데스크톱에서 화면이 좁으면 메뉴바가 한 줄을 유지하도록 아이콘 숨김 → 보기 아이템을 [보기 ▾]로 접기 → [이미지 분석]으로 줄이기 → 화면 맞춤 · 발표모드이 아이콘으로 순서대로 바뀝니다. 모바일에서는 보기 옵션을 메뉴로 접고 도구를 여러 줄로 표시합니다. Esc는 열린 도구 메뉴부터 닫습니다.',
-      '배율: 슬라이더로 확대·축소합니다. [폭 맞춤]은 전체 기간을 가로로 맞추고, [높이 맞춤]은 세션 칸 수를 유지한 채 배율을 조정해 하단 NOW를 보기 바 위에 배치합니다.',
-      '단축키: D 일자 · M 기간 · T 툴팁 · W 주차 · F 발표모드 · Shift+F 폭 맞춤 · Shift+⌘/Ctrl+F 높이 맞춤 · S 눈금 맞춤 · , 설정창. 버튼에 마우스를 올리면 단축키가 함께 보입니다.',
-      '[발표모드]은 도구와 설정창을 숨기고 일정만 보여 줍니다. 오른쪽 위 [발표모드 종료 : ESC] 버튼이나 Esc · F 키로 돌아옵니다.',
-      '처음 기본 보기는 MD · 툴팁 · 눈금 맞춤만 켜져 있습니다.']],
-    ['settings','설정창','[설정창 보기]로 열고 닫습니다. 속성 · 설정 · 버전 세 탭으로 구성됩니다. 모바일에서는 처음에 닫혀 있고, 아이템을 선택하면 하단에 열립니다. × 버튼으로 닫아 일정으로 돌아갑니다.',['props','settings'],[
-      '공유: 상단 [공유]에서 보기만 가능 / 함께 편집 권한과 열람·편집 전환 비밀번호를 설정합니다. 보기만 가능한 링크는 생성 시점의 사본이며 이후 변경은 새 링크로 전달합니다.',
-      '속성: 선택한 아이템(라벨, 메모, 시작·종료, 높이, 색상, 채우기) 또는 선택한 세션(이름, 높이, 배경색)을 편집합니다.',
-      '설정: 시작 월(아이템 날짜는 유지), 표시 개월 수, 레인 높이, 기간 단위(1MM = 22MD, KOSA 기준), 애니메이션, 마우스 조작(휠 확대 · 우클릭 이동), 월 간격 기준, 겹칠 때 규칙을 정합니다.',
-      '버전: 현재 상태를 이름을 붙여 저장하고 언제든 되돌립니다.']],
-    ['','불러오기 · 내보내기 · 공유','작업을 파일로 주고받거나 다른 사람과 함께 봅니다.',[],[
-      '[불러오기]: 저장한 맵스톤 파일이나 JSON을 파일로 가져오거나 붙여넣습니다.',
-      '[내보내기]: 파일 저장[JSON] · PNG · 편집 가능한 PPT · 인쇄/PDF를 만들고, [공유]로 접속 암호가 있는 보기/편집 링크를 만듭니다.',
-      '↻ 버튼은 모든 아이템과 구분 세션을 지우고 빈 세션 하나만 남깁니다(설정 · 버전은 유지).']]
-  ];
-  const KEYS=[['__','보기 · 화면'],['D','일자 켜기 · 끄기'],['M','기간(MD / MM) 켜기 · 끄기'],['T','툴팁 켜기 · 끄기'],['W','주차 켜기 · 끄기'],['F','발표모드 켜기 · 끄기 (Esc로도 종료)'],['Shift F','폭 맞춤'],['Shift ⌘/Ctrl F','높이 맞춤'],['S','눈금 맞춤 켜기 · 끄기'],[',','설정창 보기 · 닫기'],['Ctrl + 드래그','눈금 무시 · 24px마다 하루씩 세밀 조정'],['__','편집'],['⌘+클릭','선택 추가 · 해제'],['Shift+클릭','아이템 범위 선택'],['빈 영역 드래그','여러 아이템 선택'],['⌘/Ctrl D','선택 아이템 복제'],['Delete · Backspace','선택 아이템 삭제 (메모 점 선택 시 연결 해제)'],['← →','하루 이동'],['Shift ← →','1주 이동'],['↑ ↓','한 레인 이동 (메모는 라벨 이동)'],['Enter','텍스트 입력 완료'],['Shift Enter','입력칸 안에서 줄바꿈'],['⌘/Ctrl Enter','설정창 · 팝업: 다음 칸으로 이동, 마지막 칸이면 입력 끝내기']];
+  [
+    "story",
+    "일정 변경, 한곳에서 함께",
+    "프로젝트 일정은 수시로 바뀝니다. 부서마다, 담당자마다 PPT와 엑셀을 다시 만들다 보면 같은 프로젝트의 일정이 여러 파일에 흩어집니다. MapStone은 자료를 편집 가능한 하나의 일정표로 모으고, 변경과 공유를 이어가기 위해 시작했습니다.",
+    [
+      "overview"
+    ],
+    [
+      "기존 자료를 다시 그리는 시간을 줄이고, 같은 일정표를 보며 논의하세요.",
+      "이 사용법의 화면은 실제 MapStone에서 만든 가상의 ‘온보딩 서비스 개선’ 프로젝트입니다."
+    ]
+  ],
+  [
+    "analyze",
+    "이미지/텍스트 분석으로 시작",
+    "MapStone의 가장 빠른 시작 방법입니다. 로드맵 이미지나 회의록에서 일정과 마일스톤을 읽어 편집 가능한 일정표로 바꿉니다.",
+    [
+      "image-analysis",
+      "analyze"
+    ],
+    [
+      "① 상단 [이미지/텍스트 분석]을 열고 이미지 또는 텍스트 파일을 끌어 놓거나 붙여넣습니다. 첨부된 파일 이름을 확인하세요.",
+      "② [이미지 분석] 또는 [텍스트 분석]을 누릅니다. 분석 애니메이션과 예상 진행률을 확인하고, 필요하면 [분석 멈춤]으로 중단합니다. 예상 진행률은 서버의 실제 처리 비율이 아닌 대기 안내입니다.",
+      "③ 분석 결과의 세션·아이템·날짜를 검토하고 [검토내용 적용]을 누릅니다. 원본이 모호한 날짜나 담당 구분은 적용 전후에 직접 확인하세요.",
+      "이미지는 PNG/JPEG/WebP와 로드맵·간트차트·표·손그림을 지원합니다. 텍스트는 날짜가 포함된 회의록, 메일, 기획 문서, 복사한 표를 사용할 수 있습니다.",
+      "MapStone 형식의 JSON은 AI 분석 없이 바로 읽을 수 있습니다. 분석 완료 후 재분석 버튼은 보조 버튼으로 표시됩니다."
+    ]
+  ],
+  [
+    "compare",
+    "버전 비교로 변화와 영향 파악",
+    "중요한 변경 전후를 저장하고, 두 버전의 차이를 일정표와 보고서에서 함께 확인합니다.",
+    [
+      "compare"
+    ],
+    [
+      "① 오른쪽 [버전] 탭에서 변경 내용을 적고 [버전 저장]을 누릅니다. 변경 후 다시 저장하면 이전 상태와 비교할 수 있습니다.",
+      "② [버전 비교]를 누른 뒤 카드 두 개를 선택합니다. 첫 번째는 기준 버전, 두 번째는 비교 버전입니다. 파란색으로 바뀐 [비교 진행]을 누릅니다.",
+      "③ 슬라이드 비교는 일정표의 아래쪽 ↔ 손잡이를 끕니다. 오버랩 비교는 우하단의 비교 버전 불투명도를 조절합니다. 기본은 전체 맞춤이며 [원본 크기]로 세부 내용을 확대해 볼 수 있습니다.",
+      "변경 표시의 초록은 추가, 빨강 점선은 삭제, 주황은 변경입니다. 간략 보고서에서는 변경 건수와 날짜 이동을, 상세 보고서에서는 전체 변경 내용을 확인합니다.",
+      "[AI 분석]은 두 일정표 이미지와 [분석 프롬프트]를 함께 전달합니다. 프롬프트는 수정할 수 있으며, Executive Summary와 상세 보고서를 구분해서 확인하고 완료된 보고서를 복사할 수 있습니다."
+    ]
+  ],
+  [
+    "edit",
+    "손쉬운 아이템 관리",
+    "일정·마일스톤·연결 메모·참고 구간·공통 구간·포스트잇을 같은 화면에서 관리합니다.",
+    [
+      "edit"
+    ],
+    [
+      "상단에서 아이템 종류를 누르면 선택한 세션에 추가됩니다. 빈 일정 영역을 더블클릭해서 일정을 만들 수도 있습니다.",
+      "일정을 끌어 날짜나 세션을 옮기고 양끝 손잡이로 기간을 조절합니다. 위아래 손잡이로 높이를 바꾸고, 오른쪽 [속성]에서 라벨·메모·날짜·색상을 수정합니다.",
+      "[눈금 맞춤]은 이동할 때 주요 기준선에 쉽게 맞춰지는 snap 기능입니다. Ctrl을 누른 채 드래그하면 24px마다 하루씩 세밀하게 조절합니다.",
+      "⌘/Ctrl+클릭으로 여러 아이템을 선택하고, 빈 영역을 드래그해서 함께 이동·복제할 수 있습니다. 빈 곳을 클릭하면 선택이 해제됩니다.",
+      "연결 메모의 점을 일정에 끌어 놓으면 일정 이동에 따라 함께 움직입니다. 포스트잇은 자유롭게 배치하고 텍스트 크기에 맞게 축소할 수 있습니다.",
+      "세션 이름을 클릭해 바꾸고 왼쪽 핸들을 끌어 순서를 바꿉니다. 세션 아래 구분선으로 높이를 조절하고 더블클릭하면 내용에 맞춥니다."
+    ]
+  ],
+  [
+    "share",
+    "공유 모드로 같은 일정표 보기",
+    "보기 전용과 함께 편집을 구분해 동료에게 일정을 전달합니다.",
+    [
+      "share"
+    ],
+    [
+      "상단 [공유]에서 권한을 선택합니다. 보기 전용은 일정 열람과 발표에, 함께 편집은 같은 일정표를 수정할 때 사용합니다.",
+      "열람 비밀번호와 편집 전환 비밀번호를 필요한 경우 설정하고 링크를 생성합니다. 비밀번호는 링크를 전달할 때 별도로 안내하세요.",
+      "보기 전용 링크는 생성 시점의 사본입니다. 이후 수정 내용을 전달하려면 새 링크를 생성하세요. 편집 권한과 전환 비밀번호를 설정한 경우 링크 안에서 편집 모드로 전환할 수 있습니다.",
+      "함께 편집할 때는 화면의 저장·접속 상태를 확인하세요. 파일로 전달할 때는 [내보내기]의 MapStone 파일 저장을 사용합니다."
+    ]
+  ],
+  [
+    "present",
+    "발표 모드로 일정에 집중",
+    "회의에서는 도구를 숨기고 일정표를 크게 보여 줍니다.",
+    [
+      "present"
+    ],
+    [
+      "하단 보기 바의 [발표모드] 또는 F 키로 전환합니다. 도구와 설정창이 숨겨지고 일정표에 집중할 수 있습니다.",
+      "Shift+F로 폭을, Shift+⌘/Ctrl+F로 높이를 맞춥니다. 날짜·주차·기간 표시와 NOW 기준선을 필요한 정보에 맞춰 조절하세요.",
+      "G는 돋보기, P는 레이저 포인터, H는 발표 도구 접기·펼치기입니다. 돋보기 상태에서 Space로 위치를 고정합니다.",
+      "오른쪽 위 [발표모드 종료 : ESC] 또는 Esc·F 키로 편집 화면에 돌아옵니다.",
+      "NOW는 클릭해서 속성을 바꾸고 끌어서 기준일을 이동합니다. 더블클릭 또는 Enter·Space로 오늘 날짜에 맞춥니다."
+    ]
+  ],
+  [
+    "quick",
+    "3분 시작 · 파일과 단축키",
+    "자료를 넣고, 검토하고, 변경을 저장한 뒤 공유하세요.",
+    [],
+    [
+      "1. [이미지/텍스트 분석]에서 날짜가 포함된 자료를 넣고 분석합니다.",
+      "2. 결과를 적용하고 세션 이름·날짜·아이템 위치를 확인합니다.",
+      "3. [버전]에서 첫 상태를 저장하고, 변경한 뒤 다시 저장해 비교합니다.",
+      "4. [공유]로 권한에 맞는 링크를 만들거나 [내보내기]로 파일·PNG·PPT·인쇄/PDF를 준비합니다.",
+      "새 일정표는 3개월·3개 세션으로 시작합니다. [전체 지우기]는 확인 후 새 일정표로 초기화하므로 필요한 일정은 먼저 파일로 저장하세요."
+    ]
+  ]
+];
+  const KEYS=[['__','보기 · 화면'],['D','일자 켜기 · 끄기'],['M','기간(MD / MM) 켜기 · 끄기'],['T','툴팁 켜기 · 끄기'],['W','주차 켜기 · 끄기'],['F','발표모드 켜기 · 끄기 (Esc로도 종료)'],['Shift F','폭 맞춤'],['Shift ⌘/Ctrl F','높이 맞춤'],['S','눈금 맞춤 켜기 · 끄기'],[',','설정창 보기 · 닫기'],['Ctrl + 드래그','눈금 무시 · 24px마다 하루씩 세밀 조정'],['__','발표 모드'],['G','돋보기'],['P','레이저 포인터'],['H','발표 도구 접기 · 펼치기'],['Space','돋보기 위치 고정 · 해제'],['__','편집'],['⌘/Ctrl Z','실행 취소'],['Shift ⌘/Ctrl Z · ⌘/Ctrl Y','다시 실행'],['⌘/Ctrl C · X · V','선택 아이템 복사 · 잘라내기 · 붙여넣기'],['⌘/Ctrl+클릭','선택 추가 · 해제'],['Shift+클릭','아이템 범위 선택'],['빈 영역 드래그','여러 아이템 선택'],['⌘/Ctrl D','선택 아이템 복제'],['Delete · Backspace','선택 아이템 삭제 (메모 점 선택 시 연결 해제)'],['← →','하루 이동'],['Shift ← →','1주 이동'],['↑ ↓','한 레인 이동 (메모는 라벨 이동)'],['Enter','텍스트 입력 완료'],['Shift Enter','입력칸 안에서 줄바꿈'],['⌘/Ctrl Enter','설정창 · 팝업: 다음 칸으로 이동, 마지막 칸이면 입력 끝내기']];
   function help(app,body){
     body.closest('dialog').classList.add('ms-help');const shots=window.MapstoneHelp||{};
     const nav=el('nav',null,{className:'ms-help-nav'});const main=el('div',null,{className:'ms-help-main'});
     HELP.forEach(([,title,lead,imgs,steps],i)=>{const id='ms-help-'+i;const a=el('a',(i+1)+'. '+title,{href:'#'+id});a.addEventListener('click',e=>{e.preventDefault();main.querySelector('#'+id).scrollIntoView({behavior:app.animOn?.()?'smooth':'auto',block:'start'});});nav.append(a);
-      const sec=el('section',null,{id});sec.append(el('h3',(i+1)+'. '+title),el('p',lead,{className:'ms-help-lead'}));
-      const pics=imgs.filter(k=>shots[k]);if(pics.length){const row=el('div',null,{className:'ms-help-shots'+(pics.length>1?' two':'')});pics.forEach(k=>{const img=el('img',null,{src:shots[k],alt:title});img.addEventListener('click',()=>img.classList.toggle('big'));row.append(img);});sec.append(row);}
+      const sec=el('section',null,{id});sec.dataset.topic=HELP[i][0];sec.append(el('h3',(i+1)+'. '+title),el('p',lead,{className:'ms-help-lead'}));
+      const pics=imgs.filter(k=>shots[k]);if(pics.length){const row=el('div',null,{className:'ms-help-shots'});pics.forEach(k=>{const img=el('img',null,{src:shots[k],alt:title+' · 가상 프로젝트 실제 화면 캡처',loading:'lazy'});img.addEventListener('click',()=>img.classList.toggle('big'));row.append(img);});sec.append(row);}
       const ul=el('ul');steps.forEach(t=>ul.append(el('li',t)));sec.append(ul);main.append(sec);});
     const k=el('section',null,{id:'ms-help-keys'});k.append(el('h3','단축키'));const tb=el('table');KEYS.forEach(([key,what])=>{if(key==='__'){const tr=el('tr',null,{className:'ms-help-kgroup'});const th=el('td',what);th.colSpan=2;tr.append(th);tb.append(tr);return;}const tr=el('tr');const td=el('td');key.split(' · ').forEach((x,j)=>{if(j)td.append(' · ');td.append(el('kbd',x));});tr.append(td,el('td',what));tb.append(tr);});k.append(tb);main.append(k);
     const a=el('a','단축키',{href:'#ms-help-keys'});a.addEventListener('click',e=>{e.preventDefault();k.scrollIntoView({behavior:app.animOn?.()?'smooth':'auto'});});nav.append(a);

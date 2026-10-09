@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),C=require('../mapstone-core.js'),crypto=require('node:crypto').webcrypto;
 // Minimal DOM for async UI state checks; layout is verified in the browser.
-function fixture(fetch){
+function fixture(fetch,overrides={}){
   const nodes=[];
   class Element{
     constructor(tag){this.tagName=tag;this.children=[];this.attrs={};this.style={};this.dataset={};this.textContent='';this.value='';this.events={};nodes.push(this);this.classList={remove:(c)=>this.classList.toggle(c,false),add:(...c)=>{this.className=[this.className||'',...c].join(' ');},toggle:(c,on)=>{const s=new Set((this.className||'').split(' '));on?s.add(c):s.delete(c);this.className=[...s].join(' ');}};}
@@ -28,6 +28,7 @@ function fixture(fetch){
     click(){return this.events.click?.({target:this});}
   }
   const document={createElement:t=>new Element(t),body:new Element('body'),addEventListener(){},removeEventListener(){}},store=new Map(),ctx={MapstoneCore:C,window:{innerWidth:1000,innerHeight:800,addEventListener(){},removeEventListener(){}},requestAnimationFrame:f=>{f();return 0;},cancelAnimationFrame(){},document,Image:class{constructor(){this.width=1200;this.height=400;}async decode(){}},crypto,AbortSignal,AbortController,setInterval:()=>0,clearInterval(){},clearTimeout,setTimeout:()=>0,navigator:{clipboard:{writeText:async text=>{document._copied=text;}}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},fetch};
+  Object.assign(ctx,overrides);
   vm.runInNewContext(fs.readFileSync('mapstone-ui.js','utf8').replace('window.MapstoneUI={','window.MapstoneUI={renderVersionReport,imageComparison,changeDetails,versionImage,'),ctx);
   const app={state:{title:'QA'},sync:{endpoint:'https://example.test'}};
   return {ui:ctx.window.MapstoneUI,app,document,nodes,find:text=>nodes.find(n=>n.textContent===text),byClass:c=>nodes.find(n=>(n.className||'').split(' ').includes(c))};
@@ -119,3 +120,17 @@ test('Edited comparison prompt and selected baseline reach AI, copy appears only
  const a=C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]});let sent;const f=fixture(async(url,o)=>{if(url.endsWith('/compare')){sent=JSON.parse(o.body);return {ok:true,json:async()=>({from:2,to:1,imageCompared:true,report:'Executive Summary\n변경 없음\n상세 변경 내용\n변경 없음'})};}return {ok:true,json:async()=>url.endsWith('/versions/a')?{id:'a',sequence:1,document:a}:{id:'b',sequence:2,document:a}};});f.app.state.versions=[{id:'a',projectId:'p'},{id:'b',projectId:'p'}];await f.ui.versionComparePage(f.app,['a','b']);const prompt=f.nodes.find(n=>n.attrs['aria-label']==='분석 프롬프트'),copy=f.byClass('ms-report-copy');assert.equal(copy.hidden,true);prompt.value='담당자 확인 사항을 우선 분석하세요.';const baseline=f.nodes.find(n=>n.attrs['aria-label']==='분석 기준 버전');baseline.value='b';baseline.events.change();assert.equal(prompt.value,'담당자 확인 사항을 우선 분석하세요.');await f.find('AI 분석').click();assert.equal(sent.prompt,prompt.value);assert.equal(sent.baselineId,'b');assert.equal(sent.images.length,2);assert.equal(copy.hidden,false);assert.match(f.byClass('ms-version-report')._copyText,/v2 → v1/);
 });
 test('Comparison keeps first selected version as baseline even when it is newer',async()=>{const doc=C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]});const f=fixture(async url=>({ok:true,json:async()=>({id:url.endsWith('/b')?'b':'a',sequence:url.endsWith('/b')?2:1,document:doc})}));f.app.state.versions=[{id:'a',projectId:'p'},{id:'b',projectId:'p'}];await f.ui.versionComparePage(f.app,['b','a']);const select=f.nodes.find(n=>n.attrs['aria-label']==='분석 기준 버전');assert.equal(select.children[0].textContent,'v2 · 첫 번째 선택');f.find('오버랩 비교').click();const range=f.nodes.find(n=>n.type==='range');assert.equal(range.attrs['aria-label'],'비교 버전 [V1] 불투명도');range.value='30';range.events.input();assert.equal(f.byClass('ms-image-base').style.opacity,'1');assert.equal(f.byClass('ms-image-over').style.opacity,'0.3');assert.match(f.byClass('ms-image-opacity-info').textContent,/기준 70% · 비교 30%/);});
+
+test('Comparison resize waits for a frame and ignores its own height notifications',()=>{
+  const frames=[],observers=[];let disconnected=false;
+  const f=fixture(()=>{},{ResizeObserver:class{constructor(fn){this.fn=fn;observers.push(this);}observe(){}disconnect(){disconnected=true;}},requestAnimationFrame:fn=>{frames.push(fn);return frames.length;}});
+  const a=C.fromAnalysis({title:'Resize QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]});
+  const box=f.ui.imageComparison({name:'A',doc:a},{name:'B',doc:a},C.compareDocuments(a,a)),stage=f.byClass('ms-image-compare-stage'),base=f.byClass('ms-image-base'),frame=f.byClass('ms-image-frame');
+  stage.clientWidth=800;base.naturalWidth=1600;base.naturalHeight=500;
+  const notify=(width,height)=>observers[0].fn([{contentRect:{width,height}}]);
+  notify(782,100);assert.equal(stage.style.height,undefined);assert.equal(frames.length,1);frames.shift()();assert.equal(stage.style.height,'262px');assert.equal(frame.style.width,'781px');
+  notify(782,262);assert.equal(frames.length,0);
+  stage.clientWidth=600;notify(582,262);assert.equal(frames.length,1);frames.shift()();assert.equal(stage.style.height,'240px');assert.equal(frame.style.width,'582px');
+  stage.getBoundingClientRect=()=>({left:0,top:500});stage.clientWidth=1000;notify(982,240);frames.shift()();assert.equal(stage.style.height,'260px');assert.equal(frame.style.width,'774px');
+  notify(982,260);assert.equal(frames.length,0);box._resizeObserver.disconnect();assert.equal(disconnected,true);
+});

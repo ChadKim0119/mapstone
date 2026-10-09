@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "versionProjectId": null,
+  "title": "온보딩 서비스 개선 · 가상 프로젝트",
+  "cfg": {
+    "startY": 2026,
+    "startM": 10,
+    "months": 3,
+    "weekPx": 100,
+    "weekMode": "actual",
+    "laneH": 44,
+    "magnet": true,
+    "overlap": "moveOther",
+    "showWeek": false,
+    "showElementDates": true,
+    "durUnit": "MD",
+    "showNow": true
+  },
+  "rows": [
+    {
+      "id": "r1",
+      "name": "기획 · 고객 경험",
+      "color": "#eaf2fb",
+      "h": 120
+    },
+    {
+      "id": "r2",
+      "name": "개발 · 플랫폼",
+      "color": "#eaf2fb",
+      "h": 120
+    },
+    {
+      "id": "r3",
+      "name": "품질 · 운영",
+      "color": "#eaf2fb",
+      "h": 120
+    }
+  ],
+  "items": [
+    {
+      "id": "a1",
+      "kind": "chev",
+      "row": "r1",
+      "lane": 0,
+      "span": 1,
+      "s": 0.12903225806451613,
+      "e": 0.7096774193548387,
+      "label": "고객 여정 조사",
+      "memo": "",
+      "color": "#224b77",
+      "variant": "solid",
+      "labelAlign": "center"
+    },
+    {
+      "id": "a2",
+      "kind": "chev",
+      "row": "r1",
+      "lane": 0,
+      "span": 1,
+      "s": 0.8064516129032258,
+      "e": 1.4,
+      "label": "온보딩 UX 설계",
+      "memo": "",
+      "color": "#286b85",
+      "variant": "solid",
+      "labelAlign": "center"
+    },
+    {
+      "id": "a3",
+      "kind": "chev",
+      "row": "r2",
+      "lane": 0,
+      "span": 1,
+      "s": 0.5806451612903226,
+      "e": 1.6333333333333333,
+      "label": "가입 · 인증 API 개발",
+      "memo": "",
+      "color": "#224b77",
+      "variant": "solid",
+      "labelAlign": "center"
+    },
+    {
+      "id": "a4",
+      "kind": "chev",
+      "row": "r2",
+      "lane": 1,
+      "span": 1,
+      "s": 1.0333333333333334,
+      "e": 2.096774193548387,
+      "label": "프론트엔드 구현",
+      "memo": "",
+      "color": "#66707a",
+      "variant": "solid",
+      "labelAlign": "center"
+    },
+    {
+      "id": "a5",
+      "kind": "chev",
+      "row": "r3",
+      "lane": 0,
+      "span": 1,
+      "s": 1.7333333333333334,
+      "e": 2.5483870967741935,
+      "label": "통합 검증 · 운영 준비",
+      "memo": "",
+      "color": "#224b77",
+      "variant": "solid",
+      "labelAlign": "center"
+    },
+    {
+      "id": "a6",
+      "kind": "marker",
+      "row": "",
+      "lane": 0,
+      "span": 1,
+      "s": 1.4,
+      "e": 1.4,
+      "label": "UX 확정",
+      "memo": "",
+      "color": "#286b85",
+      "variant": "solid"
+    },
+    {
+      "id": "a7",
+      "kind": "marker",
+      "row": "",
+      "lane": 0,
+      "span": 1,
+      "s": 2.6451612903225805,
+      "e": 2.6451612903225805,
+      "label": "서비스 오픈",
+      "memo": "",
+      "color": "#224b77",
+      "variant": "solid"
+    },
+    {
+      "id": "a8",
+      "kind": "flag",
+      "row": "r2",
+      "lane": 0,
+      "span": 1,
+      "s": 1.1666666666666667,
+      "e": 1.1666666666666667,
+      "label": "보안 검토",
+      "memo": "",
+      "color": "#a65c0a",
+      "variant": "solid"
+    }
+  ],
+  "notes": [],
+  "now": 0.45,
+  "versions": []
+}
