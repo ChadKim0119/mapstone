@@ -34,6 +34,7 @@
     const cfg = Object.assign({ startY: 2026, startM: 1, months: 12, weekPx: 19, weekMode: 'uniform', laneH: 44, magnet: true, overlap: 'shrink', showWeek:false, showElementDates:false, durUnit:'MD' }, data.cfg || {});
     for (const [k, lo, hi] of [['startY',1900,2200],['startM',1,12],['months',1,48],['weekPx',4,640],['laneH',28,72]]) finite(cfg[k], k, lo, hi);
     for(const k of ['showNow','hideNowDate','showMM','showGrid','showWeek','showElementDates','showTooltip'])if(cfg[k]!==undefined && typeof cfg[k]!=='boolean')fail(k+'는 true/false여야 합니다.');
+    if(cfg.nowLane!==undefined){finite(cfg.nowLane,'NOW 표시 줄',0,1000);if(!Number.isInteger(cfg.nowLane))fail('NOW 표시 줄은 정수여야 합니다.');}
     if(cfg.nowLabelSize!==undefined)finite(cfg.nowLabelSize,'NOW 글자 크기',6,40);
     for (const k of ['startY','startM','months']) if (!Number.isInteger(cfg[k])) fail(k + '는 정수여야 합니다.');
     if (!['uniform','actual'].includes(cfg.weekMode) || !['shrink','moveOther','moveSelf'].includes(cfg.overlap)) fail('타임라인 설정이 올바르지 않습니다.');
@@ -54,7 +55,7 @@
       if (['chev','plain','band'].includes(it.kind) && it.e <= it.s) fail('종료는 시작보다 뒤여야 합니다.');
       if (['chev','plain','flag'].includes(it.kind) && !rowIds.has(it.row)) fail('블록의 구분 행을 찾을 수 없습니다: '+it.row);
       if (it.kind === 'band' && (!rowIds.has(it.rowFrom) || !rowIds.has(it.rowTo))) fail('밴드의 시작·끝 행을 찾을 수 없습니다.');
-      for (const k of ['y','w','h']) if (it[k] !== undefined) finite(it[k],k,0,20000);
+      for (const k of ['y','w','h']) if (it[k] !== undefined) finite(it[k],k,k==='y'&&it.kind==='sticky'?-20000:0,20000);
       if (it.trackY !== undefined) finite(it.trackY,'항목 위쪽 위치',-20000,20000);
       if (it.trackH !== undefined) finite(it.trackH,'항목 높이',1,20000);
       if (it.kind === 'image' && (typeof it.src !== 'string' || !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(it.src) || it.src.length > 2800000)) fail('이미지는 2MB 이하 PNG/JPEG/WebP 데이터여야 합니다.');
