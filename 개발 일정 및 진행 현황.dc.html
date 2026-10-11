@@ -439,9 +439,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-tone-pair {display:flex;flex-direction:column;gap:4px;min-width:0;}
     .ms-tone-pair button {display:flex;align-items:center;justify-content:center;flex:none;width:100%;min-width:0;min-height:22px;height:22px;padding:0;border:1px solid var(--color-border-neutral-2);border-radius:5px;cursor:pointer;transition:filter .15s,box-shadow .15s;}
     .ms-tone-pair button:hover {filter:brightness(1.08);box-shadow:0 0 0 2px #3568c52b;}
+    [data-resize][data-edge-selected="true"] {background:#3568c5!important;box-shadow:0 0 0 3px #3568c52b!important;}
+    .ms-height-controls {display:flex;gap:10px;align-items:center;}
+    .ms-height-controls .ms-number-stepper {flex:0 0 142px;}
+    [data-grid-coordinates] {flex:1;min-width:0;background:#f4effb;border:1px solid #e6dcf3;border-radius:8px;padding:6px 8px;font-size:10px;font-variant-numeric:tabular-nums;color:#8054b4;display:flex;flex-direction:column;gap:3px;}
     .ms-text-clip {position:absolute;inset:3px 10%;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;pointer-events:none;}
     .ms-text-clip > * {box-sizing:border-box;min-width:0;max-width:100%;width:100%;overflow-wrap:anywhere;word-break:break-word;}
-    [data-capture] .ms-text-clip > textarea {pointer-events:auto;height:1.8em!important;min-height:0!important;max-height:100%;white-space:pre!important;overflow:auto!important;overflow-y:hidden!important;line-height:1.3!important;outline-offset:-1px!important;outline-width:1px!important;}
+    [data-capture] .ms-text-clip > textarea {pointer-events:auto;height:auto!important;min-height:1.8em!important;field-sizing:content;max-height:100%;white-space:pre-wrap!important;overflow:auto!important;line-height:1.3!important;outline-offset:-1px!important;outline-width:1px!important;}
     [data-track] > [role="button"], [data-item-surface], [data-sticky] {box-sizing:border-box;}
     [data-app][data-anim="on"] [data-drag-active="true"][data-snap-active="true"]:not([data-sticky]) {transition:left .07s ease-out,top .07s ease-out,width .07s ease-out,height .07s ease-out!important;}
     .ms-view-pill > .ms-tool-button {width:auto!important;min-width:52px!important;padding:0 12px!important;margin:0!important;}
@@ -456,7 +460,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   <button type="button" class="ms-now-direction" data-now-indicator="" data-noprint="" onClick="{{ focusNow }}" aria-label="{{ L.nowDirection }}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"></path></svg><span>NOW</span></button>
   <sc-for list="{{ dragGuides }}" as="g"><div data-drag-date="" data-noprint="" style="position:fixed;top:{{ g.lineTop }};height:{{ g.lineHeight }};left:{{ g.left }};border-left:1px dashed var(--ms-color-action-primary);pointer-events:none;z-index:25000"><span style="position:absolute;top:{{ g.top }};left:{{ g.labelLeft }};transform:translateX(-50%);white-space:nowrap;padding:4px 7px;border-radius:4px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700">{{ g.date }}</span></div></sc-for>
   <sc-if value="{{ alignConfirm }}"><div data-noprint="" onKeyDown="{{ alignKey }}" style="position:fixed;inset:0;background:#16365d55;display:flex;align-items:center;justify-content:center;z-index:26000"><div role="dialog" data-align-dialog="" aria-modal="true" aria-label="전체 아이템 정렬 확인" style="background:#fff;padding:24px;border-radius:14px;width:min(440px,90vw);box-shadow:0 16px 50px #16365d33"><strong style="font-size:17px">전체 아이템 정렬</strong><p style="font-size:14px;line-height:1.7;margin:14px 0 20px">{{ alignMessage }}</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="ms-tool-button" autofocus="" onClick="{{ alignCancel }}">취소</button><button class="ms-tool-button ms-accent" onClick="{{ alignApply }}">전체 정렬 적용</button></div></div></div></sc-if>
-  <sc-if value="{{ joinPrompt }}"><div data-noprint="" onKeyDown="{{ joinKey }}" style="position:fixed;inset:0;background:#16365d55;display:flex;align-items:center;justify-content:center;z-index:26000"><div role="dialog" aria-modal="true" aria-label="선택 일정 이어 붙이기" data-join-dialog="" style="background:#fff;padding:24px;border-radius:14px;width:min(450px,90vw);box-shadow:0 16px 50px #16365d33"><strong style="font-size:17px">선택 일정을 이어 붙일까요?</strong><p style="font-size:14px;line-height:1.7;margin:14px 0 20px">이동은 적용되었습니다. 선택된 일정 {{ joinCount }}개를 현재 순서와 기간을 유지하며 앞 일정의 종료일에 다음 일정의 시작일을 맞춥니다.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="ms-tool-button" autofocus="" onClick="{{ cancelJoin }}">현재 간격 유지</button><button type="button" class="ms-tool-button ms-accent" onClick="{{ applyJoin }}">일정 이어 붙이기</button></div></div></div></sc-if>
+  <sc-if value="{{ joinPrompt }}"><div data-noprint="" onKeyDown="{{ joinKey }}" style="position:fixed;inset:0;background:#16365d55;display:flex;align-items:center;justify-content:center;z-index:26000"><div role="dialog" aria-modal="true" aria-label="선택 일정 이어 붙이기" data-join-dialog="" style="background:#fff;padding:24px;border-radius:14px;width:min(450px,90vw);box-shadow:0 16px 50px #16365d33"><strong style="font-size:17px">선택 일정을 이어 붙일까요?</strong><p style="font-size:14px;line-height:1.7;margin:14px 0 20px">일정 변경은 적용되었습니다. 선택된 일정 {{ joinCount }}개를 현재 순서와 기간을 유지하며 앞 일정의 종료일에 다음 일정의 시작일을 맞춥니다.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="ms-tool-button" autofocus="" onClick="{{ cancelJoin }}">현재 간격 유지</button><button type="button" class="ms-tool-button ms-accent" onClick="{{ applyJoin }}">일정 이어 붙이기</button></div></div></div></sc-if>
   <sc-for list="{{ smartGuides }}" as="g"><div data-smart-guide="" data-noprint="" style="position:fixed;pointer-events:none;z-index:25001;left:{{ g.left }};top:{{ g.top }};width:{{ g.width }};height:{{ g.height }};border-top:{{ g.borderTop }};border-left:{{ g.borderLeft }}"><span style="position:absolute;left:4px;top:4px;white-space:nowrap;background:#fff;color:#c43ca0;font-size:11px;padding:2px 4px;border-radius:3px">{{ g.label }}</span></div></sc-for>
   <sc-if value="{{ marquee }}"><div data-noprint="" style="position:fixed;left:{{ marquee.left }};top:{{ marquee.top }};width:{{ marquee.width }};height:{{ marquee.height }};border:1px solid var(--ms-color-action-primary);background:rgba(53,104,197,.08);pointer-events:none;z-index:1400"></div></sc-if>
   <sc-if value="{{ focusMode }}" hint-placeholder-val="{{ false }}"><button class="ms-focus-exit" onClick="{{ toggleFocus }}" aria-label="{{ L.focusExit }} : ESC">{{ L.focusExit }} :<kbd>ESC</kbd></button></sc-if>
@@ -560,7 +564,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
               <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-height:{{ k.boxH }};border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
-<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="off" data-text-ratio="" rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea></div>
+<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea></div>
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
 <div class="ms-text-clip"><div data-text-ratio="" class="ms-marker-caption" style="font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};letter-spacing:-.01em;pointer-events:none;color:{{ k.ink }}"><svg style="display:{{ k.iconDisplay }}" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ k.iconPath }}"></path></svg><span>{{ k.label }}</span></div></div>
@@ -593,7 +597,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div data-timeline-row="{{ row.id }}" data-row-focused="{{ row.focused }}" style="display:flex;align-items:stretch;width:calc(172px + {{ boardW }});min-height:{{ row.height }};border-bottom:1px solid var(--color-border-neutral-2)">
                 <div class="ms-sticky-col" tabindex="0" aria-label="{{ row.name }}" data-row="{{ row.id }}" onFocus="{{ onRowFocus }}" onPointerDown="{{ onRowFocus }}" onMouseEnter="{{ onRowEnter }}" onMouseLeave="{{ onRowLeave }}" style="position:sticky;left:0;z-index:115;width:172px;flex:none;display:flex;flex-direction:column;justify-content:center;padding:6px 10px 6px 25px;border-right:1px solid var(--color-border-neutral-2);cursor:pointer;background:{{ row.labelBg }};border-left:1px solid {{ row.focusBar }};transition:background .16s ease">
                   <sc-if value="{{ row.editing }}">
-                  <textarea class="ms-inline-text-editor" wrap="off" data-text-ratio="" value="{{ row.name }}" placeholder="{{ L.rowNamePh }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endRowEdit }}" onKeyDown="{{ onRowTextKey }}" rows="2" style="height:46px;flex:none;width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
+                  <textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" value="{{ row.name }}" placeholder="{{ L.rowNamePh }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endRowEdit }}" onKeyDown="{{ onRowTextKey }}" rows="2" style="height:46px;flex:none;width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
                   </sc-if>
                   <sc-if value="{{ row.show }}">
                     <div style="height:46px;display:flex;align-items:center;flex:none">
@@ -619,7 +623,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
                       <svg data-schedule-shape="" aria-hidden="true" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible;pointer-events:none"><path d="{{ b.shapePath }}" fill="{{ b.bg }}"></path></svg>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
-<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="off" data-text-ratio="" rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:0;top:50%;scale:1;transform:translateY(-50%) scaleY(var(--ms-text-ratio,1));width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};background:#fff;outline:none;resize:none;z-index:3"></textarea></div>
+<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:0;top:50%;scale:1;transform:translateY(-50%) scaleY(var(--ms-text-ratio,1));width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};background:#fff;outline:none;resize:none;z-index:3"></textarea></div>
                       </sc-if>
                       <sc-if value="{{ b.inside }}" hint-placeholder-val="{{ true }}">
 <div class="ms-text-clip"><div data-text-ratio="" style="position:absolute;left:0;right:0;top:{{ b.labelPos }};scale:1;transform:translateY({{ b.labelTranslate }}) scaleY(var(--ms-text-ratio,1));font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};line-height:1.3;letter-spacing:-.01em;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}</div></div>
@@ -645,10 +649,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:1px solid rgba(90,133,201,.5);border-radius:6px;pointer-events:none"></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
-                        <div data-id="{{ b.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ b.id }}" data-resize="" data-mode="l" role="button" tabindex="0" aria-label="시작 끝점 선택 · 방향키로 하루 조절" onFocus="{{ onEdgeFocus }}" data-edge-selected="{{ b.sEdge }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}" hint-placeholder-val="{{ false }}">
-                        <div data-id="{{ b.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ b.id }}" data-resize="" data-mode="r" role="button" tabindex="0" aria-label="종료 끝점 선택 · 방향키로 하루 조절" onFocus="{{ onEdgeFocus }}" data-edge-selected="{{ b.eEdge }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
                       </sc-if>
                       <sc-if value="{{ b.sel }}">
                         <div data-id="{{ b.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="작업 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
@@ -661,7 +665,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
 
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="off" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea></div>
+<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea></div>
                       </sc-if>
                       <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
 <div class="ms-text-clip"><div data-text-ratio="" style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};position:absolute;left:0;right:0;top:{{ p.labelPos }};scale:1;transform:translateY({{ p.labelTranslate }}) scaleY(var(--ms-text-ratio,1));line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div></div>
@@ -671,8 +675,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:1px solid rgba(90,133,201,.5);border-radius:8px;pointer-events:none"></div>
                       </sc-if>
                       <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
-                        <div data-id="{{ p.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" aria-label="참고 시작 조절" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
-                        <div data-id="{{ p.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="l" role="button" tabindex="0" aria-label="시작 끝점 선택 · 방향키로 하루 조절" onFocus="{{ onEdgeFocus }}" data-edge-selected="{{ p.sEdge }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                        <div data-id="{{ p.id }}" data-resize="" data-mode="r" role="button" tabindex="0" aria-label="종료 끝점 선택 · 방향키로 하루 조절" onFocus="{{ onEdgeFocus }}" data-edge-selected="{{ p.eEdge }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
                         <div data-id="{{ p.id }}" data-resize="" data-mode="top" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 위쪽 높이 조절" role="button" style="position:absolute;top:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
                         <div data-id="{{ p.id }}" data-resize="" data-mode="bottom" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onHeightKey }}" tabindex="0" aria-label="참고 구간 아래쪽 높이 조절" role="button" style="position:absolute;bottom:-3px;left:30%;width:40%;height:6px;border-radius:3px;background:var(--ms-color-action-primary);cursor:ns-resize;z-index:14"></div>
                       </sc-if>
@@ -682,7 +686,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
                       <span data-link-dot="" data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2;opacity:{{ f.dotOpacity }}"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea class="ms-inline-text-editor" wrap="off" data-text-ratio="" rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};outline:none;resize:none"></textarea>
+                        <textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};outline:none;resize:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ f.showConnector }}">
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
@@ -700,7 +704,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div data-item-surface="" data-id="{{ d.id }}" data-drag-active="{{ d.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:{{ d.labelItems }};justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
 
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
-<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="off" data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea></div>
+<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea></div>
                 </sc-if>
                 <sc-if value="{{ d.show }}" hint-placeholder-val="{{ true }}">
 <div class="ms-text-clip"><div data-text-ratio="" style="font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};width:100%;line-height:1.4;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div></div>
@@ -710,8 +714,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:1px solid rgba(90,133,201,.5);border-radius:6px;pointer-events:none"></div>
                 </sc-if>
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
-                  <div data-id="{{ d.id }}" data-resize="" data-mode="r" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
-                  <div data-id="{{ d.id }}" data-resize="" data-mode="l" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                  <div data-id="{{ d.id }}" data-resize="" data-mode="r" role="button" tabindex="0" aria-label="종료 끝점 선택 · 방향키로 하루 조절" onFocus="{{ onEdgeFocus }}" data-edge-selected="{{ d.eEdge }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;right:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
+                  <div data-id="{{ d.id }}" data-resize="" data-mode="l" role="button" tabindex="0" aria-label="시작 끝점 선택 · 방향키로 하루 조절" onFocus="{{ onEdgeFocus }}" data-edge-selected="{{ d.sEdge }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onHandleDbl }}" style="position:absolute;left:-4px;top:50%;margin-top:-8px;width:8px;height:16px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ew-resize;z-index:14"></div>
                   <div data-id="{{ d.id }}" data-resize="" data-mode="btop" onPointerDown="{{ onItemDown }}" style="position:absolute;top:-4px;left:50%;margin-left:-12px;width:24px;height:8px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ns-resize;z-index:14"></div>
                   <div data-id="{{ d.id }}" data-resize="" data-mode="bbot" onPointerDown="{{ onItemDown }}" style="position:absolute;bottom:-4px;left:50%;margin-left:-12px;width:24px;height:8px;border-radius:3px;background:rgba(53,104,197,.45);cursor:ns-resize;z-index:14"></div>
                 </sc-if>
@@ -729,7 +733,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
             <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-<div class="ms-text-clip"><textarea class="ms-inline-text-editor ms-sticky-editor" wrap="off" data-text-ratio="" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea></div>
+<div class="ms-text-clip"><textarea class="ms-inline-text-editor ms-sticky-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea></div>
               </sc-if>
               <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
 <div class="ms-text-clip"><div data-text-ratio="" style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};display:flex;flex-direction:column;justify-content:{{ p.labelJustify }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div></div>
@@ -884,12 +888,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <div style="display:flex;flex-direction:column;gap:10px">
                     <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
                       <div style="display:flex;flex-direction:column;gap:6px">
-                        <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.spanF }}</span><sc-if value="{{ showGrid }}"><div data-grid-coordinates="" style="display:flex;flex-direction:column;gap:3px;font-size:10px;font-variant-numeric:tabular-nums;color:#8054b4"><span>좌상단 {{ selGridCoords }}</span><span>좌하단 {{ selGridBottomCoords }}</span></div></sc-if>
-                        <div class="ms-stepper ms-number-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                        <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.spanF }}</span>
+                        <div class="ms-height-controls"><div class="ms-stepper ms-number-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                           <button data-field="span" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">−</button>
                           <input type="number" step="0.5" min="0.5" value="{{ selSpan }}" data-field="span" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                           <button data-field="span" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer">+</button>
-                        </div>
+                        </div><sc-if value="{{ showGrid }}"><div data-grid-coordinates=""><span>좌상단 {{ selGridCoords }}</span><span>좌하단 {{ selGridBottomCoords }}</span></div></sc-if></div>
                       </div>
                     </div>
                   </div>
@@ -1020,7 +1024,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <button onClick="{{ toggleAnim }}" role="switch" aria-checked="{{ animChecked }}" aria-label="{{ L.animF }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ animTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ animKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
             </section>
-<div class="ms-setting-switch"><span>스마트 가이드<small>이동 중 주변 아이템의 맞춤 안내선을 표시합니다.</small></span><button onClick="{{ toggleSmartGuides }}" role="switch" aria-label="스마트 가이드" aria-checked="{{ smartChecked }}" style="background:{{ smartTrack }}"><i style="left:{{ smartKnob }}"></i></button></div><div class="ms-setting-switch"><span>다른 아이템 줄이기<small>속성에서 일정을 수정할 때 겹친 길이를 줄입니다. 드래그 중에는 다른 아이템을 유지합니다.</small></span><button onClick="{{ setOverlap }}" role="switch" aria-label="다른 아이템 줄이기" aria-checked="{{ shrinkChecked }}" style="background:{{ shrinkTrack }}"><i style="left:{{ shrinkKnob }}"></i></button></div>            <div style="height:1px;background:var(--color-border-neutral-2)"></div>
+<div class="ms-setting-switch"><span>스마트 가이드<small>이동 중 주변 아이템의 맞춤 안내선을 표시합니다.</small></span><button onClick="{{ toggleSmartGuides }}" role="switch" aria-label="스마트 가이드" aria-checked="{{ smartChecked }}" style="background:{{ smartTrack }}"><i style="left:{{ smartKnob }}"></i></button></div><div class="ms-setting-switch"><span>다른 아이템 줄이기<small>아이템 이동·일정 조절 시 겹친 다른 일정의 길이를 실시간으로 줄입니다. 세로 위치와 높이는 유지합니다.</small></span><button onClick="{{ setOverlap }}" role="switch" aria-label="다른 아이템 줄이기" aria-checked="{{ shrinkChecked }}" style="background:{{ shrinkTrack }}"><i style="left:{{ shrinkKnob }}"></i></button></div>            <div style="height:1px;background:var(--color-border-neutral-2)"></div>
           </div>
         </sc-if>
 
@@ -1180,6 +1184,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.37', agent: 'Codex', title: '[주요 사항] 겹침 처리 복구 · 끝점 선택과 다중 일정 조절', items: ['[겹침] 다른 아이템 줄이기 ON 시 실시간 일정 구간 축소 복구 · 세로 위치·높이 유지 · OFF 시 주변 아이템 보호', '[일정] 시작·종료 끝점 개별 포커스와 방향키 하루 조절 · 다중 선택 날짜 입력·버튼·핸들 모두 적용 · 변경 후 이어 붙이기 확인', '[화면] 마일스톤 최소 행 압축 · 줄바꿈에 따라 텍스트 편집 래퍼 높이 가변 · 높이 버튼 오른쪽에 두 좌표 배치', '[검증] 293개 테스트 통과 · 실제 화면에서 끝점 하루 조절·겹침 폭 축소·다중 종료 변경 팝업·3줄 편집 래퍼·높이 우측 좌표·마일스톤 최소 행 확인'] },
     { v: 'v0.9.36', agent: 'Codex', title: '[주요 사항] 오른쪽 밀착 복제 · 세로 그라데이션 팔레트', items: ['[복제] ⌘/Ctrl+D는 원본 오른쪽 끝에 붙여 복제 · 세로 위치·크기·텍스트·색상 등 속성 유지 · 다중 선택 복제와 연결 관계 유지', '[팔레트] 다중 선택 명도 버튼을 각 색상 열 아래 위아래로 배치 · 화살표를 해당 색상의 양방향 그라데이션으로 교체', '[검증] 286개 테스트 통과 · 실제 화면에서 ⌘D 오른쪽 밀착·동일 높이 및 세로 그라데이션 적용 확인'] },
     { v: 'v0.9.35', agent: 'Codex', title: '[주요 사항] 다중 선택 명도 순차 적용 · 함께 조절 · 일정 이어 붙이기', items: ['[팔레트] 다중 선택 시 기본 색상 열 하단 좌우 화살표 · 시간·세로 위치 순서로 명도 순차 적용 · 방향 반전 · 기존 팔레트 명도 기준 활용', '[함께 조절] 다중 선택 위아래 이동과 높이 버튼·핸들 조절 · 좌우 키·그룹 이동 후 일정 이어 붙이기 확인', '[이어 붙이기] 선택 일정만 순서와 달력 기간을 유지하며 연속 배치 · 취소 시 이동 후 간격 유지 · 비선택 배치 고정과 실행 취소', '[검증] 283개 자동 테스트 통과 · 실제 화면에서 5개 명도·전체 이동·높이 조절·간격 유지·이어 붙이기 확인 · 비선택 아이템과 세션 위치 고정 확인'] },
     { v: 'v0.9.34', agent: 'Codex', title: '[주요 사항] 드래그 중·드롭 후 비선택 아이템 배치 고정', items: ['[원인] 매 포인터 프레임과 드롭의 겹침 축소가 다른 아이템의 시작·종료를 수정 · 혼합 그룹 드롭 후 마일스톤 줄 재배치 · 기존 메모 자동 연결도 재현 · 기존 검증은 세로 위치에 편중', '[수정] 모든 아이템 드래그의 비선택 아이템 원본 배치 보호 · 드래그·드롭 자동 겹침 축소 차단 · 그룹 이동·Option 복사·Ctrl 전환에도 보호 유지 · 연결 메모는 본문 고정과 연결점 추적 유지 · 기존 메모의 우발적 자동 연결 차단', '[검증] 테스트 276개 통과 · 겹침 축소 켜진 80개 배치에서 6종·단일/그룹·왕복·Ctrl·Option·핸들·드롭·저장·실행 취소 검증 · 실제 밀집 화면의 주변 110개 요소 위치·크기 변경 0개 · 대각선 왕복·혼합 그룹·같은 배율의 새로고침까지 확인'] },
@@ -1326,7 +1331,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.36';
+  APP_VER = 'v0.9.37';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1850,12 +1855,13 @@ class Component extends DCLogic {
       if(placement)for(const row of d.rows){if(placement[row.id])row.h=placement[row.id].height;}
       const g=this.drag,moving=new Set(g?.ids||[g?.id]),protectedDrag=g?.moved&&g.baseItems&&g.mode!=='link';
       const base=protectedDrag?new Map(JSON.parse(g.baseItems).map(it=>[it.id,it])):null;
-      // A pointer edit owns only the grabbed selection. No collision solver or group
-      // re-anchoring may change another item's position, duration, or dimensions.
+      // Restore peer geometry before explicit overlap trimming. The overlap toggle
+      // may shorten dates; it never reflows peer rows or heights.
       const restorePeers=()=>{if(base)d.items=d.items.map(it=>{if(moving.has(it.id))return it;const pinned=JSON.parse(JSON.stringify(base.get(it.id)||it));if(pinned.kind==='flag'&&pinned.targetId===undefined&&g.flagPositions?.[pinned.id])pinned.targetId=g.flagPositions[pinned.id].targetId;return pinned;});};
       restorePeers();
       fn(d);
       restorePeers();
+      if(protectedDrag && g.allowShrink!==false && ['move','l','r'].includes(g.mode))for(const id of moving)this.resolve(d,id,moving,0,true);
       for(const it of d.items){const old=st.items.find(o=>o.id===it.id);if(old?.labelAnchor && (['label','s','e','row','trackY','trackH','span','labelSize'].some(k=>old[k]!==it[k]) || st.cfg.weekPx!==d.cfg.weekPx || st.cfg.laneH!==d.cfg.laneH))delete it.labelAnchor;}
       if(!this.drag)this.clampItemsBottom(d);
       MapstoneCore.syncLinks(d.items);
@@ -2043,7 +2049,7 @@ class Component extends DCLogic {
   };
   durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
   labelBold(it) {return it.labelBold ?? false;}
-  labelStyle(it) {if(it.kind!=='band')it={...it,labelVAlign:it.kind==='sticky'?'top':'middle'};return {labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none',labelAlign:it.labelAlign || (['chev','band','marker'].includes(it.kind)?'center':'left'),labelVAlign:it.labelVAlign||'middle',labelPos:it.labelVAlign==='top'?'6px':it.labelVAlign==='bottom'?'calc(100% - 6px)':'50%',labelTranslate:it.labelVAlign==='top'?'0':it.labelVAlign==='bottom'?'-100%':'-50%',labelItems:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center',labelJustify:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center'};}
+  labelStyle(it) {if(it.kind!=='band')it={...it,labelVAlign:it.kind==='sticky'?'top':'middle'};return {sEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='s',eEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='e',labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none',labelAlign:it.labelAlign || (['chev','band','marker'].includes(it.kind)?'center':'left'),labelVAlign:it.labelVAlign||'middle',labelPos:it.labelVAlign==='top'?'6px':it.labelVAlign==='bottom'?'calc(100% - 6px)':'50%',labelTranslate:it.labelVAlign==='top'?'0':it.labelVAlign==='bottom'?'-100%':'-50%',labelItems:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center',labelJustify:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center'};}
   labelFont(it) {return it.labelSize || (['marker','flag','now'].includes(it.kind)?12:it.kind==='sticky'?13:12.5);}
   labelBox(it,extra=24) {const size=this.labelFont(it),lines=String(it.label||'').split('\n');return {width:Math.max(...lines.map(l=>this.measure(l)))*size/12.5+extra+(it.kind==='marker'&&this.markerIconOf(it).visible?23:0),height:Math.max(24,lines.length*size*1.35+8)};}
   stopClick = (e) => e.stopPropagation();
@@ -2189,7 +2195,7 @@ class Component extends DCLogic {
   isSelected(id) { this.selectedIds();return this._selectionCache.set.has(id); }
   selectItems(ids, primary=ids[ids.length-1], anchor=this.state.selectionAnchor) {
     this._settledSelection=null;
-    this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null});
+    this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null,edgeSelection:null});
   }
   pickItem(id, e={}) {
     const current=this.selectedIds();
@@ -2291,7 +2297,7 @@ class Component extends DCLogic {
   }
 
   // ── pointer interaction ───────────────────────
-  clearSelection = () => {this._settledSelection=null;document.activeElement?.blur?.();this.setState({ selection: [], selectionAnchor:null, sel: null, focusRow: null, editing: null, editingRow: null, editNote: null, selLinkDot: null });};
+  clearSelection = () => {this._settledSelection=null;document.activeElement?.blur?.();this.setState({ selection: [], selectionAnchor:null, sel: null, focusRow: null, editing: null, editingRow: null, editNote: null, selLinkDot: null,edgeSelection:null });};
   onOutsideDown = (e) => {
     if (this.drag?.mode==='marquee' || e.button !== 0 || e.target.closest('[data-row], [data-track], [data-id], [data-properties], button, input, textarea, select, summary, dialog, [role=dialog]')) return;
     this.clearSelection();
@@ -2402,6 +2408,7 @@ class Component extends DCLogic {
     const body = this.buildText(this.state.textFmt);
     if (navigator.clipboard) navigator.clipboard.writeText(body);
   };
+  onEdgeFocus = e => {const {id,mode}=e.currentTarget.dataset;if(!this.isSelected(id))this.selectItems([id]);this.setState({sel:id,edgeSelection:{id,field:mode==='l'?'s':'e'}});};
   onItemDown = (e) => {
     if (e.button === 2) return;
     e.stopPropagation();
@@ -2413,11 +2420,11 @@ class Component extends DCLogic {
     MapstoneUI.hideTip();
     this._settledSelection=null;
     if (!this.pickItem(d.id,e.altKey || (e.shiftKey && this.isSelected(d.id))?{...e,metaKey:false,shiftKey:false}:e)) return;
-    this.setState({ selLinkDot:null });
+    this.setState({ selLinkDot:null,edgeSelection:['l','r'].includes(d.mode)?{id:d.id,field:d.mode==='l'?'s':'e'}:null });
     this.setState({ sel: d.id, editing: null, editNote: null, panel: it.kind === 'flag' || this.narrowScreen() ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
     if (this.state.readOnly) return;
     this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), copyPending:!!e.altKey && !d.mode, moved: false };
-    if ((!d.mode || ['top','bottom'].includes(d.mode)) && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
+    if ((!d.mode || ['top','bottom','l','r'].includes(d.mode)) && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
     if(this.drag.mode==='move'){this.drag.moveLayout=this.rowLayout();if(this.boxKind(it.kind)){this.drag.box=this.trackBox(it,this.drag.moveLayout);this.drag.row=it.row;}}
     if(['sticky','image','flag'].includes(it.kind) && this.root){
       const nodes=Array.from(this.root.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])'));
@@ -2711,7 +2718,12 @@ class Component extends DCLogic {
     this.selectItems([...new Set([...g.base,...hit])]);
     this.setState({marquee:{left:left+'px',top:top+'px',width:right-left+'px',height:bottom-top+'px'}});
   }
-  moveSelectedDays(days) {const ids=this.selectedIds(),chosen=new Set(ids);this.editSelectionSafely(d=>{const items=d.items.filter(i=>chosen.has(i.id));const actual=Math.max(days,...items.filter(i=>!i.targetId).map(i=>Math.ceil((Date.parse(this.isoOf(0))-Date.parse(this.isoOf(i.s)))/86400000)));for(const it of items){if(it.kind==='flag'&&it.targetId){if(!chosen.has(it.targetId)){const target=d.items.find(t=>t.id===it.targetId);if(target){const next=Math.max(target.s,Math.min(target.e,this.shiftDay(it.s,actual)));it.linkOffset=(next-target.s)/(target.e-target.s||1);}}continue;}it.s=this.shiftDay(it.s,actual);it.e=['flag','marker'].includes(it.kind)?it.s:this.shiftDay(it.e,actual);}for(const it of items)this.resolve(d,it.id,chosen);});}
+  editSelectedEdge(field, delta, calendar=true) {
+    if(this.state.readOnly)return;const ids=this.selectedIds(),chosen=new Set(ids);
+    this.editSelectionSafely(d=>{for(const it of d.items.filter(i=>chosen.has(i.id))){const value=calendar?this.shiftDay(it[field],delta):it[field]+delta;if(['marker','flag'].includes(it.kind)){it.s=Math.max(0,value);it.e=it.s;}else if(this.linkKind(it.kind)){if(field==='s')it.s=Math.max(0,Math.min(value,this.shiftDay(it.e,-1)));else it.e=Math.max(value,this.shiftDay(it.s,1));}}},ids,true);
+    if(ids.length>1)this.askJoin(ids);
+  }
+  moveSelectedDays(days) {const ids=this.selectedIds(),chosen=new Set(ids);this.editSelectionSafely(d=>{const items=d.items.filter(i=>chosen.has(i.id));const actual=Math.max(days,...items.filter(i=>!i.targetId).map(i=>Math.ceil((Date.parse(this.isoOf(0))-Date.parse(this.isoOf(i.s)))/86400000)));for(const it of items){if(it.kind==='flag'&&it.targetId){if(!chosen.has(it.targetId)){const target=d.items.find(t=>t.id===it.targetId);if(target){const next=Math.max(target.s,Math.min(target.e,this.shiftDay(it.s,actual)));it.linkOffset=(next-target.s)/(target.e-target.s||1);}}continue;}it.s=this.shiftDay(it.s,actual);it.e=['flag','marker'].includes(it.kind)?it.s:this.shiftDay(it.e,actual);}},ids,true);}
   translateGroup(d, ids, dm, dy=0, days=null) {
     const chosen=new Set(ids), items=d.items.filter(i=>chosen.has(i.id));
     const temporal=items.filter(i=>!['flag','sticky'].includes(i.kind));
@@ -2778,6 +2790,7 @@ class Component extends DCLogic {
     if(g.mode==='move' && !['flag','sticky','band'].includes(g.kind) && !ev.shiftKey){const x=Math.abs(ev.clientX-g.x0),y=Math.abs(ev.clientY-g.y0);if(y<=8 || (x>y*2 && y<=Math.max(12,x*.12)))ev={clientX:ev.clientX,clientY:g.y0,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}
     if(g.mode==='move' && ev.shiftKey){g.axis ||= Math.abs(ev.clientX-g.x0)>=Math.abs(ev.clientY-g.y0)?'x':'y';ev={clientX:g.axis==='y'?g.x0:ev.clientX,clientY:g.axis==='x'?g.y0:ev.clientY,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}else g.axis=null;
     this._smartGuides=[];this._snapActive=false;
+    if(g.ids && ['l','r'].includes(g.mode)){const field=g.mode==='l'?'s':'e',base=g.groupBase.filter(i=>g.ids.includes(i.id)&&this.linkKind(i.kind));this.mutate(d=>{for(const old of base){const it=d.items.find(i=>i.id===old.id);let edge=this.mOf(this.xOf(old[field])+dx);if(this.state.cfg.magnet)edge=this.snapDateEdge(edge);if(field==='s')it.s=Math.max(0,Math.min(edge,this.shiftDay(old.e,-1)));else it.e=Math.max(edge,this.shiftDay(old.s,1));}},false);return;}
     if (g.ids && g.mode==='move') {this.moveGroup(ev);return;}
     if (g.mode==='top' || g.mode==='bottom') {
       const delta=(ev.clientY-g.y0)/this.heightScale(),edge=g.mode==='top'?g.top:g.bottom;
@@ -2879,7 +2892,7 @@ class Component extends DCLogic {
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
-      if(this.state.cfg.magnet && ['l','r'].includes(this.drag.mode) && this.boxKind(this.drag.kind)){const mode=this.drag.mode;this.mutate(d=>{const it=d.items.find(i=>i.id===id);if(!it)return;if(mode==='l')it.s=Math.max(0,Math.min(this.snapDateEdge(it.s),this.shiftDay(it.e,-1)));else it.e=Math.max(this.snapDateEdge(it.e),this.shiftDay(it.s,1));},false);}
+      if(this.state.cfg.magnet && ['l','r'].includes(this.drag.mode) && this.linkKind(this.drag.kind)){const mode=this.drag.mode,ids=new Set(this.drag.ids||[id]);this.mutate(d=>{for(const it of d.items.filter(i=>ids.has(i.id)&&this.linkKind(i.kind))){if(mode==='l')it.s=Math.max(0,Math.min(this.snapDateEdge(it.s),this.shiftDay(it.e,-1)));else it.e=Math.max(this.snapDateEdge(it.e),this.shiftDay(it.s,1));}},false);}
       if(this.drag.kind==='band'&&this.state.cfg.magnet&&['move','btop','bbot'].includes(this.drag.mode)){const g=this.drag;this.mutate(d=>{const it=d.items.find(i=>i.id===g.id),b=this.bandBox(it),step=this.heightUnit()/2,top=g.mode==='bbot'?b.top:Math.round(b.top/step)*step,bottom=g.mode==='btop'?b.top+b.height:g.mode==='move'?top+b.height:Math.round((b.top+b.height)/step)*step;it.trackY=top-this.rowTop(it.rowFrom);it.trackH=Math.max(step,bottom-top);},false);}
       if(this.drag.kind==='marker'||this.drag.mode==='now'){const slots=this.drag.markerSlots||{};this.mutate(d=>{for(const it of d.items)if(it.kind==='marker'&&slots[it.id]!==undefined)it.markerLane=slots[it.id];if(slots.__now!==undefined)d.cfg.nowLane=slots.__now;},false);}
       if(this.drag.baseItems||this.drag.markerSlots){this.drag.settlingPeers=true;this.mutate(()=>{},false);}
@@ -2890,7 +2903,7 @@ class Component extends DCLogic {
     this.drag = null;
     this._smartGuides=[];
     this.setState({marquee:null});
-    if(finished?.moved && finished.mode==='move' && finished.ids?.length>1 && finished.snap){const before=JSON.parse(finished.snap);if(this.state.items.some(it=>finished.ids.includes(it.id)&&this.linkKind(it.kind)&&before.items.some(o=>o.id===it.id&&Math.abs(o.s-it.s)>.000001)))this.askJoin(finished.ids);}
+    if(finished?.moved && ['move','l','r'].includes(finished.mode) && finished.ids?.length>1 && finished.snap){const before=JSON.parse(finished.snap);if(this.state.items.some(it=>finished.ids.includes(it.id)&&this.linkKind(it.kind)&&before.items.some(o=>o.id===it.id&&(Math.abs(o.s-it.s)>.000001||Math.abs(o.e-it.e)>.000001))))this.askJoin(finished.ids);}
   }
 
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
@@ -2899,7 +2912,7 @@ class Component extends DCLogic {
   beginTextEdit = (e) => { this._textPush = true;this._editingSelection=true;this._settledSelection=null;this.selectAll(e);this.setState({}); };
   endTextEdit = () => { this._textPush = null;this._editingSelection=false;this._settledSelection=new Set(this.selectedIds());this.setState({}); };
   editText(fn) { const push = this._textPush !== false; this._textPush = false; this.mutate(fn, push); }
-  setOverlap = () => this.mutate(d=>{d.cfg.shrinkOthers=d.cfg.shrinkOthers===false;d.cfg.overlap='shrink';});
+  setOverlap = () => this.mutate(d=>{d.cfg.shrinkOthers=d.cfg.shrinkOthers===false;d.cfg.overlap='shrink';if(d.cfg.shrinkOthers){const ids=new Set(this.selectedIds());for(const id of ids)this.resolve(d,id,ids);}});
   toggleSmartGuides = () => this.viewCfg(d=>{d.cfg.smartGuides=d.cfg.smartGuides===false;});
 
   /* Explicit property edits may shrink overlapping durations. Pointer edits never
@@ -2922,8 +2935,8 @@ class Component extends DCLogic {
     if(y===undefined)return item.lane;
     item.trackY=y;return Math.max(0,Math.floor(y/d.cfg.laneH));
   }
-  resolve(d,id,protectedIds=new Set(),tolerance=0) {
-    if(this.drag?.snap && this.drag.mode!=='link')return 0;
+  resolve(d,id,protectedIds=new Set(),tolerance=0,explicit=false) {
+    if(!explicit && this.drag?.snap && this.drag.mode!=='link')return 0;
     const a=d.items.find(i=>i.id===id);if(d.cfg.shrinkOthers===false||!a||!this.boxKind(a.kind))return 0;
     const peers=d.items.filter(o=>o.id!==id&&!protectedIds.has(o.id)&&this.boxKind(o.kind)&&this.visibleItem(o));
     for(const o of peers){
@@ -3052,7 +3065,7 @@ class Component extends DCLogic {
       return;
     }
     if (!this.state.sel) return;
-    if (key==='ArrowLeft' || key==='ArrowRight') {e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else {this.moveSelectedDays(days);this.askJoin();}return;}
+    if (key==='ArrowLeft' || key==='ArrowRight') {if(this.state.edgeSelection?.id===this.state.sel){e.preventDefault();this.editSelectedEdge(this.state.edgeSelection.field,key==='ArrowLeft'?-1:1);return;}e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else {this.moveSelectedDays(days);this.askJoin();}return;}
     if(['ArrowUp','ArrowDown'].includes(key) && this.selectedIds().length){e.preventDefault();this.shiftSelectedVertically((key==='ArrowUp'?-1:1)*(e.shiftKey?10:1));return;}
     if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {e.preventDefault();const ids=this.selectedIds(),dx=key==='ArrowLeft'?-.5:key==='ArrowRight'?.5:0,dy=key==='ArrowUp'?-this.laneH():key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
     if (key === 'Delete' || key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
@@ -3199,6 +3212,7 @@ class Component extends DCLogic {
     if (el.type === 'number') { v = parseFloat(v); if (isNaN(v)) return; }
     const id = this.state.sel;
     if(id==='__now'){if(f==='s')this.mutate(d=>{d.now=v;});return;}
+    if(['s','e'].includes(f)&&this.selectedIds().length>1){const it=this.selItem();if(it)this.editSelectedEdge(f,v-it[f],false);return;}
     if(f==='span') {const it=this.state.items.find(i=>i.id===id);if(it&&this.boxKind(it.kind)){const g={id,mode:'bottom',...this.heightBounds(it)};this.mutate(d=>this.resizeHeight(d,g,Math.max(.5,v)*this.heightUnit()-g.height));return;}}
     const text = f === 'label' || f === 'memo';
     this.mutate((d) => {
@@ -3228,6 +3242,7 @@ class Component extends DCLogic {
     const m = this.monthOfISO(e.currentTarget.value);
     if (m === null) return;
     const id = this.state.sel;
+    if(this.selectedIds().length>1){const it=this.selItem();if(it){const days=Math.round((Date.parse(this.isoOf(m))-Date.parse(this.isoOf(it[f])))/86400000);this.editSelectedEdge(f,days);}return;}
     if(id==='__now'){this.mutate(d=>{d.now=m;});return;}
     this.mutate((d) => {
       const it = d.items.find((i) => i.id === id);
@@ -3261,7 +3276,7 @@ class Component extends DCLogic {
     if (d0.cfg) { this.applyCfg(d0.cfg, null, delta); return; }
     const id = this.state.sel;
     if(this.selectedIds().length>1 && d0.field==='span'){this.stepSelectedHeights(delta);return;}
-    if(this.selectedIds().length>1 && ['s','e'].includes(d0.field)){this.moveSelectedDays(Math.sign(delta));this.askJoin();return;}
+    if(this.selectedIds().length>1 && ['s','e'].includes(d0.field)){this.editSelectedEdge(d0.field,Math.sign(delta));return;}
     if (this.state.propertyDates && ['s','e'].includes(d0.field)) {
       const it = this.selItem(); if (!it) return;
       const m = this.shiftDay(it[d0.field], Math.sign(delta));
@@ -3353,9 +3368,9 @@ class Component extends DCLogic {
     const tones=[-.55,-.3,0,.3,.55],colors=new Map(items.map((it,n)=>{let tone=n/(items.length-1)*4;if(+direction<0)tone=4-tone;const lower=Math.floor(tone),fraction=tone-lower,value=tones[lower]+fraction*((tones[Math.min(4,lower+1)]||0)-tones[lower]);return [it.id,this.paletteTone(color,value)];}));
     this.mutate(d=>{for(const it of d.items)if(colors.has(it.id))it.color=colors.get(it.id);});
   };
-  editSelectionSafely(fn, ids=this.selectedIds()) {
+  editSelectionSafely(fn, ids=this.selectedIds(), allowShrink=false) {
     if(this.state.readOnly)return;const previous=this.drag,layout=this.rowLayout();
-    this.drag={id:this.state.sel,ids,mode:'move',moved:true,snap:this.snapshot(),baseItems:JSON.stringify(this.state.items),moveLayout:layout,markerSlots:{...this._markerSlots},settlingPeers:true,flagPositions:Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!ids.includes(f.id)).map(f=>{const v=this.flagGeometry(f,layout,this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop,targetId:v.target?.id||''}];}))};
+    this.drag={id:this.state.sel,ids,mode:'move',moved:true,allowShrink,snap:this.snapshot(),baseItems:JSON.stringify(this.state.items),moveLayout:layout,markerSlots:{...this._markerSlots},settlingPeers:true,flagPositions:Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!ids.includes(f.id)).map(f=>{const v=this.flagGeometry(f,layout,this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop,targetId:v.target?.id||''}];}))};
     try{this.mutate(fn);}finally{this.drag=previous;this.setState({});}
   }
   askJoin(ids=this.selectedIds()) {if(this.state.readOnly)return;const ordered=this.orderedSelection(ids).filter(it=>this.linkKind(it.kind));if(ordered.length>1){this.setState({joinPrompt:ordered.map(it=>it.id)});setTimeout(()=>this.root?.querySelector('[data-join-dialog] button')?.focus(),0);}}
@@ -3790,10 +3805,10 @@ class Component extends DCLogic {
     const mrows = [];
     const mplace = {};
     const arranging=!!this.drag?.markerSlots,slots=this.drag?.markerSlots||{};
-    const ordered=markers.concat(showNow?[nowItem]:[]).sort((a,b)=>arranging?(a.id===this.drag.id?1:b.id===this.drag.id?-1:(slots[a.id]||0)-(slots[b.id]||0)||a.s-b.s):a.s-b.s);
+    const ordered=markers.concat(showNow?[nowItem]:[]).sort((a,b)=>arranging?(a.id===this.drag.id?1:b.id===this.drag.id?-1:(slots[a.id]||0)-(slots[b.id]||0)||a.s-b.s):(this.xOf(a.s)-(this.labelBox(a).width+(cfg.showElementDates&&!a.hideDate?this.measure(this.shortDate(a.s))+6:0))/2)-(this.xOf(b.s)-(this.labelBox(b).width+(cfg.showElementDates&&!b.hideDate?this.measure(this.shortDate(b.s))+6:0))/2));
     ordered.forEach(it=>{const w=this.labelBox(it).width+(cfg.showElementDates && !it.hideDate?this.measure(this.shortDate(it.s))+6:0),x0=this.xOf(it.s)-w/2,x1=x0+w;
       const occupied=k=>mrows[k]?.some(g=>g[0]<x1+8 && g[1]>x0-8);
-      const pinned=arranging?slots[it.id]:it.id==='__now'?cfg.nowLane:it.markerLane;
+      const pinned=arranging?slots[it.id]:undefined;
       let k=pinned??0;if(pinned===undefined)while(occupied(k))k++;
       (mrows[k] ||= []).push([x0,x1]);mplace[it.id]=k;
     });
@@ -3971,7 +3986,7 @@ class Component extends DCLogic {
       rowPropLanes: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id) / this.heightUnit()*100)/100 : 2,
       selIsSticky: !!sel && sel.kind === 'sticky',
       beginRowEdit: this.beginRowEdit, endRowEdit: this.endRowEdit, onRowTextKey: this.onRowTextKey, onRowName: this.onRowName, onRowDelete: this.onRowDelete, onRowUp: this.onRowUp, onRowDown: this.onRowDown, onRowMoveDown: this.onRowMoveDown, onRowFocus: this.onRowFocus,
-      alignItems:this.alignItems, alignConfirm:!!st.alignConfirm, alignMessage:st.alignMessage, alignApply:this.alignApply, alignCancel:this.alignCancel, alignKey:this.alignKey, smartGuides:this.smartGuides(), onItemDown: this.onItemDown, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
+      alignItems:this.alignItems, alignConfirm:!!st.alignConfirm, alignMessage:st.alignMessage, alignApply:this.alignApply, alignCancel:this.alignCancel, alignKey:this.alignKey, smartGuides:this.smartGuides(), onItemDown: this.onItemDown,onEdgeFocus:this.onEdgeFocus, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
       onHover: this.onHover, onOutLabelEnter: this.onOutLabelEnter, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,
