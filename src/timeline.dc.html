@@ -414,6 +414,16 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     }
   </style>
   <link rel="stylesheet" href="assets/design-system/product.css">
+  <style>
+    [data-capture] .ms-inline-text-editor { box-sizing:border-box;white-space:pre-wrap !important;overflow-wrap:anywhere;word-break:break-word;overflow:auto;outline:2px solid #3568c5 !important;outline-offset:2px;border-radius:5px !important;background:#ffffffee !important;color:#16365d !important;padding:5px 7px !important;min-height:28px;line-height:1.45 !important;box-shadow:0 2px 8px #16365d26; }
+    [data-toolbar] .ms-tool-button,[data-toolbar] .ms-tool-menu>summary,.ms-view-pill .ms-tool-button { padding:0 11px;gap:6px;line-height:20px;margin:0; }
+    .ms-view-pill > .ms-tool-button { width:auto;min-width:52px;padding:0 12px; }
+    .ms-view-pill > .ms-tool-button:nth-of-type(2),.ms-view-pill > .ms-tool-button:nth-of-type(4) { width:auto; }
+    .ms-view-pill .ms-icon-button { width:34px;min-width:34px;padding:0; }
+    .ms-version-compare-actions { display:flex;align-items:center;gap:6px;margin-left:auto; }
+    [data-properties] .ms-version-compare-actions button { min-height:32px;padding:0 10px !important; }
+    [data-properties] .ms-version-compare-actions button[data-ready="true"] { background:var(--ms-color-action-primary);border-color:var(--ms-color-action-primary);color:white; }
+  </style>
 </helmet>
 
 <div data-app="" data-anim="{{ animAttr }}" data-now-drag="{{ nowDragging }}" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
@@ -522,7 +532,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
               <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-height:{{ k.boxH }};border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
-                  <textarea data-text-ratio="" rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea>
+                  <textarea class="ms-inline-text-editor" data-text-ratio="" rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ k.show }}" hint-placeholder-val="{{ true }}">
                   <div data-text-ratio="" class="ms-marker-caption" style="font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};letter-spacing:-.01em;pointer-events:none;color:{{ k.ink }}"><svg style="display:{{ k.iconDisplay }}" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ k.iconPath }}"></path></svg><span>{{ k.label }}</span><sc-if value="{{ k.showDate }}"><span data-element-date="" style="font-size:10px;color:var(--ms-color-text-muted)">{{ k.dateLabel }}</span></sc-if></div>
@@ -555,7 +565,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div data-timeline-row="{{ row.id }}" style="display:flex;align-items:stretch;width:calc(172px + {{ boardW }});min-height:{{ row.height }};border-bottom:1px solid var(--color-border-neutral-2)">
                 <div class="ms-sticky-col" tabindex="0" aria-label="{{ row.name }}" data-row="{{ row.id }}" onFocus="{{ onRowFocus }}" onPointerDown="{{ onRowFocus }}" onMouseEnter="{{ onRowEnter }}" onMouseLeave="{{ onRowLeave }}" style="position:sticky;left:0;z-index:115;width:172px;flex:none;display:flex;flex-direction:column;justify-content:center;padding:6px 10px 6px 25px;border-right:1px solid var(--color-border-neutral-2);cursor:pointer;background:{{ row.labelBg }};border-left:3px solid {{ row.focusBar }};transition:background .16s ease">
                   <sc-if value="{{ row.editing }}">
-                  <textarea data-text-ratio="" value="{{ row.name }}" placeholder="{{ L.rowNamePh }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endRowEdit }}" onKeyDown="{{ onRowTextKey }}" rows="2" style="height:46px;flex:none;width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
+                  <textarea class="ms-inline-text-editor" data-text-ratio="" value="{{ row.name }}" placeholder="{{ L.rowNamePh }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endRowEdit }}" onKeyDown="{{ onRowTextKey }}" rows="2" style="height:46px;flex:none;width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
                   </sc-if>
                   <sc-if value="{{ row.show }}">
                     <div style="height:46px;display:flex;align-items:center;flex:none">
@@ -571,7 +581,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </div>
 
                 <div data-track="{{ row.id }}" onPointerDown="{{ onTrackDown }}" onDoubleClick="{{ onTrackDblClick }}" style="position:relative;flex:none;width:{{ boardW }};min-height:{{ row.height }};background:{{ row.trackBg }}">
-                  <div data-noprint="" data-row="{{ row.id }}" onPointerDown="{{ onRowResizeDown }}" onDoubleClick="{{ onRowFit }}" title="{{ L.rowHF }}" style="position:absolute;left:0;right:0;bottom:-3px;height:7px;cursor:ns-resize;z-index:16"></div>
+                  <div data-noprint="" data-row="{{ row.id }}" onPointerDown="{{ onRowResizeDown }}" onDoubleClick="{{ snapRowHeight }}" title="드래그: 높이 조절 · 더블클릭: 가까운 0.5 Grid에 맞춤" style="position:absolute;left:0;right:0;bottom:-3px;height:7px;cursor:ns-resize;z-index:24400"></div>
                   <sc-for list="{{ gridCols }}" as="g" hint-placeholder-count="22">
                     <div style="position:absolute;top:0;bottom:0;width:1px;pointer-events:none;left:{{ g.left }};background:{{ g.color }}"></div>
                   </sc-for>
@@ -581,7 +591,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       <sc-if value="{{ b.showMeta }}"><span data-text-ratio="" class="ms-item-meta" data-item-meta=""><sc-if value="{{ showElementDates }}"><span data-element-date="">{{ b.dateLabel }}</span></sc-if><sc-if value="{{ b.dur }}"><span class="ms-meta-duration">{{ b.dur }}</span></sc-if></span></sc-if>
                       <svg data-schedule-shape="" aria-hidden="true" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible;pointer-events:none"><path d="{{ b.shapePath }}" fill="{{ b.bg }}"></path></svg>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea data-text-ratio="" rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;scale:1;transform:translateY(-50%) scaleY(var(--ms-text-ratio,1));width:calc(100% - 22px);min-width:0;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};background:#fff;outline:none;resize:none;z-index:3"></textarea>
+                        <textarea class="ms-inline-text-editor" data-text-ratio="" rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:2px;top:50%;scale:1;transform:translateY(-50%) scaleY(var(--ms-text-ratio,1));width:calc(100% - 22px);min-width:0;max-width:calc(100% - 22px);field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};background:#fff;outline:none;resize:none;z-index:3"></textarea>
                       </sc-if>
                       <sc-if value="{{ b.inside }}" hint-placeholder-val="{{ true }}">
                         <div data-text-ratio="" style="position:absolute;left:4px;right:16px;top:{{ b.labelPos }};scale:1;transform:translateY({{ b.labelTranslate }}) scaleY(var(--ms-text-ratio,1));font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};line-height:1.3;letter-spacing:-.01em;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;color:{{ b.fg }}">{{ b.label }}</div>
@@ -623,7 +633,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
                       <sc-if value="{{ p.showMeta }}"><span data-text-ratio="" class="ms-item-meta" data-item-meta=""><sc-if value="{{ showElementDates }}"><span data-element-date="">{{ p.dateLabel }}</span></sc-if><sc-if value="{{ p.dur }}"><span class="ms-meta-duration">{{ p.dur }}</span></sc-if></span></sc-if>
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
+                        <textarea class="ms-inline-text-editor" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
                         <div data-text-ratio="" style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};position:absolute;left:9px;right:9px;top:{{ p.labelPos }};scale:1;transform:translateY({{ p.labelTranslate }}) scaleY(var(--ms-text-ratio,1));line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
@@ -644,7 +654,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
                       <span data-link-dot="" data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2;opacity:{{ f.dotOpacity }}"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea data-text-ratio="" rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};outline:none;resize:none"></textarea>
+                        <textarea class="ms-inline-text-editor" data-text-ratio="" rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="min-width:72px;max-width:240px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};outline:none;resize:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ f.showConnector }}">
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
@@ -662,7 +672,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div data-item-surface="" data-id="{{ d.id }}" data-drag-active="{{ d.dragging }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:{{ d.labelItems }};justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
                 <sc-if value="{{ d.showMeta }}"><span data-text-ratio="" class="ms-item-meta" data-item-meta=""><sc-if value="{{ showElementDates }}"><span data-element-date="">{{ d.dateLabel }}</span></sc-if><sc-if value="{{ d.dur }}"><span class="ms-meta-duration">{{ d.dur }}</span></sc-if></span></sc-if>
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
-                  <textarea data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea>
+                  <textarea class="ms-inline-text-editor" data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea>
                 </sc-if>
                 <sc-if value="{{ d.show }}" hint-placeholder-val="{{ true }}">
                   <div data-text-ratio="" style="font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};width:100%;line-height:1.4;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div>
@@ -691,7 +701,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
             <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                <textarea data-text-ratio="" class="ms-sticky-editor" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
+                <textarea class="ms-inline-text-editor" data-text-ratio="" class="ms-sticky-editor" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
               </sc-if>
               <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
                 <div data-text-ratio="" style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};display:flex;flex-direction:column;justify-content:{{ p.labelJustify }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
@@ -783,6 +793,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.memoF }}<button class="ms-memo-clear" onClick="{{ clearMemo }}" aria-label="{{ L.memoDel }}" title="{{ L.memoDel }}" style="width:24px;height:24px;border:1px solid var(--color-border-neutral-2);border-radius:4px;background:#fff;font-size:12px;line-height:1;color:var(--color-text-neutral-4);cursor:pointer" style-hover="background:var(--color-bg-neutral-1)"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"></path></svg></button></span>
+                  <span style="font-size:11px;line-height:1.5;color:var(--color-text-neutral-3)">{{ L.memoGuide }}</span>
                   <textarea value="{{ selMemo }}" data-field="memo" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" placeholder="{{ L.phMemo }}" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:var(--ms-color-action-primary)"></textarea>
                 </label>
                 </sc-if>
@@ -1005,7 +1016,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-if value="{{ vHint }}"><span role="status" style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ vHint }}</span></sc-if>
 
             <div style="height:1px;background:var(--color-border-neutral-2)"></div>
-            <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><button class="ms-version-compare-button" onClick="{{ onVersionCompareAction }}" disabled="{{ versionCompareDisabled }}" data-ready="{{ versionCompareReady }}" title="{{ versionCompareHint }}">{{ versionCompareActionLabel }}</button><sc-if value="{{ versionCompareSelecting }}"><button class="ms-version-compare-button" onClick="{{ cancelVersionCompare }}">{{ L.cancel }}</button></sc-if></div>
+            <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><div class="ms-version-compare-actions"><button class="ms-version-compare-button" onClick="{{ onVersionCompareAction }}" disabled="{{ versionCompareDisabled }}" data-ready="{{ versionCompareReady }}" title="{{ versionCompareHint }}">{{ versionCompareActionLabel }}</button><sc-if value="{{ versionCompareSelecting }}"><button class="ms-version-compare-button" onClick="{{ cancelVersionCompare }}">{{ L.cancel }}</button></sc-if></div></div>
             <sc-if value="{{ versionCompareUnavailable }}"><p class="ms-compare-guide">{{ L.versionCompareGuide }}</p></sc-if>
             <sc-if value="{{ versionCompareSelecting }}"><div class="ms-panel-compare-controls"><span role="status">{{ versionCompareCount }} / 2개 선택</span></div><p class="ms-compare-guide">첫 번째 선택은 기준 버전, 두 번째 선택은 비교 버전입니다.</p></sc-if>
             <sc-for list="{{ versionsView }}" as="v" hint-placeholder-count="2">
@@ -1149,6 +1160,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.30', agent: 'Codex', title: '[주요 사항] 이동 시 주변 배치 고정 · 반칸 정렬 · 편집·메모 사용성', items: ['[이동 안정성] 직접 이동·크기 조절 후 주변 아이템 강제 재배치 제거 · 이동 시작 시 세션 높이 고정 · 무관한 메모 위치 보정 방지', '[Grid] 위치와 높이를 각각 가장 가까운 0.5 단위로 정렬 · 세션 경계 드래그 눈금 맞춤 및 더블클릭 반칸 보정 · NOW 날짜 기준선 스냅', '[메모·편집] 툴팁 메모 명칭과 안내 · 인라인 편집 래핑·강조 · 연결메모 생성 즉시 배지 표시와 일자 숨김 기본값', '[버튼] 메뉴·보기 내부 여백 통일 · 비교 진행과 취소를 한 그룹으로 배치', '[검증] 회귀 테스트 248개 통과 · 120개 주변 아이템의 이동 중·이동 후 배치 유지 · 실제 화면 좌우·상하 이동, NOW 종료일 스냅, 세션 반칸 드래그·더블클릭, 메모 생성·이동과 편집 래핑 확인'] },
     { v: 'v0.9.29', agent: 'Codex', title: '[주요 사항] Grid 기준 통일 · 겹침 처리 · 버전 내용 편집', items: ['[Grid] 가로 스크롤에도 높이 숫자 고정 · 신규 세션 높이 정확히 2 · 눈금 맞춤 0.5 단위 스냅', '[높이] 아이템·세션 버튼 0.5 단위 증감 · 비정수 값은 다음 눈금부터 변경 · 정렬 시 위·아래 정수 Grid 맞춤 · 일정 보존', '[사용성] 메뉴·보기 버튼 간격 통일 · 연도 압축 방지 · 연결메모 일정 툴팁 제거 유지', '[오류] 실제 배치 기준 겹침 처리 및 놓을 때 적용 · 선택 세션 삭제 중 속성 참조 오류 수정', '[버전] 비교 선택 취소 버튼 · 저장된 버전 변경 내용 편집과 클라우드 갱신', '[검증] 회귀 테스트 241개 통과 · Grid 숫자 스크롤 고정 · 높이 반칸 증감 · 세션 생성·삭제 무오류 · 실제 드래그 스냅·겹침 처리 · 클라우드 내용 편집 후 재조회와 비교 취소 확인'] },
     { v: 'v0.9.28', agent: 'Codex', title: '[주요 사항] 선택 전면 표시 · Grid · 편집 단축키', items: ['[선택 위계] 선택 중 아이템과 날짜·기간 안내를 항상 전면 표시 · 드래그·속성 편집 종료 후에도 유지 · 선택 해제 시 원래 위계 복귀', '[보기] 상세 일별 눈금 450%부터 표시 · 날짜 오른쪽에 작업일수 배치 · Grid 가로선과 0부터 0.5 단위 높이 숫자 표시', '[연결 메모] 툴팁의 일정 섹션 제거 · 연결 대상과 메모만 표시', '[편집 키] Option/Alt 드래그 복제 · Shift 드래그 축 고정 · 전체 선택·복제·복사·잘라내기·붙여넣기·실행 취소·다시 실행 · 위아래 1px/Shift 10px 이동 · F2 속성 열기 · Esc 이동 취소 · 한글 입력 모드에서도 편집 키 지원', '[검증] 회귀 테스트 232개 통과 · 실제 화면 선택 전면·선택 해제 위계·Grid 숫자와 저장 복원·복제 및 실행 취소 확인'] },
     { v: 'v0.9.27', agent: 'Codex', title: '[주요 사항] 과감한 줄 정렬 · 미세 보정 제한 해제', items: ['[줄 정렬] 작은 높이까지 포함해 가까운 중심 위치를 같은 줄로 묶고 상단과 높이를 확실히 통일 · 줄 순서 유지', '[배치] 한 아이템의 겹침 때문에 전체 세션 정렬이 취소되는 조건 제거 · 이동 거리 제한 제거 · 필요 시 세션 안의 여유 공간 활용', '[큰 아이템] 큰 높이를 유지하며 가장 가까운 줄 하단에 맞춤 · 중심 위치 역전 판정으로 정렬을 취소하던 문제 수정', '[보존] 가로 일정·위계·선택 범위·세션 높이·실행 취소 유지', '[검증] 회귀 테스트 226개 통과 · 100개 밀집 아이템의 확실한 줄 정돈과 반복 안정성 · 일부 일정 겹침에도 정렬 적용 · 실제 화면 확인'] },
@@ -1288,7 +1300,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.29';
+  APP_VER = 'v0.9.30';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1311,7 +1323,7 @@ class Component extends DCLogic {
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '세션 삭제', rowDelMsg: '이 세션과 세션 안의 아이템을 삭제합니다.', nowTip: '클릭: NOW 속성 / 드래그: 기준선 이동 / 더블클릭·Enter: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
-      labelF: '라벨', memoF: '상세 메모', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
+      labelF: '라벨', memoF: '툴팁 메모', memoGuide:'마우스를 올리면 보이는 메모입니다.', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
       kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간', kMarker: '마일스톤', kFlag: '연결 메모',
       rowF: '세션', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이',
       colorF: '색상', fillF: '채우기', solid: '불투명', tint: '반투명', rowFromF: '시작 세션', rowToF: '끝 세션', del: '삭제',
@@ -1320,7 +1332,7 @@ class Component extends DCLogic {
       weekHint: '실제 주 수: 월의 일수 ÷ 7',
       weekModeF: '월 간격 기준', nowPos: 'NOW 기준선 위치 (개월)', todayBtn: '오늘 날짜로 맞추기',
       overlapF: '겹침 처리', opShrink: '다른 아이템 줄이기', opDesc_shrink: '겹친 다른 아이템의 기간 축소', opDesc_moveOther: '겹친 다른 아이템을 빈 줄로 이동', opDesc_moveSelf: '선택 아이템을 빈 줄로 이동', opMoveOther: '다른 아이템 이동', opMoveSelf: '선택 아이템 이동',
-      overlapHint: '이동 중에는 자유롭게 배치하고, 놓으면 선택한 겹침 규칙을 적용합니다. 속성·키보드 변경에도 적용됩니다.',
+      overlapHint: '직접 드래그할 때는 주변 아이템을 유지합니다. 이 겹침 규칙은 날짜 속성·키보드 변경에 적용됩니다.',
       verSave: '버전 저장', author: '작성자', date: '날짜', changes: '변경 내용', phAuthor: '예: 김지훈', phChanges: '예: DCM 지연 반영, Pre-Prod E2E 3M 조정',
       saveBtn: '현재 상태를 버전으로 저장', history: '버전 히스토리', restoreBtn: '이 버전으로 복원',
       noVer: '저장된 버전이 없습니다.',
@@ -1352,7 +1364,7 @@ class Component extends DCLogic {
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: 'セッションを削除', rowDelMsg: 'この行と行内の項目を削除します。', nowTip: 'クリック：NOW設定 / ドラッグ：基準線を移動 / ダブルクリック・Enter：今日へ移動', dup: '複製',
       tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
-      labelF: 'ラベル', memoF: '詳細メモ', phMemo: '背景・リスク・担当など', kindF: '種類',
+      labelF: 'ラベル', memoF: 'ツールチップメモ', memoGuide:'マウスを重ねると表示されるメモです。', phMemo: '背景・リスク・担当など', kindF: '種類',
       kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: '接続メモ',
       rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ',
       colorF: '色', fillF: '塗り', solid: '不透明', tint: '半透明', rowFromF: '開始行', rowToF: '終了行', del: '削除',
@@ -1807,8 +1819,10 @@ class Component extends DCLogic {
     if(push!==false && !this._editingSelection)this._settledSelection=new Set(this.selectedIds());
     this.setState((st) => {
       const d = JSON.parse(JSON.stringify({ title: st.title, cfg: st.cfg, rows: st.rows, items: st.items, notes: st.notes, now: st.now }));
+      const placement=this.drag?.moved&&this.drag.moveLayout;
+      if(placement)for(const row of d.rows){if(placement[row.id])row.h=placement[row.id].height;}
       fn(d);
-      this.clampItemsBottom(d);
+      if(!this.drag)this.clampItemsBottom(d);
       MapstoneCore.syncLinks(d.items);
       const out = { title: d.title, cfg: d.cfg, rows: d.rows, items: d.items, notes: d.notes, now: d.now };
       if (snap) { out.hist = st.hist.concat([snap]).slice(-60); out.future = []; }
@@ -1926,15 +1940,13 @@ class Component extends DCLogic {
     });
   };
   onRowResizeDown = (e) => {
-    e.stopPropagation(); if(this.state.readOnly || e.button!==0)return;e.preventDefault();
-    const id=e.currentTarget.dataset.row,h0=this.rowHeight(id),y0=e.clientY,laneH=this.laneH(),layout=this.rowLayout()[id],snap0=this.snapshot();
-    const min=Math.ceil((this.rowMinHeight()+layout.strips*layout.stripH-14)/laneH)*laneH+14;
-    let moved=false,current=h0;
-    const mv=ev=>{const h=Math.max(min,Math.round((h0+(ev.clientY-y0)/this.heightScale()-14)/laneH)*laneH+14);if(h===current)return;current=h;moved=true;this.mutate(d=>{const r=d.rows.find(x=>x.id===id);if(r)this.setRowHeight(d,id,h);},false);};
+    e.stopPropagation();if(this.state.readOnly||e.button!==0)return;e.preventDefault();
+    const id=e.currentTarget.dataset.row,h0=this.rowHeight(id),y0=e.clientY,step=this.heightUnit()/2,snap0=this.snapshot();let moved=false,current=h0;
+    const mv=ev=>{if(Math.abs(ev.clientY-y0)<2&&!moved)return;const raw=h0+(ev.clientY-y0)/this.heightScale(),h=Math.max(step,this.state.cfg.magnet?Math.round(raw/step)*step:Math.round(raw*100)/100);if(h===current)return;current=h;moved=true;this.mutate(d=>this.setRowHeight(d,id,h),false);};
     const finish=commit=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);if(!moved)return;if(commit)this.setState(s=>({hist:s.hist.concat([snap0]).slice(-60),future:[]}));else this.applySnap(snap0);};
-    const up=()=>finish(true),cancel=()=>finish(false);
-    window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);
+    const up=()=>finish(true),cancel=()=>finish(false);window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);
   };
+  snapRowHeight = e => {e.stopPropagation();if(this.state.readOnly)return;const id=e.currentTarget.dataset.row,step=this.heightUnit()/2,h=Math.max(step,Math.round(this.rowHeight(id)/step)*step);this.mutate(d=>this.setRowHeight(d,id,h));};
   onRowH = (e) => {
     const id = this.state.focusRow;
     const el = e.currentTarget;
@@ -1944,7 +1956,7 @@ class Component extends DCLogic {
       const r = d.rows.find((x) => x.id === id);
       if (!r) return;
       const cur = r.h || this.rowHeight(id);
-      const next = delta ? this.halfStep(cur,delta) : val;
+      const next = delta ? this.integerStep(cur,delta) : val;
       if (next === null || isNaN(next)) return;
       this.setRowHeight(d,id,Math.round(next));
     });
@@ -2233,9 +2245,9 @@ class Component extends DCLogic {
       });
       const contentH = lanes * laneH + 14;
       const stripH=Math.max(24,...its.filter(i=>modes[i.id]?.mode==='strip').map(i=>this.labelBox(i.kind==='chev'?{...i,label:this.scheduleLabel(i)}:i).height+4));
-      const baseH = Math.max(this.rowMinHeight(), r.h ? r.h - strips.length * stripH : contentH);
+      const baseH = r.h ? Math.max(0,Math.max(this.rowMinHeight(),r.h)-strips.length*stripH) : Math.max(this.rowMinHeight(),contentH);
       map[r.id] = {
-        lanes: lanes, labelBase: Math.max(contentH, r.h || 0), strips: strips.length, stripH, laneCap: Math.max(1, Math.floor((baseH - 14) / laneH)),
+        lanes: lanes, labelBase: baseH, strips: strips.length, stripH, laneCap: Math.max(1, Math.floor((baseH - 14) / laneH)),
         height: baseH + strips.length * stripH, modes: modes
       };
     });
@@ -2446,23 +2458,16 @@ class Component extends DCLogic {
   bandBox(it) {const top=this.rowTop(it.rowFrom||this.state.rows[0].id);const last=this.state.rows.find(r=>r.id===it.rowTo)||this.state.rows[this.state.rows.length-1];return {top:Math.max(this.rowTop(this.state.rows[0].id)+6,top+(it.trackY??6)),height:Math.max(40,it.trackH??(this.rowTop(last.id)+this.rowHeight(last.id)-top-14))};}
   dailyGrid() {return this.weekPxVal()/19>=4.5;}
   alignmentPlan(ids=this.selectedIds()) {
-    const original=this.state.items,items=JSON.parse(JSON.stringify(original)),chosen=new Set(ids),layout=this.rowLayout(),unit=this.heightUnit();let changed=0,positions=0,heights=0,held=0;
-    const records=original.filter(i=>this.boxKind(i.kind)).map(it=>({it,...this.trackBox(it,layout)}));
+    const items=JSON.parse(JSON.stringify(this.state.items)),chosen=new Set(ids),layout=this.rowLayout(),step=this.heightUnit()/2;let changed=0,positions=0,heights=0,held=0;
+    const records=this.state.items.filter(i=>this.boxKind(i.kind)).map(it=>({it,...this.trackBox(it,layout)}));
     for(const it of items){if((ids.length&&!chosen.has(it.id))||!this.boxKind(it.kind))continue;
-      const b=this.trackBox(it,layout),last=Math.floor(b.total/unit)*unit;
-      let minTop=0,maxTop=last-unit,minBottom=unit,maxBottom=last;
-      // Unselected items are fixed anchors: snapping must not swap their vertical order.
-      for(const p of records){if(!ids.length||chosen.has(p.it.id))continue;
-        if(b.top<p.top)maxTop=Math.min(maxTop,Math.floor(p.top/unit)*unit);else if(b.top>p.top)minTop=Math.max(minTop,Math.ceil(p.top/unit)*unit);
-        if(b.bottom<p.bottom)maxBottom=Math.min(maxBottom,Math.floor(p.bottom/unit)*unit);else if(b.bottom>p.bottom)minBottom=Math.max(minBottom,Math.ceil(p.bottom/unit)*unit);
-      }
-      if(minTop>maxTop||minBottom>maxBottom){held++;continue;}
-      const top=Math.max(minTop,Math.min(maxTop,Math.round(b.top/unit)*unit));
-      const bottom=Math.max(minBottom,Math.min(maxBottom,Math.max(top+unit,Math.round(b.bottom/unit)*unit)));
-      if(bottom<=top){held++;continue;}
+      const b=this.trackBox(it,layout),h=Math.max(step,Math.round(b.height/step)*step);let top=Math.round(b.top/step)*step;
+      const limit=Math.floor((b.total-h)/step)*step;top=Math.max(0,Math.min(limit,top));
+      const crosses=records.some(p=>p.it.id!==it.id&&ids.length&&!chosen.has(p.it.id)&&(b.top-p.top)*(top-p.top)<0);
+      if(limit<0||crosses){held++;continue;}
       if(top!==b.top){it.trackY=top-b.rowTop;positions++;}
-      if(bottom-top!==b.height){it.trackH=bottom-top;heights++;}
-      if(top!==b.top||bottom-top!==b.height)changed++;
+      if(h!==b.height){it.trackH=h;heights++;}
+      if(top!==b.top||h!==b.height)changed++;
     }
     const rows=this.state.rows.map(r=>r.h?r:{...r,h:layout[r.id].height});
     return {items,rows,changed,positions,heights,held};
@@ -2534,7 +2539,7 @@ class Component extends DCLogic {
   alignItems = (confirmed=false) => {
     if(this.state.readOnly || this.drag)return;
     const ids=this.selectedIds(),all=!ids.length,plan=this.alignmentPlan(ids);
-    const message=`아이템의 위·아래 경계를 가까운 정수 Grid선에 맞춥니다. 가로 일정과 세션 높이는 유지합니다. 예상 변경 ${plan.changed}개 (위치 ${plan.positions}개 · 높이 ${plan.heights}개). 실행 취소할 수 있습니다. 진행할까요?`;
+    const message=`아이템의 위치와 높이를 각각 가장 가까운 0.5 Grid 단위로 맞춥니다. 가로 일정과 세션 높이는 유지합니다. 예상 변경 ${plan.changed}개 (위치 ${plan.positions}개 · 높이 ${plan.heights}개). 실행 취소할 수 있습니다. 진행할까요?`;
     if(all && confirmed!==true){this.setState({alignConfirm:true,alignMessage:message});return;}
     this.setState({alignConfirm:false});
     if(!plan.changed){MapstoneUI.toast(this,plan.held?`현재 배치를 유지했습니다 · 보정 보류 ${plan.held}개`:'이미 정돈되어 있습니다.');return;}
@@ -2553,6 +2558,9 @@ class Component extends DCLogic {
     const near=(candidate,label,peer,edge=candidate)=>{const delta=Math.abs(this.xOf(candidate)-px)*scale;if(delta<=4 && (delta<dist || (peer && Math.abs(delta-dist)<.01))){best=candidate;dist=delta;guide=peer?{axis:'x',value:edge,label,peer:peer.id}:null;}};
     const grid=this.dailyGrid()?this.snapM(v,g.id,row):Math.round(v/step)*step;
     near(grid,'',null);
+    const now=this.state.now,lengthNow=(g.time?.e??g.e)-(g.time?.s??g.s),nowCandidates=[now];
+    if(g.mode==='move'&&lengthNow>0)nowCandidates.push(now-lengthNow);
+    const nowSnap=nowCandidates.map(candidate=>({candidate,delta:Math.abs(this.xOf(candidate)-px)*scale})).sort((a,b)=>a.delta-b.delta)[0];
     const length=(g.time?.e ?? g.e)-(g.time?.s ?? g.s),moving=g.mode==='move';
     for(const o of this.smartPeers(g,row)){
       for(const edge of [o.s,(o.s+o.e)/2,o.e]){
@@ -2563,6 +2571,7 @@ class Component extends DCLogic {
       if(g.mode==='l')near(g.e-(o.e-o.s),'같은 길이',o,g.e-(o.e-o.s));
     }
     this._smartGuides=(this._smartGuides||[]).filter(x=>x.axis!=='x');
+    if(this.state.cfg.showNow!==false && nowSnap?.delta<=6){best=nowSnap.candidate;dist=nowSnap.delta;guide={axis:'x',value:now,label:'현재 날짜 맞춤',peer:'__now'};}
     if(guide)this._smartGuides.push(guide);
     return dist<Infinity?best:Math.round(v*10000)/10000;
   }
@@ -2817,7 +2826,6 @@ class Component extends DCLogic {
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
-      if(['move','l','r','top','bottom'].includes(this.drag.mode)){const ids=new Set(this.drag.ids||[id]);this.mutate(d=>{for(const key of ids)this.resolve(d,key,ids);},false);}
       this._settledSelection=new Set(this.selectedIds());
       this.setState((st) => ({ hist: st.hist.concat([snap]).slice(-60), future: [] }));
     }
@@ -3012,9 +3020,9 @@ class Component extends DCLogic {
     if (kind === 'plain') { it.label = L.newPlain; it.color = '#315a88'; }
     if (kind === 'band') { it.label = L.newBand; it.color = '#a4c4ef'; it.rowFrom = row; it.rowTo = row; it.row = row; }
     if (kind === 'marker') { it.label = L.newMarker; it.color = '#3568c5'; it.row = ''; }
-    if (kind === 'flag') { it.label = L.newFlag; it.color = '#c83543'; it.targetId = ''; }
+    if (kind === 'flag') { it.label = L.newFlag; it.color = '#c83543'; it.targetId = ''; it.hideDate=true; }
     this.mutate((d) => { d.items.push(it);this.ensureItemRoom(d,id);this.resolve(d, id); });
-    this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
+    this.setState({ sel: id, editing: kind==='flag'?null:id, tab: 'prop', panel: true });
   }
   addPlain = () => this.addAt('plain');
   addChev = () => this.addAt('chev');
@@ -3726,7 +3734,7 @@ class Component extends DCLogic {
       showItemDeleteFooter:(st.selection?.length||0)<2 && !!this.selItem() && !['now','image'].includes(this.selItem().kind), focusMode: !!st.focusMode, toggleFocus:this.toggleFocus, fitWidth:this.fitWidth,fitVertical:this.fitVertical,fitHorizontal:this.fitHorizontal, openImport:this.openImport, openWorkspace:this.openWorkspace, openEditGate:this.openEditGate, canUnlockEdit: !!st.canUnlockEdit && !!st.readOnly, exportJson:this.exportJson, openFile:this.openFile,
       timeStep:this.timeStep(), colPad: cfg.showWeek !== false && subdivisions.length ? '4px 0 15px' : '6px 0', negativeTimeStep:-this.timeStep(), subdivisions: cfg.showWeek === false ? [] : subdivisions,
       imagesView:st.items.filter(i=>i.kind==='image').map(it=>({id:it.id,zIndex:this.itemZ(it.id),src:it.src,label:it.label,labelSize:px(this.labelFont(it)),...this.labelStyle(it),dragging:!!(this.drag && (this.drag.id===it.id || this.drag.ids?.includes(it.id))),left:px(172+this.xOf(it.s)),top:px(it.y||0),width:px(it.w||320),height:px(it.h||200),sel:this.isSelected(it.id),border:this.isSelected(it.id)?'2px solid #3568c5':'none'})),
-      onRowResizeDown: this.onRowResizeDown, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
+      onRowResizeDown: this.onRowResizeDown, snapRowHeight:this.snapRowHeight, onRowFit: this.onRowFit, onRowH: this.onRowH, onRowAuto: this.onRowAuto, onRowColor: this.onRowColor,
       noSelection: !sel && !focusRowObj, showRowProp: !sel && !!focusRowObj, rowPropName: focusRowObj ? focusRowObj.name : '', focusRowId: st.focusRow,
       rowPropH: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id)) : 0,
       rowPropAuto: !!(focusRowObj && !focusRowObj.h),
