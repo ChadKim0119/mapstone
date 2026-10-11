@@ -415,11 +415,14 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   </style>
   <link rel="stylesheet" href="assets/design-system/product.css">
   <style>
-    [data-capture] .ms-inline-text-editor { box-sizing:border-box;white-space:pre-wrap !important;overflow-wrap:anywhere;word-break:break-word;overflow:auto;outline:2px solid #3568c5 !important;outline-offset:2px;border-radius:5px !important;background:#ffffffee !important;color:#16365d !important;padding:5px 7px !important;min-height:28px;line-height:1.45 !important;box-shadow:0 2px 8px #16365d26; }
+    [data-capture] .ms-inline-text-editor { box-sizing:border-box;white-space:pre-wrap !important;overflow-wrap:anywhere;word-break:break-word;overflow:auto;outline:2px solid #3568c5 !important;outline-offset:2px;border-radius:5px !important;background:#ffffffee !important;color:#16365d !important;padding:5px 7px !important;min-height:0;max-height:100%;line-height:1.45 !important;box-shadow:0 2px 8px #16365d26; }
     [data-toolbar] .ms-tool-button,[data-toolbar] .ms-tool-menu>summary,.ms-view-pill .ms-tool-button { padding:0 11px;gap:6px;line-height:20px;margin:0; }
     .ms-view-pill > .ms-tool-button { width:auto;min-width:52px;padding:0 12px; }
     .ms-view-pill > .ms-tool-button:nth-of-type(2),.ms-view-pill > .ms-tool-button:nth-of-type(4) { width:auto; }
     .ms-view-pill .ms-icon-button { width:34px;min-width:34px;padding:0; }
+    [data-board] { overflow-anchor:none; }
+    [data-toolbar] .ms-icon-button { width:36px;min-width:36px;flex-shrink:0;padding:0 10px !important;box-sizing:border-box; }
+    [data-toolbar] .ms-icon-button svg { flex-shrink:0; }
     .ms-version-compare-actions { display:flex;align-items:center;gap:6px;margin-left:auto; }
     [data-properties] .ms-version-compare-actions button { min-height:32px;padding:0 10px !important; }
     [data-properties] .ms-version-compare-actions button[data-ready="true"] { background:var(--ms-color-action-primary);border-color:var(--ms-color-action-primary);color:white; }
@@ -633,7 +636,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
                       <sc-if value="{{ p.showMeta }}"><span data-text-ratio="" class="ms-item-meta" data-item-meta=""><sc-if value="{{ showElementDates }}"><span data-element-date="">{{ p.dateLabel }}</span></sc-if><sc-if value="{{ p.dur }}"><span class="ms-meta-duration">{{ p.dur }}</span></sc-if></span></sc-if>
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                        <textarea class="ms-inline-text-editor" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
+                        <textarea class="ms-inline-text-editor" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea>
                       </sc-if>
                       <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
                         <div data-text-ratio="" style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};position:absolute;left:9px;right:9px;top:{{ p.labelPos }};scale:1;transform:translateY({{ p.labelTranslate }}) scaleY(var(--ms-text-ratio,1));line-height:1.5;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;color:{{ p.fg }}">{{ p.label }}</div>
@@ -701,7 +704,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
             <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
-                <textarea class="ms-inline-text-editor" data-text-ratio="" class="ms-sticky-editor" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
+                <textarea class="ms-inline-text-editor ms-sticky-editor" data-text-ratio="" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea>
               </sc-if>
               <sc-if value="{{ p.show }}" hint-placeholder-val="{{ true }}">
                 <div data-text-ratio="" style="font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};display:flex;flex-direction:column;justify-content:{{ p.labelJustify }};line-height:1.6;white-space:pre-line;letter-spacing:-.01em;pointer-events:none;overflow:hidden;height:100%;color:{{ p.fg }}">{{ p.label }}</div>
@@ -1160,6 +1163,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.31', agent: 'Codex', title: '[주요 사항] 드롭 겹침 처리 복구 · 이동 흔들림 차단 · 직접 텍스트 편집', items: ['[겹침 처리] 이동 중 주변 배치 유지 · 놓을 때 실제 충돌에만 설정 규칙 적용 · 미세 겹침 허용 · 빈 공간 탐색을 반칸과 실제 높이 기준으로 수정', '[이동 안정성] 좌우 드래그의 세로 흔들림 차단 · 이동·크기 조절 중 세션 높이 유지 · 브라우저 자동 스크롤 방지', '[편집] 아이템 더블클릭 시 아이템 안에서 직접 줄바꿈 편집 · 편집 테두리 강조 · 포스트잇 편집 종료 키 적용', '[스냅·버튼] NOW 기준선 스냅을 포스트잇·이미지·연결 메모까지 적용 · 휴지통 버튼 좌우 여백 확보'] },
     { v: 'v0.9.30', agent: 'Codex', title: '[주요 사항] 이동 시 주변 배치 고정 · 반칸 정렬 · 편집·메모 사용성', items: ['[이동 안정성] 직접 이동·크기 조절 후 주변 아이템 강제 재배치 제거 · 이동 시작 시 세션 높이 고정 · 무관한 메모 위치 보정 방지', '[Grid] 위치와 높이를 각각 가장 가까운 0.5 단위로 정렬 · 세션 경계 드래그 눈금 맞춤 및 더블클릭 반칸 보정 · NOW 날짜 기준선 스냅', '[메모·편집] 툴팁 메모 명칭과 안내 · 인라인 편집 래핑·강조 · 연결메모 생성 즉시 배지 표시와 일자 숨김 기본값', '[버튼] 메뉴·보기 내부 여백 통일 · 비교 진행과 취소를 한 그룹으로 배치', '[검증] 회귀 테스트 248개 통과 · 120개 주변 아이템의 이동 중·이동 후 배치 유지 · 실제 화면 좌우·상하 이동, NOW 종료일 스냅, 세션 반칸 드래그·더블클릭, 메모 생성·이동과 편집 래핑 확인'] },
     { v: 'v0.9.29', agent: 'Codex', title: '[주요 사항] Grid 기준 통일 · 겹침 처리 · 버전 내용 편집', items: ['[Grid] 가로 스크롤에도 높이 숫자 고정 · 신규 세션 높이 정확히 2 · 눈금 맞춤 0.5 단위 스냅', '[높이] 아이템·세션 버튼 0.5 단위 증감 · 비정수 값은 다음 눈금부터 변경 · 정렬 시 위·아래 정수 Grid 맞춤 · 일정 보존', '[사용성] 메뉴·보기 버튼 간격 통일 · 연도 압축 방지 · 연결메모 일정 툴팁 제거 유지', '[오류] 실제 배치 기준 겹침 처리 및 놓을 때 적용 · 선택 세션 삭제 중 속성 참조 오류 수정', '[버전] 비교 선택 취소 버튼 · 저장된 버전 변경 내용 편집과 클라우드 갱신', '[검증] 회귀 테스트 241개 통과 · Grid 숫자 스크롤 고정 · 높이 반칸 증감 · 세션 생성·삭제 무오류 · 실제 드래그 스냅·겹침 처리 · 클라우드 내용 편집 후 재조회와 비교 취소 확인'] },
     { v: 'v0.9.28', agent: 'Codex', title: '[주요 사항] 선택 전면 표시 · Grid · 편집 단축키', items: ['[선택 위계] 선택 중 아이템과 날짜·기간 안내를 항상 전면 표시 · 드래그·속성 편집 종료 후에도 유지 · 선택 해제 시 원래 위계 복귀', '[보기] 상세 일별 눈금 450%부터 표시 · 날짜 오른쪽에 작업일수 배치 · Grid 가로선과 0부터 0.5 단위 높이 숫자 표시', '[연결 메모] 툴팁의 일정 섹션 제거 · 연결 대상과 메모만 표시', '[편집 키] Option/Alt 드래그 복제 · Shift 드래그 축 고정 · 전체 선택·복제·복사·잘라내기·붙여넣기·실행 취소·다시 실행 · 위아래 1px/Shift 10px 이동 · F2 속성 열기 · Esc 이동 취소 · 한글 입력 모드에서도 편집 키 지원', '[검증] 회귀 테스트 232개 통과 · 실제 화면 선택 전면·선택 해제 위계·Grid 숫자와 저장 복원·복제 및 실행 취소 확인'] },
@@ -1300,7 +1304,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.30';
+  APP_VER = 'v0.9.31';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1332,7 +1336,7 @@ class Component extends DCLogic {
       weekHint: '실제 주 수: 월의 일수 ÷ 7',
       weekModeF: '월 간격 기준', nowPos: 'NOW 기준선 위치 (개월)', todayBtn: '오늘 날짜로 맞추기',
       overlapF: '겹침 처리', opShrink: '다른 아이템 줄이기', opDesc_shrink: '겹친 다른 아이템의 기간 축소', opDesc_moveOther: '겹친 다른 아이템을 빈 줄로 이동', opDesc_moveSelf: '선택 아이템을 빈 줄로 이동', opMoveOther: '다른 아이템 이동', opMoveSelf: '선택 아이템 이동',
-      overlapHint: '직접 드래그할 때는 주변 아이템을 유지합니다. 이 겹침 규칙은 날짜 속성·키보드 변경에 적용됩니다.',
+      overlapHint: '이동 중에는 자유롭게 배치하고, 놓으면 실제로 겹친 아이템에 이 규칙을 적용합니다. 살짝 겹치는 것은 허용하며 빈 공간이 없으면 현재 배치를 유지합니다.',
       verSave: '버전 저장', author: '작성자', date: '날짜', changes: '변경 내용', phAuthor: '예: 김지훈', phChanges: '예: DCM 지연 반영, Pre-Prod E2E 3M 조정',
       saveBtn: '현재 상태를 버전으로 저장', history: '버전 히스토리', restoreBtn: '이 버전으로 복원',
       noVer: '저장된 버전이 없습니다.',
@@ -1373,7 +1377,7 @@ class Component extends DCLogic {
       weekHint: '実際の週数モードでは、各月の幅はその年の月の日数 ÷ 7 で計算されます（例：31日 = 4.4週）。',
       weekModeF: '月間隔の基準', nowPos: 'NOW基準線の位置（月）', todayBtn: '今日の日付に合わせる',
       overlapF: '項目が重なる場合', opShrink: '他の項目を縮小', opDesc_shrink: '動かした項目はそのままにして、重なった他の項目の期間を縮めます。', opDesc_moveOther: '重なった他の項目を空いている下の段へ移動します。', opDesc_moveSelf: '動かした項目が空いている下の段へ移動します。', opMoveOther: '他の項目の位置を変更', opMoveSelf: '選択項目の位置を変更',
-      overlapHint: '項目を移動・伸縮して重なった場合、このルールで自動整列します。ハンドルをダブルクリックすると隣の項目にぴったり合わせます。',
+      overlapHint: 'ドラッグ中は配置を維持し、離した時に実際の重なりに適用します。小さな重なりは許容し、空きがない場合は配置を維持します。',
       verSave: 'バージョン保存', author: '作成者', date: '日付', changes: '変更内容', phAuthor: '例：山田太郎', phChanges: '例：DCM遅延の反映、Pre-Prod E2E 3M調整',
       saveBtn: '現在の状態をバージョンとして保存', history: 'バージョン履歴', restoreBtn: 'このバージョンに戻す',
       noVer: '保存されたバージョンがありません。\n現在の状態をクラウドに保存するか、保存済みの作業を読み込んでください。',
@@ -1545,7 +1549,7 @@ class Component extends DCLogic {
   }
   componentDidUpdate() {
     if(this.state.alignConfirm && !this._alignFocused){this.root?.querySelector('[data-align-dialog] button')?.focus?.();this._alignFocused=true;}else if(!this.state.alignConfirm && this._alignFocused){this._alignFocused=false;this.root?.querySelector('[data-align-button]')?.focus?.();}
-    if (this.narrowScreen() && this.state.panel && (this._mobileSel !== this.state.sel || !this._mobilePanel)) {
+    if (!this.drag && this.narrowScreen() && this.state.panel && (this._mobileSel !== this.state.sel || !this._mobilePanel)) {
       const item = Array.from(this.root?.querySelectorAll('[data-id][role="button"]') || []).find(el => el.dataset.id === this.state.sel);
       item?.scrollIntoView({block:'nearest',inline:'nearest'});
     }
@@ -1819,9 +1823,10 @@ class Component extends DCLogic {
     if(push!==false && !this._editingSelection)this._settledSelection=new Set(this.selectedIds());
     this.setState((st) => {
       const d = JSON.parse(JSON.stringify({ title: st.title, cfg: st.cfg, rows: st.rows, items: st.items, notes: st.notes, now: st.now }));
-      const placement=this.drag?.moved&&this.drag.moveLayout;
+      const placement=this.drag?.moved&&(this.drag.moveLayout||this.drag.layout);
       if(placement)for(const row of d.rows){if(placement[row.id])row.h=placement[row.id].height;}
       fn(d);
+      for(const it of d.items){const old=st.items.find(o=>o.id===it.id);if(old?.labelAnchor && (['label','s','e','row','trackH','labelSize'].some(k=>old[k]!==it[k]) || st.cfg.weekPx!==d.cfg.weekPx || st.cfg.laneH!==d.cfg.laneH))delete it.labelAnchor;}
       if(!this.drag)this.clampItemsBottom(d);
       MapstoneCore.syncLinks(d.items);
       const out = { title: d.title, cfg: d.cfg, rows: d.rows, items: d.items, notes: d.notes, now: d.now };
@@ -2196,9 +2201,9 @@ class Component extends DCLogic {
 
   /* label placement: inside the block, in the free gap beside it, or in a strip
      appended under the row — prevents label-on-label collisions at the source */
-  rowLayout(state=this.state) {
-    if(this.drag?.layout && ['top','bottom'].includes(this.drag.mode))return this.drag.layout;
-    if(this.drag?.moveLayout)return this.drag.moveLayout;
+  rowLayout(state=this.state,frozen=true) {
+    if(frozen && this.drag?.layout && ['top','bottom'].includes(this.drag.mode))return this.drag.layout;
+    if(frozen && this.drag?.moveLayout)return this.drag.moveLayout;
     const st = state, laneH = st.cfg.laneH;
     const map = {};
     Object.defineProperty(map,'_rowOrder',{value:st.rows.map(r=>r.id)});
@@ -2211,6 +2216,7 @@ class Component extends DCLogic {
       const strips = [];
       const modes = {};
       chevs.forEach((it) => {
+        if(it.labelAnchor){modes[it.id]={mode:it.labelAnchor.mode};return;}
         const h = it.trackH ?? (it.span || 1) * laneH - 12;
         const w = this.wOf(it.s, it.e);
         const need = this.labelBox({...it,label:this.scheduleLabel(it)},18).width;
@@ -2370,6 +2376,7 @@ class Component extends DCLogic {
     if (e.button === 2) return;
     e.stopPropagation();
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    e.preventDefault?.();e.currentTarget.focus?.({preventScroll:true});
     const d = e.currentTarget.dataset;
     const it = this.state.items.find((i) => i.id === d.id);
     if (!it) return;
@@ -2388,7 +2395,7 @@ class Component extends DCLogic {
       const own=nodes.find(node=>node.dataset.id===it.id);if(own)this.drag.visualBox=rect(own);
       const selected=new Set(this.selectedIds());this.drag.visualPeers=nodes.filter(node=>!selected.has(node.dataset.id)).map(rect);
     }
-    if(it.kind==='marker'){this.drag.markerSlots={...this._markerSlots};this.drag.markerRows=this._markerRows||1;}
+    this.drag.markerSlots={...this._markerSlots};this.drag.markerRows=this._markerRows||1;
     if (d.mode==='top' || d.mode==='bottom') Object.assign(this.drag,this.heightBounds(it));
     this.bind();this.setState({});
   };
@@ -2397,7 +2404,7 @@ class Component extends DCLogic {
     MapstoneUI.hideTip();
     this.setState({sel:'__now',selection:[],focusRow:null,editing:null,panel:true});
     if (this.state.readOnly) return;
-    this.drag = { id: '__now', mode: 'now', x0: e.clientX, y0: e.clientY, s: this.state.now, e: 0, snap: this.snapshot(), moved: false };
+    this.drag = { markerSlots:{...this._markerSlots},markerRows:this._markerRows||1,id: '__now', mode: 'now', x0: e.clientX, y0: e.clientY, s: this.state.now, e: 0, snap: this.snapshot(), moved: false };
     this.bind();this.setState({});
   };
   onNowDbl = (e) => { e.stopPropagation(); this.nowToday(); MapstoneUI.hideTip(); };
@@ -2446,7 +2453,7 @@ class Component extends DCLogic {
     const it=d.items.find(i=>i.id===g.id);if(!it)return;
     if(g.top===undefined)Object.assign(g,this.heightBounds(it));
     // Keep row boundaries stable when an item is resized across rows.
-    d.rows.forEach(r=>{const l=g.layout[r.id];if(!r.h && l)r.h=l.height-l.strips*l.stripH;});
+    d.rows.forEach(r=>{const l=g.layout[r.id];if(!r.h && l)r.h=l.height;});
     const minimum=Math.min(24,g.height),edge=v=>snap?this.snapEdge(v,g.mode,g.rows):v;
     const top=g.mode==='top'?Math.max(g.min,Math.min(g.bottom-minimum,edge(g.top+delta))):g.top;
     const bottom=g.mode==='top'?g.bottom:Math.max(g.top+minimum,Math.min(g.max,edge(g.bottom+delta)));
@@ -2596,6 +2603,7 @@ class Component extends DCLogic {
         const candidates=resize?[[a+sz-start-size,a+sz,'크기 맞춤'],[sz-size,start+sz,vertical?'같은 높이':'같은 너비']]:[a,a+sz/2,a+sz].flatMap(edge=>[0,size/2,size].map(offset=>[edge-start-offset,edge,'위치 맞춤']));
         for(const [candidate,edge,label] of candidates){const delta=Math.abs(candidate-travel);if(delta<=4 && delta<dist){best=candidate;dist=delta;guide={axis:vertical?'screenY':'screenX',value:edge,label};}}
       }
+      if(!vertical && !resize && this.state.cfg.showNow!==false){const track=this.root?.querySelector('[data-track]')?.getBoundingClientRect();if(track){const nowX=track.left+this.xOf(this.state.now)*scale;const candidates=[nowX-start,nowX-start-size].map(candidate=>({candidate,distance:Math.abs(candidate-travel)})).sort((a,b)=>a.distance-b.distance);if(candidates[0].distance<=6){best=candidates[0].candidate;guide={axis:'screenX',value:nowX,label:'현재 날짜 맞춤'};}}}
       if(guide)(this._smartGuides ||= []).push(guide);return best/(vertical?hs:scale);
     };
     result.dx=axis(false);result.dy=axis(true);return result;
@@ -2736,6 +2744,7 @@ class Component extends DCLogic {
     if (Math.abs(dx) > 2 || Math.abs(ev.clientY - g.y0) > 2) g.moved = true;
     if (!g.moved) return;
     if(g.mode==='move' && !g.copied && (g.copyPending || ev.altKey))this.duplicateDrag(g);
+    if(g.mode==='move' && !ev.shiftKey && !g.verticalIntent){const x=Math.abs(ev.clientX-g.x0),y=Math.abs(ev.clientY-g.y0);if(y>8 || (y>3 && y>=x))g.verticalIntent=true;else ev={clientX:ev.clientX,clientY:g.y0,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}
     if(g.mode==='move' && ev.shiftKey){g.axis ||= Math.abs(ev.clientX-g.x0)>=Math.abs(ev.clientY-g.y0)?'x':'y';ev={clientX:g.axis==='y'?g.x0:ev.clientX,clientY:g.axis==='x'?g.y0:ev.clientY,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}else g.axis=null;
     this._smartGuides=[];
     if (g.ids) {this.moveGroup(ev);return;}
@@ -2812,6 +2821,15 @@ class Component extends DCLogic {
       // Pointer placement permits overlap; never reflow neighbours.
     }, false);
   }
+  stabilizePeerLabels(d,g) {
+    const previous=g.moveLayout||g.layout;if(!previous)return;
+    const next=this.rowLayout(d,false),moving=new Set(g.ids||[g.id]);
+    for(const it of d.items){if(it.kind!=='chev'||moving.has(it.id)||it.labelAnchor)continue;
+      const row=previous[it.row],before=row?.modes[it.id],after=next[it.row]?.modes[it.id];if(!before||!after)continue;
+      const y=row.labelBase-10+(before.strip||0)*row.stripH,newY=next[it.row].labelBase-10+(after.strip||0)*next[it.row].stripH;
+      if(before.mode!==after.mode || (before.mode==='strip'&&Math.abs(y-newY)>.01))it.labelAnchor={mode:before.mode,y};
+    }
+  }
   stopDrag(ev) {
     if(this._dragFrame){cancelAnimationFrame(this._dragFrame);this._dragFrame=null;}
     if(this._pendingMove){const latest=this._pendingMove;this._pendingMove=null;if(ev?.type!=='pointercancel')this.onMove(latest);}
@@ -2826,6 +2844,8 @@ class Component extends DCLogic {
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
+      if(this.drag.kind==='marker'||this.drag.mode==='now'){const slots=this.drag.markerSlots||{};this.mutate(d=>{for(const it of d.items)if(it.kind==='marker'&&slots[it.id]!==undefined)it.markerLane=slots[it.id];if(slots.__now!==undefined)d.cfg.nowLane=slots.__now;},false);}
+      if(['move','l','r','top','bottom'].includes(this.drag.mode)){const ids=new Set(this.drag.ids||[id]);this.mutate(d=>{for(const key of ids)this.resolve(d,key,ids,4/this.canvasScale());this.stabilizePeerLabels(d,this.drag);},false);}
       this._settledSelection=new Set(this.selectedIds());
       this.setState((st) => ({ hist: st.hist.concat([snap]).slice(-60), future: [] }));
     }
@@ -2846,26 +2866,32 @@ class Component extends DCLogic {
      cfg.overlap rule (default: the OTHER block gives way by shrinking) */
   boxKind(k) { return k === 'chev' || k === 'plain'; }
   linkKind(k) { return this.boxKind(k) || k === 'band'; }
+  collisionBoxes(d,a,b,tolerance=0) {
+    const layout=this.rowLayout(d),x=this.trackBox(a,layout),y=this.trackBox(b,layout);
+    const width=Math.min(this.xOf(a.e),this.xOf(b.e))-Math.max(this.xOf(a.s),this.xOf(b.s));
+    const height=Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top);
+    return width>Math.min(tolerance,Math.min(this.wOf(a.s,a.e),this.wOf(b.s,b.e))/4)+.001 && height>Math.min(tolerance,Math.min(x.height,y.height)/4)+.001;
+  }
   freeLane(d, item) {
-    const h=item.trackH??(item.span||1)*d.cfg.laneH-12;
-    const peers=d.items.filter(o=>o.id!==item.id&&o.row===item.row&&this.boxKind(o.kind)&&o.s<item.e-.001&&item.s<o.e-.001);
-    const current=item.trackY??6+item.lane*d.cfg.laneH;
-    const layout=this.rowLayout(d),limit=layout[item.row].height-h;
-    const slots=Array.from({length:Math.max(1,Math.floor(limit/d.cfg.laneH)+1)},(_,i)=>i*d.cfg.laneH).sort((a,b)=>Math.abs(a-current)-Math.abs(b-current));
-    const y=slots.find(y=>!peers.some(o=>{const oy=o.trackY??6+o.lane*d.cfg.laneH,oh=o.trackH??(o.span||1)*d.cfg.laneH-12;return y<oy+oh-.001&&oy<y+h-.001;}));
+    const layout=this.rowLayout(d),box=this.trackBox(item,layout),h=box.height,current=box.localTop,limit=layout[item.row].height-h;
+    const peers=d.items.filter(o=>o.id!==item.id&&this.boxKind(o.kind)&&this.visibleItem(o)&&o.s<item.e-.001&&item.s<o.e-.001).map(o=>this.trackBox(o,layout));
+    const step=d.cfg.magnet?this.heightUnit()/2:1,slots=new Set([current]);
+    for(let y=0;y<=limit;y+=step)slots.add(y);
+    for(const p of peers){for(const y of [p.bottom-box.rowTop+2,p.top-box.rowTop-h-2])slots.add(d.cfg.magnet?Math.round(y/step)*step:y);}
+    const y=Array.from(slots).filter(y=>y>=0&&y<=limit).sort((a,b)=>Math.abs(a-current)-Math.abs(b-current)||a-b).find(y=>!peers.some(p=>box.rowTop+y<p.bottom-.001&&p.top<box.rowTop+y+h-.001));
     if(y===undefined)return item.lane;
     item.trackY=y;return Math.max(0,Math.floor(y/d.cfg.laneH));
   }
-  resolve(d,id,protectedIds=new Set()) {
+  resolve(d,id,protectedIds=new Set(),tolerance=0) {
     const mode=d.cfg.overlap||'shrink',a=d.items.find(i=>i.id===id);if(!a||!this.boxKind(a.kind))return;
-    const vertical=(x,y)=>{const top=i=>i.trackY??6+i.lane*d.cfg.laneH,h=i=>i.trackH??(i.span||1)*d.cfg.laneH-12;return top(x)<top(y)+h(y)-.001&&top(y)<top(x)+h(x)-.001;};
-    for(const o of d.items.filter(o=>o.id!==id&&!protectedIds.has(o.id)&&o.row===a.row&&this.boxKind(o.kind))){
-      if(!vertical(a,o)||!(a.s<o.e-.001&&o.s<a.e-.001))continue;
-      if(mode==='moveSelf'){a.lane=this.freeLane(d,a);continue;}
+    const peers=d.items.filter(o=>o.id!==id&&!protectedIds.has(o.id)&&this.boxKind(o.kind)&&this.visibleItem(o));
+    if(mode==='moveSelf'){if(peers.some(o=>this.collisionBoxes(d,a,o,tolerance)))a.lane=this.freeLane(d,a);return;}
+    for(const o of peers){
+      if(!this.collisionBoxes(d,a,o,tolerance))continue;
       if(mode==='moveOther'){o.lane=this.freeLane(d,o);continue;}
-      if(o.s<a.s&&o.e<=a.e)o.e=Math.max(o.s+this.timeStep(),a.s);
-      else if(o.e>a.e&&o.s>=a.s)o.s=Math.min(o.e-this.timeStep(),a.e);
-      else if(o.s<a.s&&o.e>a.e)o.e=Math.max(o.s+this.timeStep(),a.s);
+      if(o.s<a.s&&o.e<=a.e)o.e=Math.max(this.shiftDay(o.s,1),a.s);
+      else if(o.e>a.e&&o.s>=a.s)o.s=Math.min(this.shiftDay(o.e,-1),a.e);
+      else if(o.s<a.s&&o.e>a.e)o.e=Math.max(this.shiftDay(o.s,1),a.s);
       else o.lane=this.freeLane(d,o);
     }
   }
@@ -2910,7 +2936,7 @@ class Component extends DCLogic {
     const id = e.currentTarget.dataset.id, it = this.state.items.find(i => i.id === id);
     if (!it) return;
     MapstoneUI.hideTip();
-    const inline=!this.state.readOnly && (it.kind==='sticky' || (this.state.focusMode && it.kind!=='image'));
+    const inline=!this.state.readOnly && it.kind!=='image';
     this._focusProperties = !inline;
     if(!inline&&!this.state.readOnly&&it.kind!=='image')MapstoneUI.toast(this,this.L().textEditHint);
     this.setState({ selection:[id], selectionAnchor:id, editing: inline?id:null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
@@ -3557,8 +3583,8 @@ class Component extends DCLogic {
       const solid = it.variant !== 'tint';
       const box=this.trackBox(it,L),h=box.height,top=box.localTop;
       const w = this.wOf(it.s, it.e);
-      const m = (lay && lay.modes[it.id]) || { mode: 'in' };
-      const stripTop = lay ? lay.labelBase-10+(m.strip||0)*lay.stripH-top : h + 6;
+      const m = it.labelAnchor ? {mode:it.labelAnchor.mode} : (lay && lay.modes[it.id]) || { mode: 'in' };
+      const stripTop = it.labelAnchor?.mode==='strip' ? it.labelAnchor.y-top : lay ? lay.labelBase-10+(m.strip||0)*lay.stripH-top : h + 6;
       const sel = this.isSelected(it.id);
       const hov = st.hover === it.id;
       const drag = !!(this.drag && (this.drag.id === it.id || this.drag.ids?.includes(it.id)));
@@ -3678,14 +3704,15 @@ class Component extends DCLogic {
     const markerLaneH=Math.max(30,...markers.map(it=>this.labelBox(it).height+6),this.labelBox(nowItem).height+6);
     const mrows = [];
     const mplace = {};
-    const arranging=this.drag?.kind==='marker',slots=this.drag?.markerSlots||{};
+    const arranging=!!this.drag?.markerSlots,slots=this.drag?.markerSlots||{};
     const ordered=markers.concat(showNow?[nowItem]:[]).sort((a,b)=>arranging?(a.id===this.drag.id?1:b.id===this.drag.id?-1:(slots[a.id]||0)-(slots[b.id]||0)||a.s-b.s):a.s-b.s);
     ordered.forEach(it=>{const w=this.labelBox(it).width+(cfg.showElementDates && !it.hideDate?this.measure(this.shortDate(it.s))+6:0),x0=this.xOf(it.s)-w/2,x1=x0+w;
       const occupied=k=>mrows[k]?.some(g=>g[0]<x1+8 && g[1]>x0-8);
-      let k=arranging && it.id!==this.drag.id?(slots[it.id]||0):0;while(occupied(k))k++;
+      const pinned=arranging?slots[it.id]:it.id==='__now'?cfg.nowLane:it.markerLane;
+      let k=pinned??0;if(pinned===undefined)while(occupied(k))k++;
       (mrows[k] ||= []).push([x0,x1]);mplace[it.id]=k;
     });
-    const mrowCount=Math.max(1,mrows.length,arranging?(this.drag.markerRows||1):1);this._markerSlots={...mplace};this._markerRows=mrowCount;
+    const mrowCount=arranging?this.drag.markerRows||1:Math.max(1,mrows.length);this._markerSlots={...mplace};this._markerRows=mrowCount;
     const stripH = mrowCount * markerLaneH + 14;
     const markersView = markers.filter((i) => this.visibleItem(i)).map((it0) => {
       const it = this.view(it0);

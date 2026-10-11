@@ -67,6 +67,8 @@
       for (const key of ['labelBold','labelStrike']) if(it[key] !== undefined && typeof it[key] !== 'boolean') throw new Error('글자 서식 값이 올바르지 않습니다.');
       if(it.labelVAlign!==undefined && !['top','middle','bottom'].includes(it.labelVAlign))fail('문단 세로 정렬 값이 올바르지 않습니다.');
       if(it.labelAlign!==undefined && !['left','center','right'].includes(it.labelAlign))fail('텍스트 정렬 값이 올바르지 않습니다.');
+      if(it.markerLane!==undefined){finite(it.markerLane,'마일스톤 표시 줄',0,1000);if(!Number.isInteger(it.markerLane))fail('마일스톤 표시 줄은 정수여야 합니다.');}
+      if(it.labelAnchor!==undefined){if(!it.labelAnchor || !['in','right','left','strip'].includes(it.labelAnchor.mode))fail('라벨 고정 위치가 올바르지 않습니다.');finite(it.labelAnchor.y,'라벨 고정 높이',-20000,20000);}
       if(it.stackOrder!==undefined){finite(it.stackOrder,'표시 순서',1,24000);if(!Number.isInteger(it.stackOrder))fail('표시 순서는 정수여야 합니다.');}
       if(it.markerIconVisible!==undefined && typeof it.markerIconVisible!=='boolean')fail('아이콘 표시 값이 올바르지 않습니다.');
       if(it.markerIcon!==undefined && !['planning','work','meeting','calendar','target','check','rocket','flag','idea','bug','code','design','chart','report','email','chat','clock','trophy','partner','money','globe'].includes(it.markerIcon))fail('마일스톤 아이콘 값이 올바르지 않습니다.');
