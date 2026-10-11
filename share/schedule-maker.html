@@ -75,8 +75,9 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-visible-months { display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:8px 10px;background:var(--color-bg-neutral-1);border-radius:6px;font-size:11px;color:var(--color-text-neutral-3); }
     .ms-visible-months strong { font-size:12px;color:var(--color-text-neutral-5);font-variant-numeric:tabular-nums; }
     /* Session titles shield the frozen column from memo layers; post-its remain above. */
-    .ms-sticky-col[data-row] { z-index:12000 !important; }
-    .ms-sticky-col[data-row]:hover,.ms-sticky-col[data-row]:focus-within { z-index:12001 !important; }
+    .ms-sticky-col[data-row] { z-index:24500 !important; }
+    [data-time-header] { z-index:24500 !important; }
+    .ms-sticky-col[data-row]:hover,.ms-sticky-col[data-row]:focus-within { z-index:24501 !important; }
     /* motion: short and quiet; off via 설정 › 애니메이션 or the OS reduced-motion setting */
     @keyframes ms-panel-in { from { opacity:0; transform:translateX(16px); } }
     @keyframes ms-pop { from { opacity:0; transform:translateY(6px) scale(.98); } }
@@ -210,7 +211,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-app][data-anim="on"] [data-now-tag] { transition:left .24s cubic-bezier(.2,.8,.2,1),top .28s cubic-bezier(.2,.8,.2,1); }
     [data-app][data-anim="on"][data-now-drag="true"] [data-now-tag] { transition:top .22s cubic-bezier(.2,.8,.2,1); }
     [data-app][data-anim="on"] [data-sticky], [data-app][data-anim="on"] [data-id] [data-alert-label] { transition:left .24s cubic-bezier(.2,.8,.2,1),top .24s cubic-bezier(.2,.8,.2,1),width .24s cubic-bezier(.2,.8,.2,1),height .24s cubic-bezier(.2,.8,.2,1); }
-    [data-app] [data-drag-active="true"]:not([data-marker-item]),[data-app] [data-drag-active="true"] [data-alert-label] { transition:none !important; }
+    [data-app] [data-drag-active="true"],[data-app] [data-drag-active="true"] [data-alert-label] { transition:none !important; }
     html:has([data-app][data-anim="off"]) :is(.ms-dialog,.ms-tooltip,.ms-focus-hint,.ms-focus-toolbar),html:has([data-app][data-anim="off"]) :is(.ms-dialog,.ms-tooltip,.ms-focus-hint,.ms-focus-toolbar) * { animation:none !important;transition:none !important;scroll-behavior:auto !important; }
     @keyframes ms-now-breathe { 0%,100% { opacity:1;box-shadow:0 2px 8px #17365718; } 50% { opacity:.78;box-shadow:0 2px 14px #3165d13a; } }
     [data-app][data-anim="on"] .ms-now-direction { animation:ms-now-breathe 2.8s ease-in-out infinite; }
@@ -271,7 +272,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-toolbar-group > button, .ms-tool-menu > summary { align-items:center;line-height:1.2; }
     .ms-tool-button > .sc-interp, .ms-tool-button > span:not(.ms-lbl-short), .ms-tool-menu > summary > .sc-interp { display:inline-flex;align-items:center;line-height:1.2; }
     .ms-toolbar-row .ms-action-group { border-left:1px solid var(--ms-color-border-default);padding-left:8px; }
-    @media(max-width:1400px) { .ms-toolbar-row { flex-wrap:wrap;row-gap:6px; } }
+
     .ms-toolbar-label { flex:none;padding:0 4px !important;border:0 !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important;font-size:11px;font-weight:700;color:var(--color-text-neutral-4);letter-spacing:.02em; }
     .ms-accent { border-color:var(--ms-color-action-primary) !important;color:var(--ms-color-action-primary) !important;background:#fff !important;box-shadow:0 0 0 3px rgba(53,104,197,.08); }
     .ms-accent:hover { background:var(--ms-color-surface-subtle) !important; }
@@ -304,7 +305,30 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-focus-exit kbd { font:700 12px ui-monospace,monospace;padding:4px 8px;border-radius:9999px;background:var(--ms-color-action-primary);color:#fff; }
     [data-app][data-anim="on"] .ms-focus-exit { animation:ms-pop .22s cubic-bezier(.2,.8,.2,1); }
     @media print { .ms-focus-exit { display:none !important; } }
-    /* one-row toolbar: fitToolbar() adds c1..c4 in order while the row still overflows */
+    .ms-year-tag { margin-left:8px;font-size:11px;padding:2px 7px;border:1px solid #ffffff66;border-radius:6px;opacity:0;transform:translateX(8px);transition:opacity .2s,transform .2s; }
+    .ms-year-tag[data-visible="true"] { opacity:1;transform:translateX(0); }
+    .ms-january-year { font-size:10px;font-weight:600;color:#ffffffbb;transition:opacity .2s,transform .2s; }
+    .ms-january-year:empty { display:none; }
+    .ms-january-year[data-visible="false"] { opacity:0;transform:translateX(-8px); }
+    .ms-toolbar-row.c1 .ms-tool-button:not(.ms-icon-button):not(.ms-panel-btn) > svg, .ms-toolbar-row.c1 summary > svg {display:none;}
+    .ms-toolbar-row.c2 .ms-add-more {display:block;}
+    .ms-manage-more > .ms-tool-popover > .ms-tool-menu .ms-tool-popover {position:static;box-shadow:none;}
+    .ms-extra-add {display:none;}
+    .ms-toolbar-row.c7 .ms-low-priority {display:none;}
+    .ms-toolbar-row.c7 .ms-extra-add {display:flex;}
+    .ms-toolbar-row.c7 {gap:3px;}
+    .ms-toolbar-row.c7 .ms-tool-button,.ms-toolbar-row.c7 summary {padding-left:5px;padding-right:5px;font-size:12px;}
+    .ms-toolbar-row.c7 .ms-toolbar-group {gap:3px;}
+    .ms-toolbar-row.c8 {overflow-x:auto;}
+    @media (min-width:361px) { .ms-toolbar-row,.ms-toolbar-group {flex-wrap:nowrap !important;} }
+    @media (max-width:360px) { .ms-toolbar-row {flex-wrap:wrap;} }
+    @media(max-width:700px) { .ms-toolbar-row .ms-tool-menu[open] {flex-basis:auto;} .ms-toolbar-row .ms-tool-popover {position:absolute;max-width:calc(100vw - 24px);} .ms-toolbar-row .ms-add-more .ms-tool-popover {left:0;right:auto;} }
+    .ms-add-inline,.ms-manage-inline {display:contents;}
+    .ms-add-more,.ms-manage-more {display:none;}
+    .ms-toolbar-row.c2 .ms-add-inline,.ms-toolbar-row.c4 .ms-manage-inline {display:none;}
+    .ms-toolbar-row.c2 .ms-add-more,.ms-toolbar-row.c4 .ms-manage-more {display:block;}
+    .ms-add-inline > .ms-tool-button,.ms-manage-inline > .ms-tool-button {width:auto;flex-shrink:0;}
+    /* fitToolbar applies compact stages until the visible commands fit. */
     .ms-view-inline { display:contents; } .ms-view-more, .ms-lbl-short { display:none; }
     .ms-toolbar-row .ms-tool-button > svg { display:block;flex:none; }
     .ms-toolbar-row.c2 .ms-view-inline { display:none; } .ms-toolbar-row.c2 .ms-view-more { display:block; }
@@ -365,9 +389,6 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-toolbar] > div:first-child > span { font-size:11px !important; }
     .ms-title-edit { margin:0; }
     .ms-sync-label:empty { display:none; }
-    .ms-toolbar-row.c0 .ms-add-more,.ms-toolbar-row.c0 .ms-add-more .ms-tool-popover { display:contents; }
-    .ms-toolbar-row.c0 .ms-add-more > summary { display:none; }
-    .ms-toolbar-row.c0 .ms-add-more .ms-tool-button { width:auto;justify-content:center;border:1px solid var(--ms-color-border-default); }
     .ms-view-dock { flex:none;display:flex;justify-content:center;align-items:center;min-height:72px;padding:10px 12px 8px;background:var(--ms-color-surface-canvas);z-index:24050; }
     .ms-view-pill { position:fixed;left:50%;bottom:38px;transform:translateX(-50%);z-index:24050;display:flex;align-items:center;justify-content:center;gap:8px;width:max-content;max-width:calc(100vw - 24px);box-sizing:border-box;padding:9px 14px;border:1px solid var(--ms-color-border-default);border-radius:9999px;background:#fff;box-shadow:0 5px 18px #16365d18; }
     .ms-view-pill .ms-toolbar-group { display:flex;flex:none;flex-wrap:nowrap;align-items:center;gap:6px; }
@@ -383,6 +404,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     @media(max-width:900px) { .ms-view-pill { flex-wrap:wrap;border-radius:24px; } .ms-view-pill .ms-zoom-word { display:none; } }
     @media(max-width:700px) { .ms-view-pill { gap:3px;padding:8px;max-width:calc(100vw - 16px); } .ms-view-pill > .ms-tool-button { width:36px; } .ms-view-pill > .ms-tool-button:nth-of-type(2) { width:36px; } .ms-view-pill > .ms-tool-button:nth-of-type(4) { width:66px; } .ms-view-pill > .ms-tool-button:nth-of-type(6) { width:80px; } .ms-view-dock { min-height:134px; } [data-properties] { bottom:152px; } [data-app]:has([data-properties]) [data-board] { scroll-padding-bottom:calc(35dvh + 152px); } }
     @media print { .ms-view-dock { display:none !important; } [data-capture] { zoom:1 !important; } }
+    @media(max-width:700px) {
+      [data-toolbar] {overflow:visible !important;max-height:none !important;}
+      .ms-toolbar-row .ms-tool-popover {position:absolute;margin-top:0;}
+      .ms-toolbar-row .ms-tool-menu[open] {flex-basis:auto;}
+      .ms-manage-more > .ms-tool-popover > .ms-tool-menu .ms-tool-popover {position:static;}
+    }
   </style>
   <link rel="stylesheet" href="assets/design-system/product.css">
 </helmet>
@@ -390,6 +417,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 <div data-app="" data-anim="{{ animAttr }}" data-now-drag="{{ nowDragging }}" data-focus="{{ focusMode }}" data-readonly="{{ readOnly }}" ref="{{ setRoot }}" style="display:flex;flex-direction:column;height:100vh;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:var(--color-text-neutral-6);background:#fff">
   <button type="button" class="ms-now-direction" data-now-indicator="" data-noprint="" onClick="{{ focusNow }}" aria-label="{{ L.nowDirection }}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"></path></svg><span>NOW</span></button>
   <sc-for list="{{ dragGuides }}" as="g"><div data-drag-date="" data-noprint="" style="position:fixed;top:{{ g.lineTop }};height:{{ g.lineHeight }};left:{{ g.left }};border-left:1px dashed var(--ms-color-action-primary);pointer-events:none;z-index:25000"><span style="position:absolute;top:{{ g.top }};left:{{ g.labelLeft }};transform:translateX(-50%);white-space:nowrap;padding:4px 7px;border-radius:4px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700">{{ g.date }}</span></div></sc-for>
+  <sc-if value="{{ alignConfirm }}"><div data-noprint="" onKeyDown="{{ alignKey }}" style="position:fixed;inset:0;background:#16365d55;display:flex;align-items:center;justify-content:center;z-index:26000"><div role="dialog" data-align-dialog="" aria-modal="true" aria-label="전체 아이템 정렬 확인" style="background:#fff;padding:24px;border-radius:14px;width:min(440px,90vw);box-shadow:0 16px 50px #16365d33"><strong style="font-size:17px">전체 아이템 정렬</strong><p style="font-size:14px;line-height:1.7;margin:14px 0 20px">{{ alignMessage }}</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="ms-tool-button" autofocus="" onClick="{{ alignCancel }}">취소</button><button class="ms-tool-button ms-accent" onClick="{{ alignApply }}">전체 정렬 적용</button></div></div></div></sc-if>
+  <sc-for list="{{ smartGuides }}" as="g"><div data-smart-guide="" data-noprint="" style="position:fixed;pointer-events:none;z-index:25001;left:{{ g.left }};top:{{ g.top }};width:{{ g.width }};height:{{ g.height }};border-top:{{ g.borderTop }};border-left:{{ g.borderLeft }}"><span style="position:absolute;left:4px;top:4px;white-space:nowrap;background:#fff;color:#c43ca0;font-size:11px;padding:2px 4px;border-radius:3px">{{ g.label }}</span></div></sc-for>
   <sc-if value="{{ marquee }}"><div data-noprint="" style="position:fixed;left:{{ marquee.left }};top:{{ marquee.top }};width:{{ marquee.width }};height:{{ marquee.height }};border:1px solid var(--ms-color-action-primary);background:rgba(53,104,197,.08);pointer-events:none;z-index:1400"></div></sc-if>
   <sc-if value="{{ focusMode }}" hint-placeholder-val="{{ false }}"><button class="ms-focus-exit" onClick="{{ toggleFocus }}" aria-label="{{ L.focusExit }} : ESC">{{ L.focusExit }} :<kbd>ESC</kbd></button></sc-if>
   <sc-if value="{{ reviewShown }}" hint-placeholder-val="{{ false }}">
@@ -436,14 +465,16 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <span class="ms-toolbar-label">{{ L.add }}</span>
         <button class="ms-tool-button" onClick="{{ addChev }}" data-tip="{{ L.addChevHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
         <button class="ms-tool-button" onClick="{{ addMarker }}" data-tip="{{ L.addMarkerHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
-        <button class="ms-tool-button" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
-        <button class="ms-tool-button" onClick="{{ addPlain }}" data-tip="{{ L.addPlainHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
+        <button class="ms-tool-button ms-low-priority" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
+        <span class="ms-add-inline">        <button class="ms-tool-button" onClick="{{ addPlain }}" data-tip="{{ L.addPlainHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
 <button class="ms-tool-button" onClick="{{ addBand }}" data-tip="{{ L.addBandHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
-<button class="ms-tool-button" onClick="{{ addSticky }}" data-tip="{{ L.addStickyHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button>
+<button class="ms-tool-button" onClick="{{ addSticky }}" data-tip="{{ L.addStickyHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button></span><details class="ms-tool-menu ms-add-more"><summary>{{ L.moreG }} ▾</summary><div class="ms-tool-popover">        <button class="ms-tool-button ms-extra-add" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>        <button class="ms-tool-button" onClick="{{ addPlain }}" data-tip="{{ L.addPlainHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
+<button class="ms-tool-button" onClick="{{ addBand }}" data-tip="{{ L.addBandHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
+<button class="ms-tool-button" onClick="{{ addSticky }}" data-tip="{{ L.addStickyHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button></div></details>
       </div>
-      <div class="ms-toolbar-group ms-action-group" role="group" aria-label="{{ L.editTools }}"><span class="ms-toolbar-label">{{ L.editTools }}</span><button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button><button class="ms-tool-button" onClick="{{ toggleInteract }}" aria-pressed="{{ interactChecked }}" aria-label="{{ L.interact }}" data-tip="{{ L.interactTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="border-color:{{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="6"></rect><path d="M12 2v7"></path></svg>{{ L.interact }}</button></div>
+      <div class="ms-toolbar-group ms-action-group" role="group" aria-label="{{ L.editTools }}"><span class="ms-toolbar-label">{{ L.editTools }}</span><button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button><button class="ms-tool-button" onClick="{{ toggleInteract }}" aria-pressed="{{ interactChecked }}" aria-label="{{ L.interact }}" data-tip="{{ L.interactTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="border-color:{{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="6"></rect><path d="M12 2v7"></path></svg>{{ L.interact }}</button><button class="ms-tool-button" onClick="{{ alignItems }}" data-align-button="" data-tip="{{ L.alignHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16M7 7h13M7 12h9M7 17h13"></path></svg>{{ L.align }}</button></div>
       <span style="flex:1"></span>
-      <button class="ms-tool-button ms-accent" data-analysis-button="" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg><span class="ms-lbl-full">{{ L.importG }}</span><span class="ms-lbl-short">{{ L.importShort }}</span></button>
+      <span class="ms-manage-inline">      <button class="ms-tool-button ms-accent" data-analysis-button="" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg><span class="ms-lbl-full">{{ L.importG }}</span><span class="ms-lbl-short">{{ L.importShort }}</span></button>
 
       <button class="ms-tool-button" onClick="{{ openFile }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>{{ L.fileG }}</button>
       <details class="ms-tool-menu"><summary>{{ L.exp }}<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="order:-1"><path d="M12 16V3M8 7l4-4 4 4M4 15v5h16v-5"></path></svg> <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
@@ -456,6 +487,20 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
       <button class="ms-tool-button" onClick="{{ openWorkspace }}" aria-label="{{ L.shareBtn }} (⌘/Ctrl+L)" data-tip="{{ L.shareBtn }} · ⌘/Ctrl+L" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.4"></circle><circle cx="18" cy="6" r="2.4"></circle><circle cx="18" cy="18" r="2.4"></circle><path d="M8.2 11l7.6-4M8.2 13l7.6 4"></path></svg>{{ L.shareBtn }}</button>
       <span class="ms-toolbar-sep"></span>
       <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6"></path></svg></button>
+</span><details class="ms-tool-menu ms-manage-more"><summary>{{ L.moreG }} ▾</summary><div class="ms-tool-popover">      <button class="ms-tool-button ms-accent" data-analysis-button="" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg><span class="ms-lbl-full">{{ L.importG }}</span><span class="ms-lbl-short">{{ L.importShort }}</span></button>
+
+      <button class="ms-tool-button" onClick="{{ openFile }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>{{ L.fileG }}</button>
+      <details class="ms-tool-menu"><summary>{{ L.exp }}<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="order:-1"><path d="M12 16V3M8 7l4-4 4 4M4 15v5h16v-5"></path></svg> <span aria-hidden="true">▾</span></summary><div class="ms-tool-popover">
+        <button class="ms-tool-button" onClick="{{ exportJson }}">{{ L.saveFile }}</button>
+        <button class="ms-tool-button" onClick="{{ exportPng }}">{{ L.png }}</button>
+        <button class="ms-tool-button" onClick="{{ exportPptx }}">{{ L.ppt }}</button>
+        <button class="ms-tool-button" onClick="{{ doPrint }}">{{ L.print }}</button>
+      <button class="ms-tool-button" onClick="{{ openCompare }}" aria-label="{{ L.compareBtn }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M12 3v18"></path></svg>{{ L.compareBtn }}</button>
+      </div></details>
+      <button class="ms-tool-button" onClick="{{ openWorkspace }}" aria-label="{{ L.shareBtn }} (⌘/Ctrl+L)" data-tip="{{ L.shareBtn }} · ⌘/Ctrl+L" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.4"></circle><circle cx="18" cy="6" r="2.4"></circle><circle cx="18" cy="18" r="2.4"></circle><path d="M8.2 11l7.6-4M8.2 13l7.6 4"></path></svg>{{ L.shareBtn }}</button>
+      <span class="ms-toolbar-sep"></span>
+      <button class="ms-tool-button ms-icon-button" onClick="{{ openClear }}" aria-label="{{ L.clearAll }}" data-tip="{{ L.clearAll }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6"></path></svg></button>
+</div></details>
       <button class="ms-tool-button ms-panel-btn" onClick="{{ togglePanel }}" aria-label="{{ L.panelF }}" data-tip="{{ L.panelF }} · ," onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ panel }}" style="border-color:{{ panelBorder }};background:{{ panelBg }};color:{{ panelFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M14 4v16"></path></svg><span class="ms-lbl">{{ L.panelF }}</span></button>
     </div>
   </div>
@@ -490,12 +535,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           </div>
 
           <div data-time-header="" style="width:calc(172px + {{ boardW }});display:flex;align-items:stretch;position:sticky;top:0;z-index:12500;background:var(--ms-color-brand-navy)">
-            <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700"><span data-text-ratio="">{{ L.category }}</span></div>
+            <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700"><span data-text-ratio="">{{ L.category }}</span><span data-year-tag="" class="ms-year-tag" aria-live="polite"></span></div>
             <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
 <sc-for list="{{ subdivisions }}" as="q"><span data-text-ratio="" style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
               <sc-for list="{{ cols }}" as="c" hint-placeholder-count="22">
-                <div data-col="{{ c.key }}" style="flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }};--ms-year-header:{{ c.bg }};background:var(--ms-year-header)">
-                  <span data-text-ratio="" style="font-size:10px;font-weight:600;color:rgba(255,255,255,.75);height:13px">{{ c.yearLabel }}</span>
+                <div data-col="{{ c.key }}" style="flex:none;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }};--ms-year-header:{{ c.bg }};background:var(--ms-year-header)">
+                  <span data-text-ratio="" data-january-year="{{ c.year }}" class="ms-january-year">{{ c.yearLabel }}</span>
                   <span data-text-ratio="" style="font-size:13px;font-weight:700">{{ c.label }}</span>
                 </div>
               </sc-for>
@@ -503,6 +548,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           </div>
 
           <div data-row-surface="" style="position:relative;width:calc(172px + {{ boardW }})">
+            <sc-for list="{{ heightGrid }}" as="g"><div data-height-grid="" data-noprint="" style="position:absolute;left:172px;width:{{ boardW }};top:{{ g.top }};border-top:1px solid {{ g.color }};pointer-events:none;z-index:2"><span style="position:absolute;left:3px;top:1px;font-size:10px;line-height:12px;color:#8951c9;background:#ffffffbb;padding:0 2px">{{ g.label }}</span></div></sc-for>
             <sc-for list="{{ rowsView }}" as="row" hint-placeholder-count="4">
               <div data-timeline-row="{{ row.id }}" style="display:flex;align-items:stretch;width:calc(172px + {{ boardW }});min-height:{{ row.height }};border-bottom:1px solid var(--color-border-neutral-2)">
                 <div class="ms-sticky-col" tabindex="0" aria-label="{{ row.name }}" data-row="{{ row.id }}" onFocus="{{ onRowFocus }}" onPointerDown="{{ onRowFocus }}" onMouseEnter="{{ onRowEnter }}" onMouseLeave="{{ onRowLeave }}" style="position:sticky;left:0;z-index:115;width:172px;flex:none;display:flex;flex-direction:column;justify-content:center;padding:6px 10px 6px 25px;border-right:1px solid var(--color-border-neutral-2);cursor:pointer;background:{{ row.labelBg }};border-left:3px solid {{ row.focusBar }};transition:background .16s ease">
@@ -678,9 +724,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     </div>
 <div class="ms-view-dock" data-view-dock="" data-noprint="" style="bottom:{{ viewDockBottom }}"><div class="ms-view-pill" role="toolbar" aria-label="{{ L.viewG }}">
           <button class="ms-tool-button" onClick="{{ toggleElementDates }}" aria-pressed="{{ showElementDates }}" data-tip="{{ L.elementDates }} · D" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ datesBg }};color:{{ datesFg }};border-color:{{ datesBorder }}">{{ L.elementDates }}</button>
+<button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durationViewLabel }}</button>
 <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">{{ L.weekLabel }}</button>
 <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
-<button class="ms-tool-button" onClick="{{ toggleMM }}" aria-pressed="{{ showMM }}" aria-label="{{ mmToolTip }}" data-tip="{{ mmToolTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" style="background:{{ mmBg }};color:{{ mmFg }};border-color:{{ mmBorder }}">{{ durationViewLabel }}</button>
+<button class="ms-tool-button" onClick="{{ toggleGrid }}" aria-pressed="{{ showGrid }}" data-tip="Grid · Shift+G" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ gridBg }};color:{{ gridFg }}">Grid</button>
 <button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}">Now</button>
         <span class="ms-toolbar-sep"></span>      <div class="ms-toolbar-group">
 
@@ -709,7 +756,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
         <sc-if value="{{ showProp }}" hint-placeholder-val="{{ true }}">
           <div class="ms-property-body" style="padding:16px;display:flex;flex-direction:column;gap:14px">
-            <sc-if value="{{ multiSelected }}"><div style="display:flex;flex-direction:column;gap:10px"><strong>{{ selectionCount }}{{ L.selectedCount }}</strong><span style="font-size:12px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.multiHint }}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" onClick="{{ copySel }}">{{ L.copyItems }}</button><button type="button" onClick="{{ cutSel }}">{{ L.cutItems }}</button><button type="button" onClick="{{ deleteSel }}">{{ L.del }}</button></div></div></sc-if>
+
             <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;flex-direction:column;gap:14px">
                 <h3 class="ms-property-title">{{ selKindLabel }}</h3>
@@ -1099,6 +1146,12 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.28', agent: 'Codex', title: '[주요 사항] 선택 전면 표시 · Grid · 편집 단축키', items: ['[선택 위계] 선택 중 아이템과 날짜·기간 안내를 항상 전면 표시 · 드래그·속성 편집 종료 후에도 유지 · 선택 해제 시 원래 위계 복귀', '[보기] 상세 일별 눈금 450%부터 표시 · 날짜 오른쪽에 작업일수 배치 · Grid 가로선과 0부터 0.5 단위 높이 숫자 표시', '[연결 메모] 툴팁의 일정 섹션 제거 · 연결 대상과 메모만 표시', '[편집 키] Option/Alt 드래그 복제 · Shift 드래그 축 고정 · 전체 선택·복제·복사·잘라내기·붙여넣기·실행 취소·다시 실행 · 위아래 1px/Shift 10px 이동 · F2 속성 열기 · Esc 이동 취소 · 한글 입력 모드에서도 편집 키 지원', '[검증] 회귀 테스트 232개 통과 · 실제 화면 선택 전면·선택 해제 위계·Grid 숫자와 저장 복원·복제 및 실행 취소 확인'] },
+    { v: 'v0.9.27', agent: 'Codex', title: '[주요 사항] 과감한 줄 정렬 · 미세 보정 제한 해제', items: ['[줄 정렬] 작은 높이까지 포함해 가까운 중심 위치를 같은 줄로 묶고 상단과 높이를 확실히 통일 · 줄 순서 유지', '[배치] 한 아이템의 겹침 때문에 전체 세션 정렬이 취소되는 조건 제거 · 이동 거리 제한 제거 · 필요 시 세션 안의 여유 공간 활용', '[큰 아이템] 큰 높이를 유지하며 가장 가까운 줄 하단에 맞춤 · 중심 위치 역전 판정으로 정렬을 취소하던 문제 수정', '[보존] 가로 일정·위계·선택 범위·세션 높이·실행 취소 유지', '[검증] 회귀 테스트 226개 통과 · 100개 밀집 아이템의 확실한 줄 정돈과 반복 안정성 · 일부 일정 겹침에도 정렬 적용 · 실제 화면 확인'] },
+    { v: 'v0.9.26', agent: 'Codex', title: '[주요 사항] 배치 이미지 기준 줄·높이·하단 정렬', items: ['[이미지 기준] 같은 줄의 Planning·Development 상단과 기본 높이 통일 · Design은 바로 윗줄 · 큰 System Test는 큰 높이를 유지하고 공통 하단에 맞춤', '[줄 추론] 기존 중심 위치로 가까운 아이템을 같은 줄로 판단 · 줄 순서 보존 · 세션 하단과 기존 배치 범위 안에서 기준선 정돈', '[크기] 가까운 정수 높이로 보정 · 40%를 넘는 크기 변화는 제외 · 특수한 작은 높이는 보존', '[보호] 가로 일정·너비·위계·세션 보존 · 새로운 겹침·겹침 확대·위아래 역전·세션 밀림 발생 시 미세 보정으로 대체 · 선택 범위·전체 확인·실행 취소 유지', '[검증] 회귀 테스트 225개 통과 · 첨부 이미지 배치 재현 · 일정·다음 세션 보존 · 반복 정렬·실행 취소 확인'] },
+    { v: 'v0.9.25', agent: 'Codex', title: '[주요 사항] 배치 의도를 보존하는 정렬 · 다중 선택 속성 간소화', items: ['[정렬 규칙] 세션·위아래 순서·아이템 상대 배치·일정·가로 크기·위계 보존 · 빈자리 탐색과 겹침 강제 재배치 제거', '[미세 정돈] 4px 이내 가까운 세로 기준선 및 정수 픽셀 보정 · 새 겹침·겹침 확대·순서 역전·세션 높이 변경은 보정 제외', '[높이] 배치 정돈 후 4px 이내에서만 정수 높이 단위 보정 · 공간 부족 시 크기와 기존 겹침 유지', '[범위와 피드백] 선택 아이템 또는 확인 후 전체 정돈 · 변경 개수와 보정 보류 개수 안내 · 한 번의 실행 취소', '[속성] 다중 선택 안내·선택 개수·복사·잘라내기·그룹 삭제 버튼 제거 · 마지막 선택 아이템 속성만 표시', '[검증] 회귀 테스트 222개 통과 · 100개 밀집 아이템의 순서·겹침·일정·위계 및 반복 정렬 안정성 · 실제 화면 속성·미세 정렬·실행 취소·저장 복원 확인'] },
+    { v: 'v0.9.24', agent: 'Codex', title: '[주요 사항] 선택 속성 · 연도 안내 · 한 줄 메뉴 · 세로 정렬', items: ['[선택 속성] 여러 아이템 선택 시 마지막 선택한 아이템 속성 표시 및 편집', '[날짜 안내] 양끝 날짜 기준선에서 연도 제거 · 1월 왼쪽에 연도 표시 · 1월이 화면 밖이면 세션 헤더의 연도 태그로 전환 및 양방향 애니메이션', '[메뉴] 공간 부족 시 아이콘 숨김 · 후순위 추가 기능과 관리 기능을 더보기로 이동 · 극소 화면까지 한 줄 유지', '[정렬] 가로 일정·너비 보존 · 세로 위치 및 겹침 해소 우선 · 배치 후 가능한 정수 높이 적용 · 선택 범위·전체 확인·실행 취소 유지', '[검증] 회귀 테스트 216개 통과 · 실제 화면 다중 선택 속성·겹침 정렬·날짜 유지·실행 취소·연도 태그 전환 및 휴대폰 폭 한 줄 메뉴 확인'] },
+    { v: 'v0.9.23', agent: 'Codex', title: '[주요 사항] 자유로운 이동 · 스마트 가이드 · 정렬', items: ['[이동 개선] 드래그·놓기 시 겹침 자동 재배치 제거 · 잡은 지점 유지 · 좌우 이동의 세로 위치 보존', '[즉시 반응] 드래그 전환 효과 제거 · 화면 갱신 주기에 맞춘 입력 처리 · 드래그 중 배치 계산·세션 높이 고정 · 가까운 범위에서만 눈금 맞춤', '[스마트 가이드] 주변 아이템 시작·끝·중앙·높이·동일 길이 맞춤 표시 · 포스트잇·이미지·연결 메모 위치와 크기 가이드 · 눈금 맞춤 OFF 시 자유 이동', '[선택 위계] 선택·편집 중 임시 전면 표시 · 드래그 종료와 선택 해제 시 저장된 위계 복귀', '[정렬] 마우스 오른쪽 정렬 버튼 · 선택 아이템만 보정 · 미선택 시 전체 정렬 확인 · 정수 근처 값만 보정 및 실행 취소', '[검증] 100개 겹침 반복 이동 · 회귀 테스트 212개 통과 · 실제 화면 위치·동일 길이 맞춤 및 정렬·취소·실행 취소 확인'] },
     { v: 'v0.9.22', agent: 'Codex', title: '공유 비밀번호 설정 정리', items: ['열람·편집 전환 비밀번호 역할과 설정 영역 재구성', '비활성 비밀번호 빈 공간 제거 · 입력 가능 상태와 권한 연동', '공유 창의 기존 접속 코드·DB 관리자·외부 연동 메뉴 제거'] },
     { v: 'v0.9.21', agent: 'Codex', title: '1.0 준비 · 웰컴 메시지와 실제 화면 사용법 개편', items: ['웰컴 헤드·서브·With MapStone 문구 변경 · 기존 로고와 흩날림 효과 유지', '일정 자료 파편화 문제와 이미지/텍스트 분석 중심의 사용법 전면 개편', '가상 프로젝트 실제 캡처로 버전 비교·아이템 관리·공유·발표모드 안내', '현재 동작과 단축키 대조 · 출시 전 소스·디자인·조작 검증 기록', '비교 화면 잔여 높이 맞춤 · 날짜 조절 툴팁과 버전 선택 접근성 수정'] },
     { v: 'v0.9.20', agent: 'Codex', title: '한눈에 보는 버전 비교와 편집기 배치 일치', items: ['편집기의 배치/높이/쉐이프/텍스트 정렬 계산을 비교 이미지와 AI 이미지에 공통 적용', '일정표 전체 맞춤과 원본 크기 조작 · 변경 요약을 옆에 배치', '변경 표시 기본 활성화 · 빈 변경 카테고리 축소 · 보고서 요약과 상세를 분리', '큰 화면과 일반 화면에서 일정표 전체와 핵심 변경을 동시에 확인', '자동 맞춤의 ResizeObserver 반복 경고 수정 · 폭 변경만 감지하고 다음 프레임에서 크기 반영'] },
@@ -1231,7 +1284,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.22';
+  APP_VER = 'v0.9.28';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1244,12 +1297,12 @@ class Component extends DCLogic {
     ko: {
       addChevHint: '시작과 종료가 있는 작업 일정을 추가합니다.', addMarkerHint: '주요 목표나 완료 시점을 표시합니다.', addFlagHint: '연결점으로 아이템과 관계를 표시하는 콜아웃 메모입니다.', addPlainHint: '배경 정보나 참고할 기간을 표시합니다.', addBandHint: '여러 세션에 걸친 공통 기간을 표시합니다.', addStickyHint: '자유롭게 배치하는 짧은 메모를 남깁니다.', weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 아이템', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '연결점을 원하는 아이템으로 이동해주세요.\n어떤 아이템의 콜아웃인지 명확히 알 수 있어요.', elementDates: '날짜', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '연결점', viewG: '보기', mmTip: '기간 표시', lang: '日本語', add: '아이템', chev: '일정', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '연결 메모', note: '상단 공지 메모', row: '세션',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fitWidthLabel: '폭 맞춤', weekLabel: '주차', workDays: '작업일수', durationMonths: '개월', fit: '높이 맞춤', full: '발표모드', interact: '마우스', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM = 22MD (KOSA 기준)', mmToolTip: '작업 기간을 {unit} 단위로 표시합니다.', animF: '애니메이션', animHint: '아이템 이동·재배치, 확대·축소와 화면 전환을 부드럽게 표현', periodSettings: '표시 기간', displaySettings: '표시 방식', interactionSettings: '조작 및 효과', visibleMonthLabel: '현재 표시된 월 구간', actualW: '실제 주 수',
+      align:'정렬', alignHint:'기존 줄 순서와 일정을 유지하며 같은 줄의 높이·상단과 큰 아이템의 하단을 맞춥니다. 미선택 시 전체 정렬을 확인합니다.', editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fitWidthLabel: '폭 맞춤', weekLabel: '주차', workDays: '작업일수', durationMonths: '개월', fit: '높이 맞춤', full: '발표모드', interact: '마우스', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM = 22MD (KOSA 기준)', mmToolTip: '작업 기간을 {unit} 단위로 표시합니다.', animF: '애니메이션', animHint: '아이템 이동·재배치, 확대·축소와 화면 전환을 부드럽게 표현', periodSettings: '표시 기간', displaySettings: '표시 방식', interactionSettings: '조작 및 효과', visibleMonthLabel: '현재 표시된 월 구간', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
       sticky: '포스트잇', stickyNew: '메모를 남겨주세요.', rowLanesF: '높이 (칸 갯수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
       importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장 [JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      selectedCount: '개 아이템 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 아이템 선택. 방향키나 드래그로 함께 이동합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '세션', rowBasic: '기본 정보', rowSize: '세션 크기', rowOrder: '세션 관리', timeMode: '시작·종료 표시 방식', dayHint: '화살표로 하루씩 조정', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      selectedCount: '개 아이템 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 아이템 선택. 방향키나 드래그로 함께 이동합니다. 아래 속성은 마지막 선택한 아이템의 값이며 해당 아이템만 수정합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '세션', rowBasic: '기본 정보', rowSize: '세션 크기', rowOrder: '세션 관리', timeMode: '시작·종료 표시 방식', dayHint: '화살표로 하루씩 조정', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       textEditHint: '속성에서 텍스트 수정이 가능합니다.', nowDirection: '화면 밖 NOW 위치로 이동', markerIconGuide: '마일스톤 내용에 따라 적합한 아이콘으로 자동반영됩니다.', versionCompareGuide: '두개 이상의 버전이 있어야 버전 비교가 가능합니다.', markerIconDisplay: '아이콘 표시', markerIcon: '아이콘', smartIcon: '스마트 아이콘 적용', smartIconHint: '문구를 분석해 알맞은 아이콘을 적용합니다.', iconShow: '표시', iconHide: '미표시', layerFront: '앞으로', layerBack: '뒤로',
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '세션 삭제', rowDelMsg: '이 세션과 세션 안의 아이템을 삭제합니다.', nowTip: '클릭: NOW 속성 / 드래그: 기준선 이동 / 더블클릭·Enter: 오늘 날짜로 이동', dup: '복제',
@@ -1263,7 +1316,7 @@ class Component extends DCLogic {
       weekHint: '실제 주 수: 월의 일수 ÷ 7',
       weekModeF: '월 간격 기준', nowPos: 'NOW 기준선 위치 (개월)', todayBtn: '오늘 날짜로 맞추기',
       overlapF: '겹침 처리', opShrink: '다른 아이템 줄이기', opDesc_shrink: '겹친 다른 아이템의 기간 축소', opDesc_moveOther: '겹친 다른 아이템을 빈 줄로 이동', opDesc_moveSelf: '선택 아이템을 빈 줄로 이동', opMoveOther: '다른 아이템 이동', opMoveSelf: '선택 아이템 이동',
-      overlapHint: '아이템을 옮기거나 길이를 바꿔 겹치면 이 규칙으로 자동 정리됩니다. 핸들을 더블클릭하면 옆 아이템에 딱 맞게 조정됩니다.',
+      overlapHint: '마우스로 옮기거나 길이를 바꿀 때는 겹침을 허용합니다. 이 규칙은 속성·키보드 변경에 적용됩니다. 핸들을 더블클릭하면 옆 아이템에 딱 맞게 조정됩니다.',
       verSave: '버전 저장', author: '작성자', date: '날짜', changes: '변경 내용', phAuthor: '예: 김지훈', phChanges: '예: DCM 지연 반영, Pre-Prod E2E 3M 조정',
       saveBtn: '현재 상태를 버전으로 저장', history: '버전 히스토리', restoreBtn: '이 버전으로 복원',
       noVer: '저장된 버전이 없습니다.',
@@ -1282,6 +1335,7 @@ class Component extends DCLogic {
       clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 아이템의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearConfirm: '새로 시작', clearMsg: '모든 아이템과 일정표가 사라지고 새로운 일정표가 생성됩니다.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '발표모드 종료', rowNamePh: '새로운 세션 입력', importShort: '이미지/텍스트 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipSchedule: '일정', tipMemo: '상세 메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
+      align:'整列', alignHint:'整数付近の位置・サイズを補正します。',
       addChevHint: '開始・終了のある予定を追加します。', addMarkerHint: '目標や完了の時点を示します。', addFlagHint: '接続点で項目との関係を示すコールアウトメモです。', addPlainHint: '参考となる期間を示します。', addBandHint: '複数行に共通する期間を示します。', addStickyHint: '自由に配置する短いメモを残します。', weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: '接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考ブロック', band: '共通ブロック', marker: 'マイルストーン', flag: '接続メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
       editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fitWidthLabel: '幅に合わせる', weekLabel: '週', workDays: '作業日数', durationMonths: '月数', fit: '高さに合わせる', full: 'プレゼンモード', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', animHint: '項目の移動・再配置、ズームと画面切り替えを滑らかに表示します。', periodSettings: '表示期間', displaySettings: '表示方法', interactionSettings: '操作と効果', visibleMonthLabel: '現在表示中の月間範囲', actualW: '実際の週数',
@@ -1401,20 +1455,19 @@ class Component extends DCLogic {
     this.root.querySelectorAll('.ms-tool-menu[open]').forEach((menu) => { if (menu !== current) menu.removeAttribute('open'); });
   };
   /* picking an entry closes its menu so the new item is not hidden under the popover */
-  /* keep the toolbar on one line: hide icons → fold 보기 into a menu → short analysis label → icon-only fit/full */
+  /* Keep one row by hiding icons, shortening labels and folding secondary commands into menus. */
   narrowScreen() { return !!(window.matchMedia && window.matchMedia('(max-width:700px)').matches); }
   fitToolbar = () => {
     const row = this.root && this.root.querySelector('.ms-toolbar-row');
     if (!row || typeof getComputedStyle !== 'function') return;
     const key=[row.clientWidth,window.innerWidth,this.state.lang,this.state.readOnly].join(':');if(this._toolbarFitKey===key)return;this._toolbarFitKey=key;
-    const steps=['c1','c2','c3','c4','c5','c6'];row.classList.remove(...steps);row.classList.add('c0');
-    if(this.narrowScreen()){row.classList.add('c1','c3');return;}
-    const cs=getComputedStyle(row),room=row.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
-    const need=()=>Array.from(row.children).filter(c=>c.offsetParent!==null&&c.style.flex!=='1').reduce((sum,c)=>sum+c.offsetWidth,0)+row.children.length*(parseFloat(cs.columnGap)||6);
-    for(const c of ['c3','c4','c6']){if(need()<=room)break;row.classList.add(c);}
+    const steps=['c1','c2','c3','c4','c5','c6','c7','c8'];row.classList.remove(...steps);row.classList.add('c0');
+
+    const overflow=()=>row.scrollWidth>row.clientWidth+1;
+    for(const c of ['c1','c2','c3','c5','c4','c6','c7','c8']){if(!overflow())break;row.classList.add(c);}
 
   };
-  closePickedMenu = (e) => { const b = e.target && e.target.closest ? e.target.closest('.ms-tool-popover button') : null; if (b) b.closest('details').removeAttribute('open'); };
+  closePickedMenu = (e) => { const b = e.target && e.target.closest ? e.target.closest('.ms-tool-popover button') : null; if (b) {const menu=b.closest('details');if(menu && getComputedStyle(menu.querySelector('summary')).display!=='none')menu.removeAttribute('open');} };
   componentDidMount() {
     let raw = null;
     try {
@@ -1475,6 +1528,7 @@ class Component extends DCLogic {
     if (this._msCleanup) this._msCleanup();
   }
   componentDidUpdate() {
+    if(this.state.alignConfirm && !this._alignFocused){this.root?.querySelector('[data-align-dialog] button')?.focus?.();this._alignFocused=true;}else if(!this.state.alignConfirm && this._alignFocused){this._alignFocused=false;this.root?.querySelector('[data-align-button]')?.focus?.();}
     if (this.narrowScreen() && this.state.panel && (this._mobileSel !== this.state.sel || !this._mobilePanel)) {
       const item = Array.from(this.root?.querySelectorAll('[data-id][role="button"]') || []).find(el => el.dataset.id === this.state.sel);
       item?.scrollIntoView({block:'nearest',inline:'nearest'});
@@ -1488,7 +1542,7 @@ class Component extends DCLogic {
     if(this.state.readOnly && this._viewCfg && this.state.cfg!==this._viewAppliedCfg){this._viewBaseCfg=this.state.cfg;this._viewAppliedCfg={...this.state.cfg,...this._viewCfg};this.setState({cfg:this._viewAppliedCfg});return;}
     if(!this.state.readOnly){this._viewCfg=null;this._viewBaseCfg=null;this._viewAppliedCfg=null;}
     if (this._zoomFix && this._board) { const z = this._zoomFix; this._zoomFix = null; this._board.scrollLeft = Math.max(0, 192 + z.content * z.ratio - z.ax); }
-    MapstoneUI.refreshPresentation?.(this);this.save(); this.syncScrollMetrics(); this.clipSessionTitles(); this.updateNowIndicator(); this.fitToolbar(); if (this.root && MapstoneUI.growAll) MapstoneUI.growAll(this.root);
+    MapstoneUI.refreshPresentation?.(this);this.save(); this.syncScrollMetrics(); this.clipSessionTitles(); this.updateNowIndicator(); this.updateYearIndicator(); this.fitToolbar(); if (this.root && MapstoneUI.growAll) MapstoneUI.growAll(this.root);
     const ids = new Set(this.state.items.map((i) => i.id));
     if (this._ids && this.animOn()) {
       const fresh = [...ids].filter((id) => !this._ids.has(id));
@@ -1523,6 +1577,18 @@ class Component extends DCLogic {
       this._lastEditing = this.state.editing;
       if (this.state.editing) requestAnimationFrame(()=>{const input=this.root && Array.from(this.root.querySelectorAll('input[data-id],textarea[data-id]')).find(el=>el.dataset.id===this.state.editing);if(input)input.focus();});
     }
+  }
+  updateYearIndicator() {
+    const header=this.root?.querySelector?.('[data-time-header]'),tag=header?.querySelector('[data-year-tag]');
+    if(!tag || !this._board)return;
+    const box=this._board.getBoundingClientRect(),sticky=header.querySelector('.ms-sticky-col').getBoundingClientRect();
+    const months=Array.from(header.querySelectorAll('[data-col]'));
+    const visible=months.filter(el=>{const b=el.getBoundingClientRect();return b.right>sticky.right && b.left<box.right;});
+    if(!visible.length)return;
+    const i=Number(visible[0].getAttribute('data-col')),t=this.state.cfg.startM-1+i,year=this.state.cfg.startY+Math.floor(t/12);
+    let januaryVisible=false;
+    for(const el of months){const label=el.querySelector('[data-january-year]');if(!label?.textContent.trim())continue;const b=label.getBoundingClientRect(),shown=b.left>=sticky.right && b.right<=box.right;label.setAttribute('data-visible',String(shown));if(shown && Number(label.getAttribute('data-january-year'))===year)januaryVisible=true;}
+    tag.textContent=String(year);tag.setAttribute('data-visible',String(!januaryVisible));
   }
   syncScrollMetrics() {
     const el = this._board;
@@ -1573,7 +1639,7 @@ class Component extends DCLogic {
     this._onScroll = () => {
       if (!this._sraf) this._sraf = requestAnimationFrame(() => {
         this._sraf = null;
-        this.clipSessionTitles();this.updateNowIndicator();
+        this.clipSessionTitles();this.updateNowIndicator();this.updateYearIndicator();
         const thumb = this.root && this.root.querySelector('[data-ind-thumb]');
         if (thumb) { thumb.style.left = (el.scrollLeft / el.scrollWidth * 100) + '%'; thumb.style.width = Math.min(100, el.clientWidth / el.scrollWidth * 100) + '%'; }
       });
@@ -1734,6 +1800,7 @@ class Component extends DCLogic {
   mutate(fn, push) {
     if (this.state.readOnly) { this.setState({ saved: this.L().readOnlyMsg }); return false; }
     const snap = push === false ? null : this.snapshot();
+    if(push!==false && !this._editingSelection)this._settledSelection=new Set(this.selectedIds());
     this.setState((st) => {
       const d = JSON.parse(JSON.stringify({ title: st.title, cfg: st.cfg, rows: st.rows, items: st.items, notes: st.notes, now: st.now }));
       fn(d);
@@ -1896,6 +1963,12 @@ class Component extends DCLogic {
     this._viewAppliedCfg=d.cfg;this.setState({cfg:d.cfg});return true;
   }
   toggleNow = () => this.viewCfg(d=>{d.cfg.showNow=d.cfg.showNow===false;});
+  toggleGrid = () => this.viewCfg(d=>{d.cfg.showGrid=!d.cfg.showGrid;});
+  heightGrid() {
+    if(!this.state.cfg.showGrid)return [];
+    const layout=this.rowLayout(),height=this.state.rows.reduce((sum,r)=>sum+layout[r.id].height+1,0),step=this.heightUnit()/2;
+    return Array.from({length:Math.floor(height/step)+1},(_,i)=>({key:i,top:(i*step)+'px',label:String(i/2),color:i%2?'#9b68d24d':'#8951c980'}));
+  }
   toggleMM = () => { this.viewCfg((d) => { d.cfg.showMM = d.cfg.showMM === false; }); };
   toggleWeek = () => { this.viewCfg((d) => { d.cfg.showWeek = d.cfg.showWeek === false; }); };
   toggleElementDates = () => { this.viewCfg(d => { d.cfg.showElementDates = !d.cfg.showElementDates; }); };
@@ -2051,6 +2124,7 @@ class Component extends DCLogic {
   }
   isSelected(id) { this.selectedIds();return this._selectionCache.set.has(id); }
   selectItems(ids, primary=ids[ids.length-1], anchor=this.state.selectionAnchor) {
+    this._settledSelection=null;
     this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null});
   }
   pickItem(id, e={}) {
@@ -2108,12 +2182,13 @@ class Component extends DCLogic {
      appended under the row — prevents label-on-label collisions at the source */
   rowLayout(state=this.state) {
     if(this.drag?.layout && ['top','bottom'].includes(this.drag.mode))return this.drag.layout;
+    if(this.drag?.moveLayout)return this.drag.moveLayout;
     const st = state, laneH = st.cfg.laneH;
     const map = {};
     st.rows.forEach((r) => {
       const its = st.items.filter((i) => i.row === r.id && i.kind !== 'band' && i.kind !== 'marker' && this.visibleItem(i));
       let lanes = 2;
-      its.forEach((i) => { lanes = Math.max(lanes, this.boxKind(i.kind) && i.trackH!==undefined ? Math.ceil(((i.trackY??6+i.lane*laneH)+i.trackH+6)/laneH) : i.lane + (i.span || 1)); });
+      its.forEach((i) => { lanes = Math.max(lanes, this.boxKind(i.kind) && (i.trackH!==undefined || i.trackY!==undefined) ? Math.ceil(((i.trackY??6+i.lane*laneH)+(i.trackH??(i.span||1)*laneH-12)+6)/laneH) : i.lane + (i.span || 1)); });
       const chevs = its.filter((i) => i.kind === 'chev').slice().sort((a, b) => a.s - b.s);
       const blocks = its.filter((i) => this.boxKind(i.kind));
       const strips = [];
@@ -2163,7 +2238,7 @@ class Component extends DCLogic {
   }
 
   // ── pointer interaction ───────────────────────
-  clearSelection = () => this.setState({ selection: [], selectionAnchor:null, sel: null, focusRow: null, editing: null, editingRow: null, editNote: null, selLinkDot: null });
+  clearSelection = () => {this._settledSelection=null;this.setState({ selection: [], selectionAnchor:null, sel: null, focusRow: null, editing: null, editingRow: null, editNote: null, selLinkDot: null });};
   onOutsideDown = (e) => {
     if (this.drag?.mode==='marquee' || e.button !== 0 || e.target.closest('[data-row], [data-track], [data-id], [data-properties], button, input, textarea, select, summary, dialog, [role=dialog]')) return;
     this.clearSelection();
@@ -2282,12 +2357,20 @@ class Component extends DCLogic {
     const it = this.state.items.find((i) => i.id === d.id);
     if (!it) return;
     MapstoneUI.hideTip();
-    if (!this.pickItem(d.id,e)) return;
+    this._settledSelection=null;
+    if (!this.pickItem(d.id,e.altKey || (e.shiftKey && this.isSelected(d.id))?{...e,metaKey:false,shiftKey:false}:e)) return;
     this.setState({ selLinkDot:null });
     this.setState({ sel: d.id, editing: null, editNote: null, panel: it.kind === 'flag' || this.narrowScreen() ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
     if (this.state.readOnly) return;
-    this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), moved: false };
+    this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), copyPending:!!e.altKey && !d.mode, moved: false };
     if (!d.mode && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
+    if(this.drag.mode==='move'){this.drag.moveLayout=this.rowLayout();if(this.boxKind(it.kind)){this.drag.box=this.trackBox(it,this.drag.moveLayout);this.drag.row=it.row;}}
+    if(['sticky','image','flag'].includes(it.kind) && this.root){
+      const nodes=Array.from(this.root.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])'));
+      const rect=node=>(node.querySelector?.('[data-alert-label]')||node).getBoundingClientRect();
+      const own=nodes.find(node=>node.dataset.id===it.id);if(own)this.drag.visualBox=rect(own);
+      const selected=new Set(this.selectedIds());this.drag.visualPeers=nodes.filter(node=>!selected.has(node.dataset.id)).map(rect);
+    }
     if(it.kind==='marker'){this.drag.markerSlots={...this._markerSlots};this.drag.markerRows=this._markerRows||1;}
     if (d.mode==='top' || d.mode==='bottom') Object.assign(this.drag,this.heightBounds(it));
     this.bind();this.setState({});
@@ -2302,7 +2385,7 @@ class Component extends DCLogic {
   };
   onNowDbl = (e) => { e.stopPropagation(); this.nowToday(); MapstoneUI.hideTip(); };
   bind() {
-    this._mv = (ev) => this.onMove(ev);
+    this._mv = (ev) => {this._pendingMove=ev;if(this._dragFrame)return;this._dragFrame=requestAnimationFrame(()=>{this._dragFrame=null;const latest=this._pendingMove;this._pendingMove=null;if(latest)this.onMove(latest);});};
     this._up = (ev) => this.stopDrag(ev);
     window.addEventListener('pointermove', this._mv);
     window.addEventListener('pointerup', this._up);
@@ -2337,11 +2420,11 @@ class Component extends DCLogic {
   /* vertical snap for height drags: a row boundary always catches the edge briefly (detent);
      with 눈금 맞춤 on, the edge also locks to the nearest lane line of whichever row it is in. */
   snapEdge(v,edge,rows) {
-    const laneH=this.laneH(),DETENT=8;let best=v,bd=Infinity;
+    const laneH=this.laneH(),DETENT=4/this.heightScale();let best=v,bd=Infinity;
     const near=(t,th)=>{const dd=Math.abs(t-v);if(dd<=th&&dd<bd){bd=dd;best=t;}};
     rows.forEach(r=>{
       near(edge==='top'?r.top+6:r.bottom-6,DETENT);
-      if(this.state.cfg.magnet)for(let k=0;;k++){const t=edge==='top'?r.top+6+k*laneH:r.top+(k+1)*laneH-6;if(t>r.bottom-6+.5)break;near(t,laneH/2);}
+      if(this.state.cfg.magnet)for(let k=0;;k++){const t=edge==='top'?r.top+6+k*laneH:r.top+(k+1)*laneH-6;if(t>r.bottom-6+.5)break;near(t,4/this.heightScale());}
     });
     return best;
   }
@@ -2359,7 +2442,196 @@ class Component extends DCLogic {
      whichever is closer, and only inside a small threshold. OFF → free placement,
      so a plain click never nudges the block. */
   bandBox(it) {const top=this.rowTop(it.rowFrom||this.state.rows[0].id);const last=this.state.rows.find(r=>r.id===it.rowTo)||this.state.rows[this.state.rows.length-1];return {top:Math.max(this.rowTop(this.state.rows[0].id)+6,top+(it.trackY??6)),height:Math.max(40,it.trackH??(this.rowTop(last.id)+this.rowHeight(last.id)-top-14))};}
-  dailyGrid() {return this.weekPxVal()/19>6;}
+  dailyGrid() {return this.weekPxVal()/19>=4.5;}
+  alignmentPlan(ids=this.selectedIds()) {
+    const micro=this.alignmentMicroPlan(ids),original=this.state.items,items=JSON.parse(JSON.stringify(micro.items));
+    const chosen=new Set(ids),all=!ids.length,eligible=it=>all || chosen.has(it.id),layout=this.rowLayout(),unit=this.heightUnit(),base=unit-12,held=new Set();
+    for(const row of this.state.rows){
+      const bottom=layout[row.id].height-layout[row.id].strips*layout[row.id].stripH-8;
+      const records=original.filter(it=>this.boxKind(it.kind) && it.row===row.id).map(it=>{
+        const b=this.trackBox(it,layout),rounded=(b.height<base?Math.max(.5,Math.round((b.height+12)/unit*2)/2):Math.max(1,Math.round((b.height+12)/unit)))*unit-12;
+        const regular=Math.abs(rounded-b.height)<=Math.min(unit/2,b.height*.4)+1e-8;
+        return {it,y:b.localTop,h:b.height,center:b.localTop+b.height/2,height:regular?rounded:b.height,regular};
+      });
+      // A small custom block is an intentional size, not a candidate for doubling.
+      const standard=records.filter(r=>r.regular && r.height<=base && r.y>=0 && r.y+r.h<=bottom+base/2).sort((a,b)=>a.center-b.center);
+      if(!standard.length)continue;
+      const tiers=[];
+      for(const r of standard){const last=tiers.at(-1);if(last && r.center-last[0].center<=Math.min(base,...last.map(r=>r.height),r.height)*.65)last.push(r);else tiers.push([r]);}
+      const footprint=Math.max(...standard.map(r=>r.y+r.h));
+      const sizes=tiers.map(t=>Math.max(...t.map(r=>r.height))),total=sizes.reduce((a,b)=>a+b,0);
+      const floor=Math.min(bottom,Math.max(Math.round(footprint),total+6));
+      if(floor-total<6)continue;
+      const candidate=new Map(),tierTops=[];
+      for(let i=0;i<tiers.length;i++){
+        const fixed=tiers[i].filter(r=>!eligible(r.it));
+        const top=fixed.length?fixed.slice().sort((a,b)=>a.y-b.y)[Math.floor(fixed.length/2)].y:floor-sizes.slice(i).reduce((a,b)=>a+b,0);
+        tierTops.push(top);
+        for(const r of tiers[i])if(eligible(r.it))candidate.set(r.it.id,{y:top,h:sizes[i]});
+      }
+      const edges=[...new Set(tierTops.flatMap((y,i)=>[y,y+sizes[i]]))];
+      for(const r of records){
+        if(!eligible(r.it) || !r.regular || r.height<=base || r.y<0 || r.y+r.h>bottom+base/2)continue;
+        // Tall items keep their span and join the nearest existing tier's bottom edge.
+        const edge=edges.filter(y=>y-r.height>=6 && y<=bottom).sort((a,b)=>Math.abs(a-(r.y+r.h))-Math.abs(b-(r.y+r.h)))[0];
+        if(edge!==undefined)candidate.set(r.it.id,{y:edge-r.height,h:r.height});
+      }
+      const next=r=>{const b=this.trackBox(items.find(it=>it.id===r.it.id),layout);return candidate.get(r.it.id)||{y:b.localTop,h:b.height};};
+      // Align inferred tiers decisively. Existing overlap is allowed; tall blocks span tiers.
+      // Only fixed, unselected blocks are barriers to crossing another tier.
+      let valid=records.every(r=>{if(!candidate.has(r.it.id))return true;const n=next(r);return n.y>=6 && n.y+n.h<=bottom+1e-8;});
+      for(const r of standard)if(candidate.has(r.it.id))for(const fixed of standard.filter(p=>!eligible(p.it))){
+        const n=next(r),old=r.center-fixed.center,now=n.y+n.h/2-fixed.center;
+        if(old*now < -1e-8 && Math.abs(old)>Math.min(r.height,fixed.height)*.65)valid=false;
+      }
+      if(!valid){for(const id of candidate.keys())held.add(id);continue;}
+      for(const [id,n] of candidate){const it=items.find(it=>it.id===id);const current=this.trackBox(it,layout);if(n.y!==current.localTop)it.trackY=n.y;if(n.h!==current.height)it.trackH=n.h;}
+    }
+    // Keep all other sessions stationary, including automatic session sizing and label strips.
+    const after=this.rowLayout({...this.state,items});
+    const blocked=new Set(this.state.rows.filter(row=>layout[row.id].height!==after[row.id].height || layout[row.id].strips!==after[row.id].strips).map(row=>row.id));
+    for(let i=0;i<items.length;i++)if(blocked.has(items[i].row) && JSON.stringify(items[i])!==JSON.stringify(micro.items[i])){held.add(items[i].id);items[i]=JSON.parse(JSON.stringify(micro.items[i]));}
+    let changed=0,positions=0,heights=0;
+    for(let i=0;i<items.length;i++){const a=original[i],b=items[i];if(JSON.stringify(a)===JSON.stringify(b))continue;changed++;if(['y','trackY','labelDy'].some(k=>a[k]!==b[k]))positions++;if(['h','trackH'].some(k=>a[k]!==b[k]))heights++;}
+    return {items,changed,positions,heights,held:Math.max(micro.held,held.size)};
+  }
+  alignmentMicroPlan(ids=this.selectedIds()) {
+    const original=this.state.items,items=JSON.parse(JSON.stringify(original)),chosen=new Set(ids),all=!ids.length;
+    const layout=this.rowLayout(),unit=this.heightUnit(),limit=4,held=new Set();
+    const eligible=it=>all || chosen.has(it.id);
+    const records=items.filter(it=>this.boxKind(it.kind)).map(it=>{const box=this.trackBox(it,layout);return {it,row:it.row,y:box.localTop,h:box.height,oldY:box.localTop,oldH:box.height};});
+    // Baseline coordinates are immutable: correction may not swap order or increase overlap.
+    const safe=(r,y,h)=>{
+      const row=layout[r.row],bottom=row.height-row.strips*row.stripH-8;
+      if(y<Math.min(6,r.oldY) || y+h>Math.max(bottom,r.oldY+r.oldH))return false;
+      return records.every(p=>{
+        if(p===r || p.row!==r.row)return true;
+        const direction=Math.sign(r.oldY-p.oldY),next=Math.sign(y-p.y),timeOverlap=r.it.s<p.it.e && r.it.e>p.it.s;
+        if(direction && next && direction!==next)return false;
+        if(timeOverlap && direction && next===0)return false;
+        if(!timeOverlap)return true;
+        const before=Math.max(0,Math.min(r.oldY+r.oldH,p.oldY+p.oldH)-Math.max(r.oldY,p.oldY));
+        const after=Math.max(0,Math.min(y+h,p.y+p.h)-Math.max(y,p.y));
+        return after<=before+1e-8;
+      });
+    };
+    // Nearby tops represent an existing baseline, not a request to pack or move items past neighbours.
+    for(const r of records){if(!eligible(r.it))continue;
+      const anchors=records.filter(p=>p!==r && p.row===r.row && !eligible(p.it) && Math.abs(p.oldY-r.oldY)<=limit && !(p.it.s<r.it.e && p.it.e>r.it.s));
+      const anchor=anchors.sort((a,b)=>Math.abs(a.oldY-r.oldY)-Math.abs(b.oldY-r.oldY))[0];
+      // A fixed fine grid makes repeat runs stable instead of gradually merging nearby groups.
+      const baseline=6+Math.round((r.oldY-6)/4)*4;
+      const candidates=[...(anchor?[Math.round(anchor.oldY)]:[]),baseline,Math.round(r.oldY)];
+      const y=candidates.find(y=>Math.abs(y-r.oldY)<=limit && safe(r,y,r.h));
+      if(y!==undefined){r.y=y;if(y!==r.oldY)r.it.trackY=y;}else if(candidates.some(y=>y!==r.oldY))held.add(r.it.id);
+    }
+    // Normalize logical height only for a small correction, never resize merely to make space.
+    for(const r of records){if(!eligible(r.it))continue;
+      const target=Math.max(1,Math.round((r.oldH+12)/unit))*unit-12;
+      const candidates=[target,Math.round(r.oldH)].filter(h=>Math.abs(h-r.oldH)<=limit && h>=24);
+      const h=candidates.find(h=>safe(r,r.y,h));
+      if(h!==undefined){r.h=h;if(h!==r.oldH)r.it.trackH=h;}else if(candidates.some(h=>h!==r.oldH))held.add(r.it.id);
+    }
+    // Floating objects retain their relative vertical order; horizontal fields are untouched.
+    for(const it of items){if(!eligible(it) || this.boxKind(it.kind))continue;
+      const old=original.find(o=>o.id===it.id);
+      for(const key of ['y','h','trackY','trackH','labelDy']){if(!Number.isFinite(it[key]))continue;
+        const value=Math.round(it[key]);
+        const valid=!['y','trackY'].includes(key) || original.every(p=>p.id===it.id || p.kind!==it.kind || (key==='trackY' && p.row!==it.row) || !Number.isFinite(p[key]) || (old[key]-p[key])*(value-p[key])>=0);
+        let overlapSafe=true;
+        if(['sticky','image'].includes(it.kind) && ['y','h'].includes(key)){
+          const y=key==='y'?value:(it.y||0),height=key==='h'?value:(it.h||(it.kind==='image'?200:120)),oldY=old.y||0,oldHeight=old.h||(it.kind==='image'?200:120);
+          overlapSafe=items.every(p=>{if(p.id===it.id || !['sticky','image'].includes(p.kind))return true;const base=original.find(o=>o.id===p.id),w=it.w||(it.kind==='image'?320:220),pw=p.w||(p.kind==='image'?320:220);
+            if(this.xOf(it.s)+w<=this.xOf(p.s) || this.xOf(p.s)+pw<=this.xOf(it.s))return true;
+            const py=p.y||0,ph=p.h||(p.kind==='image'?200:120),oy=base.y||0,oh=base.h||(base.kind==='image'?200:120);
+            if(oldY!==oy && Math.sign(y-py)!==Math.sign(oldY-oy))return false;
+            const before=Math.max(0,Math.min(oldY+oldHeight,oy+oh)-Math.max(oldY,oy)),after=Math.max(0,Math.min(y+height,py+ph)-Math.max(y,py));return after<=before+1e-8;
+          });
+        }
+        if(valid && overlapSafe)it[key]=value;else held.add(it.id);
+      }
+    }
+    // An alignment must not expand a session or change label strips and displace other sessions.
+    const after=this.rowLayout({...this.state,items});
+    const blocked=new Set(this.state.rows.filter(row=>{const a=layout[row.id],b=after[row.id];return a.height!==b.height || a.strips!==b.strips || JSON.stringify(a.modes)!==JSON.stringify(b.modes);}).map(row=>row.id));
+    for(let i=0;i<items.length;i++)if(blocked.has(items[i].row) && JSON.stringify(items[i])!==JSON.stringify(original[i])){held.add(items[i].id);items[i]=JSON.parse(JSON.stringify(original[i]));}
+    let positions=0,heights=0,changed=0;
+    for(let i=0;i<items.length;i++){const a=original[i],b=items[i];if(JSON.stringify(a)===JSON.stringify(b))continue;changed++;if(['y','trackY','labelDy'].some(k=>a[k]!==b[k]))positions++;if(['h','trackH'].some(k=>a[k]!==b[k]))heights++;}
+    return {items,changed,positions,heights,held:held.size};
+  }
+  alignItems = (confirmed=false) => {
+    if(this.state.readOnly || this.drag)return;
+    const ids=this.selectedIds(),all=!ids.length,plan=this.alignmentPlan(ids);
+    const message=`현재 줄의 위아래 순서와 일정을 유지하면서 같은 줄의 높이·상단을 맞춥니다. 큰 아이템은 큰 높이를 유지하며 가까운 하단 기준선에 맞춥니다. 가로 크기와 세션 높이는 유지합니다. 같은 줄로 판단한 아이템은 일부 겹치더라도 확실히 정돈하며, 큰 아이템은 여러 줄에 걸칠 수 있습니다. 예상 변경 ${plan.changed}개 (위치 ${plan.positions}개 · 높이 ${plan.heights}개), 배치 보호로 보류 ${plan.held}개. 실행 취소할 수 있습니다. 진행할까요?`;
+    if(all && confirmed!==true){this.setState({alignConfirm:true,alignMessage:message});return;}
+    this.setState({alignConfirm:false});
+    if(!plan.changed){MapstoneUI.toast(this,plan.held?`현재 배치를 유지했습니다 · 보정 보류 ${plan.held}개`:'이미 정돈되어 있습니다.');return;}
+    const before=this.snapshot();this._settledSelection=new Set(this.selectedIds());
+    this.setState({items:plan.items,hist:this.state.hist.concat([before]).slice(-60),future:[]});
+    MapstoneUI.toast(this,`${all?'전체':'선택'} 정렬 ${plan.changed}개 · 위치 ${plan.positions}개 · 높이 ${plan.heights}개${plan.held?' · 보류 '+plan.held+'개':''} · 실행 취소 가능`);
+  };
+  alignApply = () => this.alignItems(true);
+  alignCancel = () => this.setState({alignConfirm:false});
+  alignKey = (e) => {if(e.key==='Escape'){e.preventDefault();e.stopPropagation();this.alignCancel();}};
+  smartPeers(g,row) {const ids=new Set(g.ids || [g.id]);return this.state.items.filter(o=>!ids.has(o.id) && this.visibleItem(o) && (!row || o.row===row) && this.linkKind(o.kind));}
+  smartTime(v,g,row) {
+    if(!this.state.cfg.magnet)return Math.round(v*10000)/10000;
+    const px=this.xOf(v),scale=this.canvasScale(),step=this.timeStep();
+    let best=v,dist=Infinity,guide=null;
+    const near=(candidate,label,peer,edge=candidate)=>{const delta=Math.abs(this.xOf(candidate)-px)*scale;if(delta<=4 && (delta<dist || (peer && Math.abs(delta-dist)<.01))){best=candidate;dist=delta;guide=peer?{axis:'x',value:edge,label,peer:peer.id}:null;}};
+    const grid=this.dailyGrid()?this.snapM(v,g.id,row):Math.round(v/step)*step;
+    near(grid,'',null);
+    const length=(g.time?.e ?? g.e)-(g.time?.s ?? g.s),moving=g.mode==='move';
+    for(const o of this.smartPeers(g,row)){
+      for(const edge of [o.s,(o.s+o.e)/2,o.e]){
+        near(edge,'위치 맞춤',o);
+        if(moving && length>0){near(edge-length,'끝 맞춤',o,edge);near(edge-length/2,'중앙 맞춤',o,edge);}
+      }
+      if(g.mode==='r')near(g.s+o.e-o.s,'같은 길이',o,g.s+o.e-o.s);
+      if(g.mode==='l')near(g.e-(o.e-o.s),'같은 길이',o,g.e-(o.e-o.s));
+    }
+    this._smartGuides=(this._smartGuides||[]).filter(x=>x.axis!=='x');
+    if(guide)this._smartGuides.push(guide);
+    return dist<Infinity?best:Math.round(v*10000)/10000;
+  }
+  smartVertical(v,height,g,resize=false) {
+    if(!this.state.cfg.magnet)return v;
+    let best=v,dist=Infinity,guide=null;
+    const near=(candidate,edge,label,peer)=>{const delta=Math.abs(candidate-v)*this.heightScale();if(delta<=4 && (delta<dist || (peer && Math.abs(delta-dist)<.01))){dist=delta;best=candidate;guide={axis:'y',value:edge,label,peer:peer.id};}};
+    for(const o of this.smartPeers(g)){if(!this.boxKind(o.kind))continue;const b=this.trackBox(o);
+      for(const edge of [b.top,(b.top+b.bottom)/2,b.bottom]){near(edge,edge,'높이 정렬',o);if(!resize){near(edge-height,edge,'아래 맞춤',o);near(edge-height/2,edge,'중앙 맞춤',o);}}
+      if(resize){const value=g.mode==='top'?g.bottom-b.height:g.top+b.height;near(value,value,'같은 높이',o);}
+    }
+    this._smartGuides=(this._smartGuides||[]).filter(x=>x.axis!=='y');if(guide)this._smartGuides.push(guide);return best;
+  }
+  smartFloating(g,dx,dy,resize=false) {
+    const result={dx,dy};if(!this.state.cfg.magnet || !g.visualBox)return result;
+    const scale=this.canvasScale(),hs=this.heightScale(),b=g.visualBox,peers=g.visualPeers||[];
+    const axis=(vertical)=>{
+      const start=vertical?b.top:b.left,size=vertical?b.height:b.width,travel=(vertical?dy:dx)*(vertical?hs:scale);
+      if(travel===0 || (!resize && vertical && Math.abs(travel)<=3))return 0;
+      let best=travel,dist=Infinity,guide=null;
+      for(const p of peers){const a=vertical?p.top:p.left,sz=vertical?p.height:p.width;
+        const candidates=resize?[[a+sz-start-size,a+sz,'크기 맞춤'],[sz-size,start+sz,vertical?'같은 높이':'같은 너비']]:[a,a+sz/2,a+sz].flatMap(edge=>[0,size/2,size].map(offset=>[edge-start-offset,edge,'위치 맞춤']));
+        for(const [candidate,edge,label] of candidates){const delta=Math.abs(candidate-travel);if(delta<=4 && delta<dist){best=candidate;dist=delta;guide={axis:vertical?'screenY':'screenX',value:edge,label};}}
+      }
+      if(guide)(this._smartGuides ||= []).push(guide);return best/(vertical?hs:scale);
+    };
+    result.dx=axis(false);result.dy=axis(true);return result;
+  }
+
+  smartGuides() {
+    if(!this.drag || !this.state.cfg.magnet || !this.root)return [];
+    const track=this.root.querySelector('[data-track]')?.getBoundingClientRect();if(!track)return [];
+    const board=this._board?.getBoundingClientRect() || {left:0,top:0,right:100000,bottom:100000};
+    const guides=[];
+    for(const g of this._smartGuides||[]){const x=g.axis==='screenX'?g.value:track.left+this.xOf(g.value)*this.canvasScale(),y=g.axis==='screenY'?g.value:track.top+g.value*this.heightScale();
+      if(g.axis==='x'||g.axis==='screenX'){if(x<board.left || x>board.right)continue;guides.push({left:x+'px',top:Math.max(track.top,board.top)+'px',width:'0px',height:Math.max(0,Math.min(track.bottom,board.bottom)-Math.max(track.top,board.top))+'px',borderLeft:'1px solid #c43ca0',borderTop:'0',label:g.label});}
+      else{if(y<board.top || y>board.bottom)continue;guides.push({left:Math.max(track.left,board.left)+'px',top:y+'px',width:Math.max(0,Math.min(track.right,board.right)-Math.max(track.left,board.left))+'px',height:'0px',borderTop:'1px solid #c43ca0',borderLeft:'0',label:g.label});}
+    }
+    return guides;
+  }
+
   snapM(v, id, row) {
     const r2=x=>Math.round(x*10000)/10000;if(!this.state.cfg.magnet)return r2(v);
     if(this.dailyGrid()){const idx=Math.floor(v),c=this.state.cfg,month=c.startM-1+idx,days=new Date(c.startY+Math.floor(month/12),((month%12)+12)%12+1,0).getDate();return idx+Math.round((v-idx)*days)/days;}
@@ -2379,7 +2651,7 @@ class Component extends DCLogic {
     const lineTop=Math.max(box.top,header?.top??capture?.top??box.top),lineBottom=Math.min(box.bottom,lastRow?.bottom??(capture?.bottom!==undefined?capture.bottom-48*this.heightScale():box.bottom)),lineRight=Math.min(box.right-8,header?.right??capture?.right??box.right-8),lineLeft=Math.max(box.left+192*this.canvasScale(),(header?.left??box.left)+172*this.canvasScale());
     const lines=[];
     return values.map(value=>{const x=origin+(172+this.xOf(value))*this.canvasScale();if(x<=lineLeft || x>=lineRight || lineBottom<=lineTop)return null;
-      const date=this.isoOf(value),width=this.measure(date)+18,cx=Math.max(lineLeft+width/2,Math.min(lineRight-width/2,x)),left=cx-width/2,right=cx+width/2;
+      const date=this.shortDate(value),width=this.measure(date)+18,cx=Math.max(lineLeft+width/2,Math.min(lineRight-width/2,x)),left=cx-width/2,right=cx+width/2;
       let row=0;while(lines[row]?.some(b=>b.left<right+8 && b.right>left-8))row++;(lines[row] ||= []).push({left,right});
       const labelY=Math.max(box.top+4,(header?.bottom??(header?.top??box.top)+32)+4)+row*26;
       return {left:x+'px',labelLeft:(cx-x)+'px',lineTop:lineTop+'px',lineHeight:Math.max(0,lineBottom-lineTop)+'px',top:Math.min(Math.max(0,labelY-lineTop),Math.max(0,lineBottom-lineTop-24))+'px',date};}).filter(Boolean);
@@ -2400,7 +2672,7 @@ class Component extends DCLogic {
     g.lastTimeX = ev.clientX;
     const t = g.time, dx = (ev.clientX - t.x)/this.canvasScale(), days = Math.trunc(dx / 24);
     // Ctrl: a full 24px of pointer travel per calendar day, independent of zoom.
-    const at = (base, row) => fine ? (days ? this.shiftDay(base, days) : base) : (dx ? (g.kind==='sticky' ? this.mOf(this.xOf(base)+dx) : this.snapM(this.mOf(this.xOf(base) + dx), g.id, row)) : base);
+    const at = (base, row) => fine ? (days ? this.shiftDay(base, days) : base) : (dx ? (g.kind==='sticky' ? this.mOf(this.xOf(base)+dx) : this.smartTime(this.mOf(this.xOf(base) + dx), g, row)) : base);
     return { fine, days, s:t.s, e:t.e, at };
   }
   startMarquee(e) {
@@ -2442,7 +2714,7 @@ class Component extends DCLogic {
         it.rowFrom=rows[a+shift];it.rowTo=rows[b+shift];it.row=it.rowFrom;
       }
     }
-    for(const it of items) this.resolve(d,it.id,chosen);
+    if(!this.drag)for(const it of items) this.resolve(d,it.id,chosen);
   }
   moveGroup(ev) {
     const g=this.drag;
@@ -2452,8 +2724,16 @@ class Component extends DCLogic {
     if(g.groupFine!==fine){g.groupBase=JSON.parse(JSON.stringify(this.state.items));g.groupX=g.lastGroupX ?? ev.clientX;g.groupY=g.lastGroupY ?? ev.clientY;g.groupFine=fine;}
     g.lastGroupX=ev.clientX;g.lastGroupY=ev.clientY;
     const dx=(ev.clientX-g.groupX)/this.canvasScale(),dy=(ev.clientY-g.groupY)/this.heightScale(),primary=g.groupBase.find(i=>g.ids.includes(i.id) && i.kind!=='flag') || g.groupBase.find(i=>i.id===g.id),days=fine?Math.trunc(dx/24):null;
-    const dm=fine?0:dx ? (primary.kind==='sticky'?this.mOf(this.xOf(primary.s)+dx):this.snapM(this.mOf(this.xOf(primary.s)+dx),primary.id,primary.row))-primary.s : 0;
+    const dm=fine?0:dx ? (primary.kind==='sticky'?this.mOf(this.xOf(primary.s)+dx):this.smartTime(this.mOf(this.xOf(primary.s)+dx),g,primary.row))-primary.s : 0;
     this.mutate(d=>{d.items=JSON.parse(JSON.stringify(g.groupBase));this.translateGroup(d,g.ids,dm,dy,days);},false);
+  }
+  duplicateDrag(g) {
+    const ids=g.ids || [g.id],source=JSON.parse(g.baseItems).filter(it=>ids.includes(it.id)),mapping=new Map(source.map(it=>[it.id,this.uid()]));
+    const copies=source.map(it=>{const copy={...it,id:mapping.get(it.id)};if(mapping.has(it.targetId))copy.targetId=mapping.get(it.targetId);return copy;});
+    this.mutate(d=>{d.items=JSON.parse(g.baseItems);d.items.push(...copies);},false);
+    g.id=mapping.get(g.id);if(g.ids)g.ids=ids.map(id=>mapping.get(id));
+    g.baseItems=JSON.stringify(this.state.items);if(g.ids)g.groupBase=JSON.parse(g.baseItems);
+    g.copied=true;this.selectItems(copies.map(it=>it.id),g.id);
   }
   onMove(ev) {
     const g = this.drag;
@@ -2474,10 +2754,14 @@ class Component extends DCLogic {
     const dx = (ev.clientX - g.x0)/this.canvasScale();
     if (Math.abs(dx) > 2 || Math.abs(ev.clientY - g.y0) > 2) g.moved = true;
     if (!g.moved) return;
+    if(g.mode==='move' && !g.copied && (g.copyPending || ev.altKey))this.duplicateDrag(g);
+    if(g.mode==='move' && ev.shiftKey){g.axis ||= Math.abs(ev.clientX-g.x0)>=Math.abs(ev.clientY-g.y0)?'x':'y';ev={clientX:g.axis==='y'?g.x0:ev.clientX,clientY:g.axis==='x'?g.y0:ev.clientY,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}else g.axis=null;
+    this._smartGuides=[];
     if (g.ids) {this.moveGroup(ev);return;}
     if (g.mode==='top' || g.mode==='bottom') {
-      const delta=(ev.clientY-g.y0)/this.heightScale();
-      this.mutate(d=>this.resizeHeight(d,g,delta,true),false);
+      const delta=(ev.clientY-g.y0)/this.heightScale(),edge=g.mode==='top'?g.top:g.bottom;
+      const snapped=this.smartVertical(edge+delta,g.height,g,true);
+      this.mutate(d=>this.resizeHeight(d,g,snapped-edge,true),false);
       return;
     }
     if (g.mode === 'outlabel') {
@@ -2485,17 +2769,18 @@ class Component extends DCLogic {
       return;
     }
     if (g.kind === 'flag') {
-      this.mutate(d => { const it=d.items.find(i=>i.id===g.id); if (it) { it.labelDx=Math.max(-20000,Math.min(20000,g.labelDx+dx)); it.labelDy=Math.max(-20000,Math.min(20000,g.labelDy+(ev.clientY-g.y0)/this.heightScale())); } }, false);
+      const delta=this.smartFloating(g,dx,(ev.clientY-g.y0)/this.heightScale());
+      this.mutate(d => { const it=d.items.find(i=>i.id===g.id); if (it) { it.labelDx=Math.max(-20000,Math.min(20000,g.labelDx+delta.dx)); it.labelDy=Math.max(-20000,Math.min(20000,g.labelDy+delta.dy)); } }, false);
       return;
     }
     const time = this.dragTime(g, ev);
     if (g.kind === 'sticky' || g.kind === 'image') {
-      const dy = (ev.clientY - g.y0)/this.heightScale();
+      const delta=this.smartFloating(g,dx,(ev.clientY-g.y0)/this.heightScale(),g.mode==='rz'),dy=delta.dy;
       this.mutate((d) => {
         const it = d.items.find((i) => i.id === g.id);
         if (!it) return;
-        if (g.mode === 'rz') { if(it.kind==='sticky'){const size=this.stickyResize(it,g.w+dx,g.h+dy);it.w=size.w;it.h=size.h;}else{it.w = Math.max(120, Math.round(g.w + dx)); it.h = Math.max(70, Math.round(g.h + dy));} }
-        else { it.s = Math.max(0, time.at(time.s, null)); it.y = Math.max(0, Math.round(g.y + dy)); }
+        if (g.mode === 'rz') { if(it.kind==='sticky'){const size=this.stickyResize(it,g.w+delta.dx,g.h+dy);it.w=size.w;it.h=size.h;}else{it.w = Math.max(120, Math.round(g.w + delta.dx)); it.h = Math.max(70, Math.round(g.h + dy));} }
+        else { const temporal=time.at(time.s,null);it.s = Math.max(0, time.fine?temporal:this.mOf(this.xOf(temporal)+delta.dx-dx)); it.y = Math.max(0, Math.round(g.y + dy)); }
       }, false);
       return;
     }
@@ -2519,31 +2804,17 @@ class Component extends DCLogic {
     }
     if (g.mode === 'now') { this.mutate((d) => { d.now = Math.max(0, time.at(time.s, null)); }, false); return; }
     let target = null;
-    if (g.mode === 'move' && (g.kind === 'chev' || g.kind === 'plain' || g.kind === 'flag')) {
-      const tracks = this.root ? this.root.querySelectorAll('[data-track]') : [];
-      for (let i = 0; i < tracks.length; i++) {
-        const r = tracks[i].getBoundingClientRect();
-        if (ev.clientY >= r.top && ev.clientY <= r.bottom) {
-          const rowId = tracks[i].getAttribute('data-track');
-          const raw = Math.max(0, Math.round(((ev.clientY - r.top)/this.heightScale() - 6) / this.laneH()));
-          target = { row: rowId, lane: Math.min(raw, this.laneCapOf(rowId, g.span)) };
-          break;
-        }
-      }
+    if(g.mode==='move' && this.boxKind(g.kind) && Math.abs(ev.clientY-g.y0)>3){
+      const original=g.box || this.trackBox(this.state.items.find(i=>i.id===g.id));
+      const layout=g.moveLayout || this.rowLayout();
+      let top=Math.max(6,Math.min(original.top+(ev.clientY-g.y0)/this.heightScale(),original.total-6-original.height));
+      top=Math.max(6,Math.min(this.smartVertical(top,original.height,g),original.total-6-original.height));
+      let offset=0;
+      for(const row of this.state.rows){const height=layout[row.id].height;if(top<offset+height || row===this.state.rows.at(-1)){target={row:row.id,trackY:top-offset,lane:Math.max(0,Math.floor((top-offset-6)/this.laneH()))};break;}offset+=height+1;}
     }
     this.mutate((d) => {
       const it = d.items.find((i) => i.id === g.id);
       if (!it) return;
-      /* restore neighbours from the drag-start baseline first, so live shrinking
-         follows the pointer instead of accumulating as you drag back and forth */
-      if (g.baseItems) {
-        const base = JSON.parse(g.baseItems);
-        d.items.forEach((o) => {
-          if (o.id === g.id) return;
-          const b = base.find((x) => x.id === o.id);
-          if (b) { o.s = b.s; o.e = b.e; o.lane = b.lane; o.row = b.row; }
-        });
-      }
       const rowFor = target ? target.row : it.row;
       if (g.mode === 'move') {
         const len = time.e - time.s;
@@ -2553,14 +2824,16 @@ class Component extends DCLogic {
           const days = Math.round((Date.parse(this.isoOf(it.s)) - Date.parse(this.isoOf(time.s))) / 86400000);
           it.e = days ? this.shiftDay(time.e, days) : time.e;
         } else it.e = it.s + len;
-        if (target) { it.row = target.row; it.lane = target.lane; if(it.trackH!==undefined)it.trackY=6+it.lane*this.laneH(); }
+        if(target){it.row=target.row;it.lane=target.lane;it.trackY=target.trackY;}else if(g.box){it.row=g.row;it.lane=g.lane;it.trackY=g.box.localTop;}
         if (it.kind === 'band' && g.bShift !== undefined) { const ids = d.rows.map((r) => r.id); it.rowFrom = ids[g.bFrom + g.bShift]; it.rowTo = ids[g.bTo + g.bShift]; it.row = it.rowFrom; }
       } else if (g.mode === 'l') { it.s = Math.min(time.at(time.s, it.row), (time.fine || this.dailyGrid()) ? this.shiftDay(time.e, -1) : time.e - this.timeStep()); }
       else { it.e = Math.max(time.at(time.e, it.row), (time.fine || this.dailyGrid()) ? this.shiftDay(time.s, 1) : time.s + this.timeStep()); }
-      this.resolve(d, g.id);
+      // Pointer placement permits overlap; never reflow neighbours.
     }, false);
   }
   stopDrag(ev) {
+    if(this._dragFrame){cancelAnimationFrame(this._dragFrame);this._dragFrame=null;}
+    if(this._pendingMove){const latest=this._pendingMove;this._pendingMove=null;if(ev?.type!=='pointercancel')this.onMove(latest);}
     if (this.drag && this.drag.mode === 'link') {
       const hit = ev && (this.drag.moved || !this.drag.snap) && this.linkHit(ev);
       if (hit) this.connectFlag(this.drag.id, hit.id, hit.offset, !this.drag.snap, hit.y);
@@ -2572,18 +2845,19 @@ class Component extends DCLogic {
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
-      if (!['link','top','bottom'].includes(this.drag.mode) && !this.drag.ids) this.mutate((d) => { this.resolve(d, id); }, false);
+      this._settledSelection=new Set(this.selectedIds());
       this.setState((st) => ({ hist: st.hist.concat([snap]).slice(-60), future: [] }));
     }
     this.drag = null;
+    this._smartGuides=[];
     this.setState({marquee:null});
   }
 
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
   toggleLang = () => this.setState((s) => ({ lang: s.lang === 'ko' ? 'ja' : 'ko' }));
   selectAll = (e) => { const el = e.currentTarget; if (el && el.select) { try { el.select(); } catch (err) { /* ignore */ } } };
-  beginTextEdit = (e) => { this._textPush = true; this.selectAll(e); };
-  endTextEdit = () => { this._textPush = null; };
+  beginTextEdit = (e) => { this._textPush = true;this._editingSelection=true;this._settledSelection=null;this.selectAll(e);this.setState({}); };
+  endTextEdit = () => { this._textPush = null;this._editingSelection=false;this._settledSelection=new Set(this.selectedIds());this.setState({}); };
   editText(fn) { const push = this._textPush !== false; this._textPush = false; this.mutate(fn, push); }
   setOverlap = (e) => { const v = e.currentTarget.dataset.overlap; this.mutate((d) => { d.cfg.overlap = v; }); };
 
@@ -2662,7 +2936,7 @@ class Component extends DCLogic {
     if(!inline&&!this.state.readOnly&&it.kind!=='image')MapstoneUI.toast(this,this.L().textEditHint);
     this.setState({ selection:[id], selectionAnchor:id, editing: inline?id:null, selLinkDot:null, sel: id, panel: true, tab: 'prop', focusRow: it.row || this.state.focusRow });
   };
-  onItemKey = (e) => { if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return;if(e.metaKey||e.shiftKey){this.pickItem(id,e);return;} this.setState({selection:[id],selectionAnchor:id,selLinkDot:null,sel:id,panel:this.narrowScreen() || this.state.panel,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
+  onItemKey = (e) => { this._settledSelection=null;if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return;if(e.metaKey||e.shiftKey){this.pickItem(id,e);return;} this.setState({selection:[id],selectionAnchor:id,selLinkDot:null,sel:id,panel:this.narrowScreen() || this.state.panel,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
   /* tooltips belong to the shape: entering its detached/outside label closes the tooltip and keeps it from re-opening */
   onOutLabelEnter = (e) => { e.stopPropagation(); MapstoneUI.hideTip(); this.setState({ hover: null }); };
   /* tooltips belong to the shape itself: entering its outside label closes the tooltip */
@@ -2697,45 +2971,52 @@ class Component extends DCLogic {
   }
   pasteClip = () => { const c=this.state.clip;if(c)this.cloneItems(Array.isArray(c)?c:[c]); };
   onKey = (e) => {
+    if(this.state.alignConfirm){if(e.key==='Escape'){e.preventDefault();this.alignCancel();}else if(e.key==='Tab'){const buttons=Array.from(this.root?.querySelectorAll('[data-align-dialog] button')||[]);if(buttons.length){e.preventDefault();const index=buttons.indexOf(document.activeElement);buttons[(index+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}}return;}
     if (e.defaultPrevented || (document.querySelector && document.querySelector("dialog[open]"))) return;
+    if(e.key==='Escape' && this.drag){e.preventDefault();const before=this.drag.snap;this._pendingMove=null;this.drag.moved=false;this.stopDrag();if(before)this.setState({...JSON.parse(before),sel:null,selection:[]});return;}
     if (e.key === 'Escape') {
       const menus = this.root ? Array.from(this.root.querySelectorAll('.ms-tool-menu[open]')) : [];
       if (menus.length) { e.preventDefault(); menus.forEach(menu => menu.removeAttribute('open')); menus[0].querySelector('summary')?.focus(); return; }
     }
+    const key=(e.metaKey || e.ctrlKey) && e.code?.startsWith('Key')?e.code.slice(3).toLowerCase():e.key;
     const t = e.target.tagName;
-    const typing = t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT';
+    const typing = t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || e.target.isContentEditable;
+    if(typing)return;
     const mod = e.metaKey || e.ctrlKey;
-    if (e.key === 'Escape' && (this.state.helpOpen || this.state.textOpen || this.state.mouseTipOpen || this.state.relOpen || this.state.rowDelId || this.state.clearOpen)) { e.preventDefault(); this.setState({helpOpen:false,textOpen:false,mouseTipOpen:false,relOpen:false,rowDelId:null,clearOpen:false}); return; }
-    if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); return; }
-    if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); this.redo(); return; }
+    if (key === 'Escape' && (this.state.helpOpen || this.state.textOpen || this.state.mouseTipOpen || this.state.relOpen || this.state.rowDelId || this.state.clearOpen)) { e.preventDefault(); this.setState({helpOpen:false,textOpen:false,mouseTipOpen:false,relOpen:false,rowDelId:null,clearOpen:false}); return; }
+    if (mod && (key === 'z' || key === 'Z')) { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); return; }
+    if (mod && (key === 'y' || key === 'Y')) { e.preventDefault(); this.redo(); return; }
     if (typing) return;
-    if (mod && (e.key === 'c' || e.key === 'C')) { e.preventDefault(); this.copySel(); return; }
-    if (mod && (e.key === 'x' || e.key === 'X')) { e.preventDefault(); this.cutSel(); return; }
-    if (mod && (e.key === 'v' || e.key === 'V')) { e.preventDefault(); this.pasteClip(); return; }
-    if (mod && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); this.duplicateSel(); return; }
-    if (e.key === 'Escape') { this.clearSelection(); return; }
+    if(mod && key==='a'){e.preventDefault();this.selectItems(this.state.items.filter(it=>this.visibleItem(it)).map(it=>it.id));return;}
+    if (mod && (key === 'c' || key === 'C')) { e.preventDefault(); this.copySel(); return; }
+    if (mod && (key === 'x' || key === 'X')) { e.preventDefault(); this.cutSel(); return; }
+    if (mod && (key === 'v' || key === 'V')) { e.preventDefault(); this.pasteClip(); return; }
+    if (mod && (key === 'd' || key === 'D')) { e.preventDefault(); this.duplicateSel(); return; }
+    if(key==='F2' && this.selItem() && !this.state.readOnly){e.preventDefault();this.onItemDbl({stopPropagation(){},currentTarget:{dataset:{id:this.state.sel}}});return;}
+    if (key === 'Escape') { this.clearSelection(); return; }
     if (!this.state.sel && this.state.focusRow) {
-      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); this.askRowDelete({stopPropagation(){},currentTarget:{dataset:{id:this.state.focusRow}}}); }
-      if (mod && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) { e.preventDefault(); this.moveRow(this.state.focusRow,e.key === 'ArrowUp' ? -1 : 1); }
+      if (key === 'Delete' || key === 'Backspace') { e.preventDefault(); this.askRowDelete({stopPropagation(){},currentTarget:{dataset:{id:this.state.focusRow}}}); }
+      if (mod && (key === 'ArrowUp' || key === 'ArrowDown')) { e.preventDefault(); this.moveRow(this.state.focusRow,key === 'ArrowUp' ? -1 : 1); }
       return;
     }
     if (!this.state.sel) return;
-    if (e.key==='ArrowLeft' || e.key==='ArrowRight') {e.preventDefault();const days=(e.key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else this.moveSelectedDays(days);return;}
-    if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {e.preventDefault();const ids=this.selectedIds(),dx=e.key==='ArrowLeft'?-.5:e.key==='ArrowRight'?.5:0,dy=e.key==='ArrowUp'?-this.laneH():e.key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
-    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
-    if (this.selItem()?.kind === 'flag' && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
+    if (key==='ArrowLeft' || key==='ArrowRight') {e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else this.moveSelectedDays(days);return;}
+    if(['ArrowUp','ArrowDown'].includes(key) && this.selectedIds().length){e.preventDefault();const ids=new Set(this.selectedIds()),dy=(key==='ArrowUp'?-1:1)*(e.shiftKey?10:1),layout=this.rowLayout();this.mutate(d=>{for(const it of d.items.filter(it=>ids.has(it.id))){if(this.boxKind(it.kind)){const b=this.trackBox(it,layout);it.trackY=Math.max(6,Math.min(layout[it.row].height-b.height-6,b.localTop+dy));}else if(['sticky','image'].includes(it.kind))it.y=Math.max(0,(it.y||0)+dy);else if(it.kind==='flag')it.labelDy=(it.labelDy||0)+dy;}});return;}
+    if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {e.preventDefault();const ids=this.selectedIds(),dx=key==='ArrowLeft'?-.5:key==='ArrowRight'?.5:0,dy=key==='ArrowUp'?-this.laneH():key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
+    if (key === 'Delete' || key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
+    if (this.selItem()?.kind === 'flag' && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {
       e.preventDefault();
-      this.mutate(d => { const it=d.items.find(i=>i.id===this.state.sel); const horizontal=e.key==='ArrowLeft'||e.key==='ArrowRight', field=horizontal?'labelDx':'labelDy'; it[field]=Math.max(-20000,Math.min(20000,(it[field]||0)+(['ArrowLeft','ArrowUp'].includes(e.key)?-10:10))); });
+      this.mutate(d => { const it=d.items.find(i=>i.id===this.state.sel); const horizontal=key==='ArrowLeft'||key==='ArrowRight', field=horizontal?'labelDx':'labelDy'; it[field]=Math.max(-20000,Math.min(20000,(it[field]||0)+(['ArrowLeft','ArrowUp'].includes(key)?-10:10))); });
       return;
     }
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    if (key === 'ArrowLeft' || key === 'ArrowRight') {
       e.preventDefault();
-      const dx = e.key === 'ArrowLeft' ? -0.5 : 0.5;
+      const dx = key === 'ArrowLeft' ? -0.5 : 0.5;
       this.mutate((d) => { const it = d.items.find((i) => i.id === this.state.sel); if (it) { it.s = Math.max(0, it.s + dx); it.e = it.kind === 'flag' || it.kind === 'marker' ? it.s : it.e + dx; } });
     }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    if (key === 'ArrowUp' || key === 'ArrowDown') {
       e.preventDefault();
-      const dy = e.key === 'ArrowUp' ? -1 : 1;
+      const dy = key === 'ArrowUp' ? -1 : 1;
       this.mutate((d) => { const it = d.items.find((i) => i.id === this.state.sel); if (it) { it.lane = Math.max(0, it.lane + dy); if(this.boxKind(it.kind)){if(it.trackY!==undefined)it.trackY=6+it.lane*this.laneH();this.ensureItemRoom(d,it.id);} } });
     }
   };
@@ -3025,8 +3306,8 @@ class Component extends DCLogic {
   smartMarkerIcon = () => { const it=this.selItem();if(it?.kind==='marker')this.onMarkerIcon({currentTarget:{dataset:{icon:this.smartIconFor(it.label)}}}); };
   onLayer = (e) => { const id=this.state.sel,front=e.currentTarget.dataset.layer==='front';const it=this.state.items.find(i=>i.id===id);if(!it || !['chev','plain','band','marker','flag','sticky'].includes(it.kind))return;
     const cap=it.kind==='sticky'?24000:12400;
-    const peers=this.state.items.filter(i=>i.id!==id && (!front || this.itemZ(i.id)<cap));
-    const edge=front?Math.max(300,...peers.map(i=>this.itemZ(i.id))):Math.min(300,...peers.map(i=>this.itemZ(i.id)));
+    const peers=this.state.items.filter(i=>i.id!==id && (!front || this.baseItemZ(i.id)<cap));
+    const edge=front?Math.max(300,...peers.map(i=>this.baseItemZ(i.id))):Math.min(300,...peers.map(i=>this.baseItemZ(i.id)));
     this.mutate(d=>{const target=d.items.find(i=>i.id===id);target.stackOrder=Math.max(1,Math.min(cap,edge+(front?1:-1)));});
   };
   onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{if(id==='__now'){d.cfg.hideNowDate=!!e.currentTarget.checked;return;}const it=d.items.find(i=>i.id===id);if(it && ['flag','marker'].includes(it.kind))it.hideDate=!!e.currentTarget.checked;});};
@@ -3240,7 +3521,8 @@ class Component extends DCLogic {
   };
   doPrint = () => window.print();
 
-  itemZ(id) { const index=this.state.items.findIndex(it=>it.id===id),it=this.state.items[index];const floating=it?.kind==='sticky';return it?.stackOrder!==undefined?Math.max(1,Math.min(floating?24000:12400,it.stackOrder)):(it?.kind==='sticky'?13000:it?.kind==='flag'?6200:300)+index; }
+  itemZ(id) {return this.isSelected(id) ? 24001 : this.baseItemZ(id);}
+  baseItemZ(id) { const index=this.state.items.findIndex(it=>it.id===id),it=this.state.items[index];const floating=it?.kind==='sticky';return it?.stackOrder!==undefined?Math.max(1,Math.min(floating?24000:12400,it.stackOrder)):(it?.kind==='sticky'?13000:it?.kind==='flag'?6200:300)+index; }
 
   renderVals() {
     const st = this.state;
@@ -3257,13 +3539,13 @@ class Component extends DCLogic {
       const y = cfg.startY + Math.floor(t / 12);
       const m = ((t % 12) + 12) % 12;
       cols.push({
-        key: i, label: (m + 1) + '월', yearLabel: i === 0 || m === 0 ? '`' + String(y).slice(2) : '',
+        key: i, label: (m + 1) + '월', yearLabel: m === 0 ? String(y) : '',
         width: px(W[i]), year:y,bg: (y-cfg.startY)%2 ? '#284E74' : '#1C3E63'
       });
       if(cfg.months<5) for(let j=1;j<8;j++) { gridCols.push({key:i+'-'+j,left:px(O[i]+W[i]*j/8),color:'rgba(127,138,148,.16)'}); subdivisions.push({id:i+'-'+j,m:i,end:O[i]+W[i],left:px(O[i]+W[i]*j/8),label:String(1+Math.floor(new Date(y,m+1,0).getDate()*j/8))}); }
       else for (let j = 0; j < Math.ceil(this.weeksIn(i)); j++) subdivisions.push({ id: i + '-w' + j, m: i, end: O[i] + W[i], left: px(O[i] + W[i] * j / this.weeksIn(i) + 3), label: (j + 1) + 'w' });
       /* above 300% zoom, faint week lines help reading dates (short schedules already have 8 divisions) */
-      if (this.weekPxVal() / 19 > 6) { const dim = new Date(y, m + 1, 0).getDate(); for (let dd = 1; dd < dim; dd++) gridCols.push({ key: i + '-dl' + dd, left: px(O[i] + W[i] * dd / dim), color: 'repeating-linear-gradient(to bottom, rgba(127,138,148,.32) 0 2px, transparent 2px 6px)' }); }
+      if (this.weekPxVal() / 19 >= 4.5) { const dim = new Date(y, m + 1, 0).getDate(); for (let dd = 1; dd < dim; dd++) gridCols.push({ key: i + '-dl' + dd, left: px(O[i] + W[i] * dd / dim), color: 'repeating-linear-gradient(to bottom, rgba(127,138,148,.32) 0 2px, transparent 2px 6px)' }); }
       if (cfg.months >= 5 && this.weekPxVal() / 19 > 3) for (let j = 1; j < Math.ceil(this.weeksIn(i)); j++) gridCols.push({ key: i + '-wl' + j, left: px(O[i] + W[i] * j / this.weeksIn(i)), color: 'rgba(127,138,148,.10)' });
       gridCols.push({ key: i, left: px(O[i]), color: m === 0 ? '#a8bed7' : '#bfd0e4' });
     }
@@ -3462,7 +3744,7 @@ class Component extends DCLogic {
     const rowColors = MapstoneCore.rowColors;
 
     return {
-      nowDragging:this.drag?.mode==='now',focusNow:this.focusNow,dragGuides:this.dragDateGuides(),
+      heightGrid:this.heightGrid(),showGrid:!!cfg.showGrid,toggleGrid:this.toggleGrid,gridBg:cfg.showGrid?'#efe7fb':'#fff',gridFg:cfg.showGrid?'#7843b8':'var(--ms-color-text-primary)',nowDragging:this.drag?.mode==='now',focusNow:this.focusNow,dragGuides:this.dragDateGuides(),
       nowISO:this.shortDate(st.now),
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
       readOnly: !!st.readOnly, editable: !st.readOnly, rowMoveTip: st.lang === 'ja' ? 'ドラッグで行の順序変更 · Ctrl/⌘ ↑ ↓' : '드래그로 세션 순서 변경 · Ctrl/⌘ ↑ ↓',
@@ -3539,7 +3821,7 @@ class Component extends DCLogic {
       palette: (st.paletteExpanded ? [0,-.55,-.3,.3,.55] : [0]).flatMap(tone=>this.PAL.map(([name,base])=>{const hex=tone ? this.paletteTone(base,tone) : base;return {name:name+(tone ? ' · '+(tone<0 ? T.shadeDark : T.shadeLight)+' '+(Math.abs(tone)>.4 ? 2 : 1) : ''),hex,border:sel && sel.color===hex ? '#000' : 'rgba(0,0,0,.12)'};})),
       rowOptions: st.rows.map((r) => ({ id: r.id, name: r.name })),
       focusName: focusRow ? focusRow.name : '없음',
-      hasSel: !!sel && (selectionCount===1 || sel.kind==='now'), multiSelected: selectionCount>1, selectionCount, noSel: !sel,
+      hasSel: !!sel, multiSelected: selectionCount>1, selectionCount, noSel: !sel,
       selCanVertical:sel?.kind==='band',textFormatWeight:sel?.kind==='band'?8:sel?.kind==='marker'?2:st.sel==='__now'?0:5,onLabelVAlign:this.onLabelVAlign,
       ...Object.fromEntries(['top','middle','bottom'].flatMap(a=>{const chosen=this.labelStyle(sel||{}).labelVAlign===a,k='vAlign'+a[0].toUpperCase()+a.slice(1);return [[k,chosen],[k+'Bg',chosen?'var(--ms-color-surface-selected)':'#fff'],[k+'Fg',chosen?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)']];})),
       selIsMarker:sel?.kind==='marker',selCanAlign:!!sel && !['marker','now'].includes(sel.kind),selCanLayer:!!sel && ['chev','plain','band','marker','flag','sticky'].includes(sel.kind),onLabelAlign:this.onLabelAlign,onLayer:this.onLayer,
@@ -3589,7 +3871,7 @@ class Component extends DCLogic {
       rowPropLanes: focusRowObj ? Math.max(1, Math.round((this.rowHeight(focusRowObj.id) - 14) / this.heightUnit())) : 1,
       selIsSticky: !!sel && sel.kind === 'sticky',
       beginRowEdit: this.beginRowEdit, endRowEdit: this.endRowEdit, onRowTextKey: this.onRowTextKey, onRowName: this.onRowName, onRowDelete: this.onRowDelete, onRowUp: this.onRowUp, onRowDown: this.onRowDown, onRowMoveDown: this.onRowMoveDown, onRowFocus: this.onRowFocus,
-      onItemDown: this.onItemDown, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
+      alignItems:this.alignItems, alignConfirm:!!st.alignConfirm, alignMessage:st.alignMessage, alignApply:this.alignApply, alignCancel:this.alignCancel, alignKey:this.alignKey, smartGuides:this.smartGuides(), onItemDown: this.onItemDown, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
       onHover: this.onHover, onOutLabelEnter: this.onOutLabelEnter, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,

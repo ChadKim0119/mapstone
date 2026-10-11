@@ -215,7 +215,7 @@
     if(it.kind==='tip'){tip.append(el('div',text));}
     else{
       if(range){const row=el('div',null,{className:'ms-tip-range'});row.append(el('span',day(it.s)+' ~ '+day(it.e)),el('span',app.durationWD(it.s,it.e).replace(' w ',' W · ').replace(' d',' D'),{className:'ms-tip-chip'}));section(L.tipRange,row);}
-      else if(it.kind==='flag'||it.kind==='marker')section(L.tipSchedule,el('div',day(it.s)));
+      else if(it.kind==='marker')section(L.tipSchedule,el('div',day(it.s)));
       if(it.kind==='flag')section(L.tipLink,el('div',target?target.label:L.noTarget));
       if(text)section(L.tipMemo,el('div',text,{className:'ms-tip-memo'}));
     }
@@ -528,7 +528,7 @@
     ]
   ]
 ];
-  const KEYS=[['__','보기 · 화면'],['D','일자 켜기 · 끄기'],['M','기간(MD / MM) 켜기 · 끄기'],['T','툴팁 켜기 · 끄기'],['W','주차 켜기 · 끄기'],['F','발표모드 켜기 · 끄기 (Esc로도 종료)'],['Shift F','폭 맞춤'],['Shift ⌘/Ctrl F','높이 맞춤'],['S','눈금 맞춤 켜기 · 끄기'],[',','설정창 보기 · 닫기'],['Ctrl + 드래그','눈금 무시 · 24px마다 하루씩 세밀 조정'],['__','발표 모드'],['G','돋보기'],['P','레이저 포인터'],['H','발표 도구 접기 · 펼치기'],['Space','돋보기 위치 고정 · 해제'],['__','편집'],['⌘/Ctrl Z','실행 취소'],['Shift ⌘/Ctrl Z · ⌘/Ctrl Y','다시 실행'],['⌘/Ctrl C · X · V','선택 아이템 복사 · 잘라내기 · 붙여넣기'],['⌘/Ctrl+클릭','선택 추가 · 해제'],['Shift+클릭','아이템 범위 선택'],['빈 영역 드래그','여러 아이템 선택'],['⌘/Ctrl D','선택 아이템 복제'],['Delete · Backspace','선택 아이템 삭제 (메모 점 선택 시 연결 해제)'],['← →','하루 이동'],['Shift ← →','1주 이동'],['↑ ↓','한 레인 이동 (메모는 라벨 이동)'],['Enter','텍스트 입력 완료'],['Shift Enter','입력칸 안에서 줄바꿈'],['⌘/Ctrl Enter','설정창 · 팝업: 다음 칸으로 이동, 마지막 칸이면 입력 끝내기']];
+  const KEYS=[['__','보기 · 화면'],['D','일자 켜기 · 끄기'],['M','기간(MD / MM) 켜기 · 끄기'],['T','툴팁 켜기 · 끄기'],['W','주차 켜기 · 끄기'],['Shift G','Grid 높이 눈금 켜기 · 끄기'],['F','발표모드 켜기 · 끄기 (Esc로도 종료)'],['Shift F','폭 맞춤'],['Shift ⌘/Ctrl F','높이 맞춤'],['S','눈금 맞춤 켜기 · 끄기'],[',','설정창 보기 · 닫기'],['Ctrl + 드래그','눈금 무시 · 24px마다 하루씩 세밀 조정'],['__','발표 모드'],['G','돋보기'],['P','레이저 포인터'],['H','발표 도구 접기 · 펼치기'],['Space','돋보기 위치 고정 · 해제'],['__','편집'],['⌘/Ctrl Z','실행 취소'],['Shift ⌘/Ctrl Z · ⌘/Ctrl Y','다시 실행'],['⌘/Ctrl C · X · V','선택 아이템 복사 · 잘라내기 · 붙여넣기'],['⌘/Ctrl+클릭','선택 추가 · 해제'],['Shift+클릭','아이템 범위 선택'],['빈 영역 드래그','여러 아이템 선택'],['⌘/Ctrl A','전체 아이템 선택'],['⌘/Ctrl D','선택 아이템 복제'],['Option/Alt + 드래그','원본을 유지하고 복제본 이동'],['Shift + 드래그','가로 또는 세로 한 방향으로 이동'],['↑ · ↓','위아래 1px 이동 · Shift를 함께 누르면 10px'],['F2','선택 아이템 속성에서 이름 편집'],['Esc','선택 해제 · 이동 중에는 이동·복제 취소'],['Delete · Backspace','선택 아이템 삭제 (메모 점 선택 시 연결 해제)'],['← →','하루 이동'],['Shift ← →','1주 이동'],['↑ ↓','한 레인 이동 (메모는 라벨 이동)'],['Enter','텍스트 입력 완료'],['Shift Enter','입력칸 안에서 줄바꿈'],['⌘/Ctrl Enter','설정창 · 팝업: 다음 칸으로 이동, 마지막 칸이면 입력 끝내기']];
   function help(app,body){
     body.closest('dialog').classList.add('ms-help');const shots=window.MapstoneHelp||{};
     const nav=el('nav',null,{className:'ms-help-nav'});const main=el('div',null,{className:'ms-help-main'});
@@ -748,7 +748,7 @@
     document.addEventListener('keydown',onSubmitKey,true);
     const onShareKey=e=>{if(!(e.metaKey||e.ctrlKey)||e.altKey||e.shiftKey||e.code!=='KeyL')return;e.preventDefault();e.stopPropagation();if(app.sync.isShare&&app.sync.readOnly)return open(app,'workspace');if(modal&&modal.querySelector('.ms-share-perms'))return;open(app,'share-quick');};
     document.addEventListener('keydown',onShareKey,true);
-    const onKey=e=>{if(e.defaultPrevented||modal)return;if(e.shiftKey&&(e.metaKey||e.ctrlKey)&&e.code==='KeyF'&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)){e.preventDefault();app.fitVertical();return;}if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='Escape'&&app.state.focusMode){e.preventDefault();toggleFocus(app);return;}/* single-key shortcuts use e.code so they also work while a Korean/Japanese IME is active */const act=e.shiftKey?{KeyF:()=>app.fitHorizontal()}[e.code]:{KeyF:()=>toggleFocus(app),KeyD:app.toggleElementDates,KeyM:app.toggleMM,KeyT:app.toggleTooltip,KeyW:app.toggleWeek,KeyS:app.toggleMagnet,Comma:app.togglePanel}[e.code];if(act){e.preventDefault();act();}};
+    const onKey=e=>{if(e.defaultPrevented||modal)return;if(e.shiftKey&&(e.metaKey||e.ctrlKey)&&e.code==='KeyF'&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)){e.preventDefault();app.fitVertical();return;}if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='Escape'&&app.state.focusMode){e.preventDefault();toggleFocus(app);return;}/* single-key shortcuts use e.code so they also work while a Korean/Japanese IME is active */const act=e.shiftKey?{KeyF:()=>app.fitHorizontal(),KeyG:app.toggleGrid}[e.code]:{KeyF:()=>toggleFocus(app),KeyD:app.toggleElementDates,KeyM:app.toggleMM,KeyT:app.toggleTooltip,KeyW:app.toggleWeek,KeyS:app.toggleMagnet,Comma:app.togglePanel}[e.code];if(act){e.preventDefault();act();}};
     const warn=e=>{if(app.sync.base&&!C.equal(app.sync.base,app.dataDocument())){e.preventDefault();e.returnValue='';}};
     document.addEventListener('keydown',onKey);window.addEventListener('beforeunload',warn);document.addEventListener('scroll',hideTip,true);
     let code=null;try{code=sessionStorage.getItem('mapstone.connection');}catch{}const shareId=new URLSearchParams(location.search).get('share');
