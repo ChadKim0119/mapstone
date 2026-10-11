@@ -435,6 +435,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-capture] [role="button"][data-id]:focus {outline:none;}
     [data-capture] [role="button"][data-id]:focus-visible {outline:1px solid #6e96cf80;outline-offset:2px;}
     [data-timeline-row][data-row-focused="true"] {outline:1px solid rgba(53,104,197,.32);outline-offset:-1px;}
+    .ms-tone-directions {display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;}
+    .ms-tone-pair {display:flex;flex-direction:column;gap:4px;min-width:0;}
+    .ms-tone-pair button {display:flex;align-items:center;justify-content:center;flex:none;width:100%;min-width:0;min-height:22px;height:22px;padding:0;border:1px solid var(--color-border-neutral-2);border-radius:5px;cursor:pointer;transition:filter .15s,box-shadow .15s;}
+    .ms-tone-pair button:hover {filter:brightness(1.08);box-shadow:0 0 0 2px #3568c52b;}
     .ms-text-clip {position:absolute;inset:3px 10%;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;pointer-events:none;}
     .ms-text-clip > * {box-sizing:border-box;min-width:0;max-width:100%;width:100%;overflow-wrap:anywhere;word-break:break-word;}
     [data-capture] .ms-text-clip > textarea {pointer-events:auto;height:1.8em!important;min-height:0!important;max-height:100%;white-space:pre!important;overflow:auto!important;overflow-y:hidden!important;line-height:1.3!important;outline-offset:-1px!important;outline-width:1px!important;}
@@ -452,6 +456,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   <button type="button" class="ms-now-direction" data-now-indicator="" data-noprint="" onClick="{{ focusNow }}" aria-label="{{ L.nowDirection }}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"></path></svg><span>NOW</span></button>
   <sc-for list="{{ dragGuides }}" as="g"><div data-drag-date="" data-noprint="" style="position:fixed;top:{{ g.lineTop }};height:{{ g.lineHeight }};left:{{ g.left }};border-left:1px dashed var(--ms-color-action-primary);pointer-events:none;z-index:25000"><span style="position:absolute;top:{{ g.top }};left:{{ g.labelLeft }};transform:translateX(-50%);white-space:nowrap;padding:4px 7px;border-radius:4px;background:var(--ms-color-action-primary);color:#fff;font-size:12px;font-weight:700">{{ g.date }}</span></div></sc-for>
   <sc-if value="{{ alignConfirm }}"><div data-noprint="" onKeyDown="{{ alignKey }}" style="position:fixed;inset:0;background:#16365d55;display:flex;align-items:center;justify-content:center;z-index:26000"><div role="dialog" data-align-dialog="" aria-modal="true" aria-label="전체 아이템 정렬 확인" style="background:#fff;padding:24px;border-radius:14px;width:min(440px,90vw);box-shadow:0 16px 50px #16365d33"><strong style="font-size:17px">전체 아이템 정렬</strong><p style="font-size:14px;line-height:1.7;margin:14px 0 20px">{{ alignMessage }}</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="ms-tool-button" autofocus="" onClick="{{ alignCancel }}">취소</button><button class="ms-tool-button ms-accent" onClick="{{ alignApply }}">전체 정렬 적용</button></div></div></div></sc-if>
+  <sc-if value="{{ joinPrompt }}"><div data-noprint="" onKeyDown="{{ joinKey }}" style="position:fixed;inset:0;background:#16365d55;display:flex;align-items:center;justify-content:center;z-index:26000"><div role="dialog" aria-modal="true" aria-label="선택 일정 이어 붙이기" data-join-dialog="" style="background:#fff;padding:24px;border-radius:14px;width:min(450px,90vw);box-shadow:0 16px 50px #16365d33"><strong style="font-size:17px">선택 일정을 이어 붙일까요?</strong><p style="font-size:14px;line-height:1.7;margin:14px 0 20px">이동은 적용되었습니다. 선택된 일정 {{ joinCount }}개를 현재 순서와 기간을 유지하며 앞 일정의 종료일에 다음 일정의 시작일을 맞춥니다.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="ms-tool-button" autofocus="" onClick="{{ cancelJoin }}">현재 간격 유지</button><button type="button" class="ms-tool-button ms-accent" onClick="{{ applyJoin }}">일정 이어 붙이기</button></div></div></div></sc-if>
   <sc-for list="{{ smartGuides }}" as="g"><div data-smart-guide="" data-noprint="" style="position:fixed;pointer-events:none;z-index:25001;left:{{ g.left }};top:{{ g.top }};width:{{ g.width }};height:{{ g.height }};border-top:{{ g.borderTop }};border-left:{{ g.borderLeft }}"><span style="position:absolute;left:4px;top:4px;white-space:nowrap;background:#fff;color:#c43ca0;font-size:11px;padding:2px 4px;border-radius:3px">{{ g.label }}</span></div></sc-for>
   <sc-if value="{{ marquee }}"><div data-noprint="" style="position:fixed;left:{{ marquee.left }};top:{{ marquee.top }};width:{{ marquee.width }};height:{{ marquee.height }};border:1px solid var(--ms-color-action-primary);background:rgba(53,104,197,.08);pointer-events:none;z-index:1400"></div></sc-if>
   <sc-if value="{{ focusMode }}" hint-placeholder-val="{{ false }}"><button class="ms-focus-exit" onClick="{{ toggleFocus }}" aria-label="{{ L.focusExit }} : ESC">{{ L.focusExit }} :<kbd>ESC</kbd></button></sc-if>
@@ -826,7 +831,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <span class="ms-property-label">{{ L.colorF }}</span>
                     <div style="display:flex;flex-wrap:wrap;gap:6px">
                       <sc-for list="{{ stickyPalette }}" as="c" hint-placeholder-count="7">
-                        <button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:36px;height:36px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }};box-shadow:{{ c.ring }}"></button>
+                        <div style="display:flex;flex-direction:column;gap:4px;width:36px"><button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:36px;height:36px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }};box-shadow:{{ c.ring }}"></button><sc-if value="{{ multiSelected }}"><span class="ms-tone-pair" style="width:36px"><button type="button" data-color="{{ c.hex }}" data-direction="-1" onClick="{{ onSequenceColor }}" aria-label="{{ c.leftLabel }}" title="{{ c.leftLabel }}" style="background:{{ c.lightToDark }}"></button><button type="button" data-color="{{ c.hex }}" data-direction="1" onClick="{{ onSequenceColor }}" aria-label="{{ c.rightLabel }}" title="{{ c.rightLabel }}" style="background:{{ c.darkToLight }}"></button></span></sc-if></div>
                       </sc-for>
                     </div>
                     <div style="display:flex;gap:6px">
@@ -898,6 +903,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                       <button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:100%;height:26px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }}"></button>
                     </sc-for>
                   </div>
+                  <sc-if value="{{ multiSelected }}"><div class="ms-tone-directions" aria-label="선택 아이템 명도 순차 적용"><sc-for list="{{ toneColumns }}" as="c"><div class="ms-tone-pair"><button type="button" data-color="{{ c.hex }}" data-direction="-1" onClick="{{ onSequenceColor }}" aria-label="{{ c.leftLabel }}" title="{{ c.leftLabel }}" style="background:{{ c.lightToDark }}"></button><button type="button" data-color="{{ c.hex }}" data-direction="1" onClick="{{ onSequenceColor }}" aria-label="{{ c.rightLabel }}" title="{{ c.rightLabel }}" style="background:{{ c.darkToLight }}"></button></div></sc-for></div></sc-if>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:8px">
                   <sc-if value="{{ selNotFlag }}">
@@ -1014,7 +1020,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <button onClick="{{ toggleAnim }}" role="switch" aria-checked="{{ animChecked }}" aria-label="{{ L.animF }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ animTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ animKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
             </section>
-<div class="ms-setting-switch"><span>스마트 가이드<small>이동 중 주변 아이템의 맞춤 안내선을 표시합니다.</small></span><button onClick="{{ toggleSmartGuides }}" role="switch" aria-label="스마트 가이드" aria-checked="{{ smartChecked }}" style="background:{{ smartTrack }}"><i style="left:{{ smartKnob }}"></i></button></div><div class="ms-setting-switch"><span>다른 아이템 줄이기<small>이동 중 겹친 일정의 길이를 줄입니다. 세로 위치는 유지합니다.</small></span><button onClick="{{ setOverlap }}" role="switch" aria-label="다른 아이템 줄이기" aria-checked="{{ shrinkChecked }}" style="background:{{ shrinkTrack }}"><i style="left:{{ shrinkKnob }}"></i></button></div>            <div style="height:1px;background:var(--color-border-neutral-2)"></div>
+<div class="ms-setting-switch"><span>스마트 가이드<small>이동 중 주변 아이템의 맞춤 안내선을 표시합니다.</small></span><button onClick="{{ toggleSmartGuides }}" role="switch" aria-label="스마트 가이드" aria-checked="{{ smartChecked }}" style="background:{{ smartTrack }}"><i style="left:{{ smartKnob }}"></i></button></div><div class="ms-setting-switch"><span>다른 아이템 줄이기<small>속성에서 일정을 수정할 때 겹친 길이를 줄입니다. 드래그 중에는 다른 아이템을 유지합니다.</small></span><button onClick="{{ setOverlap }}" role="switch" aria-label="다른 아이템 줄이기" aria-checked="{{ shrinkChecked }}" style="background:{{ shrinkTrack }}"><i style="left:{{ shrinkKnob }}"></i></button></div>            <div style="height:1px;background:var(--color-border-neutral-2)"></div>
           </div>
         </sc-if>
 
@@ -1174,6 +1180,9 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.36', agent: 'Codex', title: '[주요 사항] 오른쪽 밀착 복제 · 세로 그라데이션 팔레트', items: ['[복제] ⌘/Ctrl+D는 원본 오른쪽 끝에 붙여 복제 · 세로 위치·크기·텍스트·색상 등 속성 유지 · 다중 선택 복제와 연결 관계 유지', '[팔레트] 다중 선택 명도 버튼을 각 색상 열 아래 위아래로 배치 · 화살표를 해당 색상의 양방향 그라데이션으로 교체', '[검증] 286개 테스트 통과 · 실제 화면에서 ⌘D 오른쪽 밀착·동일 높이 및 세로 그라데이션 적용 확인'] },
+    { v: 'v0.9.35', agent: 'Codex', title: '[주요 사항] 다중 선택 명도 순차 적용 · 함께 조절 · 일정 이어 붙이기', items: ['[팔레트] 다중 선택 시 기본 색상 열 하단 좌우 화살표 · 시간·세로 위치 순서로 명도 순차 적용 · 방향 반전 · 기존 팔레트 명도 기준 활용', '[함께 조절] 다중 선택 위아래 이동과 높이 버튼·핸들 조절 · 좌우 키·그룹 이동 후 일정 이어 붙이기 확인', '[이어 붙이기] 선택 일정만 순서와 달력 기간을 유지하며 연속 배치 · 취소 시 이동 후 간격 유지 · 비선택 배치 고정과 실행 취소', '[검증] 283개 자동 테스트 통과 · 실제 화면에서 5개 명도·전체 이동·높이 조절·간격 유지·이어 붙이기 확인 · 비선택 아이템과 세션 위치 고정 확인'] },
+    { v: 'v0.9.34', agent: 'Codex', title: '[주요 사항] 드래그 중·드롭 후 비선택 아이템 배치 고정', items: ['[원인] 매 포인터 프레임과 드롭의 겹침 축소가 다른 아이템의 시작·종료를 수정 · 혼합 그룹 드롭 후 마일스톤 줄 재배치 · 기존 메모 자동 연결도 재현 · 기존 검증은 세로 위치에 편중', '[수정] 모든 아이템 드래그의 비선택 아이템 원본 배치 보호 · 드래그·드롭 자동 겹침 축소 차단 · 그룹 이동·Option 복사·Ctrl 전환에도 보호 유지 · 연결 메모는 본문 고정과 연결점 추적 유지 · 기존 메모의 우발적 자동 연결 차단', '[검증] 테스트 276개 통과 · 겹침 축소 켜진 80개 배치에서 6종·단일/그룹·왕복·Ctrl·Option·핸들·드롭·저장·실행 취소 검증 · 실제 밀집 화면의 주변 110개 요소 위치·크기 변경 0개 · 대각선 왕복·혼합 그룹·같은 배율의 새로고침까지 확인'] },
     { v: 'v0.9.33', agent: 'Codex', title: '[주요 사항] 날짜 드롭 스냅 · 반칸 위치와 높이 정렬 · NOW 속성', items: ['[편집·포커스] 아이템 편집 래퍼 한 줄 표시 · 선택 세션 얇은 포커스 라인 · 아이템 영역에서 세션 기준선 조절 차단', '[스냅·정렬] 시작·종료 핸들 놓을 때 날짜 기준선에 확정 스냅 · 상단 위치와 높이를 가장 가까운 0.5 Grid로 정렬 · 가로 일정과 주변 배치 유지', '[속성·보기] 좌상단·좌하단 Grid 좌표 각각 표시 · 스마트 가이드 명칭 · NOW 색상과 일자 표시 속성 · 차분한 곡선 기하학 배경', '[검증] 테스트 272개 통과 · 시작·종료 드롭 날짜 확정 · 편집 한 줄 · 두 좌표 · NOW 색상과 날짜 저장 복원 · 아이템 내부에서 세션 경계 조절 차단 · 높이 0.85 → 1.0 정렬 확인'] },
     { v: 'v0.9.32', agent: 'Codex', title: '[주요 사항] 이동 배치 고정 · 실시간 겹침 축소 · 자유 메모와 선택 위계', items: ['[이동 안정성] 다른 아이템의 세로 위치·세션·헤더 고정 · 연결 메모 본문은 제자리 유지하고 연결점만 이동 · 겹침 축소는 원래 배치에서 실시간 계산 · 다른 줄로 보내는 경로 제거', '[메모·선택] 연결 메모와 포스트잇 자유 이동 · 선택 UI는 타임라인 헤더와 세션 핸들보다 위 · 선택 해제 시 기존 위계 복원 · 날짜와 작업일수 별도 상위 레이어', '[텍스트·Grid] 아이템 내부 80% 폭 래핑 및 편집 영역 제한 · Grid 숫자 라운드 배지와 전환 · 높이 옆 X/Y 좌표 · 상단만 가장 가까운 반칸 정렬', '[스냅·설정] 시작·종료 기준선 스냅 · 공통 구간 반칸 이동·높이 조절 · 애니메이션 설정을 따르는 스냅 · 스마트 위치 안내 기본 켜짐 · 겹침 축소 단일 토글', '[보기] 세션 제목 가운데 정렬 · NOW 툴팁 제거와 버튼 여백 · 마지막 세션 하단 기준 높이 맞춤 · 글자 비율 유지', '[검증] 테스트 269개 통과 · 127개 밀집 배치에서 반복 이동·30개 실시간 축소 후 주변 세로 위치와 세션 경계 유지 · 메모 헤더 위 자유 이동과 선택 교체 · 시작·종료 핸들 기준선 스냅 · 안내선·애니메이션 끄기 · Grid 가로 스크롤 고정 · 높이 맞춤 하단 8px·글자 비율 확인'] },
     { v: 'v0.9.31', agent: 'Codex', title: '[주요 사항] 드롭 겹침 처리 복구 · 이동 흔들림 차단 · 직접 텍스트 편집', items: ['[겹침 처리] 이동 중 주변 배치 유지 · 놓을 때 실제 충돌에만 설정 규칙 적용 · 미세 겹침 허용 · 빈 공간 탐색을 반칸과 실제 높이 기준으로 수정', '[이동 안정성] 좌우 드래그의 세로 흔들림 차단 · 이동·크기 조절 중 세션 높이 유지 · 주변 라벨과 마일스톤 헤더 자리 유지 및 저장 복원 · 브라우저 자동 스크롤 방지', '[편집] 아이템 더블클릭 시 아이템 안에서 직접 줄바꿈 편집 · 편집 테두리 강조 · 포스트잇 편집 종료 키 적용', '[스냅·버튼] NOW 기준선 스냅을 포스트잇·이미지·연결 메모까지 적용 · 휴지통 버튼 좌우 여백 확보', '[검증] 테스트 257개 통과 · 120개 밀집 아이템 이동 중 배치 고정 · 실제 화면 세 가지 드롭 겹침 처리와 무관한 아이템·다음 세션 유지 · 세로 흔들림 방지 · 직접 편집 래핑 · 일정·포스트잇 NOW 스냅 · 휴지통 좌우 10px 확인'] },
@@ -1317,7 +1326,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.33';
+  APP_VER = 'v0.9.36';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1839,13 +1848,25 @@ class Component extends DCLogic {
       const d = JSON.parse(JSON.stringify({ title: st.title, cfg: st.cfg, rows: st.rows, items: st.items, notes: st.notes, now: st.now }));
       const placement=this.drag?.moved&&(this.drag.moveLayout||this.drag.layout);
       if(placement)for(const row of d.rows){if(placement[row.id])row.h=placement[row.id].height;}
-      const g=this.drag,moving=new Set(g?.ids||[g?.id]),active=g?.moved&&['move','l','r','top','bottom'].includes(g.mode)&&g.baseItems&&d.items.some(it=>moving.has(it.id)&&this.boxKind(it.kind));
-      if(active){const base=JSON.parse(g.baseItems);d.items=d.items.map(it=>moving.has(it.id)?it:(base.find(o=>o.id===it.id)||it));}
+      const g=this.drag,moving=new Set(g?.ids||[g?.id]),protectedDrag=g?.moved&&g.baseItems&&g.mode!=='link';
+      const base=protectedDrag?new Map(JSON.parse(g.baseItems).map(it=>[it.id,it])):null;
+      // A pointer edit owns only the grabbed selection. No collision solver or group
+      // re-anchoring may change another item's position, duration, or dimensions.
+      const restorePeers=()=>{if(base)d.items=d.items.map(it=>{if(moving.has(it.id))return it;const pinned=JSON.parse(JSON.stringify(base.get(it.id)||it));if(pinned.kind==='flag'&&pinned.targetId===undefined&&g.flagPositions?.[pinned.id])pinned.targetId=g.flagPositions[pinned.id].targetId;return pinned;});};
+      restorePeers();
       fn(d);
-      if(active)for(const id of moving)this.resolve(d,id,moving);
+      restorePeers();
       for(const it of d.items){const old=st.items.find(o=>o.id===it.id);if(old?.labelAnchor && (['label','s','e','row','trackY','trackH','span','labelSize'].some(k=>old[k]!==it[k]) || st.cfg.weekPx!==d.cfg.weekPx || st.cfg.laneH!==d.cfg.laneH))delete it.labelAnchor;}
       if(!this.drag)this.clampItemsBottom(d);
       MapstoneCore.syncLinks(d.items);
+      if(g?.settlingPeers){
+        // Pin the header layout for every pointer transaction, including a mixed
+        // group whose primary item is not a milestone. No release-time repacking.
+        const slots=g.markerSlots||{};
+        for(const it of d.items)if(it.kind==='marker'&&slots[it.id]!==undefined)it.markerLane=slots[it.id];
+        if(slots.__now!==undefined)d.cfg.nowLane=slots.__now;
+        this.stabilizePeerLabels(d,g);
+      }
       const out = { title: d.title, cfg: d.cfg, rows: d.rows, items: d.items, notes: d.notes, now: d.now };
       if (snap) { out.hist = st.hist.concat([snap]).slice(-60); out.future = []; }
       return out;
@@ -2396,7 +2417,7 @@ class Component extends DCLogic {
     this.setState({ sel: d.id, editing: null, editNote: null, panel: it.kind === 'flag' || this.narrowScreen() ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
     if (this.state.readOnly) return;
     this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), copyPending:!!e.altKey && !d.mode, moved: false };
-    if (!d.mode && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
+    if ((!d.mode || ['top','bottom'].includes(d.mode)) && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
     if(this.drag.mode==='move'){this.drag.moveLayout=this.rowLayout();if(this.boxKind(it.kind)){this.drag.box=this.trackBox(it,this.drag.moveLayout);this.drag.row=it.row;}}
     if(['sticky','image','flag'].includes(it.kind) && this.root){
       const nodes=Array.from(this.root.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])'));
@@ -2404,9 +2425,9 @@ class Component extends DCLogic {
       const own=nodes.find(node=>node.dataset.id===it.id);if(own)this.drag.visualBox=rect(own);
       const selected=new Set(this.selectedIds());this.drag.visualPeers=nodes.filter(node=>!selected.has(node.dataset.id)).map(rect);
     }
-    this.drag.flagPositions=Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!this.selectedIds().includes(f.id)).map(f=>{const v=this.flagGeometry(f,this.rowLayout(),this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop}];}));
+    this.drag.flagPositions=Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!this.selectedIds().includes(f.id)).map(f=>{const v=this.flagGeometry(f,this.rowLayout(),this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop,targetId:v.target?.id||''}];}));
     this.drag.markerSlots={...this._markerSlots};this.drag.markerRows=this._markerRows||1;
-    if (d.mode==='top' || d.mode==='bottom') Object.assign(this.drag,this.heightBounds(it));
+    if (d.mode==='top' || d.mode==='bottom'){Object.assign(this.drag,this.heightBounds(it,new Set(this.drag.ids||[])));if(this.drag.ids)this.drag.heightGroup=this.state.items.filter(i=>this.drag.ids.includes(i.id)&&this.boxKind(i.kind)).map(i=>({id:i.id,mode:d.mode,...this.heightBounds(i,new Set(this.drag.ids))}));}
     this.bind();this.setState({});
   };
   onNowDown = (e) => {
@@ -2429,8 +2450,8 @@ class Component extends DCLogic {
     if (!['ArrowUp','ArrowDown'].includes(e.key)) return;
     e.preventDefault();e.stopPropagation();if(this.state.readOnly) return;
     const {id,mode}=e.currentTarget.dataset,it=this.state.items.find(i=>i.id===id);if(!it)return;
-    const g={id,mode,...this.heightBounds(it)};
-    this.mutate(d=>this.resizeHeight(d,g,(e.key==='ArrowUp'?-1:1)*this.laneH()));
+    const ids=this.isSelected(id)?this.selectedIds():[id],bounds=this.state.items.filter(i=>ids.includes(i.id)&&this.boxKind(i.kind)).map(i=>({id:i.id,mode,...this.heightBounds(i,new Set(ids))}));
+    this.editSelectionSafely(d=>{for(const g of bounds)this.resizeHeight(d,g,(e.key==='ArrowUp'?-1:1)*this.laneH());});
   };
   trackBox(it,layout=this.rowLayout()) {
     let rowTop=0,total=0;
@@ -2439,11 +2460,11 @@ class Component extends DCLogic {
     const top=Math.max(0,Math.min(rowTop+(it.trackY ?? 6+it.lane*this.laneH()),total-height));
     return {rowTop,top,bottom:top+height,height,total,localTop:top-rowTop};
   }
-  heightBounds(it) {
+  heightBounds(it, selected=new Set()) {
     const layout=this.rowLayout(),b=this.trackBox(it,layout);
     let min=0,max=b.total;
     this.state.items.forEach(o=>{
-      if(o.id===it.id || !this.visibleItem(o) || !this.boxKind(o.kind) || this.xOf(o.s)>=this.xOf(it.s)+this.wOf(it.s,it.e) || this.xOf(o.s)+this.wOf(o.s,o.e)<=this.xOf(it.s))return;
+      if(o.id===it.id || selected.has(o.id) || !this.visibleItem(o) || !this.boxKind(o.kind) || this.xOf(o.s)>=this.xOf(it.s)+this.wOf(it.s,it.e) || this.xOf(o.s)+this.wOf(o.s,o.e)<=this.xOf(it.s))return;
       const p=this.trackBox(o,layout);
       if(p.bottom<=b.top)min=Math.max(min,p.bottom+2);
       if(p.top>=b.bottom)max=Math.min(max,p.top-2);
@@ -2690,7 +2711,7 @@ class Component extends DCLogic {
     this.selectItems([...new Set([...g.base,...hit])]);
     this.setState({marquee:{left:left+'px',top:top+'px',width:right-left+'px',height:bottom-top+'px'}});
   }
-  moveSelectedDays(days) {const ids=this.selectedIds(),chosen=new Set(ids);this.mutate(d=>{const items=d.items.filter(i=>chosen.has(i.id));const actual=Math.max(days,...items.filter(i=>!i.targetId).map(i=>Math.ceil((Date.parse(this.isoOf(0))-Date.parse(this.isoOf(i.s)))/86400000)));for(const it of items){if(it.kind==='flag'&&it.targetId){if(!chosen.has(it.targetId)){const target=d.items.find(t=>t.id===it.targetId);if(target){const next=Math.max(target.s,Math.min(target.e,this.shiftDay(it.s,actual)));it.linkOffset=(next-target.s)/(target.e-target.s||1);}}continue;}it.s=this.shiftDay(it.s,actual);it.e=['flag','marker'].includes(it.kind)?it.s:this.shiftDay(it.e,actual);}for(const it of items)this.resolve(d,it.id,chosen);});}
+  moveSelectedDays(days) {const ids=this.selectedIds(),chosen=new Set(ids);this.editSelectionSafely(d=>{const items=d.items.filter(i=>chosen.has(i.id));const actual=Math.max(days,...items.filter(i=>!i.targetId).map(i=>Math.ceil((Date.parse(this.isoOf(0))-Date.parse(this.isoOf(i.s)))/86400000)));for(const it of items){if(it.kind==='flag'&&it.targetId){if(!chosen.has(it.targetId)){const target=d.items.find(t=>t.id===it.targetId);if(target){const next=Math.max(target.s,Math.min(target.e,this.shiftDay(it.s,actual)));it.linkOffset=(next-target.s)/(target.e-target.s||1);}}continue;}it.s=this.shiftDay(it.s,actual);it.e=['flag','marker'].includes(it.kind)?it.s:this.shiftDay(it.e,actual);}for(const it of items)this.resolve(d,it.id,chosen);});}
   translateGroup(d, ids, dm, dy=0, days=null) {
     const chosen=new Set(ids), items=d.items.filter(i=>chosen.has(i.id));
     const temporal=items.filter(i=>!['flag','sticky'].includes(i.kind));
@@ -2757,11 +2778,11 @@ class Component extends DCLogic {
     if(g.mode==='move' && !['flag','sticky','band'].includes(g.kind) && !ev.shiftKey){const x=Math.abs(ev.clientX-g.x0),y=Math.abs(ev.clientY-g.y0);if(y<=8 || (x>y*2 && y<=Math.max(12,x*.12)))ev={clientX:ev.clientX,clientY:g.y0,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}
     if(g.mode==='move' && ev.shiftKey){g.axis ||= Math.abs(ev.clientX-g.x0)>=Math.abs(ev.clientY-g.y0)?'x':'y';ev={clientX:g.axis==='y'?g.x0:ev.clientX,clientY:g.axis==='x'?g.y0:ev.clientY,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}else g.axis=null;
     this._smartGuides=[];this._snapActive=false;
-    if (g.ids) {this.moveGroup(ev);return;}
+    if (g.ids && g.mode==='move') {this.moveGroup(ev);return;}
     if (g.mode==='top' || g.mode==='bottom') {
       const delta=(ev.clientY-g.y0)/this.heightScale(),edge=g.mode==='top'?g.top:g.bottom;
       const snapped=this.smartVertical(edge+delta,g.height,g,true);
-      this.mutate(d=>this.resizeHeight(d,g,snapped-edge,true),false);
+      this.mutate(d=>{for(const bounds of g.heightGroup||[g])this.resizeHeight(d,bounds,snapped-edge,true);},false);
       return;
     }
     if (g.mode === 'outlabel') {
@@ -2861,13 +2882,15 @@ class Component extends DCLogic {
       if(this.state.cfg.magnet && ['l','r'].includes(this.drag.mode) && this.boxKind(this.drag.kind)){const mode=this.drag.mode;this.mutate(d=>{const it=d.items.find(i=>i.id===id);if(!it)return;if(mode==='l')it.s=Math.max(0,Math.min(this.snapDateEdge(it.s),this.shiftDay(it.e,-1)));else it.e=Math.max(this.snapDateEdge(it.e),this.shiftDay(it.s,1));},false);}
       if(this.drag.kind==='band'&&this.state.cfg.magnet&&['move','btop','bbot'].includes(this.drag.mode)){const g=this.drag;this.mutate(d=>{const it=d.items.find(i=>i.id===g.id),b=this.bandBox(it),step=this.heightUnit()/2,top=g.mode==='bbot'?b.top:Math.round(b.top/step)*step,bottom=g.mode==='btop'?b.top+b.height:g.mode==='move'?top+b.height:Math.round((b.top+b.height)/step)*step;it.trackY=top-this.rowTop(it.rowFrom);it.trackH=Math.max(step,bottom-top);},false);}
       if(this.drag.kind==='marker'||this.drag.mode==='now'){const slots=this.drag.markerSlots||{};this.mutate(d=>{for(const it of d.items)if(it.kind==='marker'&&slots[it.id]!==undefined)it.markerLane=slots[it.id];if(slots.__now!==undefined)d.cfg.nowLane=slots.__now;},false);}
-      if(['move','l','r','top','bottom'].includes(this.drag.mode)){const ids=new Set(this.drag.ids||[id]);let held=0;this.mutate(d=>{for(const key of ids)held+=this.resolve(d,key,ids,4/this.canvasScale())||0;this.stabilizePeerLabels(d,this.drag);},false);if(held)MapstoneUI.toast(this,'빈 공간이 부족해 일부 겹침 정리를 보류했습니다. 세션 높이는 유지합니다.');}
+      if(this.drag.baseItems||this.drag.markerSlots){this.drag.settlingPeers=true;this.mutate(()=>{},false);}
       this._settledSelection=new Set(this.selectedIds());
       this.setState((st) => ({ hist: st.hist.concat([snap]).slice(-60), future: [] }));
     }
+    const finished=this.drag;
     this.drag = null;
     this._smartGuides=[];
     this.setState({marquee:null});
+    if(finished?.moved && finished.mode==='move' && finished.ids?.length>1 && finished.snap){const before=JSON.parse(finished.snap);if(this.state.items.some(it=>finished.ids.includes(it.id)&&this.linkKind(it.kind)&&before.items.some(o=>o.id===it.id&&Math.abs(o.s-it.s)>.000001)))this.askJoin(finished.ids);}
   }
 
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
@@ -2879,8 +2902,8 @@ class Component extends DCLogic {
   setOverlap = () => this.mutate(d=>{d.cfg.shrinkOthers=d.cfg.shrinkOthers===false;d.cfg.overlap='shrink';});
   toggleSmartGuides = () => this.viewCfg(d=>{d.cfg.smartGuides=d.cfg.smartGuides===false;});
 
-  /* geometry conflict policy: after any move/resize the row is re-flowed by the
-     cfg.overlap rule (default: the OTHER block gives way by shrinking) */
+  /* Explicit property edits may shrink overlapping durations. Pointer edits never
+     alter peers; the selection alone owns its drag transaction. */
   boxKind(k) { return k === 'chev' || k === 'plain'; }
   linkKind(k) { return this.boxKind(k) || k === 'band'; }
   collisionBoxes(d,a,b,tolerance=0) {
@@ -2900,6 +2923,7 @@ class Component extends DCLogic {
     item.trackY=y;return Math.max(0,Math.floor(y/d.cfg.laneH));
   }
   resolve(d,id,protectedIds=new Set(),tolerance=0) {
+    if(this.drag?.snap && this.drag.mode!=='link')return 0;
     const a=d.items.find(i=>i.id===id);if(d.cfg.shrinkOthers===false||!a||!this.boxKind(a.kind))return 0;
     const peers=d.items.filter(o=>o.id!==id&&!protectedIds.has(o.id)&&this.boxKind(o.kind)&&this.visibleItem(o));
     for(const o of peers){
@@ -2983,16 +3007,22 @@ class Component extends DCLogic {
     if(this.state.readOnly || !copies.length)return;
     const mapping=new Map(copies.map(i=>[i.id,this.uid()])), single=copies.length===1;
     const pasted=copies.map(c=>{
-      const it=JSON.parse(JSON.stringify(c));it.id=mapping.get(c.id);it.s+=.5;it.e+=.5;
+      const it=JSON.parse(JSON.stringify(c));it.id=mapping.get(c.id);
+      if(duplicate){
+        if(['sticky','image'].includes(c.kind)){const offset=this.mOf(this.xOf(c.s)+(c.w||240))-c.s;it.s+=offset;it.e+=offset;}
+        else if(c.kind==='flag'){it.labelDx=(c.labelDx||0)+this.labelBox(c,32).width+(this.state.cfg.showElementDates&&!c.hideDate?this.measure(this.shortDate(c.s))+6:0);}
+        else if(c.kind==='marker'){const offset=this.mOf(this.xOf(c.s)+this.labelBox(c,32).width)-c.s;it.s+=offset;it.e+=offset;}else {it.s=c.e;it.e=c.e+(c.e-c.s);}
+      }else {it.s+=.5;it.e+=.5;}
       if(single && !duplicate && ['chev','plain','flag'].includes(it.kind))it.row=this.state.focusRow || it.row;
-      if(['sticky','image'].includes(it.kind))it.y=(it.y||0)+24;
-      if(it.targetId){if(mapping.has(it.targetId))it.targetId=mapping.get(it.targetId);else {it.targetId='';delete it.linkOffset;delete it.linkY;}}
+      if(!duplicate && ['sticky','image'].includes(it.kind))it.y=(it.y||0)+24;
+      if(it.targetId){if(mapping.has(it.targetId))it.targetId=mapping.get(it.targetId);else if(!duplicate){it.targetId='';delete it.linkOffset;delete it.linkY;}}
       return it;
     });
-    this.mutate(d=>{d.items.push(...pasted);});this.selectItems(pasted.map(i=>i.id));
+    if(duplicate)this.editSelectionSafely(d=>{d.items.push(...pasted);},pasted.map(i=>i.id));else this.mutate(d=>{d.items.push(...pasted);});this.selectItems(pasted.map(i=>i.id));
   }
   pasteClip = () => { const c=this.state.clip;if(c)this.cloneItems(Array.isArray(c)?c:[c]); };
   onKey = (e) => {
+    if(this.state.joinPrompt){this.joinKey(e);return;}
     if(this.state.alignConfirm){if(e.key==='Escape'){e.preventDefault();this.alignCancel();}else if(e.key==='Tab'){const buttons=Array.from(this.root?.querySelectorAll('[data-align-dialog] button')||[]);if(buttons.length){e.preventDefault();const index=buttons.indexOf(document.activeElement);buttons[(index+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}}return;}
     if (e.defaultPrevented || (document.querySelector && document.querySelector("dialog[open]"))) return;
     if(e.key==='Escape' && this.drag){e.preventDefault();const before=this.drag.snap;this._pendingMove=null;this.drag.moved=false;this.stopDrag();if(before)this.setState({...JSON.parse(before),sel:null,selection:[]});return;}
@@ -3022,8 +3052,8 @@ class Component extends DCLogic {
       return;
     }
     if (!this.state.sel) return;
-    if (key==='ArrowLeft' || key==='ArrowRight') {e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else this.moveSelectedDays(days);return;}
-    if(['ArrowUp','ArrowDown'].includes(key) && this.selectedIds().length){e.preventDefault();const ids=new Set(this.selectedIds()),dy=(key==='ArrowUp'?-1:1)*(e.shiftKey?10:1),layout=this.rowLayout();this.mutate(d=>{for(const it of d.items.filter(it=>ids.has(it.id))){if(this.boxKind(it.kind)){const b=this.trackBox(it,layout);it.trackY=Math.max(6,Math.min(layout[it.row].height-b.height-6,b.localTop+dy));}else if(['sticky','image'].includes(it.kind))it.y=Math.max(0,(it.y||0)+dy);else if(it.kind==='flag')it.labelDy=(it.labelDy||0)+dy;}});return;}
+    if (key==='ArrowLeft' || key==='ArrowRight') {e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else {this.moveSelectedDays(days);this.askJoin();}return;}
+    if(['ArrowUp','ArrowDown'].includes(key) && this.selectedIds().length){e.preventDefault();this.shiftSelectedVertically((key==='ArrowUp'?-1:1)*(e.shiftKey?10:1));return;}
     if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {e.preventDefault();const ids=this.selectedIds(),dx=key==='ArrowLeft'?-.5:key==='ArrowRight'?.5:0,dy=key==='ArrowUp'?-this.laneH():key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
     if (key === 'Delete' || key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
     if (this.selItem()?.kind === 'flag' && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {
@@ -3230,6 +3260,8 @@ class Component extends DCLogic {
     const delta = parseFloat(d0.delta);
     if (d0.cfg) { this.applyCfg(d0.cfg, null, delta); return; }
     const id = this.state.sel;
+    if(this.selectedIds().length>1 && d0.field==='span'){this.stepSelectedHeights(delta);return;}
+    if(this.selectedIds().length>1 && ['s','e'].includes(d0.field)){this.moveSelectedDays(Math.sign(delta));this.askJoin();return;}
     if (this.state.propertyDates && ['s','e'].includes(d0.field)) {
       const it = this.selItem(); if (!it) return;
       const m = this.shiftDay(it[d0.field], Math.sign(delta));
@@ -3312,6 +3344,40 @@ class Component extends DCLogic {
     this.setState({ nowOutOpen: false });
   };
   togglePalette = () => this.setState({ paletteExpanded: !this.state.paletteExpanded });
+  orderedSelection(ids=this.selectedIds()) {
+    const chosen=new Set(ids),layout=this.rowLayout();
+    return this.state.items.filter(i=>chosen.has(i.id)).map((it,index)=>({it,index})).sort((a,b)=>a.it.s-b.it.s || (this.boxKind(a.it.kind)?this.trackBox(a.it,layout).top:a.it.y||0)-(this.boxKind(b.it.kind)?this.trackBox(b.it,layout).top:b.it.y||0) || a.index-b.index).map(x=>x.it);
+  }
+  onSequenceColor = e => {
+    const {color,direction}=e.currentTarget.dataset,items=this.orderedSelection();if(items.length<2||this.state.readOnly)return;
+    const tones=[-.55,-.3,0,.3,.55],colors=new Map(items.map((it,n)=>{let tone=n/(items.length-1)*4;if(+direction<0)tone=4-tone;const lower=Math.floor(tone),fraction=tone-lower,value=tones[lower]+fraction*((tones[Math.min(4,lower+1)]||0)-tones[lower]);return [it.id,this.paletteTone(color,value)];}));
+    this.mutate(d=>{for(const it of d.items)if(colors.has(it.id))it.color=colors.get(it.id);});
+  };
+  editSelectionSafely(fn, ids=this.selectedIds()) {
+    if(this.state.readOnly)return;const previous=this.drag,layout=this.rowLayout();
+    this.drag={id:this.state.sel,ids,mode:'move',moved:true,snap:this.snapshot(),baseItems:JSON.stringify(this.state.items),moveLayout:layout,markerSlots:{...this._markerSlots},settlingPeers:true,flagPositions:Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!ids.includes(f.id)).map(f=>{const v=this.flagGeometry(f,layout,this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop,targetId:v.target?.id||''}];}))};
+    try{this.mutate(fn);}finally{this.drag=previous;this.setState({});}
+  }
+  askJoin(ids=this.selectedIds()) {if(this.state.readOnly)return;const ordered=this.orderedSelection(ids).filter(it=>this.linkKind(it.kind));if(ordered.length>1){this.setState({joinPrompt:ordered.map(it=>it.id)});setTimeout(()=>this.root?.querySelector('[data-join-dialog] button')?.focus(),0);}}
+  cancelJoin = () => this.setState({joinPrompt:null});
+  applyJoin = () => {
+    const ids=this.state.joinPrompt||[],ordered=this.orderedSelection(ids).filter(it=>this.linkKind(it.kind));this.cancelJoin();if(ordered.length<2||this.state.readOnly)return;
+    // Keep calendar-day durations across unequal month lengths. The first start anchors the chain.
+    const changes=new Map();let end=ordered[0].e;
+    for(const it of ordered.slice(1)){const days=Math.max(1,Math.round((Date.parse(this.isoOf(it.e))-Date.parse(this.isoOf(it.s)))/86400000)),start=end;end=this.shiftDay(start,days);changes.set(it.id,{s:start,e:end});}
+    this.editSelectionSafely(d=>{for(const it of d.items)if(changes.has(it.id))Object.assign(it,changes.get(it.id));},ids);
+  };
+  joinKey = e => {if(e.key==='Escape'){e.preventDefault();e.stopPropagation();this.cancelJoin();}if(e.key==='Tab'){const buttons=Array.from(this.root?.querySelectorAll('[data-join-dialog] button')||[]);if(buttons.length){e.preventDefault();const n=buttons.indexOf(document.activeElement);buttons[(n+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}}};
+  shiftSelectedVertically(dy) {
+    const ids=this.selectedIds(),chosen=new Set(ids),layout=this.rowLayout(),boxes=this.state.items.filter(it=>chosen.has(it.id)&&this.boxKind(it.kind)).map(it=>this.trackBox(it,layout));
+    if(boxes.length)dy=Math.max(Math.max(...boxes.map(b=>-b.top)),Math.min(dy,...boxes.map(b=>b.total-b.bottom)));
+    this.editSelectionSafely(d=>{for(const it of d.items.filter(i=>chosen.has(i.id))){if(this.boxKind(it.kind))it.trackY=this.trackBox(it,layout).localTop+dy;else if(it.kind==='band')it.trackY=(it.trackY??6)+dy;else if(['sticky','image'].includes(it.kind))it.y=(it.y||0)+dy;else if(it.kind==='flag')it.labelDy=(it.labelDy||0)+dy;}});
+  }
+  stepSelectedHeights(delta) {
+    const boxes=this.orderedSelection().filter(it=>this.boxKind(it.kind)),chosen=new Set(boxes.map(it=>it.id)),bounds=boxes.map(it=>({id:it.id,mode:'bottom',...this.heightBounds(it,chosen)}));
+    this.editSelectionSafely(d=>{for(const g of bounds){const next=Math.max(.5,this.halfStep(g.height/this.heightUnit(),delta));this.resizeHeight(d,g,next*this.heightUnit()-g.height);}});
+  }
+  toneGradients(hex) {const dark=this.paletteTone(hex,-.55),light=this.paletteTone(hex,.55);return {lightToDark:'linear-gradient(to right,'+light+','+hex+','+dark+')',darkToLight:'linear-gradient(to right,'+dark+','+hex+','+light+')'};}
   paletteTone(hex, tone) {
     const rgb = [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255), l=(Math.max(...rgb)+Math.min(...rgb))/2;
     const next = tone < 0 ? l*(1+tone) : l+(1-l)*tone;
@@ -3850,6 +3916,8 @@ class Component extends DCLogic {
       wmActualBorder: cfg.weekMode === 'actual' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
       clipLabel: st.clip ? '(1)' : '',
       paletteExpanded: st.paletteExpanded, togglePalette: this.togglePalette, paletteToggleLabel: st.paletteExpanded ? T.paletteCollapse : T.paletteExpand,
+      toneColumns:this.PAL.map(([name,hex])=>({hex,...this.toneGradients(hex),leftLabel:name+' · 밝게 → 어둡게 순차 적용',rightLabel:name+' · 어둡게 → 밝게 순차 적용'})),onSequenceColor:this.onSequenceColor,
+      joinPrompt:!!st.joinPrompt,joinCount:st.joinPrompt?.length||0,joinKey:this.joinKey,cancelJoin:this.cancelJoin,applyJoin:this.applyJoin,
       palette: (st.paletteExpanded ? [0,-.55,-.3,.3,.55] : [0]).flatMap(tone=>this.PAL.map(([name,base])=>{const hex=tone ? this.paletteTone(base,tone) : base;return {name:name+(tone ? ' · '+(tone<0 ? T.shadeDark : T.shadeLight)+' '+(Math.abs(tone)>.4 ? 2 : 1) : ''),hex,border:sel && sel.color===hex ? '#000' : 'rgba(0,0,0,.12)'};})),
       rowOptions: st.rows.map((r) => ({ id: r.id, name: r.name })),
       focusName: focusRow ? focusRow.name : '없음',
@@ -3896,7 +3964,7 @@ class Component extends DCLogic {
       onTitle: this.onTitle, onWeekPx: this.onWeekPx, togglePanel: this.togglePanel, onTab: this.onTab,
       addChev: this.addChev, addBand: this.addBand, addMarker: this.addMarker, addFlag: this.addFlag, addNote: this.addNote, addRow: this.addRow,
       stickies: stickies, addSticky: this.addSticky, onRowLanes: this.onRowLanes,
-      stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1], border: sel && sel.color === p[1] ? 'var(--ms-color-action-primary)' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
+      stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1],...this.toneGradients(p[1]),leftLabel:p[0]+' · 밝게 → 어둡게 순차 적용',rightLabel:p[0]+' · 어둡게 → 밝게 순차 적용', border: sel && sel.color === p[1] ? 'var(--ms-color-action-primary)' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
       stickyOpaque: { bg: sel && sel.variant !== 'tint' ? 'var(--ms-color-action-primary)' : '#fff', fg: sel && sel.variant !== 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant !== 'tint' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
       stickyTint: { bg: sel && sel.variant === 'tint' ? 'var(--ms-color-action-primary)' : '#fff', fg: sel && sel.variant === 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant === 'tint' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
       selHasMemo:!!sel && !['sticky','image','now'].includes(sel.kind),selNotSticky: !!sel && !['sticky','image'].includes(sel.kind),
