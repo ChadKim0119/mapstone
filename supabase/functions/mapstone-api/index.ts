@@ -109,6 +109,12 @@ Deno.serve(async (req:Request)=>{
       const projects=await db('mapstone_version_projects?id=eq.'+path[1]+'&owner_hash=eq.'+owner+'&select=id');
       if(!projects.length)return json({error:'보관된 작업물을 찾을 수 없습니다.'},404);
       if(path.length===3 && path[2]==='versions' && req.method==='GET')return json(await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&deleted_at=is.null&select=id,sequence,created_at,note,title:document->>title&order=sequence.desc'));
+      if(path.length===4 && path[2]==='versions' && req.method==='PATCH'){
+        if(!/^[A-Za-z0-9_-]{1,128}$/.test(path[3]))return json({error:'버전 ID를 확인하세요.'},400);
+        const body=await readBody(req);if(typeof body.note!=='string'||body.note.length>20000)return json({error:'변경 내용은 20,000자 이내로 입력하세요.'},400);
+        const updated=await db('mapstone_saved_versions?project_id=eq.'+path[1]+'&id=eq.'+path[3]+'&deleted_at=is.null','PATCH',{note:body.note});
+        return updated.length?json({id:path[3],note:body.note}):json({error:'버전을 찾을 수 없습니다.'},404);
+      }
       if(path.length===4 && path[2]==='versions' && req.method==='DELETE'){
         if(!/^[A-Za-z0-9_-]{1,128}$/.test(path[3]))return json({error:'버전 ID를 확인하세요.'},400);
         // Keep sequence reservations so deleting the latest version never reuses its number.

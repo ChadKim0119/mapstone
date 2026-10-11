@@ -3,7 +3,7 @@ const crypto=require('node:crypto').webcrypto;
 test('Version deletion checks owner and ID before hiding the exact version and excludes it from reads',async()=>{
  let handler,allow=true,deleted=false;const writes=[];
  const source=require('node:module').stripTypeScriptTypes(fs.readFileSync('supabase/functions/mapstone-api/index.ts','utf8').replace("import './mapstone-core.js';",''));
- vm.runInNewContext(source,{MapstoneCore:C,crypto,TextEncoder,URL,Response,Date,Error,Deno:{env:{get:()=> 'mock'},serve:fn=>handler=fn},fetch:async(url,options)=>{
+ vm.runInNewContext(source,{MapstoneCore:C,crypto,TextEncoder,TextDecoder,URL,Response,Date,Error,Deno:{env:{get:()=> 'mock'},serve:fn=>handler=fn},fetch:async(url,options)=>{
    if(url.includes('mapstone_version_projects?'))return Response.json(allow?[{id:'project'}]:[]);
    if(options.method==='PATCH'){writes.push({url,body:JSON.parse(options.body)});deleted=true;return Response.json([{id:'one'}]);}
    return Response.json(deleted&&url.includes('deleted_at=is.null')?[]:[{id:'one'}]);
@@ -15,4 +15,11 @@ test('Version deletion checks owner and ID before hiding the exact version and e
  const res=await handler(new Request(base+'/one',{method:'DELETE',headers}));assert.equal(res.status,200);assert.deepEqual(await res.json(),{id:'one',deleted:true});assert.equal(writes.length,1);assert.ok(writes[0].body.deleted_at);assert.match(writes[0].url,/project_id=eq\..*&id=eq\.one&deleted_at=is.null/);
  assert.deepEqual(await (await handler(new Request(base,{headers}))).json(),[]);assert.equal((await handler(new Request(base+'/one',{headers}))).status,404);
  assert.match((await handler(new Request(base,{method:'OPTIONS'}))).headers.get('Access-Control-Allow-Methods'),/DELETE/);
+});
+
+test('Version note PATCH enforces ownership, size and identity and never modifies saved document',async()=>{
+ let handler,owner=true;const writes=[];const source=require('node:module').stripTypeScriptTypes(fs.readFileSync('supabase/functions/mapstone-api/index.ts','utf8').replace("import './mapstone-core.js';",''));
+ vm.runInNewContext(source,{MapstoneCore:C,crypto,TextEncoder,TextDecoder,URL,Response,Date,Error,Deno:{env:{get:()=> 'mock'},serve:fn=>handler=fn},fetch:async(url,opt)=>{if(url.includes('mapstone_version_projects?'))return Response.json(owner?[{id:'p'}]:[]);writes.push(JSON.parse(opt.body));return Response.json([{id:'one'}]);}});
+ const url='http://local/mapstone-api/version-projects/11111111-1111-4111-8111-111111111111/versions/one',headers={'X-Mapstone-Code':'a'.repeat(48),'Content-Type':'application/json'},patch=body=>handler(new Request(url,{method:'PATCH',headers,body:JSON.stringify(body)}));
+ owner=false;assert.equal((await patch({note:'denied'})).status,404);owner=true;assert.equal((await patch({note:'x'.repeat(20001)})).status,400);assert.equal((await patch({note:'changed',document:{title:'tampered'}})).status,200);assert.deepEqual(writes,[{note:'changed'}]);
 });

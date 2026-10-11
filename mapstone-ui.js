@@ -680,6 +680,23 @@
     }catch(e){app.setState({versionStatus:'삭제하지 못했습니다. 버전은 유지됩니다. '+versionError(e)});return false;}
     finally{app.setState({versionBusy:false,versionOperation:null});}
   }
+  function editSavedVersion(app,v){
+    if(app.state.readOnly||app.state.versionBusy)return;
+    const body=createModal('버전 변경 내용 수정'),label=el('label','변경 내용'),input=el('textarea',null,{value:v.note||'',rows:6,maxLength:20000}),message=el('p','저장된 일정은 유지되며 카드의 변경 내용만 수정합니다.',{role:'status'}),actions=el('div',null,{className:'ms-dialog-actions'});
+    input.style.cssText='width:100%;padding:10px;border:1px solid #d4d8dd;border-radius:6px;line-height:1.6;resize:vertical';label.append(input);
+    const cancel=button('취소',closeModal),save=button('저장',async()=>{
+      if(app.state.readOnly||app.state.versionBusy)return;save.disabled=true;input.disabled=true;app.setState({versionBusy:true,versionOperation:'edit'});
+      try{await updateSavedVersion(app,v,input.value);closeModal();}
+      catch(e){message.textContent='저장하지 못했습니다. '+versionError(e);}
+      finally{save.disabled=false;input.disabled=false;app.setState({versionBusy:false,versionOperation:null});}
+    });save.classList.add('ms-primary');actions.append(cancel,save);body.append(label,message,actions);input.focus();
+  }
+  async function updateSavedVersion(app,v,note){
+    if(app.state.readOnly)throw new Error('보기 전용입니다.');
+    if(typeof note!=='string'||note.length>20000)throw new Error('변경 내용은 20,000자 이내로 입력하세요.');
+    if(v.projectId)await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode(),'PATCH',{note});
+    app.setState(s=>({versions:s.versions.map(x=>x.id===v.id&&x.projectId===v.projectId?{...x,note}:x),versionStatus:'버전 변경 내용을 수정했습니다.'}));return true;
+  }
   async function comparisonRaster(doc,pair,app){
     const image=new Image();image.src=editorVersionImage(app,doc,pair);await image.decode();const canvas=document.createElement('canvas'),scale=Math.min(1,2400/Math.max(image.width,image.height));canvas.width=Math.round(image.width*scale);canvas.height=Math.round(image.height*scale);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/png');
   }
@@ -762,5 +779,5 @@
     window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision,readOnly:app.sync.readOnly})};
     return ()=>{app._presentation?.dispose();app._presentation=null;app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);document.removeEventListener('keydown',onSubmitKey,true);document.removeEventListener('keydown',onEnterKey,true);document.removeEventListener('keydown',onShareKey,true);document.removeEventListener('input',onGrow,true);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
   }
-  window.MapstoneUI={versionComparePage,refreshPresentation,refreshVersionHistory,saveCloudVersion,restoreCloudVersion,deleteSavedVersion,versionLibrary,createShare,shareUrl,growAll,saveFile,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
+  window.MapstoneUI={editSavedVersion,updateSavedVersion,versionComparePage,refreshPresentation,refreshVersionHistory,saveCloudVersion,restoreCloudVersion,deleteSavedVersion,versionLibrary,createShare,shareUrl,growAll,saveFile,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
 })();

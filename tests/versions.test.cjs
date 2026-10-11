@@ -39,3 +39,10 @@ test('Version operations identify save, restore and delete independently and cle
     reject(Error('network'));await pending;assert.equal(app.state.versionBusy,false);assert.equal(app.state.versionOperation,null);
   }
 });
+
+test('Version note editing saves only metadata and preserves snapshots and other projects',async()=>{
+ let sent;const {ui,app}=fixture(async(url,opt)=>{sent={url,method:opt.method,body:JSON.parse(opt.body)};return {ok:true,status:200,json:async()=>({note:'updated'})};});
+ app.state.versions=[{id:'one',projectId:'p',note:'old',snap:'original'},{id:'one',projectId:'other',note:'keep'}];const document=app.snapshot();await ui.updateSavedVersion(app,app.state.versions[0],'수정된 변경 내용');assert.equal(sent.method,'PATCH');assert.deepEqual(sent.body,{note:'수정된 변경 내용'});assert.match(sent.url,/version-projects\/p\/versions\/one$/);assert.equal(app.state.versions[0].note,'수정된 변경 내용');assert.equal(app.state.versions[0].snap,'original');assert.equal(app.state.versions[1].note,'keep');assert.equal(app.snapshot(),document);
+ app.state.readOnly=true;await assert.rejects(ui.updateSavedVersion(app,app.state.versions[0],'blocked'));app.state.readOnly=false;await assert.rejects(ui.updateSavedVersion(app,app.state.versions[0],'x'.repeat(20001)));
+});
+test('Failed cloud note edits retain the original version content',async()=>{const {ui,app}=fixture(async()=>{throw Error('offline');});app.state.versions=[{id:'a',projectId:'p',note:'keep'}];await assert.rejects(ui.updateSavedVersion(app,app.state.versions[0],'replace'));assert.equal(app.state.versions[0].note,'keep');});
