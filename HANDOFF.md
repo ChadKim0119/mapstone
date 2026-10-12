@@ -5,12 +5,17 @@
 ## 현재 상태
 
 - **마지막 작업**: Claude Code · 2026-10-12
-- **버전**: v0.9.40 (`package.json` 0.9.40)
-- **브랜치**: `main`
+- **버전**: v0.9.41 (`package.json` 0.9.41)
+- **브랜치**: `claude/design-system-extraction-rms069` (미커밋 — 사용자 요청 시 커밋)
 - **테스트**: `npm test` 304/304 통과
 - **진행 중**: 없음
-- **다음 할 일**: 사용자 요청 대기
+- **다음 할 일**: 사용자 검토 후 커밋 여부 결정. 디자인 시스템(아래 링크) 기준으로 남은 화면 정합 계속.
+- **디자인 시스템**: MapStone 디자인 시스템(한국어판) 아티팩트 https://claude.ai/artifact/JAnQNBvL7UzeNgx44bPEeb — 토큰은 `assets/design-system/tokens.css`와 같은 이름. 컴포넌트 57개 카드. 실행 중인 화면이 기준이며, 인벤토리와 다르면 화면을 따름.
 - **주의 사항**:
+  - v0.9.41에서 패널 컨트롤을 32px·12px로, 4px 버튼을 12px로 통일했습니다. 새 버튼에 4px/6px 모서리를 쓰지 마세요(`var(--ms-radius-control)`).
+  - `mapstone-ui.js`의 주입 스타일 문자열은 작은따옴표 JS 문자열입니다. CSS 안에 `'`를 쓰면 문법 오류가 나므로 `%27`·`\u0022`로 이스케이프하세요.
+  - 대화상자 닫기는 아직 ‘닫기’ 글자 버튼입니다(디자인 시스템은 X 아이콘). 사용자가 이번에 정합을 보류했습니다.
+  - ContextMenu는 디자인 시스템에 ‘제품 미구현·예정’으로만 있습니다.
   - 원격에 미병합 브랜치 `chore/repo-hygiene`(PR #1), `feat/v9-board-tools`(PR #2)가 있습니다. 관련 작업 시 먼저 확인하세요.
   - `supabase/.temp/`가 Git에 포함되어 있습니다(Supabase CLI 캐시).
 
@@ -21,4 +26,5 @@
 ## 작업 로그
 
 <!-- 최신이 위. 형식: - YYYY-MM-DD · 에이전트 · 버전 · 한 줄 요약 -->
+- 2026-10-12 · Claude Code · v0.9.41 · 디자인 시스템 아티팩트 작성(한국어) 및 깊은 화면 적용: 패널 32/12, 4px 버튼 정리, 내보내기 메뉴 아이콘, 분석 아코디언·달력·스테퍼 아이콘, system-ui→Pretendard
 - 2026-10-12 · Claude Code · v0.9.40 · 교대 작업 환경 구성(AGENTS.md 공통 규칙, CLAUDE.md, HANDOFF.md), launch.json 경로 수정

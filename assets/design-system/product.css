@@ -266,3 +266,9 @@ dialog::backdrop{background:rgb(22 54 93 / 30%);backdrop-filter:blur(2px)}
 @media(prefers-reduced-motion:reduce){.ms-image-divider,.ms-image-divider>span{animation:none!important}}
 @media(max-width:1100px){.ms-version-workspace>.ms-dialog-body{display:flex;overflow:auto}.ms-version-workspace>.ms-dialog-body>.ms-image-comparison{height:55vh;flex:none}.ms-comparison-aside{height:40vh;flex:none}.ms-compare-context small{display:none}.ms-version-workspace .ms-overlap-dock{margin-left:auto}.ms-version-workspace .ms-image-compare-stage{min-height:160px}}
 .ms-comparison-pane .ms-report-summary{display:flex!important;flex-direction:column;gap:12px;background:transparent!important;border:0!important}.ms-comparison-pane .ms-report-card{width:100%;min-width:0}.ms-comparison-pane .ms-overview-fields{grid-template-columns:64px minmax(0,1fr)}.ms-comparison-pane .ms-overview-fields dd{overflow-wrap:normal;word-break:normal}.ms-baseline-menu select{width:100%;min-height:36px;padding:0 10px;border:1px solid var(--ms-color-border-default);border-radius:var(--ms-radius-control);background:var(--ms-color-surface-canvas);color:var(--ms-color-text-primary)}
+/* v0.9.41 design-system depth pass: menus, chevrons. */
+.ms-tool-popover .ms-tool-button{height:34px;min-height:34px;padding:0 10px;gap:10px;border-color:transparent!important;border-radius:9px!important;box-shadow:none!important;font-weight:500;color:var(--ms-color-text-primary)}
+.ms-tool-popover .ms-tool-button:hover:not(:disabled){background:var(--ms-color-surface-subtle)!important;border-color:transparent!important}
+.ms-tool-popover .ms-tool-button>svg{display:block!important;color:var(--ms-color-text-secondary)}
+.ms-tool-menu>summary .ms-chevron{order:2;color:var(--ms-color-text-secondary);transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.ms-tool-menu[open]>summary .ms-chevron{transform:rotate(180deg)}
