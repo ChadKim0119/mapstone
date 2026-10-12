@@ -5,3 +5,4 @@ node_modules/
 .mapstone-connection
 __pycache__/
 test-results/
+public/

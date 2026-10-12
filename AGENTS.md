@@ -32,6 +32,7 @@
 - 편집 원본: `src/timeline.dc.html`, `mapstone-core.js`, `mapstone-ui.js`, `mapstone-help.js`, `support.js`, `vendor/`, `assets/`, `supabase/functions/`(단, 아래 복사본 제외).
 - 생성 파일(직접 수정 금지, `npm run build`로 재생성): `index.html`, `share-timeline.dc.html`, `개발 일정 및 진행 현황.dc.html`, `share/` 전체, `supabase/functions/mapstone-api/mapstone-core.js`.
 - `versions/`는 과거 스냅샷이므로 수정하지 않습니다.
+- Vercel 배포는 `vercel.json`이 `npm run build` 후 `index.html`·`share/`·`assets/`·`*.dc.html`만 `public/`으로 복사해 올립니다. `public/`은 생성 폴더이며 커밋하지 않습니다. 런타임에 새 파일이 필요하면 `vercel.json`의 복사 목록에 추가합니다.
 - 작업 후 `npm test`를 실행하고, 화면 확인은 루트 `index.html`을 사용합니다(`npm start` → http://127.0.0.1:4173).
 
 ## 비밀 정보
