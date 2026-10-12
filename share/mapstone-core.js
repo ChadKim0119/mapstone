@@ -118,10 +118,13 @@
       if (['chev', 'plain', 'band'].includes(kind) && e === s) kind = 'marker';
       if (['chev', 'plain', 'band'].includes(kind) && e <= s) e = s + 0.125;
       const it = {id: 'a' + (n + 1), kind, row: '', lane: Math.min(20, Math.max(0, Math.round(+i.lane || 0))), span: 1, s, e, label: str(i.label, 2000), memo: str(i.memo, 20000), color: hex(i.color) || fallback[kind] || palette[n % palette.length], variant: i.variant === 'tint' || (kind === 'plain' && i.variant !== 'solid') ? 'tint' : 'solid'};
+      const grid=Number(i.heightGrid);
+      const heightGrid=Number.isFinite(grid)&&grid>0?Math.max(.5,Math.min(49.5,Math.round(grid*2)/2)):1;
+      if (['chev','plain','band'].includes(kind)) {it.trackH=heightGrid*88;it.span=Math.ceil((it.trackH+12)/44);}
       if (['chev', 'plain', 'flag'].includes(kind)) it.row = rowId(i.row);
       if (kind === 'band') { const a = rows.findIndex(r => r.id === rowId(i.row)), b = rows.findIndex(r => r.id === rowId(i.rowTo || i.row)); it.rowFrom = rows[Math.min(a, b)].id; it.rowTo = rows[Math.max(a, b)].id; it.row = it.rowFrom; it.lane = 0; }
       if (['chev', 'plain'].includes(kind)) {
-        const occupied = lane => items.some(o => o.row === it.row && ['chev', 'plain'].includes(o.kind) && o.lane === lane && o.s < it.e && it.s < o.e);
+        const occupied = lane => items.some(o => o.row === it.row && ['chev', 'plain'].includes(o.kind) && o.lane < lane+it.span && lane < o.lane+o.span && o.s < it.e && it.s < o.e);
         if (occupied(it.lane)) {
           // ponytail: at most 101 lanes per row; retain the source lane when all are occupied.
           for (let lane = 0; lane <= 100; lane++) if (!occupied(lane)) { it.lane = lane; break; }
@@ -137,6 +140,11 @@
     return analysisColors(validate({title: str(p.title || '가져온 일정', 500), cfg: {startY: Math.floor(first / 12), startM: first % 12 + 1, months, weekPx: 100, weekMode: 'actual', laneH: 44, magnet: true, overlap: 'moveOther'}, rows, items, notes: [], now: now !== null && now >= 0 && now <= months ? now : 0, versions: []}));
   }
   function analysisColors(doc) {
+    const unit=2*doc.cfg.laneH,placed=[];
+    for(const it of doc.items){if(!['chev','plain','band'].includes(it.kind))continue;
+      it.trackH=Math.max(unit/2,Math.min(49.5*unit,Math.round((it.trackH??unit)/(unit/2))*(unit/2)));it.span=Math.ceil((it.trackH+12)/doc.cfg.laneH);
+      if(it.kind!=='band'){while(placed.some(o=>o.row===it.row&&o.s<it.e&&it.s<o.e&&o.lane<it.lane+it.span&&it.lane<o.lane+o.span)&&it.lane<100)it.lane++;placed.push(it);}
+    }
     const palette = ['#5b3fd1', '#0078d4', '#17a2a2', '#f86800', '#1e3a8a', '#66707a'];
     doc.rows.forEach((row, index) => {
       const anchor = doc.items.find(it => it.row === row.id && ['chev', 'plain'].includes(it.kind));

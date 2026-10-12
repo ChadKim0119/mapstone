@@ -33,8 +33,8 @@ const str={type:'string'},nstr={type:['string','null']};
 const scheduleSchema={type:'object',additionalProperties:false,required:['title','rangeStart','rangeEnd','now','rows','items'],properties:{
   title:str,rangeStart:nstr,rangeEnd:nstr,now:nstr,
   rows:{type:'array',items:{type:'object',additionalProperties:false,required:['id','name','color'],properties:{id:str,name:str,color:str}}},
-  items:{type:'array',items:{type:'object',additionalProperties:false,required:['type','row','rowTo','lane','start','end','label','memo','color','variant','hideDuration'],properties:{
-    type:{type:'string',enum:['chev','plain','band','marker','flag','sticky']},row:str,rowTo:str,lane:{type:'integer'},start:str,end:str,label:str,memo:str,color:str,variant:{type:'string',enum:['solid','tint']},hideDuration:{type:'boolean'}}}}
+  items:{type:'array',items:{type:'object',additionalProperties:false,required:['type','row','rowTo','lane','heightGrid','start','end','label','memo','color','variant','hideDuration'],properties:{
+    type:{type:'string',enum:['chev','plain','band','marker','flag','sticky']},row:str,rowTo:str,lane:{type:'integer'},heightGrid:{type:'number'},start:str,end:str,label:str,memo:str,color:str,variant:{type:'string',enum:['solid','tint']},hideDuration:{type:'boolean'}}}}
 }};
 const analysisPrompt=`첨부한 자료(이미지 또는 텍스트)에 담긴 프로젝트 일정·마일스톤·로드맵을 Mapstone 일정 데이터로 변환하세요. 간트 차트, 로드맵, 표, 슬라이드, 손그림, 회의록, 메일, PRD, 엑셀 복사본 등 형식은 무엇이든 될 수 있습니다.
 읽을 수 있는 정보는 빠짐없이 옮기세요. 요약하거나 생략하지 말고, 원문 언어와 표기를 그대로 보존하세요.
@@ -50,6 +50,7 @@ const analysisPrompt=`첨부한 자료(이미지 또는 텍스트)에 담긴 프
 - 같은 행에서 기간이 겹치는 항목은 lane을 0, 1, 2…로 나누고, 겹치지 않으면 0을 사용하세요. 자료에서 위아래로 쌓여 있으면 그 순서를 lane으로 보존하되, 날짜가 겹치는 항목은 같은 레인에 두지 마세요. 작업명·설명도 겹치지 않도록 여유 있게 레인을 분리하세요.
 - label에는 표시된 작업명, memo에는 담당자·상태·진척률·산출물·비고·세부 설명 등 그 항목에 대한 나머지 정보를 모두 담으세요.
 - color: 자료에 보이는 색과 가장 가까운 #RRGGBB, 알 수 없으면 "". variant는 진한 채움이면 solid, 옅거나 테두리만 있으면 tint.
+- heightGrid는 세로 높이이며 기본 1입니다. 자료에 명확한 높이 차이가 필요한 경우에만 0.5, 1.5, 2 등 0.5 단위로 지정하세요.
 - hideDuration은 기본 false.
 - rangeStart/rangeEnd: 자료에 보이는 전체 시간축의 처음과 끝(없으면 null 또는 ""). now: 오늘·NOW·현재 표시선이 있으면 그 날짜(없으면 null 또는 "").
 - title: 자료의 제목, 없으면 내용을 대표하는 짧은 제목.`;

@@ -38,7 +38,9 @@ test('Analysis converts one-day ranges to milestones and separates overlapping r
  {type:'chev',start:'2026-10-29',label:'날짜만 지정'},
  {type:'chev',row:'r',start:'2026-10-28',end:'2026-10-20',label:'역전'}
  ]});
- assert.deepEqual(d.items.slice(0,3).map(i=>i.lane),[0,1,0]);
+ assert.deepEqual(d.items.slice(0,3).map(i=>i.lane),[0,3,0]);
  for(const i of d.items.slice(3,7)){assert.equal(i.kind,'marker');assert.equal(i.s,i.e);assert.equal(i.row,'');}
  assert.equal(d.items[7].kind,'chev');assert.ok(d.items[7].e>d.items[7].s);
  });
+
+test('Analysis height defaults to one Grid and variations snap to half Grids across rows',()=>{const d=C.fromAnalysis({rangeStart:'2026-10-01',rows:[{id:'r',name:'R'}],items:[undefined,.74,1.3,2.2,-1].map((heightGrid,n)=>({type:'chev',row:'r',start:'2026-10-01',end:'2026-10-20',label:String(n),heightGrid}))});assert.deepEqual(d.items.map(i=>i.trackH),[88,44,132,176,88]);for(let n=1;n<d.items.length;n++)assert.ok(d.items[n].lane>=d.items[n-1].lane+d.items[n-1].span);assert.deepEqual(C.parseFile(C.serializeFile(d)),d);});
