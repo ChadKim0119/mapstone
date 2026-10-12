@@ -565,7 +565,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ markerMetadata }}" as="meta"><div data-item-meta-layer="" style="position:absolute;left:{{ meta.left }};top:{{ meta.top }};z-index:{{ meta.zIndex }};pointer-events:none"><span data-text-ratio="" class="ms-item-meta" data-element-date="" style="position:relative;top:0">{{ meta.date }}</span></div></sc-for>
           <div data-marker-strip="" style="position:relative;margin-left:172px;min-width:200px;width:{{ boardW }};height:{{ markerStripH }}">
             <sc-for list="{{ markersView }}" as="k" hint-placeholder-count="4">
-              <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-width:{{ k.editMinW }};min-height:{{ k.boxH }};border-radius:6px;border:1px solid {{ k.color }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
+              <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-width:{{ k.editMinW }};min-height:{{ k.boxH }};border-radius:6px;border:0;box-shadow:inset 0 0 0 1px {{ k.innerStroke }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea></div>
                 </sc-if>
@@ -624,7 +624,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <sc-for list="{{ row.chevs }}" as="b" hint-placeholder-count="4">
                     <div data-id="{{ b.id }}" data-drag-active="{{ b.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ b.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ b.zIndex }};cursor:grab;left:{{ b.left }};width:{{ b.width }};top:{{ b.top }};height:{{ b.height }};transition:{{ b.trans }}">
 
-                      <svg data-schedule-shape="" aria-hidden="true" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible;pointer-events:none"><path d="{{ b.shapePath }}" fill="{{ b.bg }}"></path></svg>
+                      <svg data-schedule-shape="" aria-hidden="true" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible;pointer-events:none"><defs><clipPath id="inner-{{ b.id }}"><path d="{{ b.shapePath }}"></path></clipPath></defs><path d="{{ b.shapePath }}" fill="{{ b.bg }}" stroke="{{ b.innerStroke }}" stroke-width="2" clip-path="url(#inner-{{ b.id }})"></path></svg>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ b.label }}" data-id="{{ b.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:0;top:50%;scale:1;transform:translateY(-50%) scaleY(var(--ms-text-ratio,1));width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:3px;padding:2px 5px;font-size:{{ b.labelSize }};font-weight:{{ b.labelWeight }};text-decoration:{{ b.labelDecoration }};text-align:{{ b.labelAlign }};background:#fff;outline:none;resize:none;z-index:3"></textarea></div>
                       </sc-if>
@@ -665,7 +665,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </sc-for>
 
                   <sc-for list="{{ row.plains }}" as="p" hint-placeholder-count="1">
-                    <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:1px solid {{ p.border }};transition:{{ p.trans }}">
+                    <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:0;box-shadow:inset 0 0 0 1px {{ p.innerStroke }};transition:{{ p.trans }}">
 
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea></div>
@@ -695,7 +695,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                         <svg style="position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none"><path d="{{ f.connPath }}" fill="none" stroke="{{ f.color }}" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                       </sc-if>
                       <sc-if value="{{ f.show }}">
-                        <div data-text-ratio="" data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};padding:2px 7px;border-radius:{{ f.badgeRadius }};background:{{ f.badgeBg }};border:1.5px solid {{ f.color }};box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true">⚑</span><span style="display:inline-block;text-align:{{ f.labelAlign }}">{{ f.label }}</span></div>
+                        <div data-text-ratio="" data-alert-label="" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};display:inline-flex;align-items:center;gap:4px;white-space:pre;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};padding:2px 7px;border-radius:{{ f.badgeRadius }};background:{{ f.badgeBg }};border:0;box-shadow:{{ f.badgeFocus }};pointer-events:auto;color:{{ f.ink }}"><span aria-hidden="true" style="position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px {{ f.innerStroke }}"></span><span aria-hidden="true">⚑</span><span style="display:inline-block;text-align:{{ f.labelAlign }}">{{ f.label }}</span></div>
                       </sc-if>
                     </div>
                   </sc-for>
@@ -704,7 +704,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </sc-for>
 
             <sc-for list="{{ bandsView }}" as="d" hint-placeholder-count="2">
-              <div data-item-surface="" data-id="{{ d.id }}" data-drag-active="{{ d.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:{{ d.labelItems }};justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};transition:{{ d.trans }}">
+              <div data-item-surface="" data-id="{{ d.id }}" data-drag-active="{{ d.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:{{ d.labelItems }};justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};box-shadow:inset 0 0 0 1px {{ d.innerStroke }};transition:{{ d.trans }}">
 
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea></div>
@@ -734,7 +734,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" hint-placeholder-count="1">
-            <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
+            <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:inset 0 0 0 1px {{ p.innerStroke }},0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor ms-sticky-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea></div>
               </sc-if>
@@ -1188,6 +1188,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.40', agent: 'Codex', title: '[주요 사항] 내부 외곽선 · 마일스톤 행 조절 · 버전 비교 개선', items: ['[아이템] 내부 1px 대비 외곽선 · 어두운 채움은 밝은 선 적용', '[마일스톤] 다중 행 상하 이동 · 겹침 자동 행 조정과 최소 행 유지', '[비교] 오버랩 기본 · 변경 항목 강조 · 변경 반영 버전 별도 저장과 PNG 출력 · 우측 불투명도 · 슬라이드 breathing · 헤드메시지와 디자인 시스템 모달', '[검증] 304개 테스트 통과 · 최소 행·상하 이동 · 오버랩 기본·기준 전환·breathing · 현재 작업 유지와 별도 저장 · PNG 실제 생성·화면 확인'] },
     { v: 'v0.9.39', agent: 'Codex', title: '[주요 사항] 작업용 플로팅 달력 · 레이저 연속 tail', items: ['날짜 함수 호출과 재생성 배포본 회귀 검사', '달력 340px 비모달 플로팅 · 우하단 최초 배치 · 드래그와 방향키 이동 · 1/2/3개월 버튼과 날짜 선택 · 일정과 동시 작업', '레이저 tail을 연속 경로로 연결하고 프레임마다 서서히 소거 · 끝점 겹침으로 생기는 점 무늬 제거', '[검증] 299개 테스트 통과 · 배포본 날짜 함수 검사 · 달력 동시 편집·340px 폭·드래그·방향키·월 전환·날짜 이동 실제 확인 · 레이저 연속 tail과 소거 확인'] },
     { v: 'v0.9.38', agent: 'Codex', title: '[주요 사항] 일괄 색상 · 분석 높이 · 달력과 편집 안정화', items: ['다중 선택 색상 일괄 적용', '이미지·텍스트 분석 기본 높이 1 Grid · 필요한 높이 변형은 0.5 Grid 단위', '연결 메모 본문 위치에서 편집 · 마일스톤 편집 최소 너비와 높이 확보', '보기 달력 1·2·3개월 동시 표시 · 날짜 선택과 일정 위치 이동', '발표 레이저 프레임 보간과 부드러운 잔상', '[검증] 298개 테스트 통과 · 다중 색상·메모 본문 좌표·마일스톤 편집·달력 전환과 이동·레이저 실제 화면 확인 · 분석 서버 v24 활성 · 실제 분석 높이 1/1.5/0.5 Grid 확인'] },
     { v: 'v0.9.37', agent: 'Codex', title: '[주요 사항] 겹침 처리 복구 · 끝점 선택과 다중 일정 조절', items: ['[겹침] 다른 아이템 줄이기 ON 시 실시간 일정 구간 축소 복구 · 세로 위치·높이 유지 · OFF 시 주변 아이템 보호', '[일정] 시작·종료 끝점 개별 포커스와 방향키 하루 조절 · 다중 선택 날짜 입력·버튼·핸들 모두 적용 · 변경 후 이어 붙이기 확인', '[화면] 마일스톤 최소 행 압축 · 줄바꿈에 따라 텍스트 편집 래퍼 높이 가변 · 높이 버튼 오른쪽에 두 좌표 배치', '[검증] 293개 테스트 통과 · 실제 화면에서 끝점 하루 조절·겹침 폭 축소·다중 종료 변경 팝업·3줄 편집 래퍼·높이 우측 좌표·마일스톤 최소 행 확인'] },
@@ -1337,7 +1338,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.39';
+  APP_VER = 'v0.9.40';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -2056,7 +2057,8 @@ class Component extends DCLogic {
   };
   durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
   labelBold(it) {return it.labelBold ?? false;}
-  labelStyle(it) {if(it.kind!=='band')it={...it,labelVAlign:it.kind==='sticky'?'top':'middle'};return {sEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='s',eEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='e',labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none',labelAlign:it.labelAlign || (['chev','band','marker'].includes(it.kind)?'center':'left'),labelVAlign:it.labelVAlign||'middle',labelPos:it.labelVAlign==='top'?'6px':it.labelVAlign==='bottom'?'calc(100% - 6px)':'50%',labelTranslate:it.labelVAlign==='top'?'0':it.labelVAlign==='bottom'?'-100%':'-50%',labelItems:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center',labelJustify:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center'};}
+  itemStroke(it) {return this.paletteTone(it.color||'#66707a',this.lum(it.color||'#66707a')<.12 && it.variant!=='tint'?.4:-.3);}
+  labelStyle(it) {if(it.kind!=='band')it={...it,labelVAlign:it.kind==='sticky'?'top':'middle'};return {innerStroke:this.itemStroke(it),sEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='s',eEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='e',labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none',labelAlign:it.labelAlign || (['chev','band','marker'].includes(it.kind)?'center':'left'),labelVAlign:it.labelVAlign||'middle',labelPos:it.labelVAlign==='top'?'6px':it.labelVAlign==='bottom'?'calc(100% - 6px)':'50%',labelTranslate:it.labelVAlign==='top'?'0':it.labelVAlign==='bottom'?'-100%':'-50%',labelItems:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center',labelJustify:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center'};}
   labelFont(it) {return it.labelSize || (['marker','flag','now'].includes(it.kind)?12:it.kind==='sticky'?13:12.5);}
   labelBox(it,extra=24) {const size=this.labelFont(it),lines=String(it.label||'').split('\n');return {width:Math.max(...lines.map(l=>this.measure(l)))*size/12.5+extra+(it.kind==='marker'&&this.markerIconOf(it).visible?23:0),height:Math.max(24,lines.length*size*1.35+8)};}
   stopClick = (e) => e.stopPropagation();
@@ -2441,7 +2443,7 @@ class Component extends DCLogic {
       const selected=new Set(this.selectedIds());this.drag.visualPeers=nodes.filter(node=>!selected.has(node.dataset.id)).map(rect);
     }
     this.drag.flagPositions=Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!this.selectedIds().includes(f.id)).map(f=>{const v=this.flagGeometry(f,this.rowLayout(),this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop,targetId:v.target?.id||''}];}));
-    this.drag.markerSlots={...this._markerSlots};this.drag.markerRows=this._markerRows||1;
+    this.drag.markerSlots={...this._markerSlots};this.drag.markerStartLane=this._markerSlots?.[it.id]||0;this.drag.markerRows=this._markerRows||1;
     if (d.mode==='top' || d.mode==='bottom'){Object.assign(this.drag,this.heightBounds(it,new Set(this.drag.ids||[])));if(this.drag.ids)this.drag.heightGroup=this.state.items.filter(i=>this.drag.ids.includes(i.id)&&this.boxKind(i.kind)).map(i=>({id:i.id,mode:d.mode,...this.heightBounds(i,new Set(this.drag.ids))}));}
     this.bind();this.setState({});
   };
@@ -2799,6 +2801,7 @@ class Component extends DCLogic {
     if(g.mode==='move' && ev.shiftKey){g.axis ||= Math.abs(ev.clientX-g.x0)>=Math.abs(ev.clientY-g.y0)?'x':'y';ev={clientX:g.axis==='y'?g.x0:ev.clientX,clientY:g.axis==='x'?g.y0:ev.clientY,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}else g.axis=null;
     this._smartGuides=[];this._snapActive=false;
     if(g.ids && ['l','r'].includes(g.mode)){const field=g.mode==='l'?'s':'e',base=g.groupBase.filter(i=>g.ids.includes(i.id)&&this.linkKind(i.kind));this.mutate(d=>{for(const old of base){const it=d.items.find(i=>i.id===old.id);let edge=this.mOf(this.xOf(old[field])+dx);if(this.state.cfg.magnet)edge=this.snapDateEdge(edge);if(field==='s')it.s=Math.max(0,Math.min(edge,this.shiftDay(old.e,-1)));else it.e=Math.max(edge,this.shiftDay(old.s,1));}},false);return;}
+    if(g.kind==='marker'&&g.mode==='move'&&this._markerRows>1&&Math.abs(ev.clientY-g.y0)>8){g.markerVertical=true;const desired=Math.max(0,Math.min((g.markerRows||1)-1,(g.markerStartLane||0)+Math.round((ev.clientY-g.y0)/(this.labelBox(this.state.items.find(i=>i.id===g.id)).height+6))));g.markerSlots[g.id]=desired;this.mutate(d=>{const it=d.items.find(i=>i.id===g.id);it.markerUserLane=desired;it.markerUserOrder=Date.now();it.s=g.s;it.e=g.s;},false);return;}
     if (g.ids && g.mode==='move') {this.moveGroup(ev);return;}
     if (g.mode==='top' || g.mode==='bottom') {
       const delta=(ev.clientY-g.y0)/this.heightScale(),edge=g.mode==='top'?g.top:g.bottom;
@@ -3395,7 +3398,7 @@ class Component extends DCLogic {
   shiftSelectedVertically(dy) {
     const ids=this.selectedIds(),chosen=new Set(ids),layout=this.rowLayout(),boxes=this.state.items.filter(it=>chosen.has(it.id)&&this.boxKind(it.kind)).map(it=>this.trackBox(it,layout));
     if(boxes.length)dy=Math.max(Math.max(...boxes.map(b=>-b.top)),Math.min(dy,...boxes.map(b=>b.total-b.bottom)));
-    this.editSelectionSafely(d=>{for(const it of d.items.filter(i=>chosen.has(i.id))){if(this.boxKind(it.kind))it.trackY=this.trackBox(it,layout).localTop+dy;else if(it.kind==='band')it.trackY=(it.trackY??6)+dy;else if(['sticky','image'].includes(it.kind))it.y=(it.y||0)+dy;else if(it.kind==='flag')it.labelDy=(it.labelDy||0)+dy;}});
+    this.editSelectionSafely(d=>{for(const it of d.items.filter(i=>chosen.has(i.id))){if(this.boxKind(it.kind))it.trackY=this.trackBox(it,layout).localTop+dy;else if(it.kind==='band')it.trackY=(it.trackY??6)+dy;else if(['sticky','image'].includes(it.kind))it.y=(it.y||0)+dy;else if(it.kind==='flag')it.labelDy=(it.labelDy||0)+dy;else if(it.kind==='marker'&&this._markerRows>1){it.markerUserLane=Math.max(0,Math.min(this._markerRows-1,(this._markerSlots[it.id]||0)+Math.sign(dy)));it.markerUserOrder=Date.now();}}});
   }
   stepSelectedHeights(delta) {
     const boxes=this.orderedSelection().filter(it=>this.boxKind(it.kind)),chosen=new Set(boxes.map(it=>it.id)),bounds=boxes.map(it=>({id:it.id,mode:'bottom',...this.heightBounds(it,chosen)}));
@@ -3462,7 +3465,7 @@ class Component extends DCLogic {
   openVersionLibrary = () => MapstoneUI.versionLibrary(this);
   openVersionCompare = () => this.setState({tab:'ver',panel:true,versionCompareSelecting:!this.state.versionCompareSelecting,versionCompareIds:[]});
   onVersionComparePick = (e) => {const ids=new Set(this.state.versionCompareIds||[]),id=e.currentTarget.dataset.id;if(e.currentTarget.checked){if(ids.size<2)ids.add(id);}else ids.delete(id);this.setState({versionCompareIds:[...ids]});};
-  onVersionCompareCard = (e) => {if(!this.state.versionCompareSelecting||e.target.closest?.('input,button'))return;const id=e.currentTarget.dataset.id,ids=this.state.versionCompareIds||[];if(ids.includes(id))this.setState({versionCompareIds:ids.filter(v=>v!==id)});else if(ids.length<2&&this.state.versions.find(v=>v.id===id)?.projectId)this.setState({versionCompareIds:[...ids,id]});};
+  onVersionCompareCard = (e) => {if(!this.state.versionCompareSelecting||e.target.closest?.('input,button'))return;const id=e.currentTarget.dataset.id,ids=this.state.versionCompareIds||[];if(ids.includes(id))this.setState({versionCompareIds:ids.filter(v=>v!==id)});else if(ids.length<2&&this.state.versions.some(v=>v.id===id&&(v.projectId||v.snap)))this.setState({versionCompareIds:[...ids,id]});};
   onVersionCompareCardKey = (e) => {if(e.target!==e.currentTarget||!['Enter',' '].includes(e.key))return;e.preventDefault();this.onVersionCompareCard(e);};
   onVersionCompareAction = () => {if(this.state.versionCompareSelecting&&(this.state.versionCompareIds||[]).length===2)this.runVersionCompare();else this.openVersionCompare();};
   cancelVersionCompare = () => this.setState({versionCompareSelecting:false,versionCompareIds:[]});
@@ -3642,6 +3645,14 @@ class Component extends DCLogic {
   itemTransition(id) {if(!this.animOn())return 'none';if(this.drag)return this.isSelected(id)&&this._snapActive?'left .07s ease-out,top .07s ease-out,width .07s ease-out,height .07s ease-out':'none';return 'left .18s ease-out,top .18s ease-out,width .18s ease-out,height .18s ease-out';}
   baseItemZ(id) { const index=this.state.items.findIndex(it=>it.id===id),it=this.state.items[index];const floating=it?.kind==='sticky';return it?.stackOrder!==undefined?Math.max(1,Math.min(floating?24000:12400,it.stackOrder)):(it?.kind==='sticky'?13000:it?.kind==='flag'?6200:300)+index; }
 
+  packMarkers(markers,laneHeight) {
+    const records=markers.map(it=>{const w=this.labelBox(it).width+(this.state.cfg.showElementDates&&!it.hideDate?this.measure(this.shortDate(it.s))+6:0);return {it,left:this.xOf(it.s)-w/2,right:this.xOf(it.s)+w/2};}).sort((a,b)=>a.left-b.left);
+    const pack=(ordered,preferences)=>{const rows=[],slots={};for(const r of ordered){const occupied=k=>rows[k]?.some(o=>o.left<r.right+8&&o.right>r.left-8);let k=preferences(r)??0;while(occupied(k))k++;(rows[k]||=[]).push(r);slots[r.it.id]=k;}return {slots,rows:Math.max(1,rows.length)};};
+    const natural=pack(records,()=>0);
+    if(this.drag?.markerSlots){const g=this.drag,ordered=g.markerVertical?[...records].sort((a,b)=>(a.it.id===g.id?-1:b.it.id===g.id?1:0)):records;const placed=pack(ordered,r=>g.markerSlots[r.it.id]||0);placed.rows=Math.max(placed.rows,g.markerRows||1);return placed;}
+    if(natural.rows===1)return natural;
+    const manual=records.filter(r=>r.it.markerUserLane!==undefined).sort((a,b)=>(b.it.markerUserOrder||0)-(a.it.markerUserOrder||0)),others=records.filter(r=>r.it.markerUserLane===undefined),preferred=pack([...manual,...others],r=>Math.min(natural.rows-1,r.it.markerUserLane||0));return preferred.rows<=natural.rows?preferred:natural;
+  }
   renderVals() {
     const st = this.state;
     const cfg = st.cfg;
@@ -3811,17 +3822,8 @@ class Component extends DCLogic {
     const nowItem={id:'__now',kind:'now',label:'NOW',color:cfg.nowColor||'#3568c5',s:st.now,labelSize:cfg.nowLabelSize||12,hideDate:!!cfg.hideNowDate};
     const showNow=this.props.showNowLine!==false && cfg.showNow!==false;
     const markerLaneH=Math.max(30,...markers.map(it=>this.labelBox(it).height+6),this.labelBox(nowItem).height+6);
-    const mrows = [];
-    const mplace = {};
-    const arranging=!!this.drag?.markerSlots,slots=this.drag?.markerSlots||{};
-    const ordered=markers.concat(showNow?[nowItem]:[]).sort((a,b)=>arranging?(a.id===this.drag.id?1:b.id===this.drag.id?-1:(slots[a.id]||0)-(slots[b.id]||0)||a.s-b.s):(this.xOf(a.s)-(this.labelBox(a).width+(cfg.showElementDates&&!a.hideDate?this.measure(this.shortDate(a.s))+6:0))/2)-(this.xOf(b.s)-(this.labelBox(b).width+(cfg.showElementDates&&!b.hideDate?this.measure(this.shortDate(b.s))+6:0))/2));
-    ordered.forEach(it=>{const w=this.labelBox(it).width+(cfg.showElementDates && !it.hideDate?this.measure(this.shortDate(it.s))+6:0),x0=this.xOf(it.s)-w/2,x1=x0+w;
-      const occupied=k=>mrows[k]?.some(g=>g[0]<x1+8 && g[1]>x0-8);
-      const pinned=arranging?slots[it.id]:undefined;
-      let k=pinned??0;if(pinned===undefined)while(occupied(k))k++;
-      (mrows[k] ||= []).push([x0,x1]);mplace[it.id]=k;
-    });
-    const mrowCount=arranging?this.drag.markerRows||1:Math.max(1,mrows.length);this._markerSlots={...mplace};this._markerRows=mrowCount;
+    const arranged=this.packMarkers(markers.concat(showNow?[nowItem]:[]),markerLaneH);
+    const mplace=arranged.slots,mrowCount=arranged.rows;this._markerSlots={...mplace};this._markerRows=mrowCount;
     const stripH = mrowCount * markerLaneH + 14;
     const markersView = markers.filter((i) => this.visibleItem(i)).map((it0) => {
       const it = this.view(it0);
@@ -3977,10 +3979,10 @@ class Component extends DCLogic {
       vAuthor: st.vAuthor, vDate: st.vDate, vNote: st.vNote,
       vSaveBg: vReady ? 'var(--ms-color-action-primary)' : 'var(--color-bg-neutral-2)', vSaveFg: vReady ? '#fff' : 'var(--color-text-neutral-2)',
       vSaveBorder: vReady ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)',
-      vHint: st.versionStatus || '',versionCompareUnavailable:st.versions.filter(v=>v.projectId).length<2, versionCompareDisabled:!!st.versionBusy||st.versions.filter(v=>v.projectId).length<2,versionCompareHint:st.versions.filter(v=>v.projectId).length<2?'두개 이상의 버전이 있어야 버전 비교가 가능합니다.':'현재 작업물의 저장 버전 비교', versionBusy:!!st.versionBusy, versionSaveLabel:st.versionBusy&&st.versionOperation==='save'?'버전 저장 중…':'버전 저장',
+      vHint: st.versionStatus || '',versionCompareUnavailable:st.versions.filter(v=>v.projectId||v.snap).length<2, versionCompareDisabled:!!st.versionBusy||st.versions.filter(v=>v.projectId||v.snap).length<2,versionCompareHint:st.versions.filter(v=>v.projectId||v.snap).length<2?'두개 이상의 버전이 있어야 버전 비교가 가능합니다.':'현재 작업물의 저장 버전 비교', versionBusy:!!st.versionBusy, versionSaveLabel:st.versionBusy&&st.versionOperation==='save'?'버전 저장 중…':'버전 저장',
       editVersion:this.editVersion,cancelVersionCompare:this.cancelVersionCompare,onVersionCompareAction:this.onVersionCompareAction,versionCompareReady:!!st.versionCompareSelecting&&(st.versionCompareIds||[]).length===2,versionCompareActionLabel:st.versionCompareSelecting&&(st.versionCompareIds||[]).length===2?'비교 진행':'버전 비교',versionCompareSelecting:!!st.versionCompareSelecting,versionCompareNormal:!st.versionCompareSelecting,onVersionCompareCard:this.onVersionCompareCard,onVersionCompareCardKey:this.onVersionCompareCardKey,versionCompareCount:(st.versionCompareIds||[]).length,versionCompareRunDisabled:(st.versionCompareIds||[]).length!==2||!!st.versionBusy,onVersionComparePick:this.onVersionComparePick,runVersionCompare:this.runVersionCompare,
       versionsView: st.versions.slice().reverse().map((v, i) => ({
-        id: v.id,compareTabIndex:st.versionCompareSelecting?0:-1,compareRole:st.versionCompareSelecting?'button':'group',cardLabel:'v'+(v.sequence||st.versions.length-i)+' '+(v.title||st.title),compareOrder:(st.versionCompareIds||[]).indexOf(v.id)===0?'기준 버전':'비교 버전',compareChecked:(st.versionCompareIds||[]).includes(v.id),compareDisabled:!v.projectId||((st.versionCompareIds||[]).length===2&&!(st.versionCompareIds||[]).includes(v.id)),compareLabel:'v'+(v.sequence||st.versions.length-i)+' 비교 선택', tag: 'v' + (v.sequence || st.versions.length - i), title: v.title || st.title, date: v.date, note: v.note,
+        id: v.id,compareTabIndex:st.versionCompareSelecting?0:-1,compareRole:st.versionCompareSelecting?'button':'group',cardLabel:'v'+(v.sequence||st.versions.length-i)+' '+(v.title||st.title),compareOrder:(st.versionCompareIds||[]).indexOf(v.id)===0?'기준 버전':'비교 버전',compareChecked:(st.versionCompareIds||[]).includes(v.id),compareDisabled:!(v.projectId||v.snap)||((st.versionCompareIds||[]).length===2&&!(st.versionCompareIds||[]).includes(v.id)),compareLabel:'v'+(v.sequence||st.versions.length-i)+' 비교 선택', tag: 'v' + (v.sequence || st.versions.length - i), title: v.title || st.title, date: v.date, note: v.note,
         bg: i === 0 ? 'var(--color-bg-neutral-1)' : '#fff'
       })),
       noVersions: st.versions.length === 0,
