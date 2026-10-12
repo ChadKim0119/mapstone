@@ -272,3 +272,17 @@ dialog::backdrop{background:rgb(22 54 93 / 30%);backdrop-filter:blur(2px)}
 .ms-tool-popover .ms-tool-button>svg{display:block!important;color:var(--ms-color-text-secondary)}
 .ms-tool-menu>summary .ms-chevron{order:2;color:var(--ms-color-text-secondary);transition:transform .18s cubic-bezier(.2,.8,.2,1)}
 .ms-tool-menu[open]>summary .ms-chevron{transform:rotate(180deg)}
+/* v0.9.42 compare handles: own compositor layer, no transition or breathing while a handle is held. */
+.ms-image-over{will-change:opacity,clip-path}
+.ms-image-comparison[data-dragging="true"] .ms-image-divider,.ms-image-comparison[data-dragging="true"] .ms-image-divider>span{animation:none!important}
+/* The compare workspace covers the board; a backdrop blur re-rasterises the whole screen on every handle frame (52ms → 16.7ms without it). */
+.ms-dialog.ms-version-workspace::backdrop{backdrop-filter:none;background:rgb(22 54 93 / 42%)}
+/* v0.9.42 compare header: role-labelled chips and one swap control replace the toolbar baseline dropdown. */
+.ms-compare-context .ms-compare-version-chip{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 14px;line-height:1.1;font-size:22px}
+.ms-compare-context .ms-compare-version-chip+.ms-compare-arrow+.ms-compare-version-chip{background:var(--ms-color-surface-default)}
+.ms-compare-role{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ms-color-text-secondary)}
+.ms-compare-arrow{color:var(--ms-color-text-secondary);font-size:20px}
+.ms-dialog .ms-compare-swap{margin:0 0 0 var(--ms-space-2)!important;font-size:13px;gap:6px;min-height:32px}
+.ms-dialog .ms-compare-swap svg{flex:none}
+/* Version cards keep their content height in the scrolling history (the role badge pushed the note past the border). */
+.ms-history-card{flex:none!important;border-radius:var(--ms-radius-control)!important}
