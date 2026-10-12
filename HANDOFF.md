@@ -16,6 +16,7 @@
   - `mapstone-ui.js`의 주입 스타일 문자열은 작은따옴표 JS 문자열입니다. CSS 안에 `'`를 쓰면 문법 오류가 나므로 `%27`·`\u0022`로 이스케이프하세요.
   - 대화상자 닫기는 아직 ‘닫기’ 글자 버튼입니다(디자인 시스템은 X 아이콘). 사용자가 이번에 정합을 보류했습니다.
   - ContextMenu는 디자인 시스템에 ‘제품 미구현·예정’으로만 있습니다.
+  - Vercel 프로젝트(vibe-code-class/mapstone)는 결과물을 `public/`에서 찾아 main 포함 모든 배포가 실패하고 있었습니다. `vercel.json`으로 `public/`을 만들도록 수정했습니다(PR #3).
   - 원격에 미병합 브랜치 `chore/repo-hygiene`(PR #1), `feat/v9-board-tools`(PR #2)가 있습니다. 관련 작업 시 먼저 확인하세요.
   - `supabase/.temp/`가 Git에 포함되어 있습니다(Supabase CLI 캐시).
 
@@ -26,5 +27,6 @@
 ## 작업 로그
 
 <!-- 최신이 위. 형식: - YYYY-MM-DD · 에이전트 · 버전 · 한 줄 요약 -->
+- 2026-10-12 · Claude Code · v0.9.41 · Vercel 배포 실패(STATIC_BUILD_NO_OUT_DIR) 수정: vercel.json으로 public/ 생성
 - 2026-10-12 · Claude Code · v0.9.41 · 디자인 시스템 아티팩트 작성(한국어) 및 깊은 화면 적용: 패널 32/12, 4px 버튼 정리, 내보내기 메뉴 아이콘, 분석 아코디언·달력·스테퍼 아이콘, system-ui→Pretendard (후속: 좁은 툴바 c1 모드에서 내보내기 셰브런이 숨던 문제 수정)
 - 2026-10-12 · Claude Code · v0.9.40 · 교대 작업 환경 구성(AGENTS.md 공통 규칙, CLAUDE.md, HANDOFF.md), launch.json 경로 수정
