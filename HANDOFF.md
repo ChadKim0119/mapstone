@@ -6,10 +6,10 @@
 
 - **마지막 작업**: Claude Code · 2026-10-12
 - **버전**: v0.9.43 (`package.json` 0.9.43)
-- **브랜치**: `claude/design-system-extraction-rms069` (v0.9.43 푸시, main 미머지 · 운영 미배포)
+- **브랜치**: `claude/design-system-extraction-rms069` (v0.9.43 main 머지 · 운영 배포 완료)
 - **테스트**: `npm test` 305/305 통과
 - **진행 중**: 없음
-- **다음 할 일**: v0.9.43 사용자 검토 후 main 머지·운영 배포(https://mapstone-app.vercel.app). Vercel Git 자동 배포가 안 걸리면 mapstone-app 프로젝트에 main 기준 수동 배포.
+- **다음 할 일**: 없음. 운영(https://mapstone-app.vercel.app)에서 드래그 동작 사용자 확인 대기. Vercel Git 자동 배포가 안 걸리면 mapstone-app 프로젝트에 main 기준 수동 배포.
 - **디자인 시스템**: MapStone 디자인 시스템(한국어판) 아티팩트 https://claude.ai/artifact/JAnQNBvL7UzeNgx44bPEeb — 토큰은 `assets/design-system/tokens.css`와 같은 이름. 컴포넌트 57개 카드. 실행 중인 화면이 기준이며, 인벤토리와 다르면 화면을 따름.
 - **주의 사항**:
   - v0.9.41에서 패널 컨트롤을 32px·12px로, 4px 버튼을 12px로 통일했습니다. 새 버튼에 4px/6px 모서리를 쓰지 마세요(`var(--ms-radius-control)`).
