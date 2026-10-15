@@ -66,6 +66,7 @@
       if (it.linkY !== undefined) finite(it.linkY,'연결 높이',0,1);
       for (const k of ['labelDx','labelDy']) if (it[k] !== undefined) finite(it[k],k,-20000,20000);
       for (const key of ['labelBold','labelStrike']) if(it[key] !== undefined && typeof it[key] !== 'boolean') throw new Error('글자 서식 값이 올바르지 않습니다.');
+      for(const key of ['locked','collapsed'])if(it[key]!==undefined&&typeof it[key]!=='boolean')fail(key+'는 true/false여야 합니다.');
       if(it.labelVAlign!==undefined && !['top','middle','bottom'].includes(it.labelVAlign))fail('문단 세로 정렬 값이 올바르지 않습니다.');
       if(it.labelAlign!==undefined && !['left','center','right'].includes(it.labelAlign))fail('텍스트 정렬 값이 올바르지 않습니다.');
       if(it.markerUserOrder!==undefined)finite(it.markerUserOrder,'마일스톤 행 조절 순서',0,1e15);
@@ -163,7 +164,7 @@
   /* 버전 비교: pair rows and items by id, report added / removed / changed with per-field detail.
      Pure data → data, so the UI only has to render the result. */
   const KIND_NAME = {chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
-  const FIELD_NAME = {label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDate:'메모 날짜 숨김',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelBold:'굵게',labelStrike:'취소선',labelAlign:'텍스트 정렬',labelVAlign:'문단 세로 정렬',stackOrder:'표시 순서',markerIcon:'마일스톤 아이콘',markerIconVisible:'아이콘 표시',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
+  const FIELD_NAME = {locked:'잠금',collapsed:'접기',label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDate:'메모 날짜 숨김',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelBold:'굵게',labelStrike:'취소선',labelAlign:'텍스트 정렬',labelVAlign:'문단 세로 정렬',stackOrder:'표시 순서',markerIcon:'마일스톤 아이콘',markerIconVisible:'아이콘 표시',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
   /* Two texts count as the same when only separators/brackets/spacing/case differ:
      "e-Care (DMS)" == "e-Care / DMS" == "e-care · dms". Real wording changes still differ. */
   const plainText = (t) => String(t == null ? '' : t).normalize('NFKC').toLowerCase().replace(/[\s()\[\]{}<>\/\\|·・•,;:~\-–—_.]+/g, ' ').trim();

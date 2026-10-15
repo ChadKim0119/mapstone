@@ -192,7 +192,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-properties] .ms-text-format > button:not(#_) { padding:0 4px !important;white-space:nowrap;font-size:11px !important; }
     [data-properties] .ms-text-align button:not(#_) { width:20px;padding:0 !important; }
     .ms-text-valign { border-left:1px solid var(--ms-color-border-default);padding-left:3px; }
-    .ms-item-meta { position:absolute;top:calc(100% + 3px);left:0;display:inline-flex;align-items:center;gap:6px;max-width:max-content;white-space:nowrap;padding:2px 5px;border:1px solid var(--ms-color-border-default);border-radius:4px;background:var(--ms-color-surface-subtle);color:var(--ms-color-text-muted);font-size:10px;line-height:12px;font-weight:600;pointer-events:none;z-index:12;box-shadow:0 1px 2px #16365d08; }
+    .ms-item-meta { position:absolute;top:calc(100% + 3px);left:0;display:inline-flex;align-items:center;gap:6px;max-width:max-content;white-space:nowrap;padding:2px 5px;border:1px solid var(--ms-color-border-default);border-radius:4px;background:var(--ms-color-surface-subtle);color:var(--ms-color-text-muted);font-size:8px;line-height:9.6px;font-weight:600;pointer-events:none;z-index:12;box-shadow:0 1px 2px #16365d08; }
     .ms-meta-duration { font-weight:700;color:var(--ms-color-text-primary); }
     .ms-item-meta .ms-meta-duration:not(:first-child) { border-left:1px solid var(--ms-color-border-default);padding-left:6px; }
     [data-properties]:has(.ms-property-footer) { display:flex;flex-direction:column;overflow:hidden !important; }
@@ -204,12 +204,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-marker-caption svg { display:block;flex:none; }
     .ms-marker-caption > span { white-space:pre;flex:none; }
     [data-app][data-anim="on"] [data-marker-strip] { transition:height .28s cubic-bezier(.2,.8,.2,1); }
-    [data-app][data-anim="on"] [data-marker-item] { transition:left .24s cubic-bezier(.2,.8,.2,1),top .28s cubic-bezier(.2,.8,.2,1),width .22s cubic-bezier(.2,.8,.2,1),min-height .22s cubic-bezier(.2,.8,.2,1); }
-    [data-app][data-anim="on"] [data-marker-item][data-drag-active="true"] { transition:top .22s cubic-bezier(.2,.8,.2,1); }
-    [data-app][data-anim="on"] [data-marker-item] > div { transition:height .28s cubic-bezier(.2,.8,.2,1),margin-top .28s cubic-bezier(.2,.8,.2,1); }
+    [data-app][data-anim="on"] [data-marker-item] { transition:none; }
+    [data-app][data-anim="on"] [data-marker-item][data-drag-active="true"] { transition:none; }
+    [data-app][data-anim="on"] [data-marker-item] > div { transition:none; }
     [data-app][data-anim="on"] [data-timeline-row] { transition:min-height .28s cubic-bezier(.2,.8,.2,1); }
-    [data-app][data-anim="on"] [data-now-tag] { transition:left .24s cubic-bezier(.2,.8,.2,1),top .28s cubic-bezier(.2,.8,.2,1); }
-    [data-app][data-anim="on"][data-now-drag="true"] [data-now-tag] { transition:top .22s cubic-bezier(.2,.8,.2,1); }
+    [data-app][data-anim="on"] [data-now-tag] { transition:none; }
+    [data-app][data-anim="on"][data-now-drag="true"] [data-now-tag] { transition:none; }
     [data-app][data-anim="on"] [data-sticky], [data-app][data-anim="on"] [data-id] [data-alert-label] { transition:left .24s cubic-bezier(.2,.8,.2,1),top .24s cubic-bezier(.2,.8,.2,1),width .24s cubic-bezier(.2,.8,.2,1),height .24s cubic-bezier(.2,.8,.2,1); }
     [data-app] [data-drag-active="true"],[data-app] [data-drag-active="true"] [data-alert-label] { transition:none !important; }
     html:has([data-app][data-anim="off"]) :is(.ms-dialog,.ms-tooltip,.ms-focus-hint,.ms-focus-toolbar),html:has([data-app][data-anim="off"]) :is(.ms-dialog,.ms-tooltip,.ms-focus-hint,.ms-focus-toolbar) * { animation:none !important;transition:none !important;scroll-behavior:auto !important; }
@@ -447,8 +447,18 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-marker-item] .ms-text-clip {inset:3px 5px;overflow:visible;}
     [data-marker-item] .ms-text-clip > textarea {max-height:none!important;}
     .ms-text-clip {position:absolute;inset:3px 10%;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;pointer-events:none;}
+    .ms-text-clip:has(textarea) {overflow:visible;z-index:4;}
+    [data-capture] .ms-text-clip > textarea {max-height:none!important;}
+    [data-locked="true"] {cursor:default!important;}
+    [data-locked="true"] [data-resize] {display:none!important;}
+    [data-locked="true"]::after {content:"🔒";position:absolute;right:-7px;top:-9px;font-size:10px;line-height:14px;pointer-events:none;}
+    [data-link-dot] {background:transparent!important;border:0!important;box-shadow:none!important;outline:none;}
+    [data-link-dot]:focus-visible > span {outline:2px solid #3568c5;outline-offset:2px;}
+    .ms-sticky-fold {position:absolute;right:3px;top:3px;width:22px;height:22px;padding:0;border:0;border-radius:4px;background:#ffffffaa;color:#16365d;cursor:pointer;z-index:5;}
+    [data-sticky-collapsed="true"] .ms-text-clip {right:28px;white-space:nowrap;}
+    [data-sticky-collapsed="true"] .ms-text-clip > div {white-space:nowrap!important;text-overflow:ellipsis;display:block!important;}
     .ms-text-clip > * {box-sizing:border-box;min-width:0;max-width:100%;width:100%;overflow-wrap:anywhere;word-break:break-word;}
-    [data-capture] .ms-text-clip > textarea {pointer-events:auto;height:auto!important;min-height:1.8em!important;field-sizing:content;max-height:100%;white-space:pre-wrap!important;overflow:auto!important;line-height:1.3!important;outline-offset:-1px!important;outline-width:1px!important;}
+    [data-capture] .ms-text-clip > textarea {pointer-events:auto;height:auto!important;min-height:1.8em!important;field-sizing:content;max-height:none;white-space:pre-wrap!important;overflow:auto!important;line-height:1.3!important;outline-offset:-1px!important;outline-width:1px!important;}
     [data-track] > [role="button"], [data-item-surface], [data-sticky] {box-sizing:border-box;}
     [data-app] [data-drag-active="true"]:not([data-sticky]):not([data-marker-item]) {transition:none!important;}
     [data-app] [data-will-shrink="true"] {outline:2px dashed var(--ms-color-status-warning);outline-offset:2px;border-radius:10px;}
@@ -566,7 +576,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           <sc-for list="{{ markerMetadata }}" as="meta" key="{{ meta.id }}"><div data-item-meta-layer="" style="position:absolute;left:{{ meta.left }};top:{{ meta.top }};z-index:{{ meta.zIndex }};pointer-events:none"><span data-text-ratio="" class="ms-item-meta" data-element-date="" style="position:relative;top:0">{{ meta.date }}</span></div></sc-for>
           <div data-marker-strip="" style="position:relative;margin-left:172px;min-width:200px;width:{{ boardW }};height:{{ markerStripH }}">
             <sc-for list="{{ markersView }}" as="k" key="{{ k.id }}" hint-placeholder-count="4">
-              <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-width:{{ k.editMinW }};min-height:{{ k.boxH }};border-radius:6px;border:0;box-shadow:inset 0 0 0 1px {{ k.innerStroke }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
+              <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-locked="{{ k.locked }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-width:{{ k.editMinW }};min-height:{{ k.boxH }};border-radius:6px;border:0;box-shadow:inset 0 0 0 1px {{ k.innerStroke }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ k.label }}" data-id="{{ k.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;min-width:0;max-width:100%;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 4px;font-size:{{ k.labelSize }};font-weight:{{ k.labelWeight }};text-decoration:{{ k.labelDecoration }};outline:none;resize:none"></textarea></div>
                 </sc-if>
@@ -623,7 +633,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </sc-for>
 
                   <sc-for list="{{ row.chevs }}" as="b" key="{{ b.id }}" hint-placeholder-count="4">
-                    <div data-id="{{ b.id }}" data-drag-active="{{ b.dragging }}" data-will-shrink="{{ b.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ b.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ b.zIndex }};cursor:grab;left:{{ b.left }};width:{{ b.width }};top:{{ b.top }};height:{{ b.height }};transition:{{ b.trans }}">
+                    <div data-id="{{ b.id }}" data-drag-active="{{ b.dragging }}" data-locked="{{ b.locked }}" data-will-shrink="{{ b.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ b.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ b.zIndex }};cursor:grab;left:{{ b.left }};width:{{ b.width }};top:{{ b.top }};height:{{ b.height }};transition:{{ b.trans }}">
 
                       <svg data-schedule-shape="" aria-hidden="true" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible;pointer-events:none"><defs><clipPath id="inner-{{ b.id }}"><path d="{{ b.shapePath }}"></path></clipPath></defs><path d="{{ b.shapePath }}" fill="{{ b.bg }}" stroke="{{ b.innerStroke }}" stroke-width="2" clip-path="url(#inner-{{ b.id }})"></path></svg>
                       <sc-if value="{{ b.editing }}" hint-placeholder-val="{{ false }}">
@@ -666,7 +676,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </sc-for>
 
                   <sc-for list="{{ row.plains }}" as="p" key="{{ p.id }}" hint-placeholder-count="1">
-                    <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-will-shrink="{{ p.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:0;box-shadow:inset 0 0 0 1px {{ p.innerStroke }};transition:{{ p.trans }}">
+                    <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-locked="{{ p.locked }}" data-will-shrink="{{ p.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:6px;padding:6px 9px;overflow:visible;cursor:grab;left:{{ p.left }};width:{{ p.width }};top:{{ p.top }};height:{{ p.height }};background:{{ p.bg }};border:0;box-shadow:inset 0 0 0 1px {{ p.innerStroke }};transition:{{ p.trans }}">
 
                       <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.5;color:var(--color-text-neutral-6);resize:none;outline:none"></textarea></div>
@@ -687,7 +697,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     </div>
                   </sc-for>
                   <sc-for list="{{ row.flags }}" as="f" key="{{ f.id }}" hint-placeholder-count="1">
-                    <div data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
+                    <div data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" data-locked="{{ f.locked }}" role="button" tabindex="0" aria-label="{{ f.label }}" aria-pressed="{{ f.sel }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:center;gap:5px;height:22px;white-space:nowrap;cursor:grab;z-index:{{ f.zIndex }};min-width:22px;left:{{ f.left }};top:{{ f.top }}">
                       <span data-link-dot="" data-id="{{ f.id }}" data-drag-active="{{ f.dragging }}" role="button" tabindex="0" aria-label="{{ L.linkPoint }}" onKeyDown="{{ onLinkKey }}" onPointerDown="{{ onLinkDown }}" style="position:absolute;left:{{ f.dotLeft }};top:{{ f.dotTop }};display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:crosshair;touch-action:none;z-index:2;opacity:{{ f.dotOpacity }}"><span style="width:11px;height:11px;border-radius:9999px;border:2px solid #fff;background:{{ f.color }};box-shadow:{{ f.dotFocus }};pointer-events:none"></span></span>
                       <sc-if value="{{ f.editing }}" hint-placeholder-val="{{ false }}">
                         <textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ f.label }}" data-id="{{ f.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="position:absolute;left:{{ f.labelLeft }};top:{{ f.labelTop }};width:{{ f.editWidth }};min-width:72px;field-sizing:content;border:1px solid #000;border-radius:4px;padding:1px 5px;font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};text-decoration:{{ f.labelDecoration }};text-align:{{ f.labelAlign }};outline:none;resize:none"></textarea>
@@ -705,13 +715,13 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </sc-for>
 
             <sc-for list="{{ bandsView }}" as="d" key="{{ d.id }}" hint-placeholder-count="2">
-              <div data-item-surface="" data-id="{{ d.id }}" data-drag-active="{{ d.dragging }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:{{ d.labelItems }};justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};box-shadow:inset 0 0 0 1px {{ d.innerStroke }};transition:{{ d.trans }}">
+              <div data-item-surface="" data-id="{{ d.id }}" data-drag-active="{{ d.dragging }}" data-locked="{{ d.locked }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ d.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;display:flex;align-items:{{ d.labelItems }};justify-content:center;border-radius:4px;padding:8px;cursor:grab;z-index:{{ d.zIndex }};left:{{ d.left }};width:{{ d.width }};top:{{ d.top }};height:{{ d.height }};background:{{ d.bg }};box-shadow:inset 0 0 0 1px {{ d.innerStroke }};transition:{{ d.trans }}">
 
                 <sc-if value="{{ d.editing }}" hint-placeholder-val="{{ false }}">
-<div class="ms-text-clip"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea></div>
+<div class="ms-text-clip" style="align-items:{{ d.labelItems }}"><textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ d.label }}" data-id="{{ d.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;border:1px solid #000;border-radius:3px;padding:2px 4px;font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};outline:none;resize:none"></textarea></div>
                 </sc-if>
                 <sc-if value="{{ d.show }}" hint-placeholder-val="{{ true }}">
-<div class="ms-text-clip"><div data-text-ratio="" style="font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};width:100%;line-height:1.4;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div></div>
+<div class="ms-text-clip" style="align-items:{{ d.labelItems }}"><div data-text-ratio="" style="font-size:{{ d.labelSize }};font-weight:{{ d.labelWeight }};text-decoration:{{ d.labelDecoration }};text-align:{{ d.labelAlign }};width:100%;line-height:1.4;letter-spacing:-.01em;word-break:keep-all;white-space:pre-wrap;pointer-events:none;color:{{ d.fg }}">{{ d.label }}</div></div>
                 </sc-if>
 
                 <sc-if value="{{ d.sel }}" hint-placeholder-val="{{ false }}">
@@ -728,14 +738,15 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           </div>
 
           <sc-for list="{{ imagesView }}" as="im" key="{{ im.id }}">
-            <div data-item-surface="" data-id="{{ im.id }}" data-drag-active="{{ im.dragging }}" role="button" tabindex="0" aria-label="{{ im.label }}" onKeyDown="{{ onItemKey }}" data-sticky="" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ im.zIndex }};left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
+            <div data-item-surface="" data-id="{{ im.id }}" data-drag-active="{{ im.dragging }}" data-locked="{{ im.locked }}" role="button" tabindex="0" aria-label="{{ im.label }}" onKeyDown="{{ onItemKey }}" data-sticky="" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;z-index:{{ im.zIndex }};left:{{ im.left }};top:{{ im.top }};width:{{ im.width }};height:{{ im.height }};cursor:grab;border:{{ im.border }}">
               <img data-ms-src="{{ im.src }}" alt="{{ im.label }}" draggable="false" style="width:100%;height:100%;object-fit:contain;pointer-events:none">
               <div data-text-ratio="" style="position:absolute;top:100%;left:0;width:100%;box-sizing:border-box;max-width:100%;font-size:{{ im.labelSize }};font-weight:{{ im.labelWeight }};text-decoration:{{ im.labelDecoration }};text-align:{{ im.labelAlign }};white-space:pre-wrap;background:#fff;color:var(--ms-color-text-primary);padding:2px 5px;border-radius:4px">{{ im.label }}</div>
               <sc-if value="{{ im.sel }}"><div data-item-surface="" data-id="{{ im.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;background:rgba(53,104,197,.45);cursor:nwse-resize"></div></sc-if>
             </div>
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" key="{{ p.id }}" hint-placeholder-count="1">
-            <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-will-shrink="{{ p.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:inset 0 0 0 1px {{ p.innerStroke }},0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
+            <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-locked="{{ p.locked }}" data-will-shrink="{{ p.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" data-sticky-collapsed="{{ p.collapsed }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:inset 0 0 0 1px {{ p.innerStroke }},0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
+              <button class="ms-sticky-fold" data-id="{{ p.id }}" aria-label="{{ p.foldLabel }}" aria-expanded="{{ p.expanded }}" onPointerDown="{{ stopClick }}" onClick="{{ toggleSticky }}">{{ p.foldIcon }}</button>
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor ms-sticky-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea></div>
               </sc-if>
@@ -745,7 +756,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
                 <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:1px solid rgba(90,133,201,.5);border-radius:4px;pointer-events:none"></div>
               </sc-if>
-              <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ p.resizable }}" hint-placeholder-val="{{ false }}">
                 <div data-id="{{ p.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:3px;background:rgba(53,104,197,.45);cursor:nwse-resize;z-index:42"></div>
               </sc-if>
             </div>
@@ -760,10 +771,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <div style="position:absolute;bottom:0;width:2px;background:{{ nowColor }};pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:8px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:8px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:10px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:8px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:8px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
         </div>
 
@@ -815,6 +826,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <p class="ms-icon-guide">{{ L.markerIconGuide }}</p>
                 </section></sc-if>
                 <div class="ms-label-editor">
+                  <sc-if value="{{ selCanFormat }}"><button class="ms-tool-button" aria-pressed="{{ selectionLocked }}" onClick="{{ toggleLock }}">{{ lockLabel }}</button></sc-if>
                   <sc-if value="{{ selHasText }}"><textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" aria-label="{{ L.labelF }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:var(--ms-color-action-primary)"></textarea></sc-if>
                   <div class="ms-text-toolbar" data-format-weight="{{ textFormatWeight }}">
                     <sc-if value="{{ selHasSizing }}" hint-placeholder-val="{{ false }}">
@@ -1189,6 +1201,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.45', agent: 'Codex', title: '[주요 사항] 아이템 잠금 · 다중 편집 · 생성과 표시 개선', items: ['아이템 위치·크기 잠금과 포스트잇 접기·펼치기', '달력 폭 20% 축소 · 공통 구간 세로 텍스트 정렬과 여러 줄 편집 영역 수정', '날짜 태그 글자 20% 축소 · 마일스톤 날짜를 본체 양옆의 여유 공간에 표시 · 기준선과 본체 이동 일치', '더블클릭 생성 시 가까운 그리드와 높이 0.5 적용 · 주변 아이템을 밀지 않는 빈 공간에 배치', '클릭한 세션 기준 붙여넣기 · 시각적 소속 기준 세션 삭제 · 다중 복제와 공통 속성 적용 · Shift 범위 선택', '모달 Primary 버튼 기본 포커스와 Enter 실행 · 연결 메모 연결점 배경 정리', '[검증] 322개 테스트 통과 · 실제 화면에서 잠금 이동 차단, 272px 달력, 공통 구간 세로 정렬 3단계, 포스트잇 접기·펼치기, 다중 서식·복제, 여러 줄 편집, 마일스톤·NOW 기준선 일치, 그리드 생성, 세션 삭제 후 이동 아이템 보존, 다른 탭에서 클릭 세션 붙여넣기 확인'] },
     { v: 'v0.9.44', agent: 'Codex', title: '[주요 사항] 탭 간 아이템 붙여넣기 · 삭제 안정화 · 표시 개선', items: ['시스템 클립보드로 다른 탭·화면에서도 선택 아이템 복사·잘라내기·붙여넣기 · 필요한 세션·연결 관계 유지와 데이터 검증 · 원본 날짜가 대상 범위를 완전히 벗어나면 보이는 범위로 배치', '아이템·세션 목록을 ID로 유지해 삭제 시 이웃 아이템의 화면 요소 재사용과 위치 튐 제거', '포스트잇은 선택 아이템·날짜보다 위, 툴팁은 포스트잇보다 위에 표시', '스마트 가이드 안내선은 유지하고 맞춤 안내 문구 제거', '마일스톤 라벨의 실제 글자 두께·여러 줄·세로 배율을 반영해 글자 잘림 수정', '[검증] 310개 테스트 통과 · 실제 두 탭 간 복사·붙여넣기와 다른 시작 월 배치 확인 · 삭제 전후 이웃 위치 유지 · 선택 일정보다 위의 포스트잇 표시와 굵은 여러 줄 마일스톤 확인'] },
     { v: 'v0.9.43', agent: 'Claude Code', title: '[주요 사항] 아이템 드래그 튕김 제거 · 다른 아이템 움찔 수정', items: ['[시작점 조절] 끝점 드래그 중 상자 폭에만 걸리던 70ms 전환과 즉시 바뀌는 화살표 모양이 어긋나 끝이 출렁이던 문제 제거 · 드래그 중인 아이템은 전환 없이 포인터를 그대로 따라감', '[이동] 다른 행으로 옮길 때 재사용된 화면 요소가 이웃 아이템 자리에서 날아오던 한 프레임 튐(최대 240px) 제거 · 프레임당 이동량이 포인터 이동량과 같음', '[다른 아이템] 다른 아이템 줄이기를 끄는 동안 실시간으로 하던 방식에서 놓을 때 한 번만 적용하도록 변경 · 드래그 중 이웃·다른 행 아이템은 전혀 움직이지 않고 줄어들 일정은 점선으로 표시 · 놓으면 0.18초 동안 부드럽게 줄어듦', '[검증] 305개 테스트 통과(실시간 축소를 고정하던 테스트 3개를 새 동작으로 갱신) · 실제 화면에서 이동·행 이동·시작점 조절 100프레임 기록 시 다른 아이템 이동 0px'] },
     { v: 'v0.9.42', agent: 'Claude Code', title: '[주요 사항] 버전 비교 기준 흐름 · 핸들 끊김 · 변경 반영 이미지', items: ['[기준 흐름] 선택 순서와 관계없이 이전 버전을 기준, 최신 버전을 비교로 자동 지정 · 한 개만 고르면 ‘선택됨’ · 선택 중에는 ‘비교 진행(2개 선택 시 활성)’과 ‘취소’만 표시', '[기준 흐름] 비교 화면 상단을 ‘기준 V1 → 비교 V2’와 ‘기준 바꾸기’ 버튼으로 바꾸고 이미지 툴바의 분석 기준 드롭다운 제거 · AI 분석 중에는 바꾸기 잠금', '[성능] 비교 화면의 배경 흐림(backdrop-filter)이 핸들 프레임마다 화면 전체를 다시 그리던 문제 제거(프레임 52ms → 16.7ms) · 이미지는 기준·모드·변경 표시가 바뀔 때만 교체 · 핸들 이동은 위치만 프레임 단위로 갱신 · SVG를 한 번만 비트맵으로 변환 · 오버랩 슬라이더 조작 중 전환 애니메이션 끔', '[변경 반영 이미지] 비교 화면과 같은 변경 표시(초록 추가 · 주황 변경 · 빨강 점선 삭제)를 그리고, 아래에 기준→비교 제목 · 추가/변경/삭제 개수 범례 · 변경 내역 목록을 함께 저장', '[버전 카드] 기준/비교 배지가 붙을 때 메모가 카드 밖으로 넘치던 문제 수정 · 카드 모서리 12px', '[검증] 305개 테스트 통과(이전 버전 기준·바꾸기, 변경 반영 PNG 범례·목록 회귀 테스트 추가) · 슬라이드/오버랩 120프레임 측정 · 실제 화면 확인'] },
@@ -1343,7 +1356,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.44';
+  APP_VER = 'v0.9.45';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1361,7 +1374,7 @@ class Component extends DCLogic {
       sticky: '포스트잇', stickyNew: '메모를 남겨주세요.', rowLanesF: '높이 (칸 갯수)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
       importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장 [JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      selectedCount: '개 아이템 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 아이템 선택. 방향키나 드래그로 함께 이동합니다. 색상·높이·일정은 선택한 아이템에 함께 적용됩니다. 나머지 속성은 마지막 선택한 아이템을 수정합니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '세션', rowBasic: '기본 정보', rowSize: '세션 크기', rowOrder: '세션 관리', timeMode: '시작·종료 표시 방식', dayHint: '화살표로 하루씩 조정', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      selectedCount: '개 아이템 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 아이템 선택. 방향키나 드래그로 함께 이동합니다. 색상·높이·일정은 선택한 아이템에 함께 적용됩니다. 글자 크기·서식 등 공통 속성은 선택한 아이템에 함께 적용됩니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '세션', rowBasic: '기본 정보', rowSize: '세션 크기', rowOrder: '세션 관리', timeMode: '시작·종료 표시 방식', dayHint: '화살표로 하루씩 조정', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
       textEditHint: '속성에서 텍스트 수정이 가능합니다.', nowDirection: '화면 밖 NOW 위치로 이동', markerIconGuide: '마일스톤 내용에 따라 적합한 아이콘으로 자동반영됩니다.', versionCompareGuide: '두개 이상의 버전이 있어야 버전 비교가 가능합니다.', markerIconDisplay: '아이콘 표시', markerIcon: '아이콘', smartIcon: '스마트 아이콘 적용', smartIconHint: '문구를 분석해 알맞은 아이콘을 적용합니다.', iconShow: '표시', iconHide: '미표시', layerFront: '앞으로', layerBack: '뒤로',
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '세션 삭제', rowDelMsg: '이 세션과 세션 안의 아이템을 삭제합니다.', nowTip: '클릭: NOW 속성 / 드래그: 기준선 이동 / 더블클릭·Enter: 오늘 날짜로 이동', dup: '복제',
@@ -1589,6 +1602,7 @@ class Component extends DCLogic {
     if (this._msCleanup) this._msCleanup();
   }
   componentDidUpdate() {
+    const primaryDialog=this.root?.querySelector?.('.ms-modal-scrim [role=dialog]');if(primaryDialog!==this._primaryDialog){this._primaryDialog=primaryDialog;if(primaryDialog)requestAnimationFrame(()=>primaryDialog.querySelector?.('.ms-primary:not(:disabled)')?.focus?.());}
     if(this.state.alignConfirm && !this._alignFocused){this.root?.querySelector('[data-align-dialog] button')?.focus?.();this._alignFocused=true;}else if(!this.state.alignConfirm && this._alignFocused){this._alignFocused=false;this.root?.querySelector('[data-align-button]')?.focus?.();}
     if (!this.drag && this.narrowScreen() && this.state.panel && (this._mobileSel !== this.state.sel || !this._mobilePanel)) {
       const item = Array.from(this.root?.querySelectorAll('[data-id][role="button"]') || []).find(el => el.dataset.id === this.state.sel);
@@ -1825,7 +1839,7 @@ class Component extends DCLogic {
   }
   importDocument(data) {
     if (this.state.readOnly) return;
-    const d = MapstoneCore.validate(data); const before=JSON.stringify({...JSON.parse(this.snapshot()),versions:this.state.versions}); this._pendingVersion=null; this._saveBlocked=false; this._recoveryData=null;
+    const d = MapstoneCore.validate(data);this._deleteFinish?.(); const before=JSON.stringify({...JSON.parse(this.snapshot()),versions:this.state.versions}); this._pendingVersion=null; this._saveBlocked=false; this._recoveryData=null;
     this.setState({...d,vNote:'',versionStatus:'', sel:null,editing:null,hover:null,hist:this.state.hist.concat([before]).slice(-60),future:[]});
   }
 
@@ -1859,6 +1873,11 @@ class Component extends DCLogic {
 
     }
   }
+  normalizeItemRows(d, previous=null) {
+    const layout=this.rowLayout({...this.state,...d}),rows=[];let y=0;
+    for(const r of d.rows){rows.push({id:r.id,top:y,bottom:y+layout[r.id].height});y+=layout[r.id].height+1;}
+    for(const it of d.items.filter(i=>this.boxKind(i.kind))){const old=previous?.find(i=>i.id===it.id);if(previous&&(!old||['row','trackY','trackH'].every(k=>old[k]===it[k])))continue;if(!d.rows.some(r=>r.id===it.row))continue;const top=this.trackBox(it,layout).top,r=rows.find(r=>top<r.bottom)||rows.at(-1);if(r&&it.row!==r.id){it.row=r.id;it.trackY=top-r.top;it.lane=Math.max(0,Math.floor(it.trackY/d.cfg.laneH));}}
+  }
   mutate(fn, push) {
     if (this.state.readOnly) { this.setState({ saved: this.L().readOnlyMsg }); return false; }
     const snap = push === false ? null : this.snapshot();
@@ -1878,6 +1897,11 @@ class Component extends DCLogic {
       if(protectedDrag && g.allowShrink!==false && ['move','l','r'].includes(g.mode)){if(g.settlingPeers){for(const id of moving)this.resolve(d,id,moving,0,true);this._shrinkPreview=null;}else if(d.cfg.shrinkOthers!==false){const hit=new Set();for(const id of moving){const a=d.items.find(i=>i.id===id);if(!a||!this.boxKind(a.kind))continue;for(const o of d.items)if(!moving.has(o.id)&&this.boxKind(o.kind)&&this.visibleItem(o)&&this.collisionBoxes(d,a,o,0))hit.add(o.id);}this._shrinkPreview=hit;}}
       for(const it of d.items){const old=st.items.find(o=>o.id===it.id);if(old?.labelAnchor && (['label','s','e','row','trackY','trackH','span','labelSize'].some(k=>old[k]!==it[k]) || st.cfg.weekPx!==d.cfg.weekPx || st.cfg.laneH!==d.cfg.laneH))delete it.labelAnchor;}
       if(!this.drag)this.clampItemsBottom(d);
+      if(!g || g.settlingPeers)this.normalizeItemRows(d,st.items);
+      if(st.cfg.startY===d.cfg.startY&&st.cfg.startM===d.cfg.startM)for(const old of st.items.filter(i=>i.locked)){
+        const it=d.items.find(i=>i.id===old.id);if(!it?.locked || (old.row&&!d.rows.some(r=>r.id===old.row)))continue;
+        for(const key of ['s','e','row','lane','span','trackY','trackH','rowFrom','rowTo','y','w','h','labelDx','labelDy','linkOffset','linkY','markerLane','markerUserLane','markerUserOrder']){if(old[key]===undefined)delete it[key];else it[key]=old[key];}
+      }
       MapstoneCore.syncLinks(d.items);
       if(g?.settlingPeers){
         // Pin the header layout for every pointer transaction, including a mixed
@@ -1895,6 +1919,7 @@ class Component extends DCLogic {
   }
   undo = () => {
     if (this.state.readOnly) return;
+    this._deleteFinish?.();
     this._textPush = true;
     this.setState((st) => {
       if (!st.hist.length) return null;
@@ -1904,6 +1929,7 @@ class Component extends DCLogic {
   };
   redo = () => {
     if (this.state.readOnly) return;
+    this._deleteFinish?.();
     this._textPush = true;
     this.setState((st) => {
       if (!st.future.length) return null;
@@ -2065,7 +2091,7 @@ class Component extends DCLogic {
   durationHidden(it) { return this.state.cfg.showMM === false || !!it.hideDuration; }
   labelBold(it) {return it.labelBold ?? false;}
   itemStroke(it) {return this.paletteTone(it.color||'#66707a',this.lum(it.color||'#66707a')<.12 && it.variant!=='tint'?.4:-.3);}
-  labelStyle(it) {if(it.kind!=='band')it={...it,labelVAlign:it.kind==='sticky'?'top':'middle'};return {innerStroke:this.itemStroke(it),sEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='s',eEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='e',labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none',labelAlign:it.labelAlign || (['chev','band','marker'].includes(it.kind)?'center':'left'),labelVAlign:it.labelVAlign||'middle',labelPos:it.labelVAlign==='top'?'6px':it.labelVAlign==='bottom'?'calc(100% - 6px)':'50%',labelTranslate:it.labelVAlign==='top'?'0':it.labelVAlign==='bottom'?'-100%':'-50%',labelItems:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center',labelJustify:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center'};}
+  labelStyle(it) {if(it.kind!=='band')it={...it,labelVAlign:it.kind==='sticky'?'top':'middle'};return {locked:!!it.locked,innerStroke:this.itemStroke(it),sEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='s',eEdge:this.state.edgeSelection?.id===it.id&&this.state.edgeSelection?.field==='e',labelWeight:this.labelBold(it)?700:400,labelDecoration:it.labelStrike?'line-through':'none',labelAlign:it.labelAlign || (['chev','band','marker'].includes(it.kind)?'center':'left'),labelVAlign:it.labelVAlign||'middle',labelPos:it.labelVAlign==='top'?'6px':it.labelVAlign==='bottom'?'calc(100% - 6px)':'50%',labelTranslate:it.labelVAlign==='top'?'0':it.labelVAlign==='bottom'?'-100%':'-50%',labelItems:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center',labelJustify:it.labelVAlign==='top'?'flex-start':it.labelVAlign==='bottom'?'flex-end':'center'};}
   labelFont(it) {return it.labelSize || (['marker','flag','now'].includes(it.kind)?12:it.kind==='sticky'?13:12.5);}
   labelBox(it,extra=24) {const size=this.labelFont(it),lines=String(it.label||'').split('\n'),marker=it.kind==='marker';return {width:Math.max(...lines.map(l=>marker?this.measure(l,size,this.labelBold(it)):this.measure(l)*size/12.5))+extra+(marker&&this.markerIconOf(it).visible?23:0),height:marker?Math.max(24,Math.max(18,lines.length*size*1.35)/this.verticalScale()+8):Math.max(24,lines.length*size*1.35+8)};}
   stopClick = (e) => e.stopPropagation();
@@ -2078,8 +2104,9 @@ class Component extends DCLogic {
     if (this.state.readOnly || this.state.rows.length < 2 || !id) return;
     this.setState({ rowDelId: null, focusRow:null, editingRow:null });
     const rowEls = this.animOn() ? Array.from(this.root.querySelectorAll('[data-track="' + CSS.escape(id) + '"], [data-row="' + CSS.escape(id) + '"]')) : [];
-    this.animateOut(this.state.items.filter((i) => i.row === id).map((i) => i.id), () => {
-      this.mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); d.items = d.items.filter((i) => i.row !== id && i.rowFrom !== id && i.rowTo !== id); });
+    const preview=JSON.parse(JSON.stringify(this.dataDocument()));this.normalizeItemRows(preview);MapstoneCore.syncLinks(preview.items);
+    this.animateOut(preview.items.filter(i=>i.kind==='band'?[i.rowFrom,i.rowTo].includes(id):['chev','plain','flag'].includes(i.kind)&&i.row===id).map(i=>i.id), () => {
+      this.mutate((d) => {this.normalizeItemRows(d);MapstoneCore.syncLinks(d.items);d.items=d.items.filter(i=>i.kind==='band'?![i.rowFrom,i.rowTo].includes(id):!['chev','plain','flag'].includes(i.kind)||i.row!==id);d.rows=d.rows.filter(r=>r.id!==id);});
       this.clearSelection();
     }, rowEls);
   };
@@ -2135,7 +2162,7 @@ class Component extends DCLogic {
   };
   openHelp = () => MapstoneUI.open(this, 'help');
   closeHelp = () => this.setState({ helpOpen: false });
-  clearMemo = () => { const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.memo = ''; }); };
+  clearMemo = () => this.editCommon(it=>{it.memo='';});
   rowTop(id) {
     let t = 0;
     for (let i = 0; i < this.state.rows.length; i++) {
@@ -2213,9 +2240,9 @@ class Component extends DCLogic {
     this._settledSelection=null;
     this.setState({selection:[...new Set(ids)],sel:primary || null,selectionAnchor:anchor,editing:null,editNote:null,selLinkDot:null,edgeSelection:null});
   }
-  pickItem(id, e={}) {
+  pickItem(id, e={}, preserveGroup=false) {
     const current=this.selectedIds();
-    if (e.metaKey) {
+    if ((e.metaKey||e.ctrlKey) && !e.shiftKey) {
       const next=current.includes(id) ? current.filter(x=>x!==id) : [...current,id];
       this.selectItems(next,next.includes(id)?id:next[next.length-1],id);return false;
     }
@@ -2223,9 +2250,9 @@ class Component extends DCLogic {
       const anchor=this.state.selectionAnchor || this.state.sel || id;
       const ordered=this.state.items.filter(i=>this.visibleItem(i)).slice().sort((a,b)=>this.state.rows.findIndex(r=>r.id===a.row)-this.state.rows.findIndex(r=>r.id===b.row)||a.s-b.s);
       const a=ordered.findIndex(i=>i.id===anchor),b=ordered.findIndex(i=>i.id===id);
-      this.selectItems(ordered.slice(Math.min(a<0?b:a,b),Math.max(a<0?b:a,b)+1).map(i=>i.id),id,anchor);return false;
+      this.selectItems([...(e.metaKey||e.ctrlKey?current:[]),...ordered.slice(Math.min(a<0?b:a,b),Math.max(a<0?b:a,b)+1).map(i=>i.id)],id,anchor);return false;
     }
-    if (!current.includes(id)) this.selectItems([id],id,id);
+    if (!preserveGroup || !current.includes(id)) this.selectItems([id],id,id);
     else this.selectItems(current,id,current.length===1 ? id : this.state.selectionAnchor || id);
     return true;
   }
@@ -2436,13 +2463,14 @@ class Component extends DCLogic {
     if (!it) return;
     MapstoneUI.hideTip();
     this._settledSelection=null;
-    if (!this.pickItem(d.id,e.altKey || (e.shiftKey && this.isSelected(d.id))?{...e,metaKey:false,shiftKey:false}:e)) return;
+    const collapseOnClick=!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&this.selectedIds().length>1&&this.isSelected(d.id)?d.id:null;
+    if (!this.pickItem(d.id,e.altKey?{...e,metaKey:false,ctrlKey:false,shiftKey:false}:e,true)) return;
     this.setState({ selLinkDot:null,edgeSelection:['l','r'].includes(d.mode)?{id:d.id,field:d.mode==='l'?'s':'e'}:null });
     this.setState({ sel: d.id, editing: null, editNote: null, panel: !this.narrowScreen() && it.kind === 'flag' ? true : this.state.panel, focusRow: it.row || this.state.focusRow });
     clearTimeout(this._itemPanelTimer);if(this.narrowScreen())this._itemPanelTimer=setTimeout(()=>{if(!this.state.editing)this.setState({panel:true});},250);
-    if (this.state.readOnly) return;
-    this.drag = { id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), copyPending:!!e.altKey && !d.mode, moved: false };
-    if ((!d.mode || ['top','bottom','l','r'].includes(d.mode)) && this.selectedIds().length>1) { this.drag.ids=this.selectedIds(); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
+    if (this.state.readOnly || it.locked){if(collapseOnClick)this.selectItems([d.id],d.id,d.id);return;}
+    this.drag = { collapseOnClick,id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), copyPending:!!e.altKey && !d.mode, moved: false };
+    if ((!d.mode || ['top','bottom','l','r'].includes(d.mode)) && this.selectedIds().length>1) { this.drag.ids=this.selectedIds().filter(id=>!this.state.items.find(i=>i.id===id)?.locked); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
     if(this.drag.mode==='move'){this.drag.moveLayout=this.rowLayout();if(this.boxKind(it.kind)){this.drag.box=this.trackBox(it,this.drag.moveLayout);this.drag.row=it.row;}}
     if(['sticky','image','flag'].includes(it.kind) && this.root){
       const nodes=Array.from(this.root.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])'));
@@ -2495,7 +2523,7 @@ class Component extends DCLogic {
       if(p.top>=b.bottom)max=Math.min(max,p.top-2);
     });
     const rows=[];let y=0;this.state.rows.forEach(r=>{rows.push({top:y,bottom:y+layout[r.id].height});y+=layout[r.id].height+1;});
-    return {...b,layout,rows,min:Math.min(min,b.top),max:Math.max(max,b.bottom)};
+    return {...b,row:it.row,layout,rows,min:Math.min(min,b.top),max:Math.max(max,b.bottom)};
   }
   /* vertical snap for height drags: a row boundary always catches the edge briefly (detent);
      with 눈금 맞춤 on, the edge also locks to the nearest lane line of whichever row it is in. */
@@ -2513,7 +2541,7 @@ class Component extends DCLogic {
     const minimum=Math.min(24,g.height),edge=v=>snap?this.snapEdge(v,g.mode,g.rows):v;
     const top=g.mode==='top'?Math.max(g.min,Math.min(g.bottom-minimum,edge(g.top+delta))):g.top;
     const bottom=g.mode==='top'?g.bottom:Math.max(g.top+minimum,Math.min(g.max,edge(g.bottom+delta)));
-    it.trackY=top-g.rowTop;it.trackH=bottom-top;
+    it.row=g.row||it.row;it.trackY=top-g.rowTop;it.trackH=bottom-top;
   }
   /* magnetic snap: nearest quarter-month grid line or a neighbouring block edge,
      whichever is closer, and only inside a small threshold. OFF → free placement,
@@ -2722,7 +2750,7 @@ class Component extends DCLogic {
   }
   startMarquee(e) {
     e.preventDefault();
-    const base=e.metaKey || e.shiftKey ? this.selectedIds() : [];
+    const base=e.metaKey || e.ctrlKey || e.shiftKey ? this.selectedIds() : [];
     const rects=Array.from(this.root?.querySelectorAll('[role="button"][data-id]:not([data-resize]):not([data-mode])') || []).map(node=>({id:node.dataset.id,box:node.getBoundingClientRect()})).filter(r=>r.box.width>0 && r.box.height>0 && this.state.items.some(i=>i.id===r.id && this.visibleItem(i)));
     this.drag={mode:'marquee',x0:e.clientX,y0:e.clientY,base,rects,moved:false};
     if (!base.length) {this.clearSelection();const row=e.target?.closest('[data-track]')?.getAttribute('data-track');if(row)this.setState({focusRow:row});}
@@ -2920,6 +2948,7 @@ class Component extends DCLogic {
     }
     const finished=this.drag;
     this.drag = null;this._shrinkPreview=null;
+    if(finished?.collapseOnClick&&!finished.moved)this.selectItems([finished.collapseOnClick],finished.collapseOnClick,finished.collapseOnClick);
     this._smartGuides=[];
     this.setState({marquee:null});
     if(finished?.moved && ['move','l','r'].includes(finished.mode) && finished.ids?.length>1 && finished.snap){const before=JSON.parse(finished.snap);if(this.state.items.some(it=>finished.ids.includes(it.id)&&this.linkKind(it.kind)&&before.items.some(o=>o.id===it.id&&(Math.abs(o.s-it.s)>.000001||Math.abs(o.e-it.e)>.000001))))this.askJoin(finished.ids);}
@@ -2957,7 +2986,7 @@ class Component extends DCLogic {
   resolve(d,id,protectedIds=new Set(),tolerance=0,explicit=false) {
     if(!explicit && this.drag?.snap && this.drag.mode!=='link')return 0;
     const a=d.items.find(i=>i.id===id);if(d.cfg.shrinkOthers===false||!a||!this.boxKind(a.kind))return 0;
-    const peers=d.items.filter(o=>o.id!==id&&!protectedIds.has(o.id)&&this.boxKind(o.kind)&&this.visibleItem(o));
+    const peers=d.items.filter(o=>o.id!==id&&!o.locked&&!protectedIds.has(o.id)&&this.boxKind(o.kind)&&this.visibleItem(o));
     for(const o of peers){
       if(!this.collisionBoxes(d,a,o,tolerance))continue;
       const minimum=this.shiftDay(o.s,1)-o.s;
@@ -3000,9 +3029,10 @@ class Component extends DCLogic {
     if (e.target !== e.currentTarget || this.state.readOnly) return;
     const row = e.currentTarget.getAttribute('data-track');
     const r = e.currentTarget.getBoundingClientRect();
-    const s = Math.max(0,Math.min(this.mOf(Math.max(0,this.xOf(this.state.cfg.months)-this.xOf(this.newItemEnd(0)))),this.snapM(this.mOf((e.clientX-r.left)/this.canvasScale()),'',row)));
-    const lane = Math.max(0, Math.round(((e.clientY - r.top)/this.heightScale() - 6) / this.laneH()));
-    this.addAt('chev',{row,s,lane});
+    const step=this.timeStep(),raw=this.mOf((e.clientX-r.left)/this.canvasScale());
+    const s=Math.max(0,Math.min(this.state.cfg.months-step,Math.round(raw/step)*step));
+    const trackY=Math.max(0,Math.round((e.clientY-r.top)/this.heightScale()/(this.heightUnit()/2))*(this.heightUnit()/2));
+    this.addAt('chev',{row,s,trackY,lane:Math.floor(trackY/this.laneH())});
   };
   onItemDbl = (e) => {
     e.stopPropagation();
@@ -3010,12 +3040,13 @@ class Component extends DCLogic {
     if (!it) return;
     MapstoneUI.hideTip();
     clearTimeout(this._itemPanelTimer);
+    if(it.kind==='sticky'&&it.collapsed)this.mutate(d=>{d.items.find(i=>i.id===id).collapsed=false;});
     const inline=!this.state.readOnly && it.kind!=='image';
     this._focusProperties = !inline;
     if(!inline&&!this.state.readOnly&&it.kind!=='image')MapstoneUI.toast(this,this.L().textEditHint);
     this.setState({ selection:[id], selectionAnchor:id, editing: inline?id:null, selLinkDot:null, sel: id, panel: !inline || !this.narrowScreen(), tab: 'prop', focusRow: it.row || this.state.focusRow });
   };
-  onItemKey = (e) => { this._settledSelection=null;if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return;if(e.metaKey||e.shiftKey){this.pickItem(id,e);return;} this.setState({selection:[id],selectionAnchor:id,selLinkDot:null,sel:id,panel:e.key==='Enter'&&this.narrowScreen()?false:this.narrowScreen() || this.state.panel,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
+  onItemKey = (e) => { this._settledSelection=null;if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); const id=e.currentTarget.dataset.id,it=this.state.items.find(i=>i.id===id); if (!it) return;if(e.metaKey||e.ctrlKey||e.shiftKey){this.pickItem(id,e);return;} this.setState({selection:[id],selectionAnchor:id,selLinkDot:null,sel:id,panel:e.key==='Enter'&&this.narrowScreen()?false:this.narrowScreen() || this.state.panel,editing:e.key==='Enter'&&!this.state.readOnly&&it.kind!=='image'?id:null,tab:'prop',focusRow:it.row||this.state.focusRow}); };
   /* tooltips belong to the shape: entering its detached/outside label closes the tooltip and keeps it from re-opening */
   onOutLabelEnter = (e) => { e.stopPropagation(); MapstoneUI.hideTip(); this.setState({ hover: null }); };
   /* tooltips belong to the shape itself: entering its outside label closes the tooltip */
@@ -3034,6 +3065,9 @@ class Component extends DCLogic {
   addNote = () => { if (this.state.readOnly) return; const id = this.uid(); this.mutate((d) => { d.notes.push({ id, text: this.L().newNote }); }); this.setState({ editNote: id }); };
 
   // ── clipboard & keys ──────────────────────────
+  toggleLock = () => {const ids=new Set(this.selectedIds()),locked=!this.state.items.filter(i=>ids.has(i.id)).every(i=>i.locked);this.mutate(d=>{for(const it of d.items)if(ids.has(it.id))it.locked=locked;});};
+  toggleSticky = (e) => {e.stopPropagation();const id=e.currentTarget.dataset.id;this.mutate(d=>{const it=d.items.find(i=>i.id===id&&i.kind==='sticky');if(it)it.collapsed=!it.collapsed;});this.setState({editing:null});};
+  editCommon(fn, accepts=()=>true) {const ids=new Set(this.selectedIds());this.mutate(d=>{for(const it of d.items)if(ids.has(it.id)&&accepts(it))fn(it);});}
   onClipboard = (e) => {
     if(e.defaultPrevented || this.state.editing || e.target?.closest?.('input,textarea,select,[contenteditable="true"],dialog[open],.ms-modal-scrim') || this.state.alignConfirm)return;
     if(e.type==='paste')this.pasteClip(e);else if(e.type==='cut')this.cutSel(e);else this.copySel(e);
@@ -3054,9 +3088,11 @@ class Component extends DCLogic {
   pasteText(text) {
     if(this.state.readOnly || !text || text.length>8*1024*1024)return false;
     let doc;try{const p=JSON.parse(text);if(p.format!=='mapstone-items' || p.formatVersion!==1)return false;doc=MapstoneCore.validate(p.document);}catch{return false;}
+    const focus=this.state.rows.findIndex(r=>r.id===this.state.focusRow);
     const rows=[],mapping=new Map(),used=new Set(doc.items.flatMap(i=>[i.row,i.rowFrom,i.rowTo]).filter(Boolean));
     for(const it of doc.items.filter(i=>i.kind==='band')){const a=doc.rows.findIndex(r=>r.id===it.rowFrom),b=doc.rows.findIndex(r=>r.id===it.rowTo);for(const r of doc.rows.slice(Math.min(a,b),Math.max(a,b)+1))used.add(r.id);}
-    for(const r of doc.rows.filter(r=>used.has(r.id))){const match=this.state.rows.find(x=>x.id===r.id)||this.state.rows.find(x=>x.name===r.name);const id=match?.id||this.uid();mapping.set(r.id,id);if(!match)rows.push({...r,id});}
+    const sourceStart=doc.rows.findIndex(r=>used.has(r.id));
+    for(const r of doc.rows.filter(r=>used.has(r.id))){if(focus>=0){const index=doc.rows.indexOf(r)-sourceStart,existing=this.state.rows[focus+index];if(existing)mapping.set(r.id,existing.id);else {const id=this.uid();mapping.set(r.id,id);rows.push({...r,id});}continue;}const match=this.state.rows.find(x=>x.id===r.id)||this.state.rows.find(x=>x.name===r.name);const id=match?.id||this.uid();mapping.set(r.id,id);if(!match)rows.push({...r,id});}
     if(this.state.rows.length+rows.length>200 || this.state.items.length+doc.items.length>5000){MapstoneUI.toast(this,'세션 200개·아이템 5,000개 한도를 초과합니다.');return false;}
     let delta=(doc.cfg.startY-this.state.cfg.startY)*12+doc.cfg.startM-this.state.cfg.startM;
     const first=Math.min(...doc.items.map(i=>i.s+delta)),last=Math.max(...doc.items.map(i=>Math.max(i.s,i.e)+delta));
@@ -3066,10 +3102,11 @@ class Component extends DCLogic {
   }
   cloneItems(copies, duplicate=false, rows=[]) {
     if(this.state.readOnly || !copies.length)return;
-    const mapping=new Map(copies.map(i=>[i.id,this.uid()])), single=copies.length===1;
+    const mapping=new Map(copies.map(i=>[i.id,this.uid()])),single=copies.length===1,groupStart=Math.min(...copies.map(i=>i.s)),groupEnd=Math.max(...copies.map(i=>i.e)),groupShift=groupEnd>groupStart?groupEnd-groupStart:this.mOf(this.xOf(groupStart)+Math.max(...copies.map(i=>i.w||this.labelBox(i).width)))-groupStart;
     const pasted=copies.map(c=>{
       const it=JSON.parse(JSON.stringify(c));it.id=mapping.get(c.id);
-      if(duplicate){
+      if(duplicate && !single){it.s+=groupShift;it.e+=groupShift;if(it.kind==='flag'&&!mapping.has(it.targetId))it.labelDx=(it.labelDx||0)+this.xOf(it.s)-this.xOf(c.s);}
+      else if(duplicate){
         if(['sticky','image'].includes(c.kind)){const offset=this.mOf(this.xOf(c.s)+(c.w||240))-c.s;it.s+=offset;it.e+=offset;}
         else if(c.kind==='flag'){it.labelDx=(c.labelDx||0)+this.labelBox(c,32).width+(this.state.cfg.showElementDates&&!c.hideDate?this.measure(this.shortDate(c.s))+6:0);}
         else if(c.kind==='marker'){const offset=this.mOf(this.xOf(c.s)+this.labelBox(c,32).width)-c.s;it.s+=offset;it.e+=offset;}else {it.s=c.e;it.e=c.e+(c.e-c.s);}
@@ -3079,7 +3116,7 @@ class Component extends DCLogic {
       if(it.targetId){if(mapping.has(it.targetId))it.targetId=mapping.get(it.targetId);else if(!duplicate){it.targetId='';delete it.linkOffset;delete it.linkY;}}
       return it;
     });
-    if(duplicate)this.editSelectionSafely(d=>{d.items.push(...pasted);},pasted.map(i=>i.id));else this.mutate(d=>{d.rows.push(...rows);d.items.push(...pasted);});this.selectItems(pasted.map(i=>i.id));
+    if(duplicate)this.editSelectionSafely(d=>{d.items.push(...pasted);d.cfg.months=Math.min(48,Math.max(d.cfg.months,Math.ceil(Math.max(...pasted.map(i=>Math.max(i.s,i.e))))));},pasted.map(i=>i.id));else this.mutate(d=>{d.rows.push(...rows);d.items.push(...pasted);d.cfg.months=Math.min(48,Math.max(d.cfg.months,Math.ceil(Math.max(...pasted.map(i=>Math.max(i.s,i.e))))));});this.selectItems(pasted.map(i=>i.id));
   }
   pasteClip = (e) => {
     if(this.state.readOnly)return;
@@ -3088,6 +3125,7 @@ class Component extends DCLogic {
     const c=this.state.clip;if(c)this.cloneItems(Array.isArray(c)?c:[c]);
   };
   onKey = (e) => {
+    if(!e.defaultPrevented && e.key==='Enter' && !e.isComposing && !e.shiftKey && e.target?.tagName!=='TEXTAREA' && !e.target?.isContentEditable){const modal=document.querySelector?.('.ms-modal-scrim [role=dialog],dialog[open]'),primary=modal?.querySelector('.ms-primary:not(:disabled)');if(primary&&!(e.target?.tagName==='BUTTON'&&modal.contains?.(e.target))){e.preventDefault();primary.click();return;}}
     if(this.state.joinPrompt){this.joinKey(e);return;}
     if(this.state.alignConfirm){if(e.key==='Escape'){e.preventDefault();this.alignCancel();}else if(e.key==='Tab'){const buttons=Array.from(this.root?.querySelectorAll('[data-align-dialog] button')||[]);if(buttons.length){e.preventDefault();const index=buttons.indexOf(document.activeElement);buttons[(index+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}}return;}
     if (e.defaultPrevented || (document.querySelector && document.querySelector("dialog[open]"))) return;
@@ -3116,6 +3154,7 @@ class Component extends DCLogic {
       return;
     }
     if (!this.state.sel) return;
+    if(key.startsWith('Arrow')&&this.selectedIds().length&&this.selectedIds().every(id=>this.state.items.find(i=>i.id===id)?.locked)){e.preventDefault();return;}
     if (key==='ArrowLeft' || key==='ArrowRight') {if(this.state.edgeSelection?.id===this.state.sel){e.preventDefault();this.editSelectedEdge(this.state.edgeSelection.field,key==='ArrowLeft'?-1:1);return;}e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else {this.moveSelectedDays(days);this.askJoin();}return;}
     if(['ArrowUp','ArrowDown'].includes(key) && this.selectedIds().length){e.preventDefault();this.shiftSelectedVertically((key==='ArrowUp'?-1:1)*(e.shiftKey?10:1));return;}
     if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {e.preventDefault();const ids=this.selectedIds(),dx=key==='ArrowLeft'?-.5:key==='ArrowRight'?.5:0,dy=key==='ArrowUp'?-this.laneH():key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
@@ -3139,6 +3178,23 @@ class Component extends DCLogic {
 
   // ── add / delete ──────────────────────────────
   newItemEnd(s) { const width=Math.min(200,Math.max(120,(this._board?.clientWidth||800)*.2));return Math.min(this.state.cfg.months,this.mOf(this.xOf(s)+width)); }
+  fitNewItem(it, placement) {
+    const layout=this.rowLayout(),row=layout[it.row],step=this.heightUnit()/2,time=this.timeStep(),maxX=this.xOf(this.state.cfg.months),wantedX=this.xOf(placement.s),wantedY=Math.max(0,Math.round((placement.trackY??placement.lane*this.laneH())/step)*step),rowTop=this.rowTop(it.row);
+    const peers=this.state.items.filter(i=>this.boxKind(i.kind)&&this.visibleItem(i)).map(i=>{const b=this.trackBox(i,layout);return {left:this.xOf(i.s),right:this.xOf(i.e),top:b.top-rowTop,bottom:b.bottom-rowTop};}).sort((a,b)=>a.left-b.left);
+    const ys=Array.from({length:Math.floor(row.height/step)+1},(_,n)=>n*step).sort((a,b)=>Math.abs(a-wantedY)-Math.abs(b-wantedY));let best=null;
+    for(const top of ys){if(best&&Math.abs(top-wantedY)>best.distance)break;
+      for(const height of [...new Set([Math.min(step,row.height-top),24,16])].filter(h=>h>=16&&top+h<=row.height)){
+        let left=0;const intervals=[];
+        for(const p of peers.filter(p=>p.top<top+height&&p.bottom>top)){if(p.left>left)intervals.push([left,Math.min(maxX,p.left)]);left=Math.max(left,p.right);}
+        if(left<maxX)intervals.push([left,maxX]);
+        for(const [a,b] of intervals){const first=Math.ceil((this.mOf(a)-1e-8)/time)*time,last=Math.floor((this.mOf(b-24)+1e-8)/time)*time;if(last<first)continue;
+          const s=Math.max(first,Math.min(last,placement.s)),x=this.xOf(s),width=Math.min(200,b-x),distance=Math.hypot(x-wantedX,top-wantedY);if(width<24)continue;
+          if(!best||distance<best.distance-.01){best={s,e:this.mOf(x+width),trackY:top,trackH:height,distance};if(distance<.01)return best;}
+        }
+      }
+    }
+    return best;
+  }
   ensureItemRoom(d,id) {const it=d.items.find(i=>i.id===id),r=d.rows.find(r=>r.id===it?.row);if(r?.h && this.boxKind(it.kind))r.h=Math.max(r.h,(it.lane+1)*this.laneH()+14);}
   addAt(kind, placement = null) {
     const st = this.state;
@@ -3152,13 +3208,14 @@ class Component extends DCLogic {
     const L = this.L();
     const box = kind === 'chev' || kind === 'plain';
     const it = { id, kind, row, lane: box ? lanes : 0, s, e: box || kind==='band' ? end : s, span: box ? 2 : 1, variant: box && kind === 'plain' ? 'tint' : 'solid', memo: '' };
-    if(box){it.trackH=this.heightUnit();it.trackY=lanes*this.laneH();}
+    if(box){it.trackH=this.heightUnit()/2;it.trackY=lanes*this.laneH();}
     if (kind === 'chev') { it.label = L.newChev; it.color = '#234770'; }
     if (kind === 'plain') { it.label = L.newPlain; it.color = '#315a88'; }
     if (kind === 'band') { it.label = L.newBand; it.color = '#a4c4ef'; it.rowFrom = row; it.rowTo = row; it.row = row; }
     if (kind === 'marker') { it.label = L.newMarker; it.color = '#3568c5'; it.row = ''; }
     if (kind === 'flag') { it.label = L.newFlag; it.color = '#c83543'; it.targetId = ''; it.hideDate=true; }
-    this.mutate((d) => { d.items.push(it);this.ensureItemRoom(d,id);this.resolve(d, id); });
+    if(box&&placement){const fitted=this.fitNewItem(it,placement);if(!fitted){MapstoneUI.toast(this,'아이템을 놓을 빈 공간이 없습니다.');return;}Object.assign(it,fitted);delete it.distance;it.lane=Math.floor(it.trackY/this.laneH());}
+    this.mutate((d) => {d.items.push(it);if(!placement){this.ensureItemRoom(d,id);this.resolve(d,id);}});
     this.setState({ sel: id, editing: kind==='flag'?null:id, tab: 'prop', panel: true });
   }
   addPlain = () => this.addAt('plain');
@@ -3249,6 +3306,7 @@ class Component extends DCLogic {
   }
   onLinkDown = (e) => {
     e.stopPropagation(); if (e.button !== 0 || this.state.readOnly) return;
+    if(this.state.items.find(i=>i.id===e.currentTarget.dataset.id)?.locked)return;
     e.preventDefault(); MapstoneUI.hideTip();
     this.setState({selection:[e.currentTarget.dataset.id],selectionAnchor:e.currentTarget.dataset.id,sel:e.currentTarget.dataset.id, selLinkDot:e.currentTarget.dataset.id, editing:null, panel:true });
     if (e.currentTarget.focus) e.currentTarget.focus();
@@ -3264,6 +3322,8 @@ class Component extends DCLogic {
     const id = this.state.sel;
     if(id==='__now'){if(f==='s')this.mutate(d=>{d.now=v;});return;}
     if(['s','e'].includes(f)&&this.selectedIds().length>1){const it=this.selItem();if(it)this.editSelectedEdge(f,v-it[f],false);return;}
+    if(this.selectedIds().length>1&&['label','memo'].includes(f)){const ids=new Set(this.selectedIds());this.editText(d=>{for(const it of d.items)if(ids.has(it.id)){it[f]=v;if(f==='label')this.autoMarkerIcon(it);}});return;}
+    if(this.selectedIds().length>1&&f==='span'){const bounds=this.orderedSelection().filter(it=>this.boxKind(it.kind)).map(it=>({id:it.id,mode:'bottom',...this.heightBounds(it,new Set(this.selectedIds()))}));this.editSelectionSafely(d=>{for(const g of bounds)this.resizeHeight(d,g,Math.max(.5,v)*this.heightUnit()-g.height);});return;}
     if(f==='span') {const it=this.state.items.find(i=>i.id===id);if(it&&this.boxKind(it.kind)){const g={id,mode:'bottom',...this.heightBounds(it)};this.mutate(d=>this.resizeHeight(d,g,Math.max(.5,v)*this.heightUnit()-g.height));return;}}
     const text = f === 'label' || f === 'memo';
     this.mutate((d) => {
@@ -3312,14 +3372,14 @@ class Component extends DCLogic {
     });
   };
   /* 글자 크기: one step = 1px, 6–40px; resets to default (12.5) when set back to it */
-  onLabelFormat = (e) => {const field=e.currentTarget.dataset.format;if(!['labelBold','labelStrike'].includes(field))return;this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it)it[field]=field==='labelBold'?!this.labelBold(it):!it.labelStrike;});};
+  onLabelFormat = (e) => {const field=e.currentTarget.dataset.format;if(!['labelBold','labelStrike'].includes(field))return;const value=field==='labelBold'?!this.labelBold(this.selItem()||{}):!this.selItem()?.labelStrike;this.editCommon(it=>{it[field]=value;});};
   halfStep(value,delta) {const n=value*2;return (delta>0?Math.floor(n+1e-8)+1:Math.ceil(n-1e-8)-1)/2;}
   integerStep(value,delta) {return Number.isInteger(value)||Math.abs(delta)!==1?value+delta:delta>0?Math.ceil(value):Math.floor(value);}
   onLabelSize = (e) => {
     const id = this.state.sel, delta = parseFloat(e.currentTarget.dataset.delta);
     if(!Number.isFinite(delta))return;
     if(id==='__now'){this.mutate(d=>{d.cfg.nowLabelSize=Math.max(6,Math.min(40,this.integerStep(d.cfg.nowLabelSize||12,delta)));});return;}
-    this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (!it) return; const size=Math.max(6,Math.min(40,this.integerStep(this.labelFont(it),delta)));if(size===this.labelFont({...it,labelSize:undefined}))delete it.labelSize;else it.labelSize=size; });
+    const size=Math.max(6,Math.min(40,this.integerStep(this.labelFont(this.selItem()),delta)));this.editCommon(it=>{if(size===this.labelFont({...it,labelSize:undefined}))delete it.labelSize;else it.labelSize=size;});
   };
   onStep = (e) => {
     const d0 = e.currentTarget.dataset;
@@ -3451,26 +3511,24 @@ class Component extends DCLogic {
     return '#'+rgb.map(v=>Math.round(Math.max(0,Math.min(1,(v-l)*scale+next))*255).toString(16).padStart(2,'0')).join('');
   }
   MARKER_ICONS = [{"key": "planning", "name": "기획", "ja": "企画", "path": "M5 4h14v17H5zM9 2h6v4H9zM8 10h8M8 14h8M8 18h5", "keywords": "기획|계획|요건|요구사항|전략|planning|plan|requirements|roadmap|企画|計画|要件"}, {"key": "design", "name": "디자인", "ja": "デザイン", "path": "M4 20l2-7L17 2l5 5-11 11-7 2M14 5l5 5M6 13l5 5", "keywords": "디자인|시안|설계|design|デザイン|設計|ui|ux|프로토타입|목업|prototype|mockup|デザイン"}, {"key": "code", "name": "개발", "ja": "開発", "path": "M8 5l-6 7 6 7M16 5l6 7-6 7M14 3l-4 18", "keywords": "개발|코딩|구현|코드|development|code|開発|구축|프로그래밍|implementation|coding|programming|dev|実装"}, {"key": "check", "name": "평가", "ja": "評価", "path": "M5 4h14v17H5zM9 2h6v4H9zM8 10l1.5 1.5L12 9M14 10h2M8 16l1.5 1.5L12 15M14 16h2", "keywords": "평가|검증|검수|테스트|고구치|켄쇼|e2e|dvt|cvt|test|testing|qa|uat|validation|verification|evaluation|assessment|review|quality|검토|품질|완료|승인|확정|done|approval|評価|検証|テスト|小口|こぐち|コグチ|けんしょう|ケンショー|完了|承認"}, {"key": "meeting", "name": "회의", "ja": "会議", "path": "M3 18h18M5 18v-5h5v5M14 18v-5h5v5M7 7a2 2 0 1 0 0 .1M16 7a2 2 0 1 0 0 .1", "keywords": "회의|미팅|면담|meeting|会議|논의|대면|협의|간담회|킥오프|kickoff|sync|discussion|打合せ|打ち合わせ|ミーティング"}, {"key": "idea", "name": "아이디에이션", "ja": "アイディエーション", "path": "M8 17h8M9 21h6M8 14a6 6 0 1 1 8 0v3H8z", "keywords": "아이디에이션|아이디어|발상|브레인스토밍|ideation|idea|brainstorm|アイデア|発想"}, {"key": "rocket", "name": "출시", "ja": "リリース", "path": "M9 15l-4-4 9-8h7v7l-8 9-4-4M6 16l-3 5 5-3M15 6h3v3h-3z", "keywords": "lineoff|line off|l/o|출시|론칭|런칭|배포|release|launch|リリース|오픈|출범|서비스 개시|rollout|go-live|가동|公開|稼働"}, {"key": "work", "name": "업무", "ja": "仕事", "path": "M3 7h18v14H3zM8 7V3h8v4M3 12h18M10 12v3h4v-3", "keywords": "업무|작업|프로젝트|사업|work|project|仕事|業務"}, {"key": "target", "name": "목표", "ja": "目標", "path": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10M12 11v2", "keywords": "목표|전략|goal|target|目標"}, {"key": "bug", "name": "문제 해결", "ja": "不具合", "path": "M8 8h8v11H8zM10 8V4M14 8V4M4 10h4M16 10h4M4 15h4M16 15h4M5 21l3-3M16 18l3 3", "keywords": "버그|오류|문제|수정|bug|fix|不具合|修正"}, {"key": "chart", "name": "분석", "ja": "分析", "path": "M3 3v18h18M7 17v-5M12 17V7M17 17v-9", "keywords": "분석|성과|지표|통계|analytics|metric|分析"}, {"key": "report", "name": "문서", "ja": "資料", "path": "M5 3h10l4 4v14H5zM15 3v5h4M8 12h8M8 16h8", "keywords": "보고|문서|자료|계약|report|document|資料|報告"}, {"key": "email", "name": "이메일", "ja": "メール", "path": "M3 5h18v14H3zM3 5l9 8 9-8", "keywords": "메일|이메일|발송|email|mail|メール"}, {"key": "chat", "name": "소통", "ja": "相談", "path": "M3 4h18v13H9l-6 4V4M7 9h10M7 13h7", "keywords": "소통|상담|피드백|chat|feedback|相談"}, {"key": "clock", "name": "마감", "ja": "締切", "path": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7v5l4 3", "keywords": "마감|기한|deadline|due|締切"}, {"key": "partner", "name": "협업", "ja": "協力", "path": "M3 8l5-4 4 3 4-3 5 4-5 10h-8L3 8M8 9l4-2 4 3-5 5-3-2", "keywords": "협업|협력|파트너|협약|partner|collaboration|協力"}, {"key": "flag", "name": "마일스톤", "ja": "マイルストーン", "path": "M5 21V3M5 3h14l-3 4 3 4H5", "keywords": "마일스톤|단계|milestone|stage|段階"}, {"key": "trophy", "name": "성과", "ja": "受賞", "path": "M7 3h10v10l-5 4-5-4V3M7 5H3v5l4 3M17 5h4v5l-4 3M12 17v4M7 21h10", "keywords": "수상|시상|성과|우승|award|trophy|受賞"}, {"key": "money", "name": "예산", "ja": "予算", "path": "M3 5h18v14H3zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M6 9v6M18 9v6", "keywords": "예산|비용|정산|결제|매출|budget|payment|予算"}, {"key": "globe", "name": "외부 행사", "ja": "外部イベント", "path": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M3 12h18M12 3c-5 5-5 13 0 18M12 3c5 5 5 13 0 18", "keywords": "여행|출장|글로벌|해외|travel|global|出張"}];
-  onLabelVAlign = (e) => {const align=e.currentTarget.dataset.valign;if(!['top','middle','bottom'].includes(align))return;this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it?.kind==='band')it.labelVAlign=align;});};
+  onLabelVAlign = (e) => {const align=e.currentTarget.dataset.valign;if(!['top','middle','bottom'].includes(align))return;this.editCommon(it=>{it.labelVAlign=align;},it=>it.kind==='band');};
   iconWordMatches(text,word) {if(!word)return false;return /^[a-z0-9 /-]+$/i.test(word)?new RegExp('(?:^|[^a-z0-9])'+word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:$|[^a-z0-9])','i').test(text):text.includes(word);}
   matchedMarkerIcon(text) {const t=String(text||'').toLowerCase();let best=null,score=0;for(const icon of this.MARKER_ICONS){const words=[icon.name,icon.ja,...icon.keywords.split('|')];const n=[...new Set(words)].reduce((sum,w)=>sum+(w.trim() && this.iconWordMatches(t,w.trim())?w.trim().length:0),0);if(n>score){best=icon;score=n;}}return best;}
   markerIconOf(it) {const auto=this.matchedMarkerIcon(it?.label),icon=this.MARKER_ICONS.find(i=>i.key===it?.markerIcon)||(it?.markerIcon==='calendar'?{key:'calendar',name:'일정',ja:'予定',path:'M4 5h16v16H4zM4 10h16M8 3v4M16 3v4M8 14h2M14 14h2M8 18h2'}:null)||auto||this.MARKER_ICONS.find(i=>i.key==='flag');return {...icon,visible:it?.markerIconVisible ?? !!auto};}
   autoMarkerIcon(it) {if(it?.kind!=='marker')return;const icon=this.matchedMarkerIcon(it.label);if(icon)it.markerIcon=icon.key;}
-  onLabelAlign = (e) => { const align=e.currentTarget.dataset.align;if(!['left','center','right'].includes(align))return;this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it && !['marker','now'].includes(it.kind))it.labelAlign=align;}); };
-  toggleMarkerIcon = () => this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it?.kind==='marker')it.markerIconVisible=!this.markerIconOf(it).visible;});
-  onMarkerIcon = (e) => { const key=e.currentTarget.dataset.icon;if(!this.MARKER_ICONS.some(i=>i.key===key))return;this.mutate(d=>{const it=d.items.find(i=>i.id===this.state.sel);if(it?.kind==='marker'){it.markerIcon=key;it.markerIconVisible=true;}}); };
+  onLabelAlign = (e) => { const align=e.currentTarget.dataset.align;if(!['left','center','right'].includes(align))return;this.editCommon(it=>{it.labelAlign=align;},it=>!['marker','now'].includes(it.kind)); };
+  toggleMarkerIcon = () => this.editCommon(it=>{it.markerIconVisible=!this.markerIconOf(this.selItem()).visible;},it=>it.kind==='marker');
+  onMarkerIcon = (e) => { const key=e.currentTarget.dataset.icon;if(!this.MARKER_ICONS.some(i=>i.key===key))return;this.editCommon(it=>{it.markerIcon=key;it.markerIconVisible=true;},it=>it.kind==='marker'); };
   smartIconFor(text) { const t=String(text||'').toLowerCase();let best=this.MARKER_ICONS.find(i=>i.key==='flag'),score=0;for(const icon of this.MARKER_ICONS){const n=icon.keywords.split('|').reduce((sum,w)=>sum+(this.iconWordMatches(t,w.trim())?w.trim().length:0),0);if(n>score){best=icon;score=n;}}return best.key; }
   smartMarkerIcon = () => { const it=this.selItem();if(it?.kind==='marker')this.onMarkerIcon({currentTarget:{dataset:{icon:this.smartIconFor(it.label)}}}); };
-  onLayer = (e) => { const id=this.state.sel,front=e.currentTarget.dataset.layer==='front';const it=this.state.items.find(i=>i.id===id);if(!it || !['chev','plain','band','marker','flag','sticky'].includes(it.kind))return;
-    const cap=it.kind==='sticky'?24000:12400;
-    const peers=this.state.items.filter(i=>i.id!==id && (!front || this.baseItemZ(i.id)<cap));
-    const edge=front?Math.max(300,...peers.map(i=>this.baseItemZ(i.id))):Math.min(300,...peers.map(i=>this.baseItemZ(i.id)));
-    this.mutate(d=>{const target=d.items.find(i=>i.id===id);target.stackOrder=Math.max(1,Math.min(cap,edge+(front?1:-1)));});
+  onLayer = (e) => {
+    const chosen=new Set(this.selectedIds()),front=e.currentTarget.dataset.layer==='front',selected=this.state.items.filter(i=>chosen.has(i.id)).sort((a,b)=>this.baseItemZ(a.id)-this.baseItemZ(b.id));
+    this.mutate(d=>{for(const [n,it] of selected.entries()){const cap=it.kind==='sticky'?24000:12400,peers=this.state.items.filter(i=>!chosen.has(i.id)&&(!front||this.baseItemZ(i.id)<cap)),edge=front?Math.max(300,...peers.map(i=>this.baseItemZ(i.id))):Math.min(300,...peers.map(i=>this.baseItemZ(i.id)));d.items.find(i=>i.id===it.id).stackOrder=Math.max(1,Math.min(cap,edge+(front?n+1:n-selected.length)));}});
   };
-  onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{if(id==='__now'){d.cfg.hideNowDate=!!e.currentTarget.checked;return;}const it=d.items.find(i=>i.id===id);if(it && ['flag','marker'].includes(it.kind))it.hideDate=!!e.currentTarget.checked;});};
+  onHideDate = (e) => {const id=this.state.sel;this.mutate(d=>{if(id==='__now'){d.cfg.hideNowDate=!!e.currentTarget.checked;return;}for(const it of d.items)if(this.isSelected(it.id)&&['flag','marker'].includes(it.kind))it.hideDate=!!e.currentTarget.checked;});};
   onColor = (e) => { const c = e.currentTarget.dataset.color; const id = this.state.sel, ids=new Set(this.selectedIds()); this.mutate((d) => { if(id==='__now'){d.cfg.nowColor=c;return;}for(const it of d.items)if(ids.has(it.id))it.color=c; }); };
   toggleFill = () => { const it=this.state.items.find(i=>i.id===this.state.sel);if(it)this.onVariant({currentTarget:{dataset:{variant:it.variant==='tint'?'solid':'tint'}}}); };
-  onVariant = (e) => { const v = e.currentTarget.dataset.variant; const id = this.state.sel; this.mutate((d) => { const it = d.items.find((i) => i.id === id); if (it) it.variant = v; }); };
+  onVariant = (e) => { const v = e.currentTarget.dataset.variant; this.editCommon(it=>{it.variant=v;},it=>['chev','plain','band','sticky'].includes(it.kind)); };
   onTitle = (e) => { const v = e.currentTarget.value; this.editText((d) => { d.title = v; }); };
   togglePanel = () => {
     this._returnPanelFocus = this.state.panel && this.narrowScreen();
@@ -3491,10 +3549,11 @@ class Component extends DCLogic {
   itemEls(ids) { return ids.flatMap((id) => Array.from(this.root.querySelectorAll('[data-id="' + CSS.escape(id) + '"]'))); }
   /* fade the leaving elements, then commit; cancel afterwards so recycled DOM nodes come back visible */
   animateOut(ids, done, extra = []) {
+    this._deleteFinish?.();
     const els = this.animOn() ? this.itemEls(ids).concat(extra) : [];
     if (!els.length) { done(); return; }
     const runs = els.map((el) => el.animate([{ opacity: 1 }, { opacity: 0, scale: '.94' }], { duration: 150, easing: 'ease-in', fill: 'forwards' }));
-    setTimeout(() => { done(); runs.forEach((a) => a.cancel()); }, 150);
+    const finish=()=>{if(this._deleteFinish!==finish)return;this._deleteFinish=null;clearTimeout(timer);done();runs.forEach(a=>a.cancel());};this._deleteFinish=finish;const timer=setTimeout(finish,150);
   }
   onTab = (e) => this.setState({ tab: e.currentTarget.dataset.tab });
 
@@ -3873,7 +3932,7 @@ class Component extends DCLogic {
       const editing = st.editing === it.id;
       const k = mplace[it.id] || 0;
       return {
-        dateLabel: this.shortDate(it.s), iconVisible:this.markerIconOf(it).visible,iconVisibility:this.markerIconOf(it).visible?'visible':'hidden',iconDisplay:this.markerIconOf(it).visible?'block':'none',iconPath:this.markerIconOf(it).path,editMinW:st.editing===it.id?'120px':'0',boxW:px(this.labelBox(it).width+(cfg.showElementDates && !it.hideDate?this.measure(this.shortDate(it.s))+6:0)),boxH:px(this.labelBox(it).height),dragging:this.drag?.id===it.id, showDate: cfg.showElementDates && !it.hideDate, id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), color: it.color, ink: this.dark(it.color),
+        dateLabel: this.shortDate(it.s), iconVisible:this.markerIconOf(it).visible,iconVisibility:this.markerIconOf(it).visible?'visible':'hidden',iconDisplay:this.markerIconOf(it).visible?'block':'none',iconPath:this.markerIconOf(it).path,editMinW:st.editing===it.id?'120px':'0',boxW:px(this.labelBox(it).width),boxH:px(this.labelBox(it).height),dragging:this.drag?.id===it.id, showDate: cfg.showElementDates && !it.hideDate, id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), color: it.color, ink: this.dark(it.color),
         left: px(this.xOf(it.s)), top: px(k * markerLaneH), stemH: px(Math.max(0,stripH-k*markerLaneH-this.labelBox(it).height)),
         sel: this.isSelected(it.id), editing: editing, show: !editing
       };
@@ -3885,8 +3944,8 @@ class Component extends DCLogic {
       const alpha = it.variant === 'tint' ? 0.55 : 1;
       const base = it.color || '#fdf3d0';
       return {
-        showMeta:!!cfg.showElementDates || !this.durationHidden(it),dateLabel: this.shortDate(it.s)+' – '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label: it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), dragging:!!(this.drag && (this.drag.id===it.id || this.drag.ids?.includes(it.id))), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
-        width: px(it.w || 210), height: px(it.h || 120),
+        showMeta:!!cfg.showElementDates || !this.durationHidden(it),dateLabel: this.shortDate(it.s)+' – '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label:it.collapsed?String(it.label||'').split('\n')[0]:it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), dragging:!!(this.drag && (this.drag.id===it.id || this.drag.ids?.includes(it.id))), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
+        width: px(it.w || 210), height:px(it.collapsed?28/this.verticalScale():it.h||120),collapsed:!!it.collapsed,expanded:!it.collapsed,foldLabel:it.collapsed?'포스트잇 펼치기':'포스트잇 접기',foldIcon:it.collapsed?'+':'−',resizable:this.isSelected(it.id)&&!it.collapsed&&!it.locked,
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
         sel: this.isSelected(it.id), editing: editing, show: !editing
@@ -3911,7 +3970,7 @@ class Component extends DCLogic {
       itemMetadata:st.items.filter(it=>this.visibleItem(it)&&(['chev','plain','band'].includes(it.kind)?cfg.showElementDates||!this.durationHidden(it):it.kind==='flag'&&cfg.showElementDates&&!it.hideDate)).map(it=>{
         if(it.kind==='flag'){const f=this.flagGeometry(it,L);return {id:it.id,zIndex:this.isSelected(it.id)?62000:61000,left:px(172+f.left+f.labelLeft),top:px(f.rowTop+f.top+f.labelTop+this.labelBox(it,32).height+3),showDate:true,date:this.shortDate(it.s),duration:''};}
         const b=it.kind==='band'?this.bandBox(it):this.trackBox(it,L);return {id:it.id,zIndex:this.isSelected(it.id)?62000:61000,left:px(172+this.xOf(it.s)),top:px(b.top+b.height+3),showDate:!!cfg.showElementDates,date:this.shortDate(it.s)+' – '+this.shortDate(it.e),duration:this.durationHidden(it)?'':this.durOf(it.s,it.e)};
-      }),markerMetadata:markersView.filter(m=>m.showDate).map(m=>({id:m.id,zIndex:this.isSelected(m.id)?62000:61000,left:px(172+parseFloat(m.left)-parseFloat(m.boxW)/2),top:px(parseFloat(m.top)+parseFloat(m.boxH)+3),date:m.dateLabel})),snapActive:!!this._snapActive,heightGrid:this.heightGrid(),showGrid:!!cfg.showGrid,gridVisible:cfg.showGrid?'true':'false',toggleGrid:this.toggleGrid,gridBg:cfg.showGrid?'#efe7fb':'#fff',gridFg:cfg.showGrid?'#7843b8':'var(--ms-color-text-primary)',nowDragging:this.drag?.mode==='now',focusNow:this.focusNow,dragGuides:this.dragDateGuides(),
+      }),markerMetadata:markersView.filter(m=>m.showDate).map(m=>{const right=parseFloat(m.left)+parseFloat(m.boxW)/2+4,w=this.measure(m.dateLabel,8,false)+12,left=right+w>O[cfg.months]?parseFloat(m.left)-parseFloat(m.boxW)/2-w-4:right;return {id:m.id,zIndex:this.isSelected(m.id)?62000:61000,left:px(172+left),top:px(parseFloat(m.top)+parseFloat(m.boxH)/2-7),date:m.dateLabel};}),snapActive:!!this._snapActive,heightGrid:this.heightGrid(),showGrid:!!cfg.showGrid,gridVisible:cfg.showGrid?'true':'false',toggleGrid:this.toggleGrid,gridBg:cfg.showGrid?'#efe7fb':'#fff',gridFg:cfg.showGrid?'#7843b8':'var(--ms-color-text-primary)',nowDragging:this.drag?.mode==='now',focusNow:this.focusNow,dragGuides:this.dragDateGuides(),
       nowISO:this.shortDate(st.now),
       contentMinHeight: Math.max(0,...st.items.filter(i=>['sticky','image'].includes(i.kind)).map(i=>(i.y||0)+(i.h||120)+80))+'px',
       readOnly: !!st.readOnly, editable: !st.readOnly, rowMoveTip: st.lang === 'ja' ? 'ドラッグで行の順序変更 · Ctrl/⌘ ↑ ↓' : '드래그로 세션 순서 변경 · Ctrl/⌘ ↑ ↓',
@@ -3943,7 +4002,7 @@ class Component extends DCLogic {
       relOpen: st.relOpen, openCompare: this.openCompare, comparing: this.hasComparison(), reviewShown: this.hasComparison() && st.reviewOpen !== false, reviewClosed: this.hasComparison() && st.reviewOpen === false, openReview: this.openReview, toggleCmpMarks: this.toggleCmpMarks, marksLabel: this.marksOn() ? '비교 표시 숨기기' : '비교 표시 보이기', marksPressed: this.marksOn() ? 'true' : 'false', reviewItems: this.reviewList().map((r) => ({ ...r, hasLines: r.lines.length > 0, tag: { added: '추가', removed: '삭제', changed: '변경' }[r.type], tagBg: { added: 'var(--ms-color-status-success)', removed: 'var(--ms-color-status-error)', changed: 'var(--ms-color-status-warning)' }[r.type], on: st.sel === r.id })), reviewCount: this.reviewList().length, onReviewPick: this.onReviewPick, closeReview: this.closeReview, endComparison: this.endComparison, L_reviewTitle: '비교 검토 내용', openRel: this.openRel, closeRel: this.closeRel, releases: this.RELEASES.map((r) => ({ ...r, agentBg: 'var(--ms-color-surface-subtle)', agentFg: 'var(--ms-color-text-secondary)' })),
       rowDelOpen: !!st.rowDelId, askRowDelete: this.askRowDelete, cancelRowDelete: this.cancelRowDelete, confirmRowDelete: this.confirmRowDelete,
       rowDelName: (st.rows.find((r) => r.id === st.rowDelId) || {}).name || '',
-      duplicateSel: this.duplicateSel,
+      duplicateSel:this.duplicateSel,toggleLock:this.toggleLock,toggleSticky:this.toggleSticky,selectionLocked:this.selectedIds().length>0&&this.selectedIds().every(id=>st.items.find(i=>i.id===id)?.locked),lockLabel:this.selectedIds().length>0&&this.selectedIds().every(id=>st.items.find(i=>i.id===id)?.locked)?'잠금 해제':'위치·크기 잠금',
       clearMemo: this.clearMemo,
       clearOpen: st.clearOpen, nowOutOpen: st.nowOutOpen, closeNowOut: this.closeNowOut, nowExtend: this.nowExtend, nowOutMsg: st.nowOutOpen ? this.L().nowOutMsg.replace('{today}', this.isoOf(this.todayPos())).replace('{from}', this.isoOf(0)).replace('{to}', this.isoOf(cfg.months - 1e-6)) : '', openClear: this.openClear, closeClear: this.closeClear, doClearAll: this.doClearAll,
       onRowEnter: this.onRowEnter, onRowLeave: this.onRowLeave,
