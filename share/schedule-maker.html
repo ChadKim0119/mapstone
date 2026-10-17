@@ -54,7 +54,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-app] { -webkit-user-select: none; user-select: none; }
     input, textarea { -webkit-user-select: text; user-select: text; }
     textarea { box-sizing:border-box; }
-    [data-capture] textarea[data-id] { min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;field-sizing:content;max-height:100%;overflow-y:auto; }
+    [data-capture] textarea[data-id] { min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:keep-all;field-sizing:content;max-height:100%;overflow-y:auto; }
     [data-properties] .ms-number-stepper { width:134px;max-width:100%;align-self:flex-start; }
     * { box-sizing: border-box; }
     input, textarea, button, select { font-family: inherit; }
@@ -179,7 +179,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     html:has([data-anim="off"]) .ms-loading::before { animation:none; }
     @media (prefers-reduced-motion:reduce) { .ms-loading::before { animation:none; } }
     @media (max-width:480px) { .ms-dialog.ms-versions .ms-dialog-body { padding:12px 14px; } .ms-dialog.ms-versions header { padding:12px 14px; } .ms-dialog.ms-versions .ms-version-card { flex-wrap:wrap;gap:10px; } .ms-dialog.ms-versions .ms-version-card > .ms-version-info { flex-basis:100%; } .ms-dialog.ms-versions .ms-version-toolbar { flex-wrap:wrap; } }
-    [data-properties] .ms-time-properties { display:flex;flex-direction:column;gap:12px;margin:2px 0;padding:14px 0;border-top:1px solid var(--ms-color-border-default);border-bottom:1px solid var(--ms-color-border-default); }
+    [data-properties] .ms-time-properties { display:flex;flex-direction:column;gap:12px;margin:2px 0;padding:14px 0;border:0; }
     .ms-time-heading { display:flex;align-items:center;justify-content:space-between;gap:12px; }
     .ms-time-heading > span { font-size:12px;font-weight:650;color:var(--ms-color-text-secondary); }
     [data-properties] .ms-time-heading button[role="switch"]:not(#_) { flex:none;height:28px !important;border-radius:var(--ms-radius-control) !important; }
@@ -232,7 +232,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-marker-icon-grid { display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;flex:1;min-width:0; }
     [data-properties] .ms-marker-icon-grid button { padding:0 !important;min-width:0;height:25px !important;min-height:25px;display:flex;align-items:center;justify-content:center; }
     [data-properties] .ms-smart-icon { flex:none;width:44px;height:53px !important;display:flex;align-items:center;justify-content:center;padding:0 !important; }
-    .ms-layer-controls { display:flex;gap:8px;padding:12px 0;border-top:1px solid var(--ms-color-border-default);border-bottom:1px solid var(--ms-color-border-default); }
+    .ms-layer-controls { display:flex;gap:8px;padding:12px 0;border:0; }
     .ms-marker-icon-grid button,.ms-smart-icon,.ms-text-align button,.ms-layer-controls button { border:1px solid var(--ms-color-border-default);border-radius:6px;background:#fff;font-size:12px;font-weight:600;color:var(--ms-color-text-secondary);cursor:pointer; }
     .ms-layer-controls button { flex:1;display:flex;align-items:center;justify-content:center;gap:5px; }
     .ms-property-title { margin:0;font-size:14px;font-weight:700;color:var(--ms-color-text-primary); }
@@ -415,7 +415,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   </style>
   <link rel="stylesheet" href="assets/design-system/product.css">
   <style>
-    [data-capture] .ms-inline-text-editor { box-sizing:border-box;white-space:pre-wrap !important;overflow-wrap:anywhere;word-break:break-word;overflow:auto;outline:2px solid #3568c5 !important;outline-offset:2px;border-radius:5px !important;background:#ffffffee !important;color:#16365d !important;padding:5px 7px !important;min-height:0;max-height:100%;line-height:1.45 !important;box-shadow:0 2px 8px #16365d26; }
+    [data-capture] .ms-inline-text-editor { box-sizing:border-box;white-space:pre-wrap !important;overflow-wrap:anywhere;word-break:keep-all;overflow:auto;outline:2px solid #3568c5 !important;outline-offset:2px;border-radius:5px !important;background:#ffffffee !important;color:#16365d !important;padding:5px 7px !important;min-height:0;max-height:100%;line-height:1.45 !important;box-shadow:0 2px 8px #16365d26; }
     [data-toolbar] .ms-tool-button,[data-toolbar] .ms-tool-menu>summary,.ms-view-pill .ms-tool-button { padding:0 11px;gap:6px;line-height:20px;margin:0; }
     .ms-view-pill > .ms-tool-button { width:auto;min-width:52px;padding:0 12px; }
     .ms-view-pill > .ms-tool-button:nth-of-type(2),.ms-view-pill > .ms-tool-button:nth-of-type(4) { width:auto; }
@@ -440,9 +440,17 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-tone-pair button {display:flex;align-items:center;justify-content:center;flex:none;width:100%;min-width:0;min-height:22px;height:22px;padding:0;border:1px solid var(--color-border-neutral-2);border-radius:5px;cursor:pointer;transition:filter .15s,box-shadow .15s;}
     .ms-tone-pair button:hover {filter:brightness(1.08);box-shadow:0 0 0 2px #3568c52b;}
     [data-resize][data-edge-selected="true"] {background:#3568c5!important;box-shadow:0 0 0 3px #3568c52b!important;}
-    .ms-height-controls {display:flex;gap:10px;align-items:center;}
-    .ms-height-controls .ms-number-stepper {flex:0 0 142px;}
-    [data-grid-coordinates] {flex:1;min-width:0;background:#f4effb;border:1px solid #e6dcf3;border-radius:8px;padding:6px 8px;font-size:10px;font-variant-numeric:tabular-nums;color:#8054b4;display:flex;flex-direction:column;gap:3px;}
+    .ms-height-controls {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:center;}
+    .ms-height-controls:not(:has(.ms-number-stepper)) {grid-template-columns:minmax(0,1fr);}
+    .ms-height-controls .ms-number-stepper {width:100%;min-width:0;}
+    .ms-height-controls .ms-geometry-lock {width:100%;padding:0 6px;font-size:12px;}
+    [data-grid-coordinates] {width:100%;box-sizing:border-box;min-width:0;background:#f8f5fc;border:1px solid #e6dcf3;border-radius:8px;padding:6px 8px;font-size:10px;font-variant-numeric:tabular-nums;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .ms-coordinate-row {display:grid;grid-template-columns:max-content minmax(0,1fr) minmax(0,1.2fr);gap:4px;align-items:center;}
+    .ms-coordinate-label {color:#756b85;font-size:10px;}
+    .ms-coordinate-axis {display:flex;align-items:baseline;justify-content:space-between;gap:6px;white-space:nowrap;color:#8c8498;}
+    .ms-coordinate-axis strong {font-size:11px;font-weight:600;color:#655a73;}
+    .ms-coordinate-y {padding:2px 4px;border-radius:5px;background:#ede3f8;color:#8054b4;font-weight:700;}
+    .ms-coordinate-y strong {font-size:13px;font-weight:800;color:#67379d;}
     [data-marker-item]:has(textarea) {min-height:36px!important;}
     [data-marker-item] .ms-text-clip {inset:3px 5px;overflow:visible;}
     [data-marker-item] .ms-text-clip > textarea {max-height:none!important;}
@@ -454,10 +462,11 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-locked="true"]::after {content:"🔒";position:absolute;right:-7px;top:-9px;font-size:10px;line-height:14px;pointer-events:none;}
     [data-link-dot] {background:transparent!important;border:0!important;box-shadow:none!important;outline:none;}
     [data-link-dot]:focus-visible > span {outline:2px solid #3568c5;outline-offset:2px;}
-    .ms-sticky-fold {position:absolute;right:3px;top:3px;width:22px;height:22px;padding:0;border:0;border-radius:4px;background:#ffffffaa;color:#16365d;cursor:pointer;z-index:5;}
+    .ms-sticky-fold {position:absolute;right:3px;top:3px;width:24px;height:24px;padding:4px;border:1px solid #16365d22;border-radius:6px;background:#ffffffcc;color:#16365d;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;}
+    [data-sticky] .ms-text-clip {align-items:flex-start;right:30px;}
     [data-sticky-collapsed="true"] .ms-text-clip {right:28px;white-space:nowrap;}
     [data-sticky-collapsed="true"] .ms-text-clip > div {white-space:nowrap!important;text-overflow:ellipsis;display:block!important;}
-    .ms-text-clip > * {box-sizing:border-box;min-width:0;max-width:100%;width:100%;overflow-wrap:anywhere;word-break:break-word;}
+    .ms-text-clip > * {box-sizing:border-box;min-width:0;max-width:100%;width:100%;overflow-wrap:normal;word-break:keep-all;text-wrap:balance;}
     [data-capture] .ms-text-clip > textarea {pointer-events:auto;height:auto!important;min-height:1.8em!important;field-sizing:content;max-height:none;white-space:pre-wrap!important;overflow:auto!important;line-height:1.3!important;outline-offset:-1px!important;outline-width:1px!important;}
     [data-track] > [role="button"], [data-item-surface], [data-sticky] {box-sizing:border-box;}
     [data-app] [data-drag-active="true"]:not([data-sticky]):not([data-marker-item]) {transition:none!important;}
@@ -520,16 +529,16 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     <div class="ms-toolbar-row">
       <div class="ms-toolbar-group">
         <span class="ms-toolbar-label">{{ L.add }}</span>
-        <button class="ms-tool-button" onClick="{{ addChev }}" data-tip="{{ L.addChevHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
-        <button class="ms-tool-button" onClick="{{ addMarker }}" data-tip="{{ L.addMarkerHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
-        <button class="ms-tool-button ms-low-priority" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
+        <button class="ms-tool-button" onClick="{{ addChev }}" data-tip="{{ L.addChevHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" data-shortcut="I+1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11l4 6-4 6H3z"></path></svg>{{ L.chev }}</button>
+        <button class="ms-tool-button" onClick="{{ addMarker }}" data-tip="{{ L.addMarkerHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" data-shortcut="I+2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M12 4h7l-2 3.5L19 11h-7"></path></svg>{{ L.marker }}</button>
+        <button class="ms-tool-button ms-low-priority" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" data-shortcut="I+3"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>
         <span class="ms-add-inline">        <button class="ms-tool-button" onClick="{{ addPlain }}" data-tip="{{ L.addPlainHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
 <button class="ms-tool-button" onClick="{{ addBand }}" data-tip="{{ L.addBandHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
-<button class="ms-tool-button" onClick="{{ addSticky }}" data-tip="{{ L.addStickyHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button></span><details class="ms-tool-menu ms-add-more"><summary>{{ L.moreG }}<svg class="ms-chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.5l5 5 5-5"></path></svg></summary><div class="ms-tool-popover">        <button class="ms-tool-button ms-extra-add" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>        <button class="ms-tool-button" onClick="{{ addPlain }}" data-tip="{{ L.addPlainHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
+<button class="ms-tool-button" onClick="{{ addSticky }}" data-tip="{{ L.addStickyHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button></span><details class="ms-tool-menu ms-add-more"><summary>{{ L.moreG }}<svg class="ms-chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.5l5 5 5-5"></path></svg></summary><div class="ms-tool-popover">        <button class="ms-tool-button ms-extra-add" onClick="{{ addFlag }}" data-tip="{{ L.addFlagHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" data-shortcut="I+3"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5M12 16h.01"></path></svg>{{ L.kFlag }}</button>        <button class="ms-tool-button" onClick="{{ addPlain }}" data-tip="{{ L.addPlainHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 11h8M7 14h5"></path></svg>{{ L.plain }}</button>
 <button class="ms-tool-button" onClick="{{ addBand }}" data-tip="{{ L.addBandHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16M5 12h14"></path></svg>{{ L.band }}</button>
 <button class="ms-tool-button" onClick="{{ addSticky }}" data-tip="{{ L.addStickyHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11H10l-5 4z"></path></svg>{{ L.sticky }}</button></div></details>
       </div>
-      <div class="ms-toolbar-group ms-action-group" role="group" aria-label="{{ L.editTools }}"><span class="ms-toolbar-label">{{ L.editTools }}</span><button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button><button class="ms-tool-button" onClick="{{ toggleInteract }}" aria-pressed="{{ interactChecked }}" aria-label="{{ L.interact }}" data-tip="{{ L.interactTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="border-color:{{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="6"></rect><path d="M12 2v7"></path></svg>{{ L.interact }}</button><button class="ms-tool-button" onClick="{{ alignItems }}" data-align-button="" data-tip="{{ L.alignHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16M7 7h13M7 12h9M7 17h13"></path></svg>{{ L.align }}</button></div>
+      <div class="ms-toolbar-group ms-action-group" role="group" aria-label="{{ L.editTools }}"><span class="ms-toolbar-label">{{ L.editTools }}</span><button onClick="{{ toggleMagnet }}" data-tip="{{ L.magnetHint }}" data-shortcut="S" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" aria-pressed="{{ magnetOn }}" class="ms-tool-button" style="border-color:{{ magnetBorder }};background:{{ magnetBg }};color:{{ magnetFg }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v7a6 6 0 0012 0V4h-4v7a2 2 0 01-4 0V4z"></path></svg>{{ L.magnetF }}</button><button class="ms-tool-button" onClick="{{ toggleInteract }}" aria-pressed="{{ interactChecked }}" aria-label="{{ L.interact }}" data-tip="{{ L.interactTip }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="border-color:{{ interactBorder }};background:{{ interactBg }};color:{{ interactFg }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="6"></rect><path d="M12 2v7"></path></svg>{{ L.interact }}</button><button class="ms-tool-button" onClick="{{ alignItems }}" data-align-button="" data-tip="{{ L.alignHint }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" data-shortcut="A" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16M7 7h13M7 12h9M7 17h13"></path></svg>{{ L.align }}</button></div>
       <span style="flex:1"></span>
       <span class="ms-manage-inline">      <button class="ms-tool-button ms-accent" data-analysis-button="" onClick="{{ openImport }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"></path><path d="M8 12h8M12 8v8"></path></svg><span class="ms-lbl-full">{{ L.importG }}</span><span class="ms-lbl-short">{{ L.importShort }}</span></button>
 
@@ -746,7 +755,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           </sc-for>
           <sc-for list="{{ stickies }}" as="p" key="{{ p.id }}" hint-placeholder-count="1">
             <div data-id="{{ p.id }}" data-drag-active="{{ p.dragging }}" data-locked="{{ p.locked }}" data-will-shrink="{{ p.willShrink }}" data-snap-active="{{ snapActive }}" role="button" tabindex="0" aria-label="{{ p.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" data-sticky="" data-sticky-collapsed="{{ p.collapsed }}" style="position:absolute;z-index:{{ p.zIndex }};border-radius:2px;padding:3px;box-shadow:inset 0 0 0 1px {{ p.innerStroke }},0 2px 6px rgba(0,0,0,.14);cursor:grab;left:{{ p.left }};top:{{ p.top }};width:{{ p.width }};height:{{ p.height }};background:{{ p.bg }}">
-              <button class="ms-sticky-fold" data-id="{{ p.id }}" aria-label="{{ p.foldLabel }}" aria-expanded="{{ p.expanded }}" onPointerDown="{{ stopClick }}" onClick="{{ toggleSticky }}">{{ p.foldIcon }}</button>
+              <button class="ms-sticky-fold" data-id="{{ p.id }}" aria-label="{{ p.foldLabel }}" aria-expanded="{{ p.expanded }}" onPointerDown="{{ stopClick }}" onClick="{{ toggleSticky }}" data-tip="{{ p.foldLabel }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.foldPath }}"></path></svg></button>
               <sc-if value="{{ p.editing }}" hint-placeholder-val="{{ false }}">
 <div class="ms-text-clip"><textarea class="ms-inline-text-editor ms-sticky-editor" wrap="soft" data-text-ratio="" rows="1" value="{{ p.label }}" data-id="{{ p.id }}" onChange="{{ onLabelInput }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endEdit }}" onKeyDown="{{ onEditKey }}" style="width:100%;height:auto;min-height:1.6em;max-height:100%;border:none;background:transparent;font-size:{{ p.labelSize }};font-weight:{{ p.labelWeight }};text-decoration:{{ p.labelDecoration }};text-align:{{ p.labelAlign }};line-height:1.6;resize:none;outline:none;color:{{ p.fg }}"></textarea></div>
               </sc-if>
@@ -787,8 +796,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 <button class="ms-tool-button" onClick="{{ toggleWeek }}" aria-pressed="{{ showWeek }}" data-tip="{{ L.weekTip }} · W" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ weekViewBg }};color:{{ weekViewFg }};border-color:{{ weekViewBorder }}">{{ L.weekLabel }}</button>
 <button class="ms-tool-button" onClick="{{ toggleTooltip }}" aria-pressed="{{ showTooltip }}" data-tip="{{ L.tooltip }} · T" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ tooltipBg }};color:{{ tooltipFg }};border-color:{{ tooltipBorder }}">{{ L.tooltip }}</button>
 <button class="ms-tool-button" onClick="{{ toggleGrid }}" aria-pressed="{{ showGrid }}" data-tip="Grid · Shift+G" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ gridBg }};color:{{ gridFg }}">Grid</button>
-<button class="ms-tool-button" onClick="{{ openCalendar }}" aria-label="달력">달력</button>
-<button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}">Now</button>
+<button class="ms-tool-button" onClick="{{ openCalendar }}" aria-label="달력" data-shortcut="C" data-tip="달력" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}">달력</button>
+<button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}" data-shortcut="N" data-tip="NOW 표시" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}">Now</button>
         <span class="ms-toolbar-sep"></span>      <div class="ms-toolbar-group">
 
         <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onChange="{{ onWeekPx }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:var(--ms-color-action-primary)">
@@ -825,8 +834,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <div class="ms-marker-icon-grid"><sc-for list="{{ markerIcons }}" as="icon"><button type="button" data-icon="{{ icon.key }}" onClick="{{ onMarkerIcon }}" aria-label="{{ icon.name }}" aria-pressed="{{ icon.selected }}" data-tip="{{ icon.name }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ icon.bg }};color:{{ icon.fg }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ icon.path }}"></path></svg></button></sc-for></div>
                   <p class="ms-icon-guide">{{ L.markerIconGuide }}</p>
                 </section></sc-if>
-                <div class="ms-label-editor">
-                  <sc-if value="{{ selCanFormat }}"><button class="ms-tool-button" aria-pressed="{{ selectionLocked }}" onClick="{{ toggleLock }}">{{ lockLabel }}</button></sc-if>
+                <div class="ms-label-editor"><span class="ms-property-label">{{ L.textStyle }}</span>
                   <sc-if value="{{ selHasText }}"><textarea value="{{ selLabel }}" readonly="{{ selIsNow }}" aria-label="{{ L.labelF }}" data-field="label" onChange="{{ onField }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" rows="1" style="width:100%;min-height:38px;height:38px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:8px;font-size:13px;line-height:1.5;resize:vertical;outline:none" style-focus="border-color:var(--ms-color-action-primary)"></textarea></sc-if>
                   <div class="ms-text-toolbar" data-format-weight="{{ textFormatWeight }}">
                     <sc-if value="{{ selHasSizing }}" hint-placeholder-val="{{ false }}">
@@ -849,7 +857,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <sc-if value="{{ selIsSticky }}"><div class="ms-layer-controls"><button type="button" data-layer="front" onClick="{{ onLayer }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 8h12v12H8zM4 16V4h12M12 15V10m-3 3l3-3 3 3"></path></svg>{{ L.layerFront }}</button><button type="button" data-layer="back" onClick="{{ onLayer }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h12v12H4zM8 20h12V8M10 7v5m-3-3l3 3 3-3"></path></svg>{{ L.layerBack }}</button></div></sc-if>
                 <sc-if value="{{ selIsSticky }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;gap:10px">
-                    <span class="ms-property-label">{{ L.colorF }}</span>
+                    <span class="ms-property-label">{{ appearanceLabel }}</span>
                     <div style="display:flex;flex-wrap:wrap;gap:6px">
                       <sc-for list="{{ stickyPalette }}" as="c" hint-placeholder-count="7">
                         <div style="display:flex;flex-direction:column;gap:4px;width:36px"><button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:36px;height:36px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }};box-shadow:{{ c.ring }}"></button><sc-if value="{{ multiSelected }}"><span class="ms-tone-pair" style="width:36px"><button type="button" data-color="{{ c.hex }}" data-direction="-1" onClick="{{ onSequenceColor }}" aria-label="{{ c.leftLabel }}" title="{{ c.leftLabel }}" style="background:{{ c.lightToDark }}"></button><button type="button" data-color="{{ c.hex }}" data-direction="1" onClick="{{ onSequenceColor }}" aria-label="{{ c.rightLabel }}" title="{{ c.rightLabel }}" style="background:{{ c.darkToLight }}"></button></span></sc-if></div>
@@ -901,16 +909,16 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 </div>
                 </section>
                 </sc-if>
-                <sc-if value="{{ selIsTrack }}" hint-placeholder-val="{{ true }}">
+                <sc-if value="{{ selCanFormat }}">
                   <div style="display:flex;flex-direction:column;gap:10px">
                     <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
                       <div style="display:flex;flex-direction:column;gap:6px">
-                        <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.spanF }}</span>
-                        <div class="ms-height-controls"><div class="ms-stepper ms-number-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
+                        <sc-if value="{{ selIsTrack }}"><span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.spanF }}</span></sc-if>
+                        <div class="ms-height-controls"><sc-if value="{{ selIsTrack }}"><div class="ms-stepper ms-number-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                           <button data-field="span" data-delta="-1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" aria-label="줄이기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto"><path d="M6 12h12"></path></svg></button>
                           <input type="number" step="0.5" min="0.5" value="{{ selSpan }}" data-field="span" onChange="{{ onField }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                           <button data-field="span" data-delta="1" onClick="{{ onStep }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" aria-label="늘리기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto"><path d="M12 6v12M6 12h12"></path></svg></button>
-                        </div><sc-if value="{{ showGrid }}"><div data-grid-coordinates=""><span>좌상단 {{ selGridCoords }}</span><span>좌하단 {{ selGridBottomCoords }}</span></div></sc-if></div>
+                        </div></sc-if><button class="ms-tool-button ms-geometry-lock" aria-pressed="{{ selectionLocked }}" onClick="{{ toggleLock }}">{{ lockLabel }}</button></div><sc-if value="{{ selIsTrack }}"><sc-if value="{{ showGrid }}"><div data-grid-coordinates="" aria-label="아이템 좌표"><div class="ms-coordinate-row"><span class="ms-coordinate-label">좌상단</span><span class="ms-coordinate-axis">X<strong>{{ selGridCoords.x }}</strong></span><span class="ms-coordinate-axis ms-coordinate-y">Y<strong>{{ selGridCoords.y }}</strong></span></div><div class="ms-coordinate-row"><span class="ms-coordinate-label">좌하단</span><span class="ms-coordinate-axis">X<strong>{{ selGridBottomCoords.x }}</strong></span><span class="ms-coordinate-axis ms-coordinate-y">Y<strong>{{ selGridBottomCoords.y }}</strong></span></div></div></sc-if></sc-if>
                       </div>
                     </div>
                   </div>
@@ -918,7 +926,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                 <sc-if value="{{ selNotSticky }}" hint-placeholder-val="{{ true }}">
                 <sc-if value="{{ selCanLayer }}"><div class="ms-layer-controls"><button type="button" data-layer="front" onClick="{{ onLayer }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 8h12v12H8zM4 16V4h12M12 15V10m-3 3l3-3 3 3"></path></svg>{{ L.layerFront }}</button><button type="button" data-layer="back" onClick="{{ onLayer }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h12v12H4zM8 20h12V8M10 7v5m-3-3l3 3 3-3"></path></svg>{{ L.layerBack }}</button></div></sc-if>
                 <div style="display:flex;flex-direction:column;gap:8px">
-                  <span class="ms-property-label ms-color-heading">{{ L.colorF }}<button type="button" onClick="{{ togglePalette }}" aria-expanded="{{ paletteExpanded }}" style="margin-left:8px;padding:0 8px;border:1px solid var(--color-border-neutral-2);background:#fff;font-size:11px;cursor:pointer">{{ paletteToggleLabel }}</button></span>
+                  <span class="ms-property-label ms-color-heading">{{ appearanceLabel }}<button type="button" onClick="{{ togglePalette }}" aria-expanded="{{ paletteExpanded }}" style="margin-left:8px;padding:0 8px;border:1px solid var(--color-border-neutral-2);background:#fff;font-size:11px;cursor:pointer">{{ paletteToggleLabel }}</button></span>
                   <div style="display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px">
                     <sc-for list="{{ palette }}" as="c" hint-placeholder-count="9">
                       <button data-color="{{ c.hex }}" onClick="{{ onColor }}" title="{{ c.name }}" style="width:100%;height:26px;border-radius:6px;border:2px solid;cursor:pointer;background:{{ c.hex }};border-color:{{ c.border }}"></button>
@@ -938,11 +946,11 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             <sc-if value="{{ showRowProp }}" hint-placeholder-val="{{ true }}">
               <div class="ms-row-properties" style="display:flex;flex-direction:column;gap:16px">
                 <h3 class="ms-property-title">{{ L.rowProp }}</h3>
-                <section class="ms-property-group">
+                <section class="ms-property-group"><h4>{{ L.rowBasic }}</h4>
                 <label style="display:flex;flex-direction:column;gap:6px">
                   <input aria-label="{{ L.rowName }}" value="{{ rowPropName }}" data-id="{{ focusRowId }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" style="height:40px;border:1px solid var(--color-border-neutral-2);border-radius:6px;padding:0 10px;font-size:13px;font-weight:600;outline:none" style-focus="border-color:var(--ms-color-action-primary)">
                 </label></section>
-                <section class="ms-property-group">
+                <section class="ms-property-group"><h4>{{ L.rowSize }}</h4>
                 <div class="ms-row-size-grid">
                 <div style="display:flex;flex-direction:column;gap:6px">
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowLanesF }}</span>
@@ -964,7 +972,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <button onClick="{{ onRowAuto }}" style="height:34px;border:1px solid var(--color-border-neutral-2);border-radius:var(--ms-radius-control);background:#fff;font-size:12px;font-weight:600;color:var(--color-text-neutral-5);cursor:pointer">{{ L.rowAutoBtn }}</button>
                   <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.rowHint }}</span>
                 </section>
-                <section class="ms-property-group">
+                <section class="ms-property-group"><h4>{{ L.rowColorF }}</h4>
                 <div style="display:flex;flex-direction:column;gap:8px">
 
                   <div style="display:flex;flex-wrap:wrap;gap:6px">
@@ -974,7 +982,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </div>
                 </div>
                 </section>
-                <section class="ms-property-group ms-row-management">
+                <section class="ms-property-group ms-row-management"><h4>{{ L.rowOrder }}</h4>
                 <div style="display:flex;gap:8px">
                   <button data-id="{{ focusRowId }}" onClick="{{ onRowUp }}" style="flex:1;height:32px;cursor:pointer">{{ L.moveUp }}</button>
                   <button data-id="{{ focusRowId }}" onClick="{{ onRowDown }}" style="flex:1;height:32px;cursor:pointer">{{ L.moveDown }}</button>
@@ -992,7 +1000,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
         <sc-if value="{{ showSet }}" hint-placeholder-val="{{ false }}">
           <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
             <span style="font-size:14px;font-weight:700">{{ L.timeline }}</span>
-            <section class="ms-settings-group">
+            <section class="ms-settings-group"><h4>{{ L.periodSettings }}</h4>
             <div class="ms-timeline-range" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.startMonth }}</span>
@@ -1021,7 +1029,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <span style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ L.weekHint }}</span>
             </div>
             </section>
-            <section class="ms-settings-group">
+            <section class="ms-settings-group"><h4>{{ L.displaySettings }}</h4>
             <div style="display:flex;flex-direction:column;gap:8px">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
                 <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.durUnitF }}</span>
@@ -1041,7 +1049,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <button onClick="{{ toggleAnim }}" role="switch" aria-checked="{{ animChecked }}" aria-label="{{ L.animF }}" style="width:44px;height:24px;padding:0;border:0;border-radius:9999px;background:{{ animTrack }};cursor:pointer;position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ animKnob }};width:18px;height:18px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .18s cubic-bezier(.2,.8,.2,1)"></span></button>
             </div>
             </section>
-<div class="ms-setting-switch"><span>스마트 가이드<small>이동 중 주변 아이템의 맞춤 안내선을 표시합니다.</small></span><button onClick="{{ toggleSmartGuides }}" role="switch" aria-label="스마트 가이드" aria-checked="{{ smartChecked }}" style="background:{{ smartTrack }}"><i style="left:{{ smartKnob }}"></i></button></div><div class="ms-setting-switch"><span>다른 아이템 줄이기<small>아이템을 놓을 때 겹친 다른 일정의 길이를 줄입니다. 끄는 동안 다른 아이템은 움직이지 않고, 줄어들 일정만 점선으로 표시합니다.</small></span><button onClick="{{ setOverlap }}" role="switch" aria-label="다른 아이템 줄이기" aria-checked="{{ shrinkChecked }}" style="background:{{ shrinkTrack }}"><i style="left:{{ shrinkKnob }}"></i></button></div>            <div style="height:1px;background:var(--color-border-neutral-2)"></div>
+<section class="ms-settings-group"><h4>{{ L.placementSettings }}</h4><div class="ms-setting-switch"><span>스마트 가이드<small>이동 중 주변 아이템의 맞춤 안내선을 표시합니다.</small></span><button onClick="{{ toggleSmartGuides }}" role="switch" aria-label="스마트 가이드" aria-checked="{{ smartChecked }}" style="background:{{ smartTrack }}"><i style="left:{{ smartKnob }}"></i></button></div><div class="ms-setting-switch"><span>다른 아이템 줄이기<small>아이템을 놓을 때 겹친 다른 일정의 길이를 줄입니다. 끄는 동안 다른 아이템은 움직이지 않고, 줄어들 일정만 점선으로 표시합니다.</small></span><button onClick="{{ setOverlap }}" role="switch" aria-label="다른 아이템 줄이기" aria-checked="{{ shrinkChecked }}" style="background:{{ shrinkTrack }}"><i style="left:{{ shrinkKnob }}"></i></button></div></section>
           </div>
         </sc-if>
 
@@ -1201,6 +1209,9 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.48', agent: 'Codex', title: '[주요 사항] 일정표 중심 버전 비교 · 속성/설정 레이블 정리', items: ['비교 화면 상단을 압축하고 일정표를 폭에 맞춰 크게 표시 · 변경 목록과 AI 분석은 접이식 패널', '변경 강조 기본 보기 · 슬라이드·오버랩 유지 · 폭/전체/원본 크기와 확대·축소', '현재 비교 모드·불투명도·변경 표시를 담는 현재 보기 PNG 출력 추가 · 기존 버전 저장과 변경 반영 PNG 유지', '툴팁 메모 본문 20% 확대 · 지속 표시 기본값 · 좌표 한 줄 표시', '높이·위치 및 텍스트·서식, 기간·눈금, 이동·겹침 등 청킹 명칭 정리 · 겹침 순서 버튼 경계선 제거', '[검증] 331개 테스트 통과 · 같은 화면에서 일정표 이미지 폭 612→1,222px · 비교 기준·확대·전체 맞춤·슬라이드 방향키·패널 Escape · 25% 오버랩 PNG 4,096×1,632px 확인 · 좌표 한 줄·순서 버튼 테두리 제거·툴팁 지속 기본값 확인'] },
+    { v: 'v0.9.47', agent: 'Codex', title: '[주요 사항] 툴팁 밀도 · 공통 줄바꿈 · 좌표 가독성 개선', items: ['눈금 맞춤 툴팁에 S 표시 · 버튼 툴팁은 한 줄을 우선하고 필요 시 단어 단위로 균형 있게 줄바꿈', '공통 문구·아이템 라벨의 단어 중간 줄바꿈 방지 · 일정 라벨과 포스트잇의 단어 단위 크기 계산', '높이 조절과 위치·크기 잠금을 같은 가로폭으로 배치 · 좌표 라벨·값 분리와 Y 강조', '아이템 툴팁의 기간·상세 메모 제목과 간격 축소 · 본문 13px에서 9.1px로 30% 축소', '[검증] 329개 테스트 통과 · 실제 화면에서 높이·잠금 폭 149.5px씩 일치, Y 강조, S 단축키 한 줄 툴팁, 한글 라벨 균형 줄바꿈, 아이템 툴팁 본문 9.1px·제목 9px·구역 간격 4px 확인'] },
+    { v: 'v0.9.46', agent: 'Codex', title: '[주요 사항] 생성 위치 · 단축키 · 높이 조절과 속성 개선', items: ['높이 오른쪽에 위치·크기 잠금 배치 · 하단 전체 폭 좌표 안내', '포스트잇 텍스트 위쪽 정렬 · 접기·펼치기 SVG 아이콘', 'Ctrl 높이 조절 시 눈금·경계·주변 아이템 스냅 해제', '기간 변경으로 같은 세션·세로 위치·높이의 일정 간격이 달라졌을 때만 이어 붙이기 제안', '정렬 A · 달력 C · NOW N · I 다음 1/2/3으로 일정·마일스톤·연결 메모 생성', '마지막 클릭 위치 또는 활성 세션 중앙에 생성 · 설명과 단축키를 분리한 어두운 툴팁', '[검증] 328개 테스트 통과 · 실제 화면에서 높이 옆 잠금과 하단 좌표, 포스트잇 위쪽 정렬과 접기·펼치기, A/C/N·I→1/2/3, Ctrl 높이 1px 조절, 이동·다른 세션의 팝업 생략과 같은 줄 기간 변경 시 제안 확인'] },
     { v: 'v0.9.45', agent: 'Codex', title: '[주요 사항] 아이템 잠금 · 다중 편집 · 생성과 표시 개선', items: ['아이템 위치·크기 잠금과 포스트잇 접기·펼치기', '달력 폭 20% 축소 · 공통 구간 세로 텍스트 정렬과 여러 줄 편집 영역 수정', '날짜 태그 글자 20% 축소 · 마일스톤 날짜를 본체 양옆의 여유 공간에 표시 · 기준선과 본체 이동 일치', '더블클릭 생성 시 가까운 그리드와 높이 0.5 적용 · 주변 아이템을 밀지 않는 빈 공간에 배치', '클릭한 세션 기준 붙여넣기 · 시각적 소속 기준 세션 삭제 · 다중 복제와 공통 속성 적용 · Shift 범위 선택', '모달 Primary 버튼 기본 포커스와 Enter 실행 · 연결 메모 연결점 배경 정리', '[검증] 322개 테스트 통과 · 실제 화면에서 잠금 이동 차단, 272px 달력, 공통 구간 세로 정렬 3단계, 포스트잇 접기·펼치기, 다중 서식·복제, 여러 줄 편집, 마일스톤·NOW 기준선 일치, 그리드 생성, 세션 삭제 후 이동 아이템 보존, 다른 탭에서 클릭 세션 붙여넣기 확인'] },
     { v: 'v0.9.44', agent: 'Codex', title: '[주요 사항] 탭 간 아이템 붙여넣기 · 삭제 안정화 · 표시 개선', items: ['시스템 클립보드로 다른 탭·화면에서도 선택 아이템 복사·잘라내기·붙여넣기 · 필요한 세션·연결 관계 유지와 데이터 검증 · 원본 날짜가 대상 범위를 완전히 벗어나면 보이는 범위로 배치', '아이템·세션 목록을 ID로 유지해 삭제 시 이웃 아이템의 화면 요소 재사용과 위치 튐 제거', '포스트잇은 선택 아이템·날짜보다 위, 툴팁은 포스트잇보다 위에 표시', '스마트 가이드 안내선은 유지하고 맞춤 안내 문구 제거', '마일스톤 라벨의 실제 글자 두께·여러 줄·세로 배율을 반영해 글자 잘림 수정', '[검증] 310개 테스트 통과 · 실제 두 탭 간 복사·붙여넣기와 다른 시작 월 배치 확인 · 삭제 전후 이웃 위치 유지 · 선택 일정보다 위의 포스트잇 표시와 굵은 여러 줄 마일스톤 확인'] },
     { v: 'v0.9.43', agent: 'Claude Code', title: '[주요 사항] 아이템 드래그 튕김 제거 · 다른 아이템 움찔 수정', items: ['[시작점 조절] 끝점 드래그 중 상자 폭에만 걸리던 70ms 전환과 즉시 바뀌는 화살표 모양이 어긋나 끝이 출렁이던 문제 제거 · 드래그 중인 아이템은 전환 없이 포인터를 그대로 따라감', '[이동] 다른 행으로 옮길 때 재사용된 화면 요소가 이웃 아이템 자리에서 날아오던 한 프레임 튐(최대 240px) 제거 · 프레임당 이동량이 포인터 이동량과 같음', '[다른 아이템] 다른 아이템 줄이기를 끄는 동안 실시간으로 하던 방식에서 놓을 때 한 번만 적용하도록 변경 · 드래그 중 이웃·다른 행 아이템은 전혀 움직이지 않고 줄어들 일정은 점선으로 표시 · 놓으면 0.18초 동안 부드럽게 줄어듦', '[검증] 305개 테스트 통과(실시간 축소를 고정하던 테스트 3개를 새 동작으로 갱신) · 실제 화면에서 이동·행 이동·시작점 조절 100프레임 기록 시 다른 아이템 이동 0px'] },
@@ -1356,7 +1367,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.45';
+  APP_VER = 'v0.9.48';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1369,21 +1380,21 @@ class Component extends DCLogic {
     ko: {
       addChevHint: '시작과 종료가 있는 작업 일정을 추가합니다.', addMarkerHint: '주요 목표나 완료 시점을 표시합니다.', addFlagHint: '연결점으로 아이템과 관계를 표시하는 콜아웃 메모입니다.', addPlainHint: '배경 정보나 참고할 기간을 표시합니다.', addBandHint: '여러 세션에 걸친 공통 기간을 표시합니다.', addStickyHint: '자유롭게 배치하는 짧은 메모를 남깁니다.', weekTip: '월 아래 주차·일자 표시', linkedTo: '연결된 아이템', unlinked: '독립 메모 — 해당 시점에 연결된 작업 없음', noTarget: '연결 없음', linkHint: '연결점을 원하는 아이템으로 이동해주세요.\n어떤 아이템의 콜아웃인지 명확히 알 수 있어요.', elementDates: '날짜', tooltip: '툴팁', tooltipOn: '툴팁 켜짐 · 마우스를 올리면 기간·메모·연결 대상을 표시합니다.', tooltipOff: '툴팁 꺼짐 · 마우스를 올려도 상세정보를 표시하지 않습니다.', linkPoint: '연결점', viewG: '보기', mmTip: '기간 표시', lang: '日本語', add: '아이템', chev: '일정', plain: '참고 구간', band: '공통 구간', marker: '마일스톤', flag: '연결 메모', note: '상단 공지 메모', row: '세션',
       edit: '편집', undo: '되돌리기', redo: '다시 실행', copy: '복사', cut: '잘라내기', paste: '붙여넣기',
-      align:'정렬', alignHint:'아이템 상단과 높이를 가까운 0.5 Grid에 맞춥니다. 가로 일정은 유지합니다. 미선택 시 전체 정렬을 확인합니다.', editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fitWidthLabel: '폭 맞춤', weekLabel: '주차', workDays: '작업일수', durationMonths: '개월', fit: '높이 맞춤', full: '발표모드', interact: '마우스', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM = 22MD (KOSA 기준)', mmToolTip: '작업 기간을 {unit} 단위로 표시합니다.', animF: '애니메이션', animHint: '아이템 이동·재배치, 확대·축소와 화면 전환을 부드럽게 표현', periodSettings: '표시 기간', displaySettings: '표시 방식', interactionSettings: '조작 및 효과', visibleMonthLabel: '현재 표시된 월 구간', actualW: '실제 주 수',
+      align:'정렬', alignHint:'아이템 상단과 높이를 가까운 0.5 Grid에 맞춥니다. 가로 일정은 유지합니다. 미선택 시 전체 정렬을 확인합니다.', editTools: '동작', screenG: '화면', fileG: '불러오기', moreG: '더보기', fitWidthLabel: '폭 맞춤', weekLabel: '주차', workDays: '작업일수', durationMonths: '개월', fit: '높이 맞춤', full: '발표모드', interact: '마우스', interactTip: '1. 마우스 휠 : 확대/축소\n2. 오른버튼 드래그 : 화면 이동(패닝)', weekGap: '월 간격', uniform4: '매달 4주', durUnitF: '기간 단위', durUnitHint: '1MM = 22MD (KOSA 기준)', mmToolTip: '작업 기간을 {unit} 단위로 표시합니다.', animF: '애니메이션', animHint: '아이템 이동·재배치, 확대·축소와 화면 전환을 부드럽게 표현', periodSettings: '기간·눈금 기준', displaySettings: '작업 기간 표시', interactionSettings: '툴팁·화면 효과', placementSettings:'이동·겹침 처리', textStyle:'텍스트·서식', appearanceF:'색상·투명도', visibleMonthLabel: '현재 표시된 월 구간', actualW: '실제 주 수',
       mouseTipMsg: '마우스 컨트롤을 켜면 보드를 이렇게 조작할 수 있습니다.\n\n· 마우스 오른쪽 버튼 드래그 → 화면 이동(패닝) · 손을 떼면 부드럽게 감속됩니다\n· 마우스 휠 → 확대 · 축소 (커서 위치 기준)\n\n끄면 마우스 휠은 일반 스크롤로 동작합니다.', dontShow: '다시 보지 않기',
-      sticky: '포스트잇', stickyNew: '메모를 남겨주세요.', rowLanesF: '높이 (칸 갯수)', stickySize: '포스트잇 크기',
+      sticky: '포스트잇', stickyNew: '메모를 남겨주세요.', rowLanesF: '세션 높이 (Grid)', stickySize: '포스트잇 크기',
       exp: '내보내기', png: '이미지 저장 [PNG]', ppt: 'PPT', print: '인쇄', restore: '원본 복원', weekPx: '주 폭', panelClose: '설정 패널 닫기', panelOpen: '설정 패널 열기',
       importG: '이미지/텍스트 분석', shareBtn: '공유', jsonBak: '맵스톤 파일', saveFile: '파일 저장 [JSON]', panelF: '설정창 보기', helpTip: '단축키와 조작 방법 보기',
-      selectedCount: '개 아이템 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 아이템 선택. 방향키나 드래그로 함께 이동합니다. 색상·높이·일정은 선택한 아이템에 함께 적용됩니다. 글자 크기·서식 등 공통 속성은 선택한 아이템에 함께 적용됩니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '세션', rowBasic: '기본 정보', rowSize: '세션 크기', rowOrder: '세션 관리', timeMode: '시작·종료 표시 방식', dayHint: '화살표로 하루씩 조정', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
-      textEditHint: '속성에서 텍스트 수정이 가능합니다.', nowDirection: '화면 밖 NOW 위치로 이동', markerIconGuide: '마일스톤 내용에 따라 적합한 아이콘으로 자동반영됩니다.', versionCompareGuide: '두개 이상의 버전이 있어야 버전 비교가 가능합니다.', markerIconDisplay: '아이콘 표시', markerIcon: '아이콘', smartIcon: '스마트 아이콘 적용', smartIconHint: '문구를 분석해 알맞은 아이콘을 적용합니다.', iconShow: '표시', iconHide: '미표시', layerFront: '앞으로', layerBack: '뒤로',
+      selectedCount: '개 아이템 선택', multiHint: '⌘+클릭: 추가·해제 · Shift+클릭: 범위 선택 · 빈 영역 드래그: 여러 아이템 선택. 방향키나 드래그로 함께 이동합니다. 색상·높이·일정은 선택한 아이템에 함께 적용됩니다. 글자 크기·서식 등 공통 속성은 선택한 아이템에 함께 적용됩니다.', copyItems: '복사', cutItems: '잘라내기', hideMemoDate: '일자 표시 숨기기', shadeDark: '어둡게', shadeLight: '밝게', paletteExpand: '색상 확장', paletteCollapse: '색상 접기', timeNumber: '숫자', timeDate: '일자', titlePrefix: '타이틀', rowNamePrefix: '세션', rowBasic: '세션 이름', rowSize: '높이·자동 맞춤', rowOrder: '세션 순서', timeMode: '일정·기간', dayHint: '화살표로 하루씩 조정', dateSet: '날짜를 직접 골라 시작 · 종료 지점을 맞춥니다', dateHint: "블록을 세부 조정하려면 '눈금 맞춤'을 꺼주세요.",
+      textEditHint: '속성에서 텍스트 수정이 가능합니다.', nowDirection: '화면 밖 NOW 위치로 이동', markerIconGuide: '마일스톤 내용에 따라 적합한 아이콘으로 자동반영됩니다.', versionCompareGuide: '두개 이상의 버전이 있어야 버전 비교가 가능합니다.', markerIconDisplay: '아이콘 표시', markerIcon: '마일스톤 아이콘', smartIcon: '스마트 아이콘 적용', smartIconHint: '문구를 분석해 알맞은 아이콘을 적용합니다.', iconShow: '표시', iconHide: '미표시', layerFront: '앞으로', layerBack: '뒤로',
       opaque: '불투명', translucent: '반투명', stickyColorF: '포스트잇 색',
       relTitle: '리비전 히스토리', titleF: '일정 제목', readOnlyMsg: '보기 전용 공유입니다. 선택·내보내기는 가능하지만 일정은 수정되지 않습니다.', rowDelTitle: '세션 삭제', rowDelMsg: '이 세션과 세션 안의 아이템을 삭제합니다.', nowTip: '클릭: NOW 속성 / 드래그: 기준선 이동 / 더블클릭·Enter: 오늘 날짜로 이동', dup: '복제',
       tabProp: '속성', tabSet: '설정', tabVer: '버전', category: '세션', verNone: 'Beta ver.', savedAuto: '자동 저장',
       labelF: '라벨', memoF: '툴팁 메모', memoGuide:'마우스를 올리면 보이는 메모입니다.', phMemo: '이 블록의 배경 · 리스크 · 담당', kindF: '종류',
       kChev: '작업', kPlain: '참고 구간', kBand: '공통 구간', kMarker: '마일스톤', kFlag: '연결 메모',
-      rowF: '세션', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이',
+      rowF: '세션', startF: '시작', endF: '종료', durF: '기간 (자동 계산)', laneF: '레인', spanF: '높이·위치',
       colorF: '색상', fillF: '채우기', solid: '불투명', tint: '반투명', rowFromF: '시작 세션', rowToF: '끝 세션', del: '삭제',
-      timeline: '타임라인 설정', startMonth: '시작 월', monthsF: '표시 개월 수', laneHF: '레인 높이',
+      timeline: '일정표 설정', startMonth: '시작 월', monthsF: '표시 개월 수', laneHF: '레인 높이',
       shiftHint: '시작 월을 바꿔도 아이템 날짜 유지',
       weekHint: '실제 주 수: 월의 일수 ÷ 7',
       weekModeF: '월 간격 기준', nowPos: 'NOW 기준선 위치 (개월)', todayBtn: '오늘 날짜로 맞추기',
@@ -1401,28 +1412,29 @@ class Component extends DCLogic {
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
       newChev: '새 일정', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 연결 메모', newRow: '새로운 세션 입력', newNote: '공지 메모를 입력하세요',
       zoom: '배율', magnetF: '눈금 맞춤', magnetHint: '아이템을 이동할 경우 주요 기준선에 쉽게 맞춰지는 snap 기능입니다.',
-      helpT: '사용법', rowProp: '세션', rowName: '세션 이름', rowHF: '세밀 조정 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '세션 배경색', rowColorNone: '없음', rowDel: '세션 삭제', rowAdd: '아래에 세션 추가',
+      helpT: '사용법', rowProp: '세션', rowName: '세션 이름', rowHF: '높이 세밀 조정 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '세션 배경색', rowColorNone: '없음', rowDel: '세션 삭제', rowAdd: '아래에 세션 추가',
       rowHint: '세션 경계선을 마우스로 드래그해도 높이를 조정할 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
-      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 아이템의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearConfirm: '새로 시작', clearMsg: '모든 아이템과 일정표가 사라지고 새로운 일정표가 생성됩니다.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '발표모드 종료', rowNamePh: '새로운 세션 입력', importShort: '이미지/텍스트 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipSchedule: '일정', tipMemo: '상세 메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
+      clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 아이템의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearConfirm: '새로 시작', clearMsg: '모든 아이템과 일정표가 사라지고 새로운 일정표가 생성됩니다.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '발표모드 종료', rowNamePh: '새로운 세션 입력', importShort: '이미지/텍스트 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipSchedule: '일정', tipMemo: '툴팁 메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
     },
     ja: {
+      placementSettings:'移動・重なり', textStyle:'テキスト・書式', appearanceF:'色・透明度',
       align:'整列', alignHint:'上端と高さを最も近い0.5 Gridに揃えます。日程は維持します。',
       addChevHint: '開始・終了のある予定を追加します。', addMarkerHint: '目標や完了の時点を示します。', addFlagHint: '接続点で項目との関係を示すコールアウトメモです。', addPlainHint: '参考となる期間を示します。', addBandHint: '複数行に共通する期間を示します。', addStickyHint: '自由に配置する短いメモを残します。', weekTip: '月の下に週・日を表示', linkedTo: '接続先', unlinked: '独立したメモ — 接続先なし', noTarget: '接続なし', linkHint: '接続先を選択してください。接続点をドラッグして再接続できます。メモは接続先の変更に追従します。', elementDates: '日付', tooltip: 'ツールチップ', tooltipOn: 'ツールチップ ON · 期間・メモ・接続先を表示します。', tooltipOff: 'ツールチップ OFF · 詳細情報を表示しません。', linkPoint: '接続点', viewG: '表示', mmTip: '期間(MM)を表示', lang: '한국어', add: '項目を追加', chev: 'スケジュール', plain: '参考ブロック', band: '共通ブロック', marker: 'マイルストーン', flag: '接続メモ', note: '上部お知らせメモ', row: '行',
       edit: '編集', undo: '元に戻す', redo: 'やり直す', copy: 'コピー', cut: '切り取り', paste: '貼り付け',
-      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fitWidthLabel: '幅に合わせる', weekLabel: '週', workDays: '作業日数', durationMonths: '月数', fit: '高さに合わせる', full: 'プレゼンモード', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', animHint: '項目の移動・再配置、ズームと画面切り替えを滑らかに表示します。', periodSettings: '表示期間', displaySettings: '表示方法', interactionSettings: '操作と効果', visibleMonthLabel: '現在表示中の月間範囲', actualW: '実際の週数',
+      editTools: '動作', screenG: '表示', fileG: '読み込む', moreG: 'その他', fitWidthLabel: '幅に合わせる', weekLabel: '週', workDays: '作業日数', durationMonths: '月数', fit: '高さに合わせる', full: 'プレゼンモード', interact: 'マウス操作', interactTip: '1. マウスホイール：拡大/縮小\n2. 右ドラッグ：画面移動（パン）', weekGap: '月間隔', uniform4: '毎月4週', durUnitF: '期間の単位', durUnitHint: '1MMは22MDで計算します（KOSA基準）。', mmToolTip: '期間（{unit}）表示のON/OFF\n単位（MM / MD）は設定で変更できます。', animF: 'アニメーション', animHint: '項目の移動・再配置、ズームと画面切り替えを滑らかに表示します。', periodSettings: '期間・目盛り基準', displaySettings: '作業期間の表示', interactionSettings: 'ツールチップ・画面効果', visibleMonthLabel: '現在表示中の月間範囲', actualW: '実際の週数',
       mouseTipMsg: 'マウスコントロールを ON にすると、ボードを次のように操作できます。\n\n· マウス右ボタンのドラッグ → 画面移動（パン）・離すと滑らかに減速します\n· マウスホイール → 拡大・縮小（カーソル位置基準）\n\nOFF のときホイールは通常のスクロールになります。', dontShow: '今後表示しない',
       sticky: '付箋メモ', stickyNew: 'メモを残してください。', rowLanesF: '高さ（マス数）', stickySize: '付箋のサイズ',
       exp: '書き出す', png: '画像保存 [PNG]', ppt: 'PPT', print: '印刷', restore: '初期状態に戻す', weekPx: '週幅', panelClose: '設定パネルを閉じる', panelOpen: '設定パネルを開く',
       importG: '画像/テキスト分析', shareBtn: '共有', jsonBak: 'Mapstoneファイル', saveFile: 'ファイル保存 [JSON]', panelF: '設定パネル表示', helpTip: 'ショートカットと操作方法を見る',
-      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: '日付を非表示', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', titlePrefix: 'タイトル', rowNamePrefix: '行', rowBasic: '基本情報', rowSize: '行のサイズ', rowOrder: '行の管理', timeMode: '開始・終了の表示方式', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
+      selectedCount: '項目を選択', multiHint: '⌘+クリック：追加・解除 · Shift+クリック：範囲選択 · 空白をドラッグ：複数選択。矢印キーやドラッグでまとめて移動します。', copyItems: 'コピー', cutItems: '切り取り', hideMemoDate: '日付を非表示', shadeDark: '暗く', shadeLight: '明るく', paletteExpand: '色を展開', paletteCollapse: '色を閉じる', timeNumber: '数値', timeDate: '日付', titlePrefix: 'タイトル', rowNamePrefix: '行', rowBasic: 'セッション名', rowSize: '高さ・自動調整', rowOrder: 'セッション順序', timeMode: '日程・期間', dayHint: '日付モードでは矢印で1日ずつ調整します。', dateSet: '日付を選んで開始・終了を合わせます', dateHint: 'ブロックを細かく調整するには「グリッドに合わせる」を OFF にしてください。',
       textEditHint: 'プロパティでテキストを編集できます。', nowDirection: '画面外のNOWへ移動', markerIconGuide: 'マイルストーンの内容に応じてアイコンが自動適用されます。', versionCompareGuide: '比較には2つ以上の保存バージョンが必要です。', markerIconDisplay: '項目のアイコンを表示', markerIcon: 'アイコン', smartIcon: 'スマートアイコンを適用', smartIconHint: 'テキストを分析してアイコンを選びます。', iconShow: '表示', iconHide: '非表示', layerFront: '前面へ', layerBack: '背面へ',
       opaque: '不透明', translucent: '半透明', stickyColorF: '付箋の色',
       relTitle: 'リビジョン履歴', titleF: 'スケジュール名', readOnlyMsg: '閲覧専用の共有です。選択・書き出しはできますが、スケジュールは変更されません。', rowDelTitle: 'セッションを削除', rowDelMsg: 'この行と行内の項目を削除します。', nowTip: 'クリック：NOW設定 / ドラッグ：基準線を移動 / ダブルクリック・Enter：今日へ移動', dup: '複製',
       tabProp: 'プロパティ', tabSet: '設定', tabVer: 'バージョン', category: 'セッション', verNone: 'Beta ver.', savedAuto: '自動保存',
       labelF: 'ラベル', memoF: 'ツールチップメモ', memoGuide:'マウスを重ねると表示されるメモです。', phMemo: '背景・リスク・担当など', kindF: '種類',
       kChev: 'タスク', kPlain: '参考期間', kBand: '共通期間（複数行）', kMarker: 'マイルストーン', kFlag: '接続メモ',
-      rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ',
+      rowF: '行', startF: '開始', endF: '終了', durF: '期間（自動計算）', laneF: 'レーン', spanF: '高さ・位置',
       colorF: '色', fillF: '塗り', solid: '不透明', tint: '半透明', rowFromF: '開始行', rowToF: '終了行', del: '削除',
       timeline: 'タイムライン設定', startMonth: '開始月', monthsF: '表示月数', laneHF: 'レーン高さ',
       shiftHint: '開始月を変更すると、すべての項目が同じ実日付を保つよう自動でシフトします。',
@@ -1445,7 +1457,7 @@ class Component extends DCLogic {
       helpT: '使い方', rowProp: 'セッション', rowName: 'セッション名', rowHF: '微調整 (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: 'セッションの背景色', rowColorNone: 'なし', rowDel: 'セッションを削除', rowAdd: '下にセッションを追加',
       rowHint: 'セッションの境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
-      clearAll: '全て削除', clearTitle: '全て削除', clearConfirm: '新しく開始', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべてのアイテムと予定表が消え、新しい予定表が作成されます。', titlePrompt: 'スケジュールのタイトルを入力してください', unlockEdit: '編集モードに切り替え', compareBtn: 'バージョン比較', labelSmaller: '文字を小さく', labelBigger: '文字を大きく', weekdays: '日月火水木金土', credit: '制作 : 커넥티드카 사업팀 김창목', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像/テキスト分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipSchedule: '予定', tipMemo: 'メモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
+      clearAll: '全て削除', clearTitle: '全て削除', clearConfirm: '新しく開始', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべてのアイテムと予定表が消え、新しい予定表が作成されます。', titlePrompt: 'スケジュールのタイトルを入力してください', unlockEdit: '編集モードに切り替え', compareBtn: 'バージョン比較', labelSmaller: '文字を小さく', labelBigger: '文字を大きく', weekdays: '日月火水木金土', credit: '制作 : 커넥티드카 사업팀 김창목', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像/テキスト分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipSchedule: '予定', tipMemo: 'ツールチップメモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
     }
   };
 
@@ -1839,8 +1851,8 @@ class Component extends DCLogic {
   }
   importDocument(data) {
     if (this.state.readOnly) return;
-    const d = MapstoneCore.validate(data);this._deleteFinish?.(); const before=JSON.stringify({...JSON.parse(this.snapshot()),versions:this.state.versions}); this._pendingVersion=null; this._saveBlocked=false; this._recoveryData=null;
-    this.setState({...d,vNote:'',versionStatus:'', sel:null,editing:null,hover:null,hist:this.state.hist.concat([before]).slice(-60),future:[]});
+    const d = MapstoneCore.validate(data);this._lastPlacement=null;this._deleteFinish?.(); const before=JSON.stringify({...JSON.parse(this.snapshot()),versions:this.state.versions}); this._pendingVersion=null; this._saveBlocked=false; this._recoveryData=null;
+    this.setState({...d,vNote:'',versionStatus:'', sel:null,selection:[],selectionAnchor:null,focusRow:null,editing:null,hover:null,hist:this.state.hist.concat([before]).slice(-60),future:[]});
   }
 
   snapshot() { const s = this.state; return JSON.stringify({ title: s.title, cfg: s.cfg, rows: s.rows, items: s.items, notes: s.notes, now: s.now, versionProjectId:s.versionProjectId || null }); }
@@ -1991,9 +2003,11 @@ class Component extends DCLogic {
     return Math.max(this.rowMinHeight(), n * this.laneH() + 14);
   }
   addSticky = () => {
-    const st = this.state;
+    const st = this.state;if(st.readOnly)return;
+    const placement=this.creationPlacement(),track=Array.from(this.root?.querySelectorAll?.('[data-track]')||[]).find(el=>el.getAttribute('data-track')===placement.row),origin=this.root?.querySelector?.('[data-capture] > div')?.getBoundingClientRect();
+    const y=(track&&origin?(track.getBoundingClientRect().top-origin.top)/this.heightScale():this.rowTop(placement.row))+placement.trackY;
     const id = this.uid();
-    const it = { id, kind: 'sticky', row: '', lane: 0, s: Math.max(0, Math.round(st.now * 2) / 2), e: 0, y: 60, w: Math.min(240,Math.max(140,(this._board?.clientWidth||800)*.22)), h: 120, label: this.L().stickyNew, color: '#fdf3d0', span: 1, variant: 'solid', memo: '' };
+    const it = { id, kind: 'sticky', row: '', lane: 0, s: placement.s, e: placement.s, y, w: Math.min(240,Math.max(140,(this._board?.clientWidth||800)*.22)), h: 120, label: this.L().stickyNew, color: '#fdf3d0', span: 1, variant: 'solid', memo: '' };
     this.mutate((d) => { d.items.push(it); });
     this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   };
@@ -2033,7 +2047,7 @@ class Component extends DCLogic {
     e.stopPropagation();if(this.state.readOnly||e.button!==0)return;
     if(this.pointerInsideItem(e))return;e.preventDefault();
     const id=e.currentTarget.dataset.row,h0=this.rowHeight(id),y0=e.clientY,step=this.heightUnit()/2,snap0=this.snapshot();let moved=false,current=h0;
-    const mv=ev=>{if(Math.abs(ev.clientY-y0)<2&&!moved)return;const raw=h0+(ev.clientY-y0)/this.heightScale(),h=Math.max(step,this.state.cfg.magnet?Math.round(raw/step)*step:Math.round(raw*100)/100);if(h===current)return;current=h;moved=true;this.mutate(d=>this.setRowHeight(d,id,h),false);};
+    const mv=ev=>{if(Math.abs(ev.clientY-y0)<2&&!moved)return;const raw=h0+(ev.clientY-y0)/this.heightScale(),h=Math.max(step,this.state.cfg.magnet&&!ev.ctrlKey?Math.round(raw/step)*step:Math.round(raw*100)/100);if(h===current)return;current=h;moved=true;this.mutate(d=>this.setRowHeight(d,id,h),false);};
     const finish=commit=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);if(!moved)return;if(commit)this.setState(s=>({hist:s.hist.concat([snap0]).slice(-60),future:[]}));else this.applySnap(snap0);};
     const up=()=>finish(true),cancel=()=>finish(false);window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);
   };
@@ -2072,8 +2086,8 @@ class Component extends DCLogic {
   toggleNow = () => this.viewCfg(d=>{d.cfg.showNow=d.cfg.showNow===false;});
   toggleGrid = () => this.viewCfg(d=>{d.cfg.showGrid=!d.cfg.showGrid;});
   gridCoords(it,bottom=false,layout=this.rowLayout()) {
-    if(!it)return '';const b=this.boxKind(it.kind)?this.trackBox(it,layout):it.kind==='band'?this.bandBox(it):{top:it.y||0,height:it.h||0};
-    return 'X '+(this.xOf(it.s)/this.heightUnit()).toFixed(1)+' · Y '+((b.top+(bottom?b.height:0))/this.heightUnit()).toFixed(1);
+    if(!it)return {x:'',y:''};const b=this.boxKind(it.kind)?this.trackBox(it,layout):it.kind==='band'?this.bandBox(it):{top:it.y||0,height:it.h||0};
+    return {x:(this.xOf(it.s)/this.heightUnit()).toFixed(1),y:((b.top+(bottom?b.height:0))/this.heightUnit()).toFixed(1)};
   }
   heightGrid() {
     const layout=this.rowLayout(),height=this.state.rows.reduce((sum,r)=>sum+layout[r.id].height+1,0),step=this.heightUnit()/2;
@@ -2266,9 +2280,9 @@ class Component extends DCLogic {
   }
   stickyResize(it,width,height) {
     const size=this.labelFont(it),k=size/12.5,paragraphs=String(it.label||'').split('\n');
-    const chars=[...String(it.label||' ')].filter(c=>c!=='\n');
-    const minWidth=Math.max(1,...chars.map(c=>this.measure(c)*k))+6,w=Math.max(Math.ceil(minWidth),Math.round(width));
-    let lines=0;for(const p of paragraphs){let used=0;lines++;for(const c of p){const cw=this.measure(c)*k;if(used && used+cw>w-6){lines++;used=0;}used+=cw;}}
+    const words=String(it.label||' ').split(/\s+/);
+    const minWidth=(Math.max(1,...words.map(word=>this.measure(word)*k))+30)/.9,w=Math.max(Math.ceil(minWidth),Math.round(width)),available=w*.9-30;
+    let lines=0;for(const p of paragraphs){let line='';lines++;for(const word of p.split(/\s+/)){const next=line?line+' '+word:word;if(line&&this.measure(next)*k>available){lines++;line=word;}else line=next;}}
     return {w,h:Math.max(Math.ceil(lines*size*1.6/this.verticalScale()+6),Math.round(height))};
   }
   scheduleLabel(it) { return it.label || ''; }
@@ -2282,7 +2296,8 @@ class Component extends DCLogic {
         const next=line ? line+' '+word : word;
         if (this.measure(next)<=width) { line=next; continue; }
         if (line) { lines++; line=''; }
-        for (const char of word) { if (line && this.measure(line+char)>width) { lines++; line=''; } line+=char; }
+        if(this.measure(word)>width)return false;
+        line=word;
       }
     }
     /* Move overflowing labels outside before they spill beyond the shape. */
@@ -2462,6 +2477,7 @@ class Component extends DCLogic {
     const it = this.state.items.find((i) => i.id === d.id);
     if (!it) return;
     MapstoneUI.hideTip();
+    this.rememberPlacement(e);
     this._settledSelection=null;
     const collapseOnClick=!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&this.selectedIds().length>1&&this.isSelected(d.id)?d.id:null;
     if (!this.pickItem(d.id,e.altKey?{...e,metaKey:false,ctrlKey:false,shiftKey:false}:e,true)) return;
@@ -2504,7 +2520,7 @@ class Component extends DCLogic {
     e.preventDefault();e.stopPropagation();if(this.state.readOnly) return;
     const {id,mode}=e.currentTarget.dataset,it=this.state.items.find(i=>i.id===id);if(!it)return;
     const ids=this.isSelected(id)?this.selectedIds():[id],bounds=this.state.items.filter(i=>ids.includes(i.id)&&this.boxKind(i.kind)).map(i=>({id:i.id,mode,...this.heightBounds(i,new Set(ids))}));
-    this.editSelectionSafely(d=>{for(const g of bounds)this.resizeHeight(d,g,(e.key==='ArrowUp'?-1:1)*this.laneH());});
+    this.editSelectionSafely(d=>{for(const g of bounds)this.resizeHeight(d,g,(e.key==='ArrowUp'?-1:1)*(e.ctrlKey?1:this.laneH()));});
   };
   trackBox(it,layout=this.rowLayout()) {
     let rowTop=0,total=0;
@@ -2765,9 +2781,9 @@ class Component extends DCLogic {
     this.setState({marquee:{left:left+'px',top:top+'px',width:right-left+'px',height:bottom-top+'px'}});
   }
   editSelectedEdge(field, delta, calendar=true) {
-    if(this.state.readOnly)return;const ids=this.selectedIds(),chosen=new Set(ids);
+    if(this.state.readOnly)return;const ids=this.selectedIds(),chosen=new Set(ids),before=this.snapshot();
     this.editSelectionSafely(d=>{for(const it of d.items.filter(i=>chosen.has(i.id))){const value=calendar?this.shiftDay(it[field],delta):it[field]+delta;if(['marker','flag'].includes(it.kind)){it.s=Math.max(0,value);it.e=it.s;}else if(this.linkKind(it.kind)){if(field==='s')it.s=Math.max(0,Math.min(value,this.shiftDay(it.e,-1)));else it.e=Math.max(value,this.shiftDay(it.s,1));}}},ids,true);
-    if(ids.length>1)this.askJoin(ids);
+    if(ids.length>1)this.askJoin(ids,before);
   }
   moveSelectedDays(days) {const ids=this.selectedIds(),chosen=new Set(ids);this.editSelectionSafely(d=>{const items=d.items.filter(i=>chosen.has(i.id));const actual=Math.max(days,...items.filter(i=>!i.targetId).map(i=>Math.ceil((Date.parse(this.isoOf(0))-Date.parse(this.isoOf(i.s)))/86400000)));for(const it of items){if(it.kind==='flag'&&it.targetId){if(!chosen.has(it.targetId)){const target=d.items.find(t=>t.id===it.targetId);if(target){const next=Math.max(target.s,Math.min(target.e,this.shiftDay(it.s,actual)));it.linkOffset=(next-target.s)/(target.e-target.s||1);}}continue;}it.s=this.shiftDay(it.s,actual);it.e=['flag','marker'].includes(it.kind)?it.s:this.shiftDay(it.e,actual);}},ids,true);}
   translateGroup(d, ids, dm, dy=0, days=null) {
@@ -2841,8 +2857,8 @@ class Component extends DCLogic {
     if (g.ids && g.mode==='move') {this.moveGroup(ev);return;}
     if (g.mode==='top' || g.mode==='bottom') {
       const delta=(ev.clientY-g.y0)/this.heightScale(),edge=g.mode==='top'?g.top:g.bottom;
-      const snapped=this.smartVertical(edge+delta,g.height,g,true);
-      this.mutate(d=>{for(const bounds of g.heightGroup||[g])this.resizeHeight(d,bounds,snapped-edge,true);},false);
+      const snapped=ev.ctrlKey?edge+delta:this.smartVertical(edge+delta,g.height,g,true);
+      this.mutate(d=>{for(const bounds of g.heightGroup||[g])this.resizeHeight(d,bounds,snapped-edge,!ev.ctrlKey);},false);
       return;
     }
     if (g.mode === 'outlabel') {
@@ -2856,7 +2872,7 @@ class Component extends DCLogic {
     }
     const time = this.dragTime(g, ev);
     if (g.kind === 'sticky' || g.kind === 'image') {
-      const delta=this.smartFloating(g,dx,(ev.clientY-g.y0)/this.heightScale(),g.mode==='rz'),dy=delta.dy;
+      const delta=g.mode==='rz'&&ev.ctrlKey?{dx,dy:(ev.clientY-g.y0)/this.heightScale()}:this.smartFloating(g,dx,(ev.clientY-g.y0)/this.heightScale(),g.mode==='rz'),dy=delta.dy;
       this.mutate((d) => {
         const it = d.items.find((i) => i.id === g.id);
         if (!it) return;
@@ -2868,7 +2884,8 @@ class Component extends DCLogic {
     if (g.kind === 'band') {
       const it0=this.state.items.find(i=>i.id===g.id),ids=this.state.rows.map(r=>r.id);g.bandBox ||= this.bandBox(it0);
       const b=g.bandBox,dy=(ev.clientY-g.y0)/this.heightScale(),last=ids.at(-1),total=this.rowTop(last)+this.rowHeight(last),step=this.heightUnit()/2;
-      const snap=v=>{if(!this.state.cfg.magnet)return v;const near=Math.round(v/step)*step;if(Math.abs(near-v)*this.heightScale()<=6){this._snapActive=true;return near;}return v;};
+      g.freeHeight=!!ev.ctrlKey&&['btop','bbot'].includes(g.mode);
+      const snap=v=>{if(g.freeHeight||!this.state.cfg.magnet)return v;const near=Math.round(v/step)*step;if(Math.abs(near-v)*this.heightScale()<=6){this._snapActive=true;return near;}return v;};
       let top=b.top,bottom=b.top+b.height;
       if(g.mode==='move'){top=Math.max(0,Math.min(total-b.height,dy?snap(b.top+dy):b.top));bottom=top+b.height;}
       if(g.mode==='btop')top=Math.max(0,Math.min(bottom-step,snap(b.top+dy)));
@@ -2940,7 +2957,7 @@ class Component extends DCLogic {
       const snap = this.drag.snap;
       const id = this.drag.id;
       if(this.state.cfg.magnet && ['l','r'].includes(this.drag.mode) && this.linkKind(this.drag.kind)){const mode=this.drag.mode,ids=new Set(this.drag.ids||[id]);this.mutate(d=>{for(const it of d.items.filter(i=>ids.has(i.id)&&this.linkKind(i.kind))){if(mode==='l')it.s=Math.max(0,Math.min(this.snapDateEdge(it.s),this.shiftDay(it.e,-1)));else it.e=Math.max(this.snapDateEdge(it.e),this.shiftDay(it.s,1));}},false);}
-      if(this.drag.kind==='band'&&this.state.cfg.magnet&&['move','btop','bbot'].includes(this.drag.mode)){const g=this.drag;this.mutate(d=>{const it=d.items.find(i=>i.id===g.id),b=this.bandBox(it),step=this.heightUnit()/2,top=g.mode==='bbot'?b.top:Math.round(b.top/step)*step,bottom=g.mode==='btop'?b.top+b.height:g.mode==='move'?top+b.height:Math.round((b.top+b.height)/step)*step;it.trackY=top-this.rowTop(it.rowFrom);it.trackH=Math.max(step,bottom-top);},false);}
+      if(this.drag.kind==='band'&&!this.drag.freeHeight&&this.state.cfg.magnet&&['move','btop','bbot'].includes(this.drag.mode)){const g=this.drag;this.mutate(d=>{const it=d.items.find(i=>i.id===g.id),b=this.bandBox(it),step=this.heightUnit()/2,top=g.mode==='bbot'?b.top:Math.round(b.top/step)*step,bottom=g.mode==='btop'?b.top+b.height:g.mode==='move'?top+b.height:Math.round((b.top+b.height)/step)*step;it.trackY=top-this.rowTop(it.rowFrom);it.trackH=Math.max(step,bottom-top);},false);}
       if(this.drag.kind==='marker'||this.drag.mode==='now'){const slots=this.drag.markerSlots||{};this.mutate(d=>{for(const it of d.items)if(it.kind==='marker'&&slots[it.id]!==undefined)it.markerLane=slots[it.id];if(slots.__now!==undefined)d.cfg.nowLane=slots.__now;},false);}
       if(this.drag.baseItems||this.drag.markerSlots){this.drag.settlingPeers=true;this.mutate(()=>{},false);}
       this._settledSelection=new Set(this.selectedIds());
@@ -2951,7 +2968,7 @@ class Component extends DCLogic {
     if(finished?.collapseOnClick&&!finished.moved)this.selectItems([finished.collapseOnClick],finished.collapseOnClick,finished.collapseOnClick);
     this._smartGuides=[];
     this.setState({marquee:null});
-    if(finished?.moved && ['move','l','r'].includes(finished.mode) && finished.ids?.length>1 && finished.snap){const before=JSON.parse(finished.snap);if(this.state.items.some(it=>finished.ids.includes(it.id)&&this.linkKind(it.kind)&&before.items.some(o=>o.id===it.id&&(Math.abs(o.s-it.s)>.000001||Math.abs(o.e-it.e)>.000001))))this.askJoin(finished.ids);}
+    if(finished?.moved && ['l','r'].includes(finished.mode) && finished.ids?.length>1 && finished.snap)this.askJoin(finished.ids,finished.snap);
   }
 
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
@@ -3018,9 +3035,24 @@ class Component extends DCLogic {
     });
   };
 
-  onRowFocus = (e) => { this._settledSelection=null;if (!e.target?.closest?.('textarea,button')) e.currentTarget.focus?.(); this.setState({ selection: [], sel: null, editing: null, editNote: null, focusRow: e.currentTarget.dataset.row }); };
+  onRowFocus = (e) => { this._lastPlacement=null;this._settledSelection=null;if (!e.target?.closest?.('textarea,button')) e.currentTarget.focus?.(); this.setState({ selection: [], sel: null, editing: null, editNote: null, focusRow: e.currentTarget.dataset.row }); };
+  rememberPlacement(e) {
+    const track=e.currentTarget?.closest?.('[data-track]')||e.target?.closest?.('[data-track]')||Array.from(this.root?.querySelectorAll?.('[data-track]')||[]).find(el=>{if(!el.dataset?.track)return false;const r=el.getBoundingClientRect();return e.clientY>=r.top&&e.clientY<=r.bottom&&e.clientX>=r.left&&e.clientX<=r.right;});
+    if(!track||!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;
+    const r=track.getBoundingClientRect(),row=track.getAttribute('data-track'),trackY=Math.max(0,(e.clientY-r.top)/this.heightScale());
+    this._lastPlacement={row,s:Math.max(0,this.mOf((e.clientX-r.left)/this.canvasScale())),trackY,lane:Math.floor(trackY/this.laneH())};this.setState({focusRow:row});
+  }
+  creationPlacement() {
+    const row=this.state.rows.find(r=>r.id===this.state.focusRow)?.id||this.state.rows.find(r=>r.id===this._lastPlacement?.row)?.id||this.state.rows[0].id;
+    if(this._lastPlacement?.row===row)return {...this._lastPlacement};
+    const track=Array.from(this.root?.querySelectorAll?.('[data-track]')||[]).find(el=>el.getAttribute('data-track')===row),r=track?.getBoundingClientRect(),board=this._board?.getBoundingClientRect?.();
+    const s=r&&board?this.mOf(((Math.max(r.left,board.left+172*this.canvasScale())+Math.min(r.right,board.right))/2-r.left)/this.canvasScale()):this.state.cfg.months/2;
+    const trackY=Math.max(0,this.rowHeight(row)/2-this.heightUnit()/4);
+    return {row,s,trackY,lane:Math.floor(trackY/this.laneH())};
+  }
   onTrackDown = (e) => {
     if (e.button === 2) return;
+    this.rememberPlacement(e);
     const row = e.currentTarget.getAttribute('data-track');
     if (!e.target.closest?.('[data-id],button,input,textarea') && !e.metaKey && !e.shiftKey) this.clearSelection();
     this.setState({ focusRow: row });
@@ -3066,7 +3098,7 @@ class Component extends DCLogic {
 
   // ── clipboard & keys ──────────────────────────
   toggleLock = () => {const ids=new Set(this.selectedIds()),locked=!this.state.items.filter(i=>ids.has(i.id)).every(i=>i.locked);this.mutate(d=>{for(const it of d.items)if(ids.has(it.id))it.locked=locked;});};
-  toggleSticky = (e) => {e.stopPropagation();const id=e.currentTarget.dataset.id;this.mutate(d=>{const it=d.items.find(i=>i.id===id&&i.kind==='sticky');if(it)it.collapsed=!it.collapsed;});this.setState({editing:null});};
+  toggleSticky = (e) => {e.stopPropagation();MapstoneUI.hideTip();const id=e.currentTarget.dataset.id;this.mutate(d=>{const it=d.items.find(i=>i.id===id&&i.kind==='sticky');if(it)it.collapsed=!it.collapsed;});this.setState({editing:null});};
   editCommon(fn, accepts=()=>true) {const ids=new Set(this.selectedIds());this.mutate(d=>{for(const it of d.items)if(ids.has(it.id)&&accepts(it))fn(it);});}
   onClipboard = (e) => {
     if(e.defaultPrevented || this.state.editing || e.target?.closest?.('input,textarea,select,[contenteditable="true"],dialog[open],.ms-modal-scrim') || this.state.alignConfirm)return;
@@ -3137,8 +3169,16 @@ class Component extends DCLogic {
     const key=(e.metaKey || e.ctrlKey) && e.code?.startsWith('Key')?e.code.slice(3).toLowerCase():e.key;
     const t = e.target.tagName;
     const typing = t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || e.target.isContentEditable;
-    if(typing)return;
+    if(typing){this._insertPrefix=0;return;}
     const mod = e.metaKey || e.ctrlKey;
+    if(!mod&&!e.altKey&&!e.shiftKey&&!e.repeat){
+      const code=e.code||({a:'KeyA',c:'KeyC',n:'KeyN',i:'KeyI','1':'Digit1','2':'Digit2','3':'Digit3'}[key.toLowerCase()]);
+      const insert={Digit1:this.addChev,Digit2:this.addMarker,Digit3:this.addFlag}[code];
+      if(insert&&this._insertPrefix&&Date.now()-this._insertPrefix<1500){this._insertPrefix=0;e.preventDefault();insert();return;}
+      this._insertPrefix=code==='KeyI'?Date.now():0;
+      const action={KeyA:()=>this.alignItems(),KeyC:this.openCalendar,KeyN:this.toggleNow}[code];
+      if(code==='KeyI'||action){e.preventDefault();action?.();return;}
+    }else this._insertPrefix=0;
     if (key === 'Escape' && (this.state.helpOpen || this.state.textOpen || this.state.mouseTipOpen || this.state.relOpen || this.state.rowDelId || this.state.clearOpen)) { e.preventDefault(); this.setState({helpOpen:false,textOpen:false,mouseTipOpen:false,relOpen:false,rowDelId:null,clearOpen:false}); return; }
     if (mod && (key === 'z' || key === 'Z')) { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); return; }
     if (mod && (key === 'y' || key === 'Y')) { e.preventDefault(); this.redo(); return; }
@@ -3155,7 +3195,7 @@ class Component extends DCLogic {
     }
     if (!this.state.sel) return;
     if(key.startsWith('Arrow')&&this.selectedIds().length&&this.selectedIds().every(id=>this.state.items.find(i=>i.id===id)?.locked)){e.preventDefault();return;}
-    if (key==='ArrowLeft' || key==='ArrowRight') {if(this.state.edgeSelection?.id===this.state.sel){e.preventDefault();this.editSelectedEdge(this.state.edgeSelection.field,key==='ArrowLeft'?-1:1);return;}e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else {this.moveSelectedDays(days);this.askJoin();}return;}
+    if (key==='ArrowLeft' || key==='ArrowRight') {if(this.state.edgeSelection?.id===this.state.sel){e.preventDefault();this.editSelectedEdge(this.state.edgeSelection.field,key==='ArrowLeft'?-1:1);return;}e.preventDefault();const days=(key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);if(this.state.sel==='__now'){this.mutate(d=>{d.now=Math.max(0,this.shiftDay(d.now,days));});}else this.moveSelectedDays(days);return;}
     if(['ArrowUp','ArrowDown'].includes(key) && this.selectedIds().length){e.preventDefault();this.shiftSelectedVertically((key==='ArrowUp'?-1:1)*(e.shiftKey?10:1));return;}
     if (this.selectedIds().length>1 && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)) {e.preventDefault();const ids=this.selectedIds(),dx=key==='ArrowLeft'?-.5:key==='ArrowRight'?.5:0,dy=key==='ArrowUp'?-this.laneH():key==='ArrowDown'?this.laneH():0;this.mutate(d=>this.translateGroup(d,ids,dx,dy));return;}
     if (key === 'Delete' || key === 'Backspace') { e.preventDefault(); if (this.state.selLinkDot === this.state.sel) this.connectFlag(this.state.sel, ''); else this.deleteSel(); return; }
@@ -3188,7 +3228,7 @@ class Component extends DCLogic {
         for(const p of peers.filter(p=>p.top<top+height&&p.bottom>top)){if(p.left>left)intervals.push([left,Math.min(maxX,p.left)]);left=Math.max(left,p.right);}
         if(left<maxX)intervals.push([left,maxX]);
         for(const [a,b] of intervals){const first=Math.ceil((this.mOf(a)-1e-8)/time)*time,last=Math.floor((this.mOf(b-24)+1e-8)/time)*time;if(last<first)continue;
-          const s=Math.max(first,Math.min(last,placement.s)),x=this.xOf(s),width=Math.min(200,b-x),distance=Math.hypot(x-wantedX,top-wantedY);if(width<24)continue;
+          const s=Math.max(first,Math.min(last,placement.s)),x=this.xOf(s),width=Math.min(this.xOf(it.e)-this.xOf(it.s),b-x),distance=Math.hypot(x-wantedX,top-wantedY);if(width<24)continue;
           if(!best||distance<best.distance-.01){best={s,e:this.mOf(x+width),trackY:top,trackH:height,distance};if(distance<.01)return best;}
         }
       }
@@ -3199,23 +3239,22 @@ class Component extends DCLogic {
   addAt(kind, placement = null) {
     const st = this.state;
     if (st.readOnly) return;
-    const row = placement?.row || st.focusRow || st.rows[0].id;
-    const s = Math.max(0,Math.min(this.mOf(Math.max(0,this.xOf(st.cfg.months)-this.xOf(this.newItemEnd(0)))),placement?.s ?? Math.round(st.now * 2) / 2));
-    const id = this.uid();
-    const end=this.newItemEnd(s);let lanes=0;
-    while(st.items.some(i=>i.row===row && this.boxKind(i.kind) && this.visibleItem(i) && i.s<end && i.e>s && (i.trackY??6+i.lane*this.laneH())<6+(lanes+2)*this.laneH()-12 && (i.trackY??6+i.lane*this.laneH())+(i.trackH??(i.span||1)*this.laneH()-12)>6+lanes*this.laneH()))lanes++;
-    if(placement)lanes=placement.lane;
-    const L = this.L();
+    placement ||= this.creationPlacement();
     const box = kind === 'chev' || kind === 'plain';
+    const row = placement.row;
+    const s = Math.max(0,Math.min(box?this.mOf(Math.max(0,this.xOf(st.cfg.months)-this.xOf(this.newItemEnd(0)))):st.cfg.months-this.timeStep(),placement?.s ?? Math.round(st.now * 2) / 2));
+    const id = this.uid();
+    const end=this.newItemEnd(s),lanes=placement.lane;
+    const L = this.L();
     const it = { id, kind, row, lane: box ? lanes : 0, s, e: box || kind==='band' ? end : s, span: box ? 2 : 1, variant: box && kind === 'plain' ? 'tint' : 'solid', memo: '' };
-    if(box){it.trackH=this.heightUnit()/2;it.trackY=lanes*this.laneH();}
+    if(box){it.trackH=this.heightUnit()/2;it.trackY=placement.trackY??lanes*this.laneH();}
     if (kind === 'chev') { it.label = L.newChev; it.color = '#234770'; }
     if (kind === 'plain') { it.label = L.newPlain; it.color = '#315a88'; }
-    if (kind === 'band') { it.label = L.newBand; it.color = '#a4c4ef'; it.rowFrom = row; it.rowTo = row; it.row = row; }
+    if (kind === 'band') { it.label = L.newBand; it.color = '#a4c4ef'; it.rowFrom = row; it.rowTo = row; it.row = row; it.trackY=placement.trackY; it.trackH=Math.max(40,this.rowHeight(row)-placement.trackY-6); }
     if (kind === 'marker') { it.label = L.newMarker; it.color = '#3568c5'; it.row = ''; }
-    if (kind === 'flag') { it.label = L.newFlag; it.color = '#c83543'; it.targetId = ''; it.hideDate=true; }
-    if(box&&placement){const fitted=this.fitNewItem(it,placement);if(!fitted){MapstoneUI.toast(this,'아이템을 놓을 빈 공간이 없습니다.');return;}Object.assign(it,fitted);delete it.distance;it.lane=Math.floor(it.trackY/this.laneH());}
-    this.mutate((d) => {d.items.push(it);if(!placement){this.ensureItemRoom(d,id);this.resolve(d,id);}});
+    if (kind === 'flag') { it.label = L.newFlag; it.color = '#c83543'; it.targetId = ''; it.hideDate=true; it.lane=placement.lane; it.labelDy=(placement.trackY??0)-6-it.lane*this.laneH(); }
+    if(box){const fitted=this.fitNewItem(it,placement);if(!fitted){MapstoneUI.toast(this,'아이템을 놓을 빈 공간이 없습니다.');return;}Object.assign(it,fitted);delete it.distance;it.lane=Math.floor(it.trackY/this.laneH());}
+    this.mutate((d) => {d.items.push(it);});
     this.setState({ sel: id, editing: kind==='flag'?null:id, tab: 'prop', panel: true });
   }
   addPlain = () => this.addAt('plain');
@@ -3484,7 +3523,18 @@ class Component extends DCLogic {
     this.drag={id:this.state.sel,ids,mode:'move',moved:true,allowShrink,snap:this.snapshot(),baseItems:JSON.stringify(this.state.items),moveLayout:layout,markerSlots:{...this._markerSlots},settlingPeers:true,flagPositions:Object.fromEntries(this.state.items.filter(f=>f.kind==='flag'&&!ids.includes(f.id)).map(f=>{const v=this.flagGeometry(f,layout,this.state.items,false);return [f.id,{x:v.left+v.labelLeft,y:v.rowTop+v.top+v.labelTop,targetId:v.target?.id||''}];}))};
     try{this.mutate(fn);}finally{this.drag=previous;this.setState({});}
   }
-  askJoin(ids=this.selectedIds()) {if(this.state.readOnly)return;const ordered=this.orderedSelection(ids).filter(it=>this.linkKind(it.kind));if(ordered.length>1){this.setState({joinPrompt:ordered.map(it=>it.id)});setTimeout(()=>this.root?.querySelector('[data-join-dialog] button')?.focus(),0);}}
+  askJoin(ids=this.selectedIds(), before=null) {
+    if(this.state.readOnly||!before)return;
+    const ordered=this.orderedSelection(ids),old=JSON.parse(before).items,layout=this.rowLayout();
+    if(ordered.length<2||ordered.some(it=>!this.boxKind(it.kind)||it.locked))return;
+    const first=ordered[0],box=this.trackBox(first,layout);
+    if(ordered.some(it=>it.row!==first.row||Math.abs(this.trackBox(it,layout).top-box.top)>.5||Math.abs(this.trackBox(it,layout).height-box.height)>.5))return;
+    const days=(a,b)=>Math.round((Date.parse(this.isoOf(b))-Date.parse(this.isoOf(a)))/86400000);
+    if(!ordered.some(it=>{const prev=old.find(o=>o.id===it.id);return prev&&days(prev.s,prev.e)!==days(it.s,it.e);}))return;
+    const changed=ordered.slice(1).some((it,n)=>{const a=old.find(o=>o.id===ordered[n].id),b=old.find(o=>o.id===it.id),gap=days(ordered[n].e,it.s);return a&&b&&gap!==0&&gap!==days(a.e,b.s);});
+    if(!changed)return;
+    this.setState({joinPrompt:ordered.map(it=>it.id)});setTimeout(()=>this.root?.querySelector('[data-join-dialog] button')?.focus(),0);
+  }
   cancelJoin = () => this.setState({joinPrompt:null});
   applyJoin = () => {
     const ids=this.state.joinPrompt||[],ordered=this.orderedSelection(ids).filter(it=>this.linkKind(it.kind));this.cancelJoin();if(ordered.length<2||this.state.readOnly)return;
@@ -3536,7 +3586,7 @@ class Component extends DCLogic {
     if (!el) { this.setState((s) => ({ panel: !s.panel })); return; }
     el.classList.add('ms-panel-out'); setTimeout(() => { el.classList.remove('ms-panel-out'); this.setState({ panel: false }); }, 160);
   };
-  tipHoldPref() { try { return window.localStorage.getItem('mapstone.tipHold') === '1'; } catch (err) { return false; } }
+  tipHoldPref() { try { return window.localStorage.getItem('mapstone.tipHold') !== '0'; } catch (err) { return true; } }
   toggleTipHold = () => { const on = !this.state.tipHold; try { window.localStorage.setItem('mapstone.tipHold', on ? '1' : '0'); } catch (err) { /* private mode — session only */ } this.setState({ tipHold: on }); };
   animPref() { try { return window.localStorage.getItem('mapstone.anim') !== '0'; } catch (err) { return true; } }
   /* prefOnly: the user's switch alone (for the settings UI); otherwise also needs a live DOM and no reduced-motion request */
@@ -3945,7 +3995,7 @@ class Component extends DCLogic {
       const base = it.color || '#fdf3d0';
       return {
         showMeta:!!cfg.showElementDates || !this.durationHidden(it),dateLabel: this.shortDate(it.s)+' – '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label:it.collapsed?String(it.label||'').split('\n')[0]:it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), dragging:!!(this.drag && (this.drag.id===it.id || this.drag.ids?.includes(it.id))), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
-        width: px(it.w || 210), height:px(it.collapsed?28/this.verticalScale():it.h||120),collapsed:!!it.collapsed,expanded:!it.collapsed,foldLabel:it.collapsed?'포스트잇 펼치기':'포스트잇 접기',foldIcon:it.collapsed?'+':'−',resizable:this.isSelected(it.id)&&!it.collapsed&&!it.locked,
+        width: px(it.w || 210), height:px(it.collapsed?28/this.verticalScale():it.h||120),collapsed:!!it.collapsed,expanded:!it.collapsed,foldLabel:it.collapsed?'포스트잇 펼치기':'포스트잇 접기',foldPath:it.collapsed?'M8 3H3v5M16 21h5v-5M3 3l6 6M21 21l-6-6':'M3 9h6V3M21 15h-6v6M9 9L3 3M15 15l6 6',resizable:this.isSelected(it.id)&&!it.collapsed&&!it.locked,
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
         sel: this.isSelected(it.id), editing: editing, show: !editing
@@ -4064,7 +4114,7 @@ class Component extends DCLogic {
       selTargetId: sel && sel.kind === 'flag' ? (sel.targetId ?? ((this.rowLayout()[sel.row] || {}).modes || {})[sel.id]?.targetId ?? '') : '', onLinkTarget: this.onLinkTarget, onLinkDown:this.onLinkDown, onLinkKey:this.onLinkKey,
       linkOptions: st.items.filter(i=>this.linkKind(i.kind)).map(i=>({id:i.id,label:(st.rows.find(r=>r.id===(i.rowFrom||i.row))?.name || '')+' · '+i.label})),
       marquee:st.marquee, linkDrag: st.linkDrag, linking:!!st.linkDrag,
-      selBoldBg:sel && this.labelBold(sel)?'var(--ms-color-surface-selected)':'var(--ms-color-surface-default)',selBoldFg:sel && this.labelBold(sel)?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)',selStrikeBg:sel?.labelStrike?'var(--ms-color-surface-selected)':'var(--ms-color-surface-default)',selStrikeFg:sel?.labelStrike?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)',selCanFormat:!!sel && sel.kind!=='now',selBold:sel?this.labelBold(sel):false,selStrike:!!sel?.labelStrike,onLabelFormat:this.onLabelFormat,selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
+      appearanceLabel:sel?.kind==='flag'?T.colorF:T.appearanceF,selBoldBg:sel && this.labelBold(sel)?'var(--ms-color-surface-selected)':'var(--ms-color-surface-default)',selBoldFg:sel && this.labelBold(sel)?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)',selStrikeBg:sel?.labelStrike?'var(--ms-color-surface-selected)':'var(--ms-color-surface-default)',selStrikeFg:sel?.labelStrike?'var(--ms-color-action-primary)':'var(--ms-color-text-secondary)',selCanFormat:!!sel && sel.kind!=='now',selBold:sel?this.labelBold(sel):false,selStrike:!!sel?.labelStrike,onLabelFormat:this.onLabelFormat,selLabelSize: sel ? this.labelFont(sel) : 12.5, onLabelSize: this.onLabelSize, selIsBand: !!sel && sel.kind === 'band', selIsTrack: !!sel && this.boxKind(sel.kind),
       selGridCoords:this.gridCoords(sel,false,L),selGridBottomCoords:this.gridCoords(sel,true,L),selS: sel ? Math.round(sel.s*100)/100 : 0, selE: sel ? Math.round(sel.e*100)/100 : 0, selLane: sel ? sel.lane : 0, selSpan: sel ? this.boxKind(sel.kind)?Math.round(this.trackBox(sel,L).height/this.heightUnit()*100)/100:sel.span||1 : 1,
       selSDate: sel ? this.dateOf(sel.s) : '', selEDate: sel ? this.dateOf(sel.e) : '',
       propertyDates: !!st.propertyDates, togglePropertyDates: this.togglePropertyDates, openPropertyCalendar:this.openPropertyCalendar, onPropertyTimeField: this.onPropertyTimeField,
