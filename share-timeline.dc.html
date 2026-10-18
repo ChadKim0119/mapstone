@@ -582,8 +582,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 
         <div style="position:relative">
 
-          <sc-for list="{{ markerMetadata }}" as="meta" key="{{ meta.id }}"><div data-item-meta-layer="" style="position:absolute;left:{{ meta.left }};top:{{ meta.top }};z-index:{{ meta.zIndex }};pointer-events:none"><span data-text-ratio="" class="ms-item-meta" data-element-date="" style="position:relative;top:0">{{ meta.date }}</span></div></sc-for>
-          <div data-marker-strip="" style="position:relative;margin-left:172px;min-width:200px;width:{{ boardW }};height:{{ markerStripH }}">
+          <sc-for list="{{ markerMetadata }}" as="meta" key="{{ meta.id }}"><div data-item-meta-layer="" data-zoom-anchor="{{ meta.id }}" style="position:absolute;left:{{ meta.left }};top:{{ meta.top }};z-index:{{ meta.zIndex }};pointer-events:none"><span data-text-ratio="" class="ms-item-meta" data-element-date="" style="position:relative;top:0">{{ meta.date }}</span></div></sc-for>
+          <div data-marker-strip="" data-zoom-width="0" style="position:relative;margin-left:172px;min-width:200px;width:{{ boardW }};height:{{ markerStripH }}">
             <sc-for list="{{ markersView }}" as="k" key="{{ k.id }}" hint-placeholder-count="4">
               <div data-marker-item="" data-drag-active="{{ k.dragging }}" data-locked="{{ k.locked }}" data-id="{{ k.id }}" role="button" tabindex="0" aria-label="{{ k.label }}" onKeyDown="{{ onItemKey }}" onPointerDown="{{ onItemDown }}" onDoubleClick="{{ onItemDbl }}" onMouseEnter="{{ onHover }}" onMouseLeave="{{ offHover }}" style="position:absolute;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;box-sizing:border-box;width:{{ k.boxW }};min-width:{{ k.editMinW }};min-height:{{ k.boxH }};border-radius:6px;border:0;box-shadow:inset 0 0 0 1px {{ k.innerStroke }};background:#fff;cursor:grab;z-index:{{ k.zIndex }};left:{{ k.left }};top:{{ k.top }}">
                 <sc-if value="{{ k.editing }}" hint-placeholder-val="{{ false }}">
@@ -601,12 +601,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </sc-for>
           </div>
 
-          <div data-time-header="" style="height:{{ timeHeaderH }};width:calc(172px + {{ boardW }});display:flex;align-items:stretch;position:sticky;top:0;z-index:12500;background:var(--ms-color-brand-navy)">
+          <div data-time-header="" data-zoom-width="172" style="height:{{ timeHeaderH }};width:calc(172px + {{ boardW }});display:flex;align-items:stretch;position:sticky;top:0;z-index:12500;background:var(--ms-color-brand-navy)">
             <div class="ms-sticky-col" style="position:sticky;left:0;z-index:64;width:172px;flex:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;background:var(--color-neutral-800);color:#fff;font-size:13px;font-weight:700"><span data-text-ratio="">{{ L.category }}</span><span data-text-ratio="" data-year-tag="" class="ms-year-tag" aria-live="polite"></span></div>
-            <div style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
-<sc-for list="{{ subdivisions }}" as="q"><span data-text-ratio="" style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
+            <div data-zoom-width="0" style="flex:none;position:relative;display:flex;background:var(--color-neutral-800);width:{{ boardW }}">
+<sc-for list="{{ subdivisions }}" as="q"><span data-zoom-left="0" data-text-ratio="" style="position:absolute;bottom:3px;left:{{ q.left }};font-size:9px;line-height:1;color:#e7ebee;pointer-events:none">{{ q.label }}</span></sc-for>
               <sc-for list="{{ cols }}" as="c" hint-placeholder-count="22">
-                <div data-col="{{ c.key }}" style="flex:none;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }};--ms-year-header:{{ c.bg }};background:var(--ms-year-header)">
+                <div data-col="{{ c.key }}" data-zoom-width="0" style="flex:none;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border-left:1px solid rgba(255,255,255,.22);color:#fff;padding:{{ colPad }};width:{{ c.width }};--ms-year-header:{{ c.bg }};background:var(--ms-year-header)">
                   <span data-text-ratio="" data-january-year="{{ c.year }}" class="ms-january-year">{{ c.yearLabel }}</span>
                   <span data-text-ratio="" style="font-size:13px;font-weight:700">{{ c.label }}</span>
                 </div>
@@ -614,10 +614,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </div>
           </div>
 
-          <div data-row-surface="" style="position:relative;width:calc(172px + {{ boardW }})"><sc-for list="{{ itemMetadata }}" as="meta" key="{{ meta.id }}"><div data-item-meta-layer="" style="position:absolute;left:{{ meta.left }};top:{{ meta.top }};z-index:{{ meta.zIndex }};pointer-events:none"><span data-text-ratio="" class="ms-item-meta" data-item-meta="" style="position:relative;top:0"><sc-if value="{{ meta.showDate }}"><span data-element-date="">{{ meta.date }}</span></sc-if><sc-if value="{{ meta.duration }}"><span class="ms-meta-duration">{{ meta.duration }}</span></sc-if></span></div></sc-for>
+          <div data-row-surface="" data-zoom-width="172" style="position:relative;width:calc(172px + {{ boardW }})"><sc-for list="{{ itemMetadata }}" as="meta" key="{{ meta.id }}"><div data-item-meta-layer="" data-zoom-anchor="{{ meta.id }}" style="position:absolute;left:{{ meta.left }};top:{{ meta.top }};z-index:{{ meta.zIndex }};pointer-events:none"><span data-text-ratio="" class="ms-item-meta" data-item-meta="" style="position:relative;top:0"><sc-if value="{{ meta.showDate }}"><span data-element-date="">{{ meta.date }}</span></sc-if><sc-if value="{{ meta.duration }}"><span class="ms-meta-duration">{{ meta.duration }}</span></sc-if></span></div></sc-for>
             <sc-for list="{{ heightGrid }}" as="g"><div data-height-grid="" data-grid-visible="{{ gridVisible }}" data-noprint="" style="position:absolute;left:172px;right:0;top:{{ g.top }};border-top:1px solid {{ g.color }};pointer-events:none;z-index:2"></div><div data-noprint="" style="position:absolute;left:0;width:100%;top:{{ g.top }};pointer-events:none;z-index:25000"><span data-grid-number="" data-grid-visible="{{ gridVisible }}" data-text-ratio="" style="position:sticky;left:172px;display:inline-block;margin-left:172px;top:1px;font-size:10px;line-height:12px;color:#8951c9;background:#fffffff0;padding:0 3px">{{ g.label }}</span></div></sc-for>
             <sc-for list="{{ rowsView }}" as="row" key="{{ row.id }}" hint-placeholder-count="4">
-              <div data-timeline-row="{{ row.id }}" data-row-focused="{{ row.focused }}" style="display:flex;align-items:stretch;width:calc(172px + {{ boardW }});min-height:{{ row.height }};border-bottom:1px solid var(--color-border-neutral-2)">
+              <div data-timeline-row="{{ row.id }}" data-zoom-width="172" data-row-focused="{{ row.focused }}" style="display:flex;align-items:stretch;width:calc(172px + {{ boardW }});min-height:{{ row.height }};border-bottom:1px solid var(--color-border-neutral-2)">
                 <div class="ms-sticky-col" tabindex="0" aria-label="{{ row.name }}" data-row="{{ row.id }}" onFocus="{{ onRowFocus }}" onPointerDown="{{ onRowFocus }}" onMouseEnter="{{ onRowEnter }}" onMouseLeave="{{ onRowLeave }}" style="position:sticky;left:0;z-index:115;width:172px;flex:none;display:flex;flex-direction:column;justify-content:center;padding:6px 10px 6px 25px;border-right:1px solid var(--color-border-neutral-2);cursor:pointer;background:{{ row.labelBg }};border-left:1px solid {{ row.focusBar }};transition:background .16s ease">
                   <sc-if value="{{ row.editing }}">
                   <textarea class="ms-inline-text-editor" wrap="soft" data-text-ratio="" value="{{ row.name }}" placeholder="{{ L.rowNamePh }}" data-id="{{ row.id }}" onChange="{{ onRowName }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endRowEdit }}" onKeyDown="{{ onRowTextKey }}" rows="2" style="height:46px;flex:none;width:100%;border:1px solid transparent;border-radius:4px;padding:4px 6px;font-size:13px;font-weight:700;line-height:1.35;color:var(--color-text-neutral-6);background:transparent;resize:none;outline:none" style-hover="border-color:var(--color-border-neutral-2);background:#fff" style-focus="border-color:#000;background:#fff"></textarea>
@@ -635,10 +635,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   </sc-if>
                 </div>
 
-                <div data-track="{{ row.id }}" onPointerDown="{{ onTrackDown }}" onDoubleClick="{{ onTrackDblClick }}" style="position:relative;flex:none;width:{{ boardW }};min-height:{{ row.height }};background:{{ row.trackBg }}">
+                <div data-track="{{ row.id }}" data-zoom-width="0" onPointerDown="{{ onTrackDown }}" onDoubleClick="{{ onTrackDblClick }}" style="position:relative;flex:none;width:{{ boardW }};min-height:{{ row.height }};background:{{ row.trackBg }}">
                   <div data-noprint="" data-row="{{ row.id }}" onPointerDown="{{ onRowResizeDown }}" onDoubleClick="{{ snapRowHeight }}" title="드래그: 높이 조절 · 더블클릭: 가까운 0.5 Grid에 맞춤" style="position:absolute;left:0;right:0;bottom:-3px;height:7px;cursor:ns-resize;z-index:0"></div>
                   <sc-for list="{{ gridCols }}" as="g" hint-placeholder-count="22">
-                    <div style="position:absolute;top:0;bottom:0;width:1px;pointer-events:none;left:{{ g.left }};background:{{ g.color }}"></div>
+                    <div data-zoom-left="0" style="position:absolute;top:0;bottom:0;width:1px;pointer-events:none;left:{{ g.left }};background:{{ g.color }}"></div>
                   </sc-for>
 
                   <sc-for list="{{ row.chevs }}" as="b" key="{{ b.id }}" hint-placeholder-count="4">
@@ -772,18 +772,18 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
           </sc-for>
 
           <sc-for list="{{ markerLines }}" as="k" hint-placeholder-count="4">
-            <div style="position:absolute;bottom:0;width:0;border-left:2px dashed;pointer-events:none;z-index:8;left:{{ k.left }};top:{{ k.top }};border-left-color:{{ k.color }}"></div>
+            <div data-zoom-left="172" style="position:absolute;bottom:0;width:0;border-left:2px dashed;pointer-events:none;z-index:8;left:{{ k.left }};top:{{ k.top }};border-left-color:{{ k.color }}"></div>
           </sc-for>
 
 
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div style="position:absolute;bottom:0;width:2px;background:{{ nowColor }};pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
+            <div data-zoom-left="172" style="position:absolute;bottom:0;width:2px;background:{{ nowColor }};pointer-events:none;z-index:8;left:{{ nowLineLeft }};top:{{ nowTop }}"></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:8px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" data-zoom-left="172" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:{{ nowTagTop }};transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:8px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
-            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:8px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:8px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
+            <div onPointerDown="{{ onNowDown }}" onDoubleClick="{{ onNowDbl }}" data-text-ratio="" data-now-tag="" data-zoom-left="172" role="button" tabindex="0" aria-label="{{ L.nowTip }}" onMouseEnter="{{ onNowHover }}" onMouseLeave="{{ offHover }}" onKeyDown="{{ onNowKey }}" onFocus="{{ onNowHover }}" onBlur="{{ offHover }}" style="position:absolute;top:100%;margin-top:8px;transform:translateX(-50%);z-index:12;padding:4px 11px;border-radius:9999px;--ms-now-color:{{ nowColor }};--ms-now-ink:{{ nowInk }};background:{{ nowColor }};color:{{ nowInk }};font-size:{{ nowLabelSize }};font-weight:700;cursor:ew-resize;left:{{ nowLineLeft }}">NOW<sc-if value="{{ showNowDate }}"><span data-element-date="" style="margin-left:6px;font-size:8px;white-space:nowrap">{{ nowISO }}</span></sc-if></div>
           </sc-if>
         </div>
 
@@ -800,7 +800,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 <button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}" data-shortcut="N" data-tip="NOW 표시" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}">Now</button>
         <span class="ms-toolbar-sep"></span>      <div class="ms-toolbar-group">
 
-        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onKeyDown="{{ onRangeKey }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:var(--ms-color-action-primary)">
+        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" data-zoom-slider="" defaultValue="{{ weekPxSlider }}" onKeyDown="{{ onRangeKey }}" onInput="{{ onWeekPx }}" onPointerDown="{{ onZoomStart }}" onPointerUp="{{ onZoomEnd }}" onPointerCancel="{{ onZoomEnd }}" onBlur="{{ onZoomEnd }}" style="width:84px;accent-color:var(--ms-color-action-primary)">
         <span class="ms-zoom-value">{{ zoomPct }}</span>
         <button class="ms-tool-button ms-icon-button" onClick="{{ fitHorizontal }}" aria-label="{{ L.fitWidthLabel }}" data-tip="{{ L.fitWidthLabel }} · Shift+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4v16M21 4v16M5 12h14M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"></path></svg></button>
         <button class="ms-tool-button ms-icon-button" onClick="{{ fitVertical }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }} · Shift+⌘/Ctrl+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16M4 21h16M12 5v14M12 5l-3 3M12 5l3 3M12 19l-3-3M12 19l3-3"></path></svg></button>
@@ -1209,6 +1209,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.54', agent: 'Codex', title: '슬라이더 연속 조작 성능 개선', items: ['메인 배율 드래그 중 전체 렌더링을 제거하고 좌표·폭·도형만 즉시 갱신', '드래그 종료 후 최종 레이아웃과 저장을 한 번 처리', '실제 실행 버전과 연속 드래그 프레임 검증을 작업 규칙에 추가'] },
     { v: 'v0.9.53', agent: 'Codex', title: '실시간 비교 조작 · 변경 영역 잘림/버전 정보', items: ['핸들·오버랩·메인 배율을 입력 즉시 반영 · 포인터 캡처 여부와 무관하게 드래그 추적', '교차/상세 비교는 변경 아이템의 전체 높이와 테두리 여백을 포함해 캡처', '기준·비교 버전 옆에 생성 날짜·10글자 메모와 전체 메모 툴팁 제공', '버전 비교·변경 분석 버튼에 아이콘·강조 배경·변경 건수로 인지성 개선', '[검증] build/test 343개 · 놓기 전 핸들/슬라이더 중간 값 반영 · 경계 초과 도형/테두리/날짜 전체 표시 · 10글자 메모와 전체 툴팁·활성 버튼 확인'] },
     { v: 'v0.9.52', agent: 'Codex', title: '섹션 높이 고정 위치 · 섹션 상세/교차 비교', items: ['섹션 축소는 여유 공간부터 소비하고 경계에 닿는 아이템 높이만 줄임 · Y 위치 유지', '변경 목록 이동 시 분석 패널 유지 · 패널 열림 활성 표시', '닫기·전체보기·이동 툴팁 제거 · 브리딩에서 아이콘 위치/크기 고정', '상세보기 모달과 교차 비교에서 변경된 섹션의 기준/비교 이미지를 상하 배치', '[검증] build/test 340개 · 실제 섹션 200→180px 아이템 유지/110px에서 Y44px 유지·높이88→60px · 이동 후 패널 유지·상세 모달·3개 섹션 교차 비교 · 브리딩 아이콘 좌표 고정 확인'] },
     { v: 'v0.9.51', agent: 'Codex', title: '변경점 이동 · 보이는 영역 기준 비교 핸들', items: ['변경 목록·상세 항목의 이동 버튼으로 일정표 해당 위치 포커스', 'PNG 다시 다운로드 버튼 제거 · 버튼 그룹/간격과 재시도 버튼 크기 조정', '슬라이드 핸들을 확대·스크롤한 현재 보이는 영역 중심에 표시 · 첫 진입 breathing 안내', '메인 배율·오버랩·슬라이드 구분선에서 Shift+좌우 방향키 10배 이동', '[검증] 337개 테스트 · 추가/삭제/상세 변경점 이동과 실제 포커스 · 확대/스크롤 후 핸들 위치와 첫 진입 애니메이션 · PNG 저장 후 중복 버튼 없음 · 재시도 86×28px 확인'] },
@@ -1372,7 +1373,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.53';
+  APP_VER = 'v0.9.54';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1613,12 +1614,13 @@ class Component extends DCLogic {
     this.flushSave(); clearTimeout(this._t);
     if (this._board && this._onScroll) this._board.removeEventListener('scroll', this._onScroll);
     if (this._sraf) cancelAnimationFrame(this._sraf);
-    clearTimeout(this._ztimer);
+    this._zoomPreview=null;this.onZoomEnd();clearTimeout(this._ztimer);
     window.removeEventListener('pagehide', this._flush);
     document.removeEventListener('visibilitychange', this._hidden);
     if (this._msCleanup) this._msCleanup();
   }
   componentDidUpdate() {
+    const zoomRange=this.root?.querySelector?.('[data-zoom-slider]');if(zoomRange)zoomRange.value=String(this.zoomToSlider(this._zoomPreview?.target||this.weekPxVal()));
     const primaryDialog=this.root?.querySelector?.('.ms-modal-scrim [role=dialog]');if(primaryDialog!==this._primaryDialog){this._primaryDialog=primaryDialog;if(primaryDialog)requestAnimationFrame(()=>primaryDialog.querySelector?.('.ms-primary:not(:disabled)')?.focus?.());}
     if(this.state.alignConfirm && !this._alignFocused){this.root?.querySelector('[data-align-dialog] button')?.focus?.();this._alignFocused=true;}else if(!this.state.alignConfirm && this._alignFocused){this._alignFocused=false;this.root?.querySelector('[data-align-button]')?.focus?.();}
     if (!this.drag && this.narrowScreen() && this.state.panel && (this._mobileSel !== this.state.sel || !this._mobilePanel)) {
@@ -1684,6 +1686,7 @@ class Component extends DCLogic {
     tag.textContent=String(year);tag.setAttribute('data-visible',String(!januaryVisible));header.querySelector('.ms-sticky-col').setAttribute('data-has-year',String(!januaryVisible));
   }
   syncScrollMetrics() {
+    if(this._zoomPreview)return;
     const el = this._board;
     if (!el) return;
     const sw = el.scrollWidth, cw = el.clientWidth, sx = el.scrollLeft;
@@ -1721,7 +1724,7 @@ class Component extends DCLogic {
       if (!ev.ctrlKey && !this.state.interact) return;
       if (!ev.deltaY) return;
       ev.preventDefault();
-      const old = this.state.cfg.weekPx;
+      const old = this._zoomPreview?.target || this.state.cfg.weekPx;
       const next = Math.max(this.ZMIN, Math.min(this.ZMAX, old * (ev.ctrlKey ? Math.exp(-ev.deltaY * .01) : ev.deltaY > 0 ? 0.92 : 1.08)));
       if (Math.abs(next - old) < 0.01) return;
       this.zoomTo(Math.round(next * 10) / 10, ev.clientX);
@@ -1730,6 +1733,7 @@ class Component extends DCLogic {
     /* re-rendering the whole board on every scroll frame caused jank/flicker: the thumb is moved directly
        and state catches up once scrolling settles */
     this._onScroll = () => {
+      if(this._zoomPreview)return;
       if (!this._sraf) this._sraf = requestAnimationFrame(() => {
         this._sraf = null;
         this.clipSessionTitles();this.updateNowIndicator();this.updateYearIndicator();
@@ -3463,15 +3467,73 @@ class Component extends DCLogic {
   onCfg = (e) => { const v = parseFloat(e.currentTarget.value); if (isNaN(v)) return; this.applyCfg(e.currentTarget.dataset.cfg, v, 0); };
   onRangeKey = e => MapstoneUI.rangeKey(e,this.onWeekPx);
   onWeekPx = e => {const value=Number(e.currentTarget.value);if(Number.isFinite(value))this.zoomTo(this.zoomFromSlider(value));};
+  onZoomStart = () => {
+    this._zoomHolding=true;
+    window.addEventListener('pointerup',this.onZoomEnd);window.addEventListener('pointercancel',this.onZoomEnd);window.addEventListener('blur',this.onZoomEnd);
+  };
+  onZoomEnd = () => {
+    this._zoomHolding=false;window.removeEventListener('pointerup',this.onZoomEnd);window.removeEventListener('pointercancel',this.onZoomEnd);window.removeEventListener('blur',this.onZoomEnd);
+    this.finishZoom();
+  };
+  finishZoom = () => {
+    const z=this._zoomPreview;if(!z)return;this._zoomPreview=null;clearTimeout(this._ztimer);
+    // Restore declarative geometry before React commits once; no per-input board render/save.
+    for(const [node,prop,value] of z.restore)node.style[prop]=value;
+    const target=z.target;this._zooming=false;this.root?.removeAttribute('data-zooming');
+    this._zoomFix={ax:z.ax,content:z.content,ratio:target/z.old};
+    this.commitZoom(target);
+  };
+  previewZoom(target,clientX) {
+    const board=this._board,capture=this.root?.querySelector?.('[data-capture]');if(!capture||!board)return false;
+    let z=this._zoomPreview;
+    if(!z){
+      const old=this.weekPxVal(),ax=clientX===undefined?board.clientWidth/2:clientX-board.getBoundingClientRect().left;
+      z=this._zoomPreview={old,ax,content:(board.scrollLeft+ax)/this.canvasScale()-192,target,restore:[],geometry:[],shapes:[]};
+      const remember=(node,prop)=>{z.restore.push([node,prop,node.style[prop]]);return parseFloat(node.style[prop]);};
+      const geometry=(node,prop,fixed,span,min=0)=>{const base=remember(node,prop);if(Number.isFinite(base))z.geometry.push({node,prop,fixed,span:span===undefined?base-fixed:span,min});};
+      for(const node of capture.querySelectorAll('[data-zoom-width]')){
+        const fixed=Number(node.dataset.zoomWidth),width=node.style.width;
+        // calc(172px + Npx) is used by the row surface and header.
+        const base=width.startsWith('calc(')?[...width.matchAll(/([\d.]+)px/g)].reduce((n,m)=>n+Number(m[1]),0):parseFloat(width);
+        remember(node,'width');z.geometry.push({node,prop:'width',fixed,span:base-fixed,min:0});
+      }
+      for(const node of capture.querySelectorAll('[data-zoom-left]'))geometry(node,'left',Number(node.dataset.zoomLeft));
+      const items=new Map(this.state.items.map(i=>[i.id,i])),layout=this.state.items.some(i=>i.kind==='flag')?this.rowLayout():null;
+      for(const node of capture.querySelectorAll('[data-id][role="button"]:not([data-mode]):not([data-resize]),[data-zoom-anchor]')){
+        const it=items.get(node.dataset.zoomAnchor||node.dataset.id);if(!it||!node.style.left.endsWith('px'))continue;
+        const f=it.kind==='flag'?this.flagGeometry(it,layout):null,x=f?f.left:this.xOf(it.s);geometry(node,'left',parseFloat(node.style.left)-x,x);
+        if(f?.target&&it.linkOffset!==undefined){const g=z.geometry.at(-1),start=this.xOf(f.target.s),span=this.xOf(f.target.e)-start;g.anchor=ratio=>start*ratio+Math.max(24,span*ratio)*it.linkOffset;}
+        if(node.dataset.zoomAnchor===undefined&&(this.boxKind(it.kind)||it.kind==='band')){
+          geometry(node,'width',0,this.xOf(it.e)-x,24);
+          const shape=node.querySelector('[data-schedule-shape]');if(shape)z.shapes.push({paths:[...shape.querySelectorAll('path')],span:this.xOf(it.e)-x,height:parseFloat(node.style.height)});
+        }
+      }
+      if(capture.style.width.endsWith('px'))geometry(capture,'width',218);
+      remember(capture,'zoom');capture.style.zoom='1';this._zooming=true;this.root.setAttribute('data-zooming','');
+    }
+    z.target=target;const ratio=target/z.old;
+    for(const g of z.geometry)g.node.style[g.prop]=Math.max(g.min,g.fixed+(g.anchor?g.anchor(ratio):g.span*ratio))+'px';
+    for(const g of z.shapes){const path=this.scheduleShape(Math.max(24,g.span*ratio),g.height);for(const p of g.paths)p.setAttribute('d',path);}
+    board.scrollLeft=Math.max(0,192+z.content*ratio-z.ax);
+    const value=this.root.querySelector('.ms-zoom-value');if(value)value.textContent=Math.round(target/19*100)+'%';
+    const range=this.root.querySelector('[data-zoom-slider]');if(range)range.value=String(this.zoomToSlider(target));
+    clearTimeout(this._ztimer);if(!this._zoomHolding)this._ztimer=setTimeout(this.finishZoom,160);
+    return true;
+  }
   zoomTo(wp, clientX) {
     if(!Number.isFinite(wp))return;
-    const target=Math.max(this.ZMIN,Math.min(this.ZMAX,wp)),old=this.weekPxVal(),el=this._board;
+    const target=Math.max(this.ZMIN,Math.min(this.ZMAX,wp));
+    if(this.previewZoom(target,clientX))return;
+    const old=this.weekPxVal(),el=this._board;
     if(target===old && this.canvasScale()===1)return;
     const rect=el?.getBoundingClientRect(),ax=el?(clientX===undefined?el.clientWidth/2:clientX-rect.left):0;
     if(el&&old)this._zoomFix={ax,content:el.scrollLeft+ax-192,ratio:target/old};
     // Direct manipulation follows the latest input; save and layout housekeeping run after it settles.
     this._zooming=true;this.root?.setAttribute('data-zooming','');clearTimeout(this._ztimer);
     this._ztimer=setTimeout(()=>{this._zooming=false;this.root?.removeAttribute('data-zooming');this.refreshBoardUI();},100);
+    this.commitZoom(target);
+  }
+  commitZoom(target) {
     this.setState(st=>{const cfg={...st.cfg,weekPx:target};if(st.readOnly){this._viewBaseCfg=this._viewBaseCfg||st.cfg;this._viewCfg={...this._viewCfg,weekPx:target};this._viewAppliedCfg=cfg;}
       const items=!st.readOnly && st.items.some(i=>i.labelAnchor)?st.items.map(i=>{if(!i.labelAnchor)return i;const next={...i};delete next.labelAnchor;return next;}):st.items;
       return {cfg,items,canvasScale:1};});
@@ -4146,7 +4208,7 @@ class Component extends DCLogic {
       })),
       noVersions: st.versions.length === 0,
       setRoot: this.setRoot, setBoard: this.setBoard, onCtx: this.onCtx, onBoardDown: this.onBoardDown,
-      onTitle: this.onTitle, onRangeKey:this.onRangeKey, onWeekPx: this.onWeekPx, togglePanel: this.togglePanel, onTab: this.onTab,
+      onTitle: this.onTitle, onRangeKey:this.onRangeKey, onWeekPx: this.onWeekPx, onZoomStart:this.onZoomStart,onZoomEnd:this.onZoomEnd, togglePanel: this.togglePanel, onTab: this.onTab,
       addChev: this.addChev, addBand: this.addBand, addMarker: this.addMarker, addFlag: this.addFlag, addNote: this.addNote, addRow: this.addRow,
       stickies: stickies, addSticky: this.addSticky, onRowLanes: this.onRowLanes,
       stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1],...this.toneGradients(p[1]),leftLabel:p[0]+' · 밝게 → 어둡게 순차 적용',rightLabel:p[0]+' · 어둡게 → 밝게 순차 적용', border: sel && sel.color === p[1] ? 'var(--ms-color-action-primary)' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
