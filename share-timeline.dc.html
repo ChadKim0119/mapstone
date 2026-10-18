@@ -800,7 +800,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
 <button class="ms-tool-button" onClick="{{ toggleNow }}" aria-pressed="{{ showNow }}" aria-label="NOW 표시" style="background:{{ nowBg }};color:{{ nowFg }}" data-shortcut="N" data-tip="NOW 표시" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" onFocus="{{ onTipHover }}" onBlur="{{ offHover }}">Now</button>
         <span class="ms-toolbar-sep"></span>      <div class="ms-toolbar-group">
 
-        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:var(--ms-color-action-primary)">
+        <input aria-label="{{ L.zoom }}" title="{{ zoomTip }}" onDoubleClick="{{ fitWidth }}" type="range" min="0" max="1000" step="1" value="{{ weekPxSlider }}" onKeyDown="{{ onRangeKey }}" onInput="{{ onWeekPx }}" style="width:84px;accent-color:var(--ms-color-action-primary)">
         <span class="ms-zoom-value">{{ zoomPct }}</span>
         <button class="ms-tool-button ms-icon-button" onClick="{{ fitHorizontal }}" aria-label="{{ L.fitWidthLabel }}" data-tip="{{ L.fitWidthLabel }} · Shift+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4v16M21 4v16M5 12h14M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"></path></svg></button>
         <button class="ms-tool-button ms-icon-button" onClick="{{ fitVertical }}" aria-label="{{ L.fit }}" data-tip="{{ L.fit }} · Shift+⌘/Ctrl+F" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16M4 21h16M12 5v14M12 5l-3 3M12 5l3 3M12 19l-3-3M12 19l3-3"></path></svg></button>
@@ -1209,6 +1209,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.51', agent: 'Codex', title: '변경점 이동 · 보이는 영역 기준 비교 핸들', items: ['변경 목록·상세 항목의 이동 버튼으로 일정표 해당 위치 포커스', 'PNG 다시 다운로드 버튼 제거 · 버튼 그룹/간격과 재시도 버튼 크기 조정', '슬라이드 핸들을 확대·스크롤한 현재 보이는 영역 중심에 표시 · 첫 진입 breathing 안내', '메인 배율·오버랩·슬라이드 구분선에서 Shift+좌우 방향키 10배 이동', '[검증] 337개 테스트 · 추가/삭제/상세 변경점 이동과 실제 포커스 · 확대/스크롤 후 핸들 위치와 첫 진입 애니메이션 · PNG 저장 후 중복 버튼 없음 · 재시도 86×28px 확인'] },
     { v: 'v0.9.50', agent: 'Codex', title: '비교 이미지 좌표 정합 · 분석 패널 계위', items: ['비교 이미지의 공통 마일스톤 영역/캔버스 높이와 편집기 헤더 높이를 일치시켜 겹침 왜곡 수정', '마일스톤 날짜를 본체 밖 메타데이터 좌표로 분리 · 실제 글자 크기/굵기로 아이콘과 여러 줄 라벨 배치', '변경 항목 표시를 파란색으로 통일', '분석 패널의 보기/닫기 도구와 기능 탭을 분리 · 본문/카드 패딩과 간격 정리', '일정 헤더 아래 10px 여백과 얇은 경계선 추가 · 비교 이미지에도 동일 반영', '모든 슬라이더 성능 개선 — 배율의 180ms 재시작 애니메이션·문서 전체 복제/충돌 계산 제거, 프레임당 마지막 입력만 반영 · 저장/화면 측정은 조작 후 처리 · 오버랩/구분선 전환 지연과 반복 저장 제거', '[슬라이더 검증] 333개 테스트 · 같은 가상 일정의 브라우저 단일 측정에서 큰 배율 변경 636→80ms, 오버랩 234→39ms · 실제 드래그/키보드 최종 값 확인', '[검증] 331개 테스트 · 마일스톤/포스트잇이 다른 두 이미지 1,486×486 크기 일치 · 편집 헤더 44px/하단 여백 10px · 아이콘/날짜와 파란 변경 표시 PNG 확인 · 보기 도구/기능 탭 분리와 14px 본문·카드 여백 확인'] },
     { v: 'v0.9.49', agent: 'Codex', title: '버전 비교 도구 정리 · 분석 패널 가독성', items: ['오버랩 비교를 첫 버튼과 기본 보기로 변경 · 변경 강조/현재 보기 PNG/변경 반영 버전 저장 제거', '변경 비교 이미지 저장으로 버튼명 수정 · 비교 버튼 설명 툴팁 · 폭 맞춤 앞 구분선', '변경 표시·범례 글자 확대 · 실제 주황색으로 변경 테두리와 출력 색상 통일', '변경·AI 분석 전체보기/접기 추가 · 좁은 패널의 분석 진행/보고서 한 열 배치와 단어 줄바꿈 개선', '[검증] 329개 테스트 · 실제 오버랩 기본/도구/툴팁/12px 범례/전체보기 확인 · 가상 AI 진행·보고서 가로 넘침 없음 · 주황 변경 테두리 PNG 파일 확인'] },
     { v: 'v0.9.48', agent: 'Codex', title: '[주요 사항] 일정표 중심 버전 비교 · 속성/설정 레이블 정리', items: ['비교 화면 상단을 압축하고 일정표를 폭에 맞춰 크게 표시 · 변경 목록과 AI 분석은 접이식 패널', '변경 강조 기본 보기 · 슬라이드·오버랩 유지 · 폭/전체/원본 크기와 확대·축소', '현재 비교 모드·불투명도·변경 표시를 담는 현재 보기 PNG 출력 추가 · 기존 버전 저장과 변경 반영 PNG 유지', '툴팁 메모 본문 20% 확대 · 지속 표시 기본값 · 좌표 한 줄 표시', '높이·위치 및 텍스트·서식, 기간·눈금, 이동·겹침 등 청킹 명칭 정리 · 겹침 순서 버튼 경계선 제거', '[검증] 331개 테스트 통과 · 같은 화면에서 일정표 이미지 폭 612→1,222px · 비교 기준·확대·전체 맞춤·슬라이드 방향키·패널 Escape · 25% 오버랩 PNG 4,096×1,632px 확인 · 좌표 한 줄·순서 버튼 테두리 제거·툴팁 지속 기본값 확인'] },
@@ -1369,7 +1370,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.50';
+  APP_VER = 'v0.9.51';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -3466,6 +3467,7 @@ class Component extends DCLogic {
     });
   }
   onCfg = (e) => { const v = parseFloat(e.currentTarget.value); if (isNaN(v)) return; this.applyCfg(e.currentTarget.dataset.cfg, v, 0); };
+  onRangeKey = e => MapstoneUI.rangeKey(e,this.onWeekPx);
   onWeekPx = (e) => {const t=Number(e.currentTarget.value);if(!Number.isFinite(t))return;this._zoomQ=this.zoomFromSlider(t);if(this._zraf)return;this._zraf=requestAnimationFrame(()=>{this._zraf=null;this.zoomTo(this._zoomQ);});};
   zoomTo(wp, clientX) {
     if(!Number.isFinite(wp))return;
@@ -4150,7 +4152,7 @@ class Component extends DCLogic {
       })),
       noVersions: st.versions.length === 0,
       setRoot: this.setRoot, setBoard: this.setBoard, onCtx: this.onCtx, onBoardDown: this.onBoardDown,
-      onTitle: this.onTitle, onWeekPx: this.onWeekPx, togglePanel: this.togglePanel, onTab: this.onTab,
+      onTitle: this.onTitle, onRangeKey:this.onRangeKey, onWeekPx: this.onWeekPx, togglePanel: this.togglePanel, onTab: this.onTab,
       addChev: this.addChev, addBand: this.addBand, addMarker: this.addMarker, addFlag: this.addFlag, addNote: this.addNote, addRow: this.addRow,
       stickies: stickies, addSticky: this.addSticky, onRowLanes: this.onRowLanes,
       stickyPalette: this.PAL_STICKY.map((p) => ({ name: p[0], hex: p[1],...this.toneGradients(p[1]),leftLabel:p[0]+' · 밝게 → 어둡게 순차 적용',rightLabel:p[0]+' · 어둡게 → 밝게 순차 적용', border: sel && sel.color === p[1] ? 'var(--ms-color-action-primary)' : 'rgba(0,0,0,.14)', ring: sel && sel.color === p[1] ? '0 0 0 2px #fff inset' : 'none' })),
