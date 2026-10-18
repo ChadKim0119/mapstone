@@ -30,7 +30,7 @@ function fixture(fetch,overrides={}){
   }
   const document={createElement:t=>new Element(t),body:new Element('body'),addEventListener(){},removeEventListener(){}},store=new Map(),ctx={MapstoneCore:C,window:{innerWidth:1000,innerHeight:800,addEventListener(){},removeEventListener(){}},requestAnimationFrame:f=>{f();return 0;},cancelAnimationFrame(){},document,Image:class{constructor(){this.width=1200;this.height=400;}async decode(){}},crypto,AbortSignal,AbortController,setInterval:()=>0,clearInterval(){},clearTimeout,setTimeout:()=>0,navigator:{clipboard:{writeText:async text=>{document._copied=text;}}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},fetch};
   Object.assign(ctx,overrides);
-  vm.runInNewContext(fs.readFileSync('mapstone-ui.js','utf8').replace('window.MapstoneUI={','window.MapstoneUI={renderVersionReport,imageComparison,changeDetails,versionImage,'),ctx);
+  vm.runInNewContext(fs.readFileSync('mapstone-ui.js','utf8').replace('window.MapstoneUI={','window.MapstoneUI={renderVersionReport,imageComparison,changeDetails,versionImage,editorVersionImage,'),ctx);
   const app={state:{title:'QA'},sync:{endpoint:'https://example.test'}};
   return {ui:ctx.window.MapstoneUI,app,document,nodes,find:text=>nodes.find(n=>n.textContent===text),byClass:c=>nodes.find(n=>(n.className||'').split(' ').includes(c))};
 }
@@ -150,4 +150,14 @@ test('Button tooltip separates the shortcut from its label without changing item
 
 test('Comparison details start closed, toggle independently and Escape closes the panel first',async()=>{
  const f=fixture(()=>{}),doc=C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{id:'r',name:'QA'}],items:[]});f.app.state.versions=[{id:'a',snap:JSON.stringify(doc)},{id:'b',snap:JSON.stringify(doc)}];await f.ui.versionComparePage(f.app,['a','b']);const aside=f.byClass('ms-comparison-aside'),toggle=f.find('변경·분석'),dialog=f.nodes.find(n=>n.tagName==='dialog');assert.equal(aside.hidden,true);toggle.click();assert.equal(aside.hidden,false);assert.equal(toggle.attrs['aria-expanded'],'true');const full=f.find('전체보기');full.click();assert.match(aside.className,/is-expanded/);assert.equal(full.textContent,'접기');dialog.events.keydown({key:'Escape',preventDefault(){},stopPropagation(){}});assert.doesNotMatch(aside.className,/is-expanded/);assert.equal(aside.hidden,false);assert.equal(full.textContent,'전체보기');dialog.events.keydown({key:'Escape',preventDefault(){},stopPropagation(){}});assert.equal(aside.hidden,true);assert.equal(dialog.open,true);assert.equal(toggle.focused,true);
+});
+
+test('Comparison milestone caption uses its own font metrics and keeps dates outside the icon and label box',()=>{
+ const f=fixture(()=>{}),view={bandsView:[],rowsView:[],stickies:[],imagesView:[],cols:[],gridCols:[],subdivisions:[],markersView:[{id:'m',left:'200px',top:'0px',boxW:'160px',boxH:'40px',label:'Milestone',labelSize:'20px',labelWeight:700,iconVisible:true,iconPath:'M3 3v18',ink:'#16365d',color:'#3568c5',stemH:'0px'}],markerMetadata:[{left:'458px',top:'13px',date:'11.05'}]};const app={comparisonLayout:()=>({view,width:600,height:300,rowTop:94,headerH:44,headerGap:10,measure:(t,size=12.5)=>t.length*size/2})},svg=decodeURIComponent(f.ui.editorVersionImage(app,{},[{},{}]));assert.match(svg,/<svg x="315.5" y="11" width="18"/);assert.match(svg,/font-size="20"[^>]+font-weight="700">Milestone/);assert.match(svg,/<text x="462" y="23" font-size="8"[^>]+>11.05/);assert.match(svg,/<rect y="40"[^>]+height="44"/);assert.doesNotMatch(svg,/#f58220/);
+});
+
+test('Overlap input batches one frame, writes coaching once and commits the final value without replacing images',()=>{
+ const frames=new Map();let id=0,writes=0;const f=fixture(()=>{},{requestAnimationFrame:fn=>{frames.set(++id,fn);return id;},cancelAnimationFrame:n=>frames.delete(n),localStorage:{getItem:()=>null,setItem:()=>writes++}}),doc=C.fromAnalysis({title:'QA',rangeStart:'2026-10-01',rows:[{name:'QA'}],items:[]}),box=f.ui.imageComparison({name:'A',doc},{name:'B',doc},C.compareDocuments(doc,doc)),range=f.nodes.find(n=>n.type==='range'),over=f.byClass('ms-image-over'),src=over.src;
+ for(let n=0;n<100;n++){range.value=String(n);range.events.input();}assert.equal(frames.size,1);assert.equal(writes,1);assert.equal(over.style.opacity,'0.5');const callback=[...frames.values()][0];frames.clear();callback();assert.equal(over.style.opacity,'0.99');assert.equal(over.src,src);
+ range.value='100';range.events.input();range.events.change();assert.equal(frames.size,0);assert.equal(over.style.opacity,'1');range.value='25';range.events.input();box._resizeObserver.disconnect();assert.equal(frames.size,0);
 });
