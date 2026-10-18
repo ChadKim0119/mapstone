@@ -956,7 +956,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                   <span style="font-size:12px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowLanesF }}</span>
                   <div class="ms-stepper" style="display:flex;align-items:stretch;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:40px">
                     <button data-delta="-1" onClick="{{ onRowLanes }}" style="width:40px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" aria-label="줄이기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto"><path d="M6 12h12"></path></svg></button>
-                    <input type="number" step="0.5" min="0.5" value="{{ rowPropLanes }}" onChange="{{ onRowLanes }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
+                    <input aria-label="{{ L.rowLanesF }}" type="number" step="0.5" min="0.5" value="{{ rowPropLanes }}" onChange="{{ onRowLanes }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:13px;font-weight:600;outline:none">
                     <button data-delta="1" onClick="{{ onRowLanes }}" style="width:40px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:17px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" aria-label="늘리기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto"><path d="M12 6v12M6 12h12"></path></svg></button>
                   </div>
                   </div>
@@ -964,7 +964,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
                     <span style="font-size:11px;font-weight:600;color:var(--color-text-neutral-3)">{{ L.rowHF }}</span>
                     <div class="ms-stepper" style="display:flex;align-items:stretch;flex:1;border:1px solid var(--color-border-neutral-2);border-radius:6px;overflow:hidden;height:32px">
                       <button data-delta="-8" onClick="{{ onRowH }}" style="width:34px;flex:none;border:none;border-right:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" aria-label="줄이기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto"><path d="M6 12h12"></path></svg></button>
-                      <input type="number" step="4" min="44" value="{{ rowPropH }}" onChange="{{ onRowH }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:12px;font-weight:600;outline:none">
+                      <input aria-label="{{ L.rowHF }}" type="number" step="4" min="44" value="{{ rowPropH }}" onChange="{{ onRowH }}" onFocus="{{ selectAll }}" style="flex:1;min-width:0;border:none;text-align:center;font-size:12px;font-weight:600;outline:none">
                       <button data-delta="8" onClick="{{ onRowH }}" style="width:34px;flex:none;border:none;border-left:1px solid var(--color-border-neutral-2);background:var(--color-bg-neutral-1);font-size:15px;font-weight:700;color:var(--color-text-neutral-5);cursor:pointer" aria-label="늘리기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto"><path d="M12 6v12M6 12h12"></path></svg></button>
                     </div>
                   </div>
@@ -1209,6 +1209,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.52', agent: 'Codex', title: '섹션 높이 고정 위치 · 섹션 상세/교차 비교', items: ['섹션 축소는 여유 공간부터 소비하고 경계에 닿는 아이템 높이만 줄임 · Y 위치 유지', '변경 목록 이동 시 분석 패널 유지 · 패널 열림 활성 표시', '닫기·전체보기·이동 툴팁 제거 · 브리딩에서 아이콘 위치/크기 고정', '상세보기 모달과 교차 비교에서 변경된 섹션의 기준/비교 이미지를 상하 배치', '[검증] build/test 340개 · 실제 섹션 200→180px 아이템 유지/110px에서 Y44px 유지·높이88→60px · 이동 후 패널 유지·상세 모달·3개 섹션 교차 비교 · 브리딩 아이콘 좌표 고정 확인'] },
     { v: 'v0.9.51', agent: 'Codex', title: '변경점 이동 · 보이는 영역 기준 비교 핸들', items: ['변경 목록·상세 항목의 이동 버튼으로 일정표 해당 위치 포커스', 'PNG 다시 다운로드 버튼 제거 · 버튼 그룹/간격과 재시도 버튼 크기 조정', '슬라이드 핸들을 확대·스크롤한 현재 보이는 영역 중심에 표시 · 첫 진입 breathing 안내', '메인 배율·오버랩·슬라이드 구분선에서 Shift+좌우 방향키 10배 이동', '[검증] 337개 테스트 · 추가/삭제/상세 변경점 이동과 실제 포커스 · 확대/스크롤 후 핸들 위치와 첫 진입 애니메이션 · PNG 저장 후 중복 버튼 없음 · 재시도 86×28px 확인'] },
     { v: 'v0.9.50', agent: 'Codex', title: '비교 이미지 좌표 정합 · 분석 패널 계위', items: ['비교 이미지의 공통 마일스톤 영역/캔버스 높이와 편집기 헤더 높이를 일치시켜 겹침 왜곡 수정', '마일스톤 날짜를 본체 밖 메타데이터 좌표로 분리 · 실제 글자 크기/굵기로 아이콘과 여러 줄 라벨 배치', '변경 항목 표시를 파란색으로 통일', '분석 패널의 보기/닫기 도구와 기능 탭을 분리 · 본문/카드 패딩과 간격 정리', '일정 헤더 아래 10px 여백과 얇은 경계선 추가 · 비교 이미지에도 동일 반영', '모든 슬라이더 성능 개선 — 배율의 180ms 재시작 애니메이션·문서 전체 복제/충돌 계산 제거, 프레임당 마지막 입력만 반영 · 저장/화면 측정은 조작 후 처리 · 오버랩/구분선 전환 지연과 반복 저장 제거', '[슬라이더 검증] 333개 테스트 · 같은 가상 일정의 브라우저 단일 측정에서 큰 배율 변경 636→80ms, 오버랩 234→39ms · 실제 드래그/키보드 최종 값 확인', '[검증] 331개 테스트 · 마일스톤/포스트잇이 다른 두 이미지 1,486×486 크기 일치 · 편집 헤더 44px/하단 여백 10px · 아이콘/날짜와 파란 변경 표시 PNG 확인 · 보기 도구/기능 탭 분리와 14px 본문·카드 여백 확인'] },
     { v: 'v0.9.49', agent: 'Codex', title: '버전 비교 도구 정리 · 분석 패널 가독성', items: ['오버랩 비교를 첫 버튼과 기본 보기로 변경 · 변경 강조/현재 보기 PNG/변경 반영 버전 저장 제거', '변경 비교 이미지 저장으로 버튼명 수정 · 비교 버튼 설명 툴팁 · 폭 맞춤 앞 구분선', '변경 표시·범례 글자 확대 · 실제 주황색으로 변경 테두리와 출력 색상 통일', '변경·AI 분석 전체보기/접기 추가 · 좁은 패널의 분석 진행/보고서 한 열 배치와 단어 줄바꿈 개선', '[검증] 329개 테스트 · 실제 오버랩 기본/도구/툴팁/12px 범례/전체보기 확인 · 가상 AI 진행·보고서 가로 넘침 없음 · 주황 변경 테두리 PNG 파일 확인'] },
@@ -1370,7 +1371,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.51';
+  APP_VER = 'v0.9.52';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -2017,19 +2018,11 @@ class Component extends DCLogic {
   };
   setRowHeight(d,id,height) {
     const r=d.rows.find(x=>x.id===id);if(!r)return;
-    const old=this.rowLayout(d)[id].height;
-    r.h=Math.max(this.rowMinHeight(),height);
-    if(r.h>=old)return;
-    const layout=this.rowLayout(d)[id],baseH=layout.height-layout.strips*layout.stripH,laneH=d.cfg.laneH;
-    const cap=Math.max(1,Math.floor((baseH-14)/laneH));
-    d.items.forEach(it=>{
-      if(it.row!==id || it.kind==='band' || it.kind==='marker')return;
-      if(this.boxKind(it.kind)){
-        const h=it.trackH??(it.span||1)*laneH-12,y=it.trackY??6+it.lane*laneH;
-        const nextH=Math.min(h,baseH-12),nextY=Math.max(6,Math.min(y,6+(cap-1)*laneH,baseH-6-nextH));
-        if(nextY!==y || nextH!==h){it.trackY=nextY;it.trackH=nextH;it.lane=Math.max(0,Math.floor((nextY-6)/laneH));it.span=Math.max(1,Math.ceil((nextH+12)/laneH));}
-      }else it.lane=Math.min(it.lane,cap-1);
-    });
+    const layout=this.rowLayout(d,false)[id],old=layout.height,laneH=d.cfg.laneH,stripH=layout.strips*layout.stripH;
+    const blocks=d.items.filter(it=>it.row===id&&this.boxKind(it.kind)),top=it=>it.trackY??6+it.lane*laneH,h=it=>it.trackH??(it.span||1)*laneH-12;
+    const minimum=Math.max(this.rowMinHeight(),...blocks.map(it=>top(it)+Math.min(24,h(it))+6+stripH));
+    r.h=Math.max(minimum,height);if(r.h>=old)return;
+    for(const it of blocks){const next=Math.min(h(it),r.h-stripH-6-top(it));if(next<h(it))it.trackH=next;}
   }
   onRowLanes = (e) => {
     const id = this.state.focusRow;
