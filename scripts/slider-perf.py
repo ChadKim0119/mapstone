@@ -3,7 +3,8 @@
 Usage: python3 scripts/slider-perf.py /tmp/mapstone-slider-perf [index.html]
 Serve that directory locally and drag main zoom, overlap and wipe at least 3 times each.
 Read #ms-slider-perf JSON after each gesture. rAF intervals measure delivered browser
-frames, not GPU presentation; inspect the interaction visually too.
+frames, not GPU presentation. Check trustedPointer and pointerErrorPx; inspect
+a real mouse gesture visually too. Synthetic gestures are not native-input proof.
 """
 import base64, gzip, json, re, sys
 from pathlib import Path
@@ -17,12 +18,16 @@ PROBE = r'''
  const signature=g=>g.kind==='배율'?document.querySelector('[data-track]')?.style.width:g.kind.includes('불투명도')?document.querySelector('.ms-image-over')?.style.opacity:document.querySelector('.ms-image-divider')?.style.left;
  document.addEventListener('pointerdown',e=>{
   const node=e.target.closest('input[type="range"],[role="slider"]');if(!node)return;
-  const g=active={id:++sequence,kind:node.getAttribute('aria-label'),start:performance.now(),inputs:[],frames:[],latencies:[],values:[],node};
+  const thumb=parseFloat(getComputedStyle(node).getPropertyValue('--ms-range-thumb'))||16,r=node.getBoundingClientRect(),min=Number(node.min||0),max=Number(node.max||100),center=r.left+thumb/2+(Number(node.value)-min)/(max-min)*(r.width-thumb);
+  const g=active={id:++sequence,kind:node.getAttribute('aria-label'),trustedPointer:e.isTrusted,start:performance.now(),inputs:[],moves:[],trace:[],frames:[],latencies:[],values:[],node,thumb,r,min,max,offset:Math.abs(e.clientX-center)<=thumb?e.clientX-center:0};
   function tick(t){if(active!==g)return;if(g.last!==undefined)g.frames.push(t-g.last);g.last=t;requestAnimationFrame(tick);}requestAnimationFrame(tick);
  },true);
  window.addEventListener('input',e=>{const g=active;if(!g||e.target!==g.node)return;g.inputs.push(performance.now());g.values.push(e.target.value);const t=performance.now();requestAnimationFrame(()=>{g.latencies.push({ms:performance.now()-t,held:active===g,visual:signature(g)});});});
- window.addEventListener('pointermove',e=>{const g=active;if(!g||g.node.tagName==='INPUT')return;g.inputs.push(performance.now());g.values.push(g.node.getAttribute('aria-valuenow'));const t=performance.now();requestAnimationFrame(()=>g.latencies.push({ms:performance.now()-t,held:active===g,visual:signature(g)}));});
- const end=()=>{const g=active;if(!g)return;active=null;setTimeout(()=>{reports.push({id:g.id,kind:g.kind,inputs:g.inputs.length,frames:g.frames.length,frameP95:percentile(g.frames,.95),frameMax:Math.max(0,...g.frames),longFrames:g.frames.filter(t=>t>50).length,inputP95:percentile(g.latencies.filter(x=>x.held).map(x=>x.ms),.95),values:g.values,visuals:g.latencies.map(x=>x.visual),final:signature(g)});show();},300);};
+ window.addEventListener('pointermove',e=>{const g=active;if(!g)return;g.moves.push(e.clientX);const t=performance.now(),x=e.clientX;
+  // Queue after the application's pointer handler/rAF, rather than reading styles before it runs.
+  setTimeout(()=>requestAnimationFrame(()=>{const n=Number(g.node.value??g.node.getAttribute('aria-valuenow')),center=g.r.left+g.thumb/2+(n-g.min)/(g.max-g.min)*(g.r.width-g.thumb),target=Math.max(g.r.left+g.thumb/2,Math.min(g.r.right-g.thumb/2,g.moves.at(-1)-g.offset));g.trace.push({pointerX:g.moves.at(-1),value:n,pointerErrorPx:g.node.tagName==='INPUT'?Math.abs(center-target):Math.abs(g.node.getBoundingClientRect().left+g.node.getBoundingClientRect().width/2-g.moves.at(-1)),held:active===g,visual:signature(g)});g.latencies.push({ms:performance.now()-t,held:active===g,visual:signature(g)});}),0);
+ });
+ const end=()=>{const g=active;if(!g)return;active=null;setTimeout(()=>{reports.push({id:g.id,kind:g.kind,trustedPointer:g.trustedPointer,inputs:g.inputs.length,pointerMoves:g.moves.length,trace:g.trace,frames:g.frames.length,frameP95:percentile(g.frames,.95),frameMax:Math.max(0,...g.frames),longFrames:g.frames.filter(t=>t>50).length,inputP95:percentile(g.latencies.filter(x=>x.held).map(x=>x.ms),.95),values:g.values,visuals:g.latencies.map(x=>x.visual),final:signature(g)});show();},300);};
  window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
  setTimeout(show,1000);
 })();

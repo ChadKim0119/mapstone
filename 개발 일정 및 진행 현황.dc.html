@@ -1209,6 +1209,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.55', agent: 'Codex', title: '슬라이더 포인터 추적 · 섹션별 교차 비교', items: ['메인 배율·오버랩은 native input 이벤트 대기 대신 포인터를 직접 추적하고 같은 입력에서 손잡이와 화면을 즉시 갱신', '확대 시 구분선의 1% 반올림으로 생기는 포인터 이격을 줄여 정밀하게 추적', '교차·상세 비교 이미지는 섹션마다 독립적으로 렌더링하여 다른 섹션이 섞이지 않도록 수정'] },
     { v: 'v0.9.54', agent: 'Codex', title: '슬라이더 연속 조작 성능 개선', items: ['메인 배율 드래그 중 전체 렌더링을 제거하고 좌표·폭·도형만 즉시 갱신', '드래그 종료 후 최종 레이아웃과 저장을 한 번 처리', '실제 실행 버전과 연속 드래그 프레임 검증을 작업 규칙에 추가'] },
     { v: 'v0.9.53', agent: 'Codex', title: '실시간 비교 조작 · 변경 영역 잘림/버전 정보', items: ['핸들·오버랩·메인 배율을 입력 즉시 반영 · 포인터 캡처 여부와 무관하게 드래그 추적', '교차/상세 비교는 변경 아이템의 전체 높이와 테두리 여백을 포함해 캡처', '기준·비교 버전 옆에 생성 날짜·10글자 메모와 전체 메모 툴팁 제공', '버전 비교·변경 분석 버튼에 아이콘·강조 배경·변경 건수로 인지성 개선', '[검증] build/test 343개 · 놓기 전 핸들/슬라이더 중간 값 반영 · 경계 초과 도형/테두리/날짜 전체 표시 · 10글자 메모와 전체 툴팁·활성 버튼 확인'] },
     { v: 'v0.9.52', agent: 'Codex', title: '섹션 높이 고정 위치 · 섹션 상세/교차 비교', items: ['섹션 축소는 여유 공간부터 소비하고 경계에 닿는 아이템 높이만 줄임 · Y 위치 유지', '변경 목록 이동 시 분석 패널 유지 · 패널 열림 활성 표시', '닫기·전체보기·이동 툴팁 제거 · 브리딩에서 아이콘 위치/크기 고정', '상세보기 모달과 교차 비교에서 변경된 섹션의 기준/비교 이미지를 상하 배치', '[검증] build/test 340개 · 실제 섹션 200→180px 아이템 유지/110px에서 Y44px 유지·높이88→60px · 이동 후 패널 유지·상세 모달·3개 섹션 교차 비교 · 브리딩 아이콘 좌표 고정 확인'] },
@@ -1373,7 +1374,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.54';
+  APP_VER = 'v0.9.55';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1614,13 +1615,13 @@ class Component extends DCLogic {
     this.flushSave(); clearTimeout(this._t);
     if (this._board && this._onScroll) this._board.removeEventListener('scroll', this._onScroll);
     if (this._sraf) cancelAnimationFrame(this._sraf);
-    this._zoomPreview=null;this.onZoomEnd();clearTimeout(this._ztimer);
+    this._zoomPreview=null;this.onZoomEnd(true);clearTimeout(this._ztimer);
     window.removeEventListener('pagehide', this._flush);
     document.removeEventListener('visibilitychange', this._hidden);
     if (this._msCleanup) this._msCleanup();
   }
   componentDidUpdate() {
-    const zoomRange=this.root?.querySelector?.('[data-zoom-slider]');if(zoomRange)zoomRange.value=String(this.zoomToSlider(this._zoomPreview?.target||this.weekPxVal()));
+    const zoomRange=this.root?.querySelector?.('[data-zoom-slider]');if(zoomRange&&!this._zoomHolding)zoomRange.value=String(this.zoomToSlider(this._zoomPreview?.target||this.weekPxVal()));
     const primaryDialog=this.root?.querySelector?.('.ms-modal-scrim [role=dialog]');if(primaryDialog!==this._primaryDialog){this._primaryDialog=primaryDialog;if(primaryDialog)requestAnimationFrame(()=>primaryDialog.querySelector?.('.ms-primary:not(:disabled)')?.focus?.());}
     if(this.state.alignConfirm && !this._alignFocused){this.root?.querySelector('[data-align-dialog] button')?.focus?.();this._alignFocused=true;}else if(!this.state.alignConfirm && this._alignFocused){this._alignFocused=false;this.root?.querySelector('[data-align-button]')?.focus?.();}
     if (!this.drag && this.narrowScreen() && this.state.panel && (this._mobileSel !== this.state.sel || !this._mobilePanel)) {
@@ -3467,11 +3468,14 @@ class Component extends DCLogic {
   onCfg = (e) => { const v = parseFloat(e.currentTarget.value); if (isNaN(v)) return; this.applyCfg(e.currentTarget.dataset.cfg, v, 0); };
   onRangeKey = e => MapstoneUI.rangeKey(e,this.onWeekPx);
   onWeekPx = e => {const value=Number(e.currentTarget.value);if(Number.isFinite(value))this.zoomTo(this.zoomFromSlider(value));};
-  onZoomStart = () => {
+  onZoomStart = (e) => {
+    if(e && e.button!==0)return;
     this._zoomHolding=true;
     window.addEventListener('pointerup',this.onZoomEnd);window.addEventListener('pointercancel',this.onZoomEnd);window.addEventListener('blur',this.onZoomEnd);
+    if(e)this._zoomRangeEnd=MapstoneUI.rangePointer(e,this.onWeekPx,()=>{this._zoomRangeEnd=null;this.onZoomEnd();});
   };
-  onZoomEnd = () => {
+  onZoomEnd = (cancel=false) => {
+    const end=this._zoomRangeEnd;this._zoomRangeEnd=null;end?.(cancel);
     this._zoomHolding=false;window.removeEventListener('pointerup',this.onZoomEnd);window.removeEventListener('pointercancel',this.onZoomEnd);window.removeEventListener('blur',this.onZoomEnd);
     this.finishZoom();
   };
@@ -3516,7 +3520,7 @@ class Component extends DCLogic {
     for(const g of z.shapes){const path=this.scheduleShape(Math.max(24,g.span*ratio),g.height);for(const p of g.paths)p.setAttribute('d',path);}
     board.scrollLeft=Math.max(0,192+z.content*ratio-z.ax);
     const value=this.root.querySelector('.ms-zoom-value');if(value)value.textContent=Math.round(target/19*100)+'%';
-    const range=this.root.querySelector('[data-zoom-slider]');if(range)range.value=String(this.zoomToSlider(target));
+    const range=this.root.querySelector('[data-zoom-slider]');if(range&&!this._zoomHolding)range.value=String(this.zoomToSlider(target));
     clearTimeout(this._ztimer);if(!this._zoomHolding)this._ztimer=setTimeout(this.finishZoom,160);
     return true;
   }
