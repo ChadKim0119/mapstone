@@ -4,9 +4,9 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Codex · 2026-10-19 · README에 v0.9.57 작업 내용·조작법·검증 결과·배포 상태 반영. 기능 변경 없이 버전 유지.
+- **마지막 작업**: Codex · 2026-10-19 · 사용자 요청으로 v0.9.57 기능 수정과 README 업데이트를 GitHub main에 push. 기능 변경 없이 버전 유지.
 - **버전**: v0.9.57 (`package.json` 0.9.57). APP_VER·RELEASES·패키지 버전 동기화.
-- **브랜치**: `main`, 시작 시 `git pull --ff-only` 최신 확인. 사용자 요청으로 v0.9.57 변경을 로컬 커밋. push·배포하지 않음.
+- **브랜치**: `main`, 시작 시 `git pull --ff-only` 최신 확인. 사용자 요청으로 기능 커밋 7a2deab과 README 커밋 a7e963b 및 반영 상태 문서 커밋을 일반 push로 GitHub main에 반영. 운영 배포는 별도 확인 필요.
 - **기능**: 선·화살표 선택 시 양 끝점 핸들 표시. 각 끝점 독립 이동·교차·임의 각도/길이, Shift 45도, 끝점 방향키 1px/Shift 10px. 드래그 한 번 실행 취소, pointercancel 원복, 잠금/읽기 전용 보호. 기존 도형의 표시 좌표를 유지한 채 최초 끝점 편집 시 `lineExact`로 전환. 수평/수직의 w/h=0을 지원하며 코어 SVG·편집기·비교·PPT가 drawingEndpoints를 공유.
 - **선 두께**: 디자인 시스템 ms-tool-button의 −/＋와 숫자 입력 1–12px. 선택된 도형에 공통 적용하며 비도형 제외, 경계값 버튼 비활성화. 사각형/타원/마름모/선/화살표 모두 브라우저 반영 확인.
 - **복원 안전**: 내용이 저장된 기준과 다르면 요청한 한국어 문구로 window.confirm. 로컬/클라우드/보관함 불러오기에 적용. JSONB의 객체 키 순서는 정렬해 비교하며 과거 버전 복원 후 새로고침도 SHA-256 지문으로 판정(이미지 문서를 중복 저장하지 않음). 서버 불러오기 중 새 편집이 발생하면 복원을 중단해 변경을 보존.
@@ -14,7 +14,7 @@
 - **검증**: 시작 353개 통과, 변경 후 363개 통과. `npm run build` → `npm test`, `node --check mapstone-ui.js`, Node 타입 제거 모드의 Edge Function 구문 검사 및 `git diff --check`. 상세 결과 `/tmp/mapstone-57-detailed.log`, 최종 `/tmp/mapstone-tests57-final.log`. Chromium 브라우저에서 선/화살표 양쪽 핸들 24회 이동·고정점 유지, 다섯 도형 두께 입력/증감/상한, 새로고침 유지, 실제 확인창 취소/진행, 503 응답 재현 및 안내·입력 메모 보존 확인. 캡처 `/tmp/mapstone-{line,arrow}-final57.png`, `/tmp/mapstone-version-error57.png`.
 - **슬라이더 측정**: `scripts/slider-perf.py`의 격리 origin(4174)에서 저장한 8개/42개 테스트 일정 사용. 메인 배율·오버랩·구분선 각각 3회×25 pointermove, trustedPointer=true. p95 최대33.4ms, 50ms 초과0회. 손잡이 최대오차: 배율0.034px, 오버랩0.22px, 구분선0.017px, 놓기 전 중간 geometry/opacity 연속 반영. 42개 일정의 비교 이미지133% 확대·scrollLeft45/scrollTop20·분석 패널 열림에서 추가 각3회×25 이동: p95≤33.3ms, 50ms 초과0회. 증거 `/tmp/mapstone-perf57.json`, `/tmp/mapstone-perf57-zoomed.json`. Chromium headless 마우스 입력과 스크린샷으로 검증했으며 사용자의 기존 저장 일정/실사용 탭은 이 환경에 없어서 확인하지 못함. 실제 사용자 수동 체감/GPU 표시 성능을 보장하는 측정은 아님.
 - **운영 범위**: 브라우저 오류 흐름은 격리된 재현 응답으로 검증. 운영 Supabase의 실제 저장 실패 원인/인증/마이그레이션 상태는 접속 정보와 실패 로그가 없어 확인하지 않음. 웹 프런트엔드와 Supabase Edge Function을 함께 배포해야 서버 세부 오류 안내가 운영에 적용됨.
-- **다음 작업**: 사용자 요청 시 push 및 웹/Edge Function 배포. 이후 실제 운영 저장 요청과 사용자 일정의 화면·슬라이더 체감 검증.
+- **다음 작업**: 사용자 요청 시 웹/Edge Function 배포. 이후 실제 운영 저장 요청과 사용자 일정의 화면·슬라이더 체감 검증.
 - **디자인 시스템**: MapStone 디자인 시스템(한국어판) 아티팩트 https://claude.ai/artifact/JAnQNBvL7UzeNgx44bPEeb — 토큰은 `assets/design-system/tokens.css`와 같은 이름. 컴포넌트 57개 카드. 실행 중인 화면이 기준이며, 인벤토리와 다르면 화면을 따름.
 - **주의 사항**: 원본은 src/timeline.dc.html·mapstone-core.js·mapstone-ui.js·supabase/functions/mapstone-api/index.ts. 생성 파일을 직접 수정하지 말고 build 사용. versions/ 과거 스냅샷은 미변경. 기존 v0.9.56 분석 preserveVersions·포스트잇 연결과 v0.9.55 슬라이더 직접 갱신/확대·교차 비교 구조를 보존. 슬라이더 pointermove에 mutate/전체 렌더링을 다시 넣지 말 것. 상세한 이전 기능 인수인계는 작업 로그 및 Git 이전 HANDOFF 참고.
 
@@ -83,6 +83,8 @@
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-19 · Codex · v0.9.57 유지 · 사용자 명시 요청으로 기능 수정·README 업데이트 전체를 GitHub main에 일반 push, README/HANDOFF 반영 상태 갱신. 운영 배포·운영 DB 장애 확인은 별도.
 
 - 2026-10-19 · Codex · v0.9.57 유지 · 사용자 요청으로 README에 선/화살표 양 끝점·두께 조절, 미저장 복원 확인, 저장 오류 원인 안내와 검증/운영 반영 상태 기록. 문서 변경 커밋, push·배포 미실행.
 
