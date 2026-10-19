@@ -4,14 +4,14 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Codex · 2026-10-20 (분석 버전 보존 · 포스트잇 연결 · 기본 도형 그리기)
-- **버전**: v0.9.56 (`package.json` 0.9.56)
-- **브랜치**: 로컬 `main` HEAD `4ddaca8` · 원격 최신 `02978c1`(v0.9.55)의 슬라이더/교차 비교 변경을 3-way 병합. 이번 기능은 v0.9.56으로 조정. GitHub API로 커밋/반영 진행 중(로컬 .git은 쓰기 제한).
-- **동기화**: 준비 시 `git pull --ff-only`는 `.git/FETCH_HEAD: Operation not permitted`로 실패. 원격 최신 여부 미확인(로컬 origin/main 참조 `02978c1`).
-- **테스트**: 시작 340/340 통과. 최종 `npm run build` → `npm test` 353/353 통과, `git diff --check` 통과. 분석 버전/작업물 ID 보존·undo/redo·파일 왕복, 포스트잇 연결 대상 이동/크기/삭제/복원, 도형 5종 배율·역방향·Shift·취소·이동·리사이즈·파일 왕복, SVG/PPT 출력 검증.
-- **진행 중**: Git 반영·배포가 권한 제한으로 차단됨. 코드 병합/빌드/353개 테스트 완료, 원격 쓰기·배포 성공 없음.
-- **배포 요청/차단 근거**: 사용자가 2026-10-20 Git 반영·배포 명시 승인. `git add`는 `.git/index.lock: Operation not permitted`, GitHub `create_blob`도 `MCP tool call requires approval, but approval policy is never`로 거절. GitHub 객체/커밋/브랜치는 생성되지 않았음. Vercel 커넥터 프로젝트 상세 404·배포 조회 403, 웹 대시보드에서는 mapstone/mapstone-app이 같은 저장소에 연결된 것을 확인. Supabase 기존 GitHub 로그인 후 mapstone-api(v24) 상세/Code 경로까지 열었지만 코드 수정·배포는 하지 않았음.
-- **다음 할 일**: Git 쓰기·배포가 허용된 환경에서 현재 파일을 보존하여 작업 재개. 원격 main 기준은 `02978c1`(v0.9.55), 이번 결과는 v0.9.56. 로컬 HEAD는 아직 `4ddaca8`이므로 워킹트리 내용을 버리거나 구버전을 그대로 push하지 말 것. 최신 원격과 합친 현재 결과를 기준으로 커밋하고 Vercel 두 프로젝트 및 Supabase API core를 함께 배포·검증해야 함. 로컬 서버 bind와 file URL 접근도 막혀 실제 화면/슬라이더 검증은 미완료.
+- **마지막 작업**: Codex · 2026-10-20 (기존 병합 정리 · GitHub 동기화)
+- **버전**: v0.9.56 (`package.json` 0.9.56), 기능 변경 없이 기존 리비전의 검증 건수만 353개로 정정.
+- **브랜치**: `main`. 로컬 `3c4dd6a`와 원격 최신 `02978c1`의 진행 중 병합을 사용자 승인에 따라 마무리. 원격 v0.9.55 슬라이더·교차 비교와 로컬 v0.9.56 분석 버전 보존·포스트잇 연결·도형 기능을 함께 보존.
+- **충돌 정리**: 기존 8개 파일의 내용 충돌은 복구된 원본을 유지하고 `npm run build`로 생성 파일을 재생성. 충돌 마커 없음. Git 메타데이터를 수동 삭제하거나 merge abort하지 않음.
+- **테스트**: 시작 테스트 353/353 통과. 최종 `npm run build` → `npm test` 및 `git diff --check` 확인. 로그: `/tmp/mapstone-1020-merge-tests.log`.
+- **GitHub 반영**: 사용자가 로컬 병합 커밋과 GitHub main 반영을 명시 승인. 병합 커밋 작성 후 일반 push로 반영하고 원격 해시·작업 트리 상태를 확인하는 단계.
+- **배포/화면 상태**: 이번 요청은 GitHub 병합·동기화. Vercel·Supabase의 실제 배포와 이전 v0.9.56 기능의 브라우저/슬라이더 검증은 이번 Git 검증 결과에 포함하지 않음. 과거 제한과 시도는 작업 로그 참고.
+- **다음 할 일**: GitHub 동기화 후 실제 배포 및 이전 기능의 브라우저 검증은 별도 진행·확인 필요.
 - **디자인 시스템**: MapStone 디자인 시스템(한국어판) 아티팩트 https://claude.ai/artifact/JAnQNBvL7UzeNgx44bPEeb — 토큰은 `assets/design-system/tokens.css`와 같은 이름. 컴포넌트 57개 카드. 실행 중인 화면이 기준이며, 인벤토리와 다르면 화면을 따름.
 - **주의 사항**:
   - v0.9.56: 분석 검토 적용만 `importDocument(pending,{preserveVersions:true})`로 현재 versions/versionProjectId를 유지합니다. 일반 파일 불러오기·새 문서는 기존 교체 정책을 유지합니다.
@@ -75,6 +75,12 @@
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-20 · Codex · v0.9.56 유지 · 사용자 승인으로 기존 병합 정리: 원격 02978c1과 로컬 3c4dd6a 기능 보존, 생성 파일 재빌드·353개 테스트·충돌 마커/공백 검사, 병합 커밋 및 GitHub main 동기화 진행.
+
+- 2026-10-20 · Codex · v0.9.56 유지 · 작업 준비: origin fetch 성공(최신 main 02978c1), 기존 8개 unmerged index로 ff-only pull 중단. 로컬 기능 보존, 빌드·353개 테스트 통과. 병합 커밋 승인 대기.
+
+- 2026-10-20 · Codex · v0.9.56 · 사용자 권한 승인 후 재시도해도 .git/커넥터 쓰기 거절 유지. 사용자 측 병합 충돌 8개 파일 내용을 정상 HEAD 기준으로 복구·재생성, build/test353개 통과. stage/merge commit/push와 배포는 미완료.
 
 - 2026-10-20 · Codex · v0.9.56 · 배포 차단: .git/index.lock 쓰기 거절 및 GitHub create_blob 승인 필요/approval policy never로 원격 반영 불가. 원격·Vercel·Supabase 배포 미실행. 병합 코드·353개 테스트 통과 상태 보존.
 
