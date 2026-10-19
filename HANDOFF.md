@@ -4,25 +4,35 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Codex · 2026-10-18 (섹션 높이 조절 시 아이템 Y 고정·섹션 상세/교차 비교)
-- **버전**: v0.9.52 (`package.json` 0.9.52)
-- **브랜치**: `main` · 기준 `355b503`은 `origin/main`과 동일 · 시작 클린, 이번 변경 미커밋
-- **테스트**: 시작 337/337 통과. 최종 `npm run build` → `npm test` 340/340 통과. 브라우저에서 섹션 높이 200→180px는 Y44/H88 유지, 110px는 Y44 유지/H60으로 감소, 다른 참고 구간 Y6/H32 유지 확인. 변경점 이동 후 패널·초점 유지, 상세 모달의 해당 섹션 상하 이미지, 교차 비교의 변경 3개 섹션/6개 이미지와 동일 섹션 제외·전체 맞춤 확인. 브리딩 두 프레임의 핸들 좌표/크기/transform 고정과 shadow 변화 확인. 콘솔 경고/오류 없음.
-- **진행 중**: 없음 · 서버 http://127.0.0.1:4173/index.html 유지 · 검증은 별도 localhost 출처의 가상 일정으로 수행
-- **다음 할 일**: 사용자 후속 확인. 커밋·푸시·배포는 미실행.
+- **마지막 작업**: Codex · 2026-10-20 (분석 버전 보존 · 포스트잇 연결 · 기본 도형 그리기)
+- **버전**: v0.9.56 (`package.json` 0.9.56)
+- **브랜치**: 로컬 `main` HEAD `4ddaca8` · 원격 최신 `02978c1`(v0.9.55)의 슬라이더/교차 비교 변경을 3-way 병합. 이번 기능은 v0.9.56으로 조정. GitHub API로 커밋/반영 진행 중(로컬 .git은 쓰기 제한).
+- **동기화**: 준비 시 `git pull --ff-only`는 `.git/FETCH_HEAD: Operation not permitted`로 실패. 원격 최신 여부 미확인(로컬 origin/main 참조 `02978c1`).
+- **테스트**: 시작 340/340 통과. 최종 `npm run build` → `npm test` 353/353 통과, `git diff --check` 통과. 분석 버전/작업물 ID 보존·undo/redo·파일 왕복, 포스트잇 연결 대상 이동/크기/삭제/복원, 도형 5종 배율·역방향·Shift·취소·이동·리사이즈·파일 왕복, SVG/PPT 출력 검증.
+- **진행 중**: Git 반영·배포가 권한 제한으로 차단됨. 코드 병합/빌드/353개 테스트 완료, 원격 쓰기·배포 성공 없음.
+- **배포 요청/차단 근거**: 사용자가 2026-10-20 Git 반영·배포 명시 승인. `git add`는 `.git/index.lock: Operation not permitted`, GitHub `create_blob`도 `MCP tool call requires approval, but approval policy is never`로 거절. GitHub 객체/커밋/브랜치는 생성되지 않았음. Vercel 커넥터 프로젝트 상세 404·배포 조회 403, 웹 대시보드에서는 mapstone/mapstone-app이 같은 저장소에 연결된 것을 확인. Supabase 기존 GitHub 로그인 후 mapstone-api(v24) 상세/Code 경로까지 열었지만 코드 수정·배포는 하지 않았음.
+- **다음 할 일**: Git 쓰기·배포가 허용된 환경에서 현재 파일을 보존하여 작업 재개. 원격 main 기준은 `02978c1`(v0.9.55), 이번 결과는 v0.9.56. 로컬 HEAD는 아직 `4ddaca8`이므로 워킹트리 내용을 버리거나 구버전을 그대로 push하지 말 것. 최신 원격과 합친 현재 결과를 기준으로 커밋하고 Vercel 두 프로젝트 및 Supabase API core를 함께 배포·검증해야 함. 로컬 서버 bind와 file URL 접근도 막혀 실제 화면/슬라이더 검증은 미완료.
 - **디자인 시스템**: MapStone 디자인 시스템(한국어판) 아티팩트 https://claude.ai/artifact/JAnQNBvL7UzeNgx44bPEeb — 토큰은 `assets/design-system/tokens.css`와 같은 이름. 컴포넌트 57개 카드. 실행 중인 화면이 기준이며, 인벤토리와 다르면 화면을 따름.
 - **주의 사항**:
+  - v0.9.56: 분석 검토 적용만 `importDocument(pending,{preserveVersions:true})`로 현재 versions/versionProjectId를 유지합니다. 일반 파일 불러오기·새 문서는 기존 교체 정책을 유지합니다.
+  - 포스트잇 `.ms-text-clip`은 좌상단 8px/오른쪽 30px 고정 여백, 줄바꿈 balance 해제. 사용자가 지정한 가로 정렬 설정은 유지하며 기본값은 왼쪽입니다. 최소 크기 계산도 고정 여백을 사용합니다.
+  - 포스트잇 connectionEnabled/targetId/linkOffset/linkY로 일정·참고·공통 구간에 연결합니다. 연결점/드롭·키보드는 기존 연결 메모 경로를 공유하되 포스트잇 s/y/w/h는 보존합니다. 대상 삭제 시 연결만 해제, pointercancel은 연결하지 않습니다.
+  - 도형은 자유 배치/선택/복제/리사이즈를 재사용하는 sticky + drawingShape(rect/ellipse/diamond/line/arrow)입니다. shapeReverseX/Y, strokeWidth, shapeFill을 검증·저장합니다. 도형의 포스트잇 배경/접기는 숨깁니다. MapstoneCore.drawingPath를 미리보기·편집·비교 SVG가 공유하고 PPT는 native shape로 출력합니다.
+  - 상단 도형 도구 선택 후 보드에서 드래그합니다. Shift는 닫힌 도형 비율 또는 선 45도 방향 고정, Esc/포인터 취소는 문서를 변경하지 않습니다. 문서 교체·언마운트에서도 드로잉 리스너를 정리합니다.
   - 이전 슬라이더 성능 요청만 사용자 지시로 v0.9.50 버전·제목을 유지했습니다. 이번 새 변경 요청은 규칙에 따라 v0.9.51로 기록했습니다.
   - v0.9.52: 변경점 이동은 공통 `comparisonLayout` 좌표를 재사용합니다. 삭제는 현재 기준 문서, 나머지는 비교 문서 좌표입니다. 분석 패널을 열린 채 유지하고 (전체보기는 기본 너비로) 오버랩 100%로 표시하며, 포커스 테두리로 실제 초점을 옮깁니다. 일정표와 패널은 나란히 배치합니다. 모드·기준·변경 표시를 바꾸면 이전 포커스 테두리를 지웁니다.
   - 슬라이드 핸들/선은 진입·이미지 크기 변경·스크롤마다 보이는 영역을 기준으로 배치합니다. 스크롤 갱신은 rAF 1회로 병합합니다. 첫 슬라이드 진입에만 breathing 3회, 조작·화면 종료 시 정리하고 모션 감소를 존중합니다. v0.9.52부터 shadow만 변화시키며 아이콘에 scale/opacity/위치 애니메이션을 주지 않습니다.
   - native range의 Shift+좌우 방향키는 공통 `rangeKey`로 10×step, 구분선은 10%입니다. 일반 키는 native 동작/기존 구분선 키 처리를 유지합니다.
   - PNG 저장은 기존 단일 버튼만 남깁니다. `data-result-png`/‘PNG 다시 다운로드’를 복구하지 마세요. 데스크톱에서 패널을 열면 일정표 자체가 패널 왼쪽 공간을 사용하며 하단 도구는 그 영역 안에 배치됩니다.
+  - v0.9.56: 교차/상세 캡처는 변경 아이템의 실제 bounds와 `itemMetadata` 날짜 높이를 모두 포함하고, 원본 SVG/크롭 경계에 8px 여백을 둡니다. 일반 비교의 `editorVersionImage`는 padding=0이며 기존 좌표 정합을 유지합니다.
+  - 기준·비교 메타데이터는 saved.created_at/date 및 note를 보존하고, 기준 바꾸기에서 함께 바뀝니다. 메모 미리보기는 말줄임 포함 최대 10글자, 전체는 공통 툴팁입니다. 메인 버전 비교 진입·변경 분석 토글은 아이콘/강조색/변경 건수를 유지합니다.
   - v0.9.52: `setRowHeight`는 공간이 있으면 아이템을 그대로 두고, 부족할 때 Y/lane 고정으로 trackH만 줄입니다. 최소 아이템 높이(최대 24px)+아래 6px와 연결 메모 strip 공간을 확보하는 최소 섹션 높이를 유지합니다. 예전 lane cap으로 Y를 위로 당기는 코드를 복구하지 마세요.
   - `changedSections`/`sectionImage`/`sectionComparison`이 상세 모달과 교차 비교를 공유합니다. 공통 `comparisonLayout`의 행 좌표로 섹션과 날짜 헤더만 잘라 재사용합니다. 이전·이후 소속이 다르면 두 섹션을 모두 포함합니다. 제목/마일스톤 등은 공통 영역입니다. 교차 비교는 이미지 중심, 상세 모달에는 변경 필드까지 제공합니다.
   - 상세 모달은 부모 비교 대화상자를 닫지 않는 별도 native dialog입니다. 부모 close에서 정리하고 child close에서는 부모 리스너를 제거합니다. 닫기·전체보기·이동에는 설명 툴팁을 다시 넣지 마세요. 변경·분석 버튼의 aria-pressed와 선택 배경을 유지하세요.
   - `zoomTo`는 화면 배율용 cfg와 필요한 labelAnchor만 갱신합니다. `mutate`의 전체 JSON 복제/충돌 정규화나 180ms easing을 복구하지 마세요. readOnly 보기 오버라이드는 유지합니다.
-  - 배율 input은 rAF 1회로 최신 값만 적용하고, 저장/전체 DOM 측정·텍스트 높이는 마지막 입력 100ms 후 `refreshBoardUI()`로 정리합니다. 언마운트에서 입력 rAF/정리 타이머를 해제합니다.
-  - 오버랩/구분선에는 CSS transition이 없습니다. 오버랩 input은 프레임당 한 번, change/pointerup/blur는 마지막 값을 즉시 반영합니다. 코칭 localStorage는 처음 한 번만 기록합니다.
+  - v0.9.55 메인/오버랩의 native range 포인터 기본 드래그는 rangePointer로 대체합니다. 손잡이 좌표는 즉시 반영하고 무거운 처리는 rAF당 최신 값만 전달합니다. 종료 시 대기값 flush 후 한 번 commit합니다. pointercancel/blur/언마운트에서 리스너/프레임을 정리합니다.
+  - v0.9.54 배율은 `previewZoom`에서 기하만 갱신하고 `finishZoom`에서 선언형 DOM을 복구한 뒤 `commitZoom`을 한 번 호출합니다. 이동 중 setState/mutate/저장·스크롤 후처리를 복구하지 마세요. 포인터를 누르고 멈춰도 commit하지 않으며 pointerup/cancel/blur에서 정리합니다. 키보드/휠은160ms 종료 판정입니다. 언마운트는 리스너/타이머를 제거합니다. native range를 controlled value로 되돌리면 React가 thumb를 이전 값으로 복원합니다.
+  - 오버랩/구분선에는 CSS transition이 없습니다. v0.9.56 오버랩 input과 핸들 pointermove는 바로 스타일을 반영합니다. 핸들은 window 포인터 추적이며 캡처 성공에 의존하지 않습니다. v0.9.55 오버랩 rangePointer는 native 이벤트 대기 대신 포인터 최신 값을 프레임당 반영하며, 구분선은 기존 직접 추적을 유지합니다. change/pointerup/blur는 마지막 값을 반영합니다. 코칭 localStorage는 처음 한 번만 기록합니다.
   - v0.9.50: `comparisonLayout`은 두 문서(삭제 마일스톤 포함)의 공통 마일스톤 영역·헤더·캔버스 높이를 계산합니다. 각각 다른 SVG 높이를 `.ms-image-over` 높이 100%로 늘리지 않도록 공통 크기를 유지하세요.
   - 마일스톤 SVG 라벨 배치에는 날짜 폭을 넣지 않습니다. `markerMetadata`·`itemMetadata`의 편집기 좌표를 재사용합니다. `measure`는 실제 글자 크기/굵기를 전달할 수 있습니다.
   - `timeHeaderH`는 주차 표시 44px/숨김 36px, 비교는 큰 값을 공통 사용합니다. `[data-time-header]`의 하단 10px 여백과 SVG `headerGap`을 함께 유지하세요.
@@ -65,6 +75,23 @@
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-20 · Codex · v0.9.56 · 배포 차단: .git/index.lock 쓰기 거절 및 GitHub create_blob 승인 필요/approval policy never로 원격 반영 불가. 원격·Vercel·Supabase 배포 미실행. 병합 코드·353개 테스트 통과 상태 보존.
+
+- 2026-10-20 · Codex · v0.9.56 · Git 반영/배포 요청: 원격 v0.9.55 변경을 보존해 병합하고 이번 리비전을 56으로 조정, build/test 353개 통과. GitHub API·웹 배포 경로 사용(.git 쓰기 제한).
+
+- 2026-10-20 · Codex · v0.9.56 · 분석 저장 버전 보존, 포스트잇 좌상단 여백·연결점, 화살표/선/사각형/타원/마름모 그리기와 SVG/PPT 출력. build/test 353개 통과. 포트 권한 제한으로 브라우저 미검증, 배포 미실행.
+
+- 2026-10-20 · Codex · v0.9.52 유지 · 작업 준비, 시작 클린 확인, build 및 테스트 340개 통과. pull은 .git 쓰기 제한으로 실패, 원격 최신 여부 미확인.
+- 2026-10-18 | Codex | v0.9.55 실제 trusted 드래그 재개: 추가 rAF 지연 제거·확대 구분선 오차8.234→0.016px, 42아이템 각3회 p95≤26.7ms/50ms 초과0회, 저장 일정·A/C 독립 교차/상세·Shift10배 확인. build/test346개 통과.
+
+- 2026-10-18 | Codex | v0.9.55 유지 · ‘계속 검증’ 새 실행에서도 Work 브라우저 비활성 오류 지속. 원격 동일·build/test346개·diff 확인, 실제 UI 검증은 계속 차단. 사용자 설정 화면 확인 필요.
+
+- 2026-10-18 | Codex | v0.9.55 공통 직접 포인터 슬라이더/최신값 병합·섹션별 독립 교차 캡처, build/test346개 통과. 실제 화면 검증은 Work 브라우저 설정 차단(사용자 On 후 초기화에도 동일)으로 미완료.
+
+- 2026-10-18 | Codex | v0.9.54 메인 배율 매 입력 전체 렌더 제거·기하 미리보기/종료 commit, 실제 열린 v0.9.51→54 갱신, 성능 probe/AGENTS 필수 검사 추가. build/test344개·동일 일정 최대66.7→14.2ms·42아이템/확대/패널 조건 50ms 초과0회.
+
+- 2026-10-18 | Codex | v0.9.56 직접 입력 즉시 반영·캡처 없는 핸들 추적, 교차/상세 테두리·날짜 잘림 해결, 날짜/메모·비교 버튼 인지성 개선. build/test 343개와 네이티브 드래그/화면 확인.
 
 - 2026-10-18 | Codex | v0.9.52 섹션 축소 시 Y 고정/높이만 조정, 분석 패널 유지·활성 표시, 툴팁/브리딩 보정, 섹션 상세 모달·교차 비교 추가. build/test 340개와 실제 화면 검증.
 

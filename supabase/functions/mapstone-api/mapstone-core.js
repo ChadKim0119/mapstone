@@ -16,10 +16,20 @@
     return rowColors.slice(1).reduce((best, c) => distance(c[1]) < distance(best) ? c[1] : best, rowColors[1][1]);
   }
   const uid = () => 'i' + (globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
+  function drawingPath(it) {
+    if(!it.drawingShape)return '';
+    const w=Math.max(12,it.w||120),h=Math.max(12,it.h||80),p=Math.min(5,w/4,h/4),r=w-p,b=h-p;
+    if(it.drawingShape==='rect')return `M ${p} ${p} H ${r} V ${b} H ${p} Z`;
+    if(it.drawingShape==='ellipse')return `M ${p} ${h/2} A ${(w-2*p)/2} ${(h-2*p)/2} 0 1 0 ${r} ${h/2} A ${(w-2*p)/2} ${(h-2*p)/2} 0 1 0 ${p} ${h/2} Z`;
+    if(it.drawingShape==='diamond')return `M ${w/2} ${p} L ${r} ${h/2} L ${w/2} ${b} L ${p} ${h/2} Z`;
+    const x1=w<=12?w/2:it.shapeReverseX?r:p,y1=h<=12?h/2:it.shapeReverseY?b:p,x2=w<=12?w/2:it.shapeReverseX?p:r,y2=h<=12?h/2:it.shapeReverseY?p:b,a=Math.atan2(y2-y1,x2-x1),size=Math.min(14,Math.hypot(x2-x1,y2-y1)*.4);
+    return `M ${x1} ${y1} L ${x2} ${y2}`+(it.drawingShape==='arrow'?` M ${x2-size*Math.cos(a-.5)} ${y2-size*Math.sin(a-.5)} L ${x2} ${y2} L ${x2-size*Math.cos(a+.5)} ${y2-size*Math.sin(a+.5)}`:'');
+  }
   function syncLinks(items) {
-    for (const flag of items.filter(i => i.kind === 'flag' && i.targetId)) {
+    for (const flag of items.filter(i => ['flag','sticky'].includes(i.kind) && i.targetId)) {
       const target = items.find(i => i.id === flag.targetId && ['chev','plain','band'].includes(i.kind));
       if (!target) { flag.targetId = ''; delete flag.linkOffset; delete flag.linkY; continue; }
+      if(flag.kind==='sticky')continue;
       flag.row = target.kind === 'band' ? target.rowFrom : target.row; flag.lane = target.kind === 'band' ? 0 : target.lane;
       flag.s = flag.e = target.s + (target.e - target.s) * (flag.linkOffset ?? 1);
     }
@@ -61,11 +71,14 @@
       if (it.kind === 'image' && (typeof it.src !== 'string' || !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(it.src) || it.src.length > 2800000)) fail('이미지는 2MB 이하 PNG/JPEG/WebP 데이터여야 합니다.');
       if (it.hideDate !== undefined && typeof it.hideDate !== 'boolean') fail('hideDate은 true/false입니다.');
       if (it.hideDuration !== undefined && typeof it.hideDuration !== 'boolean') fail('hideDuration은 true/false입니다.');
-      if (it.targetId !== undefined) { text(it.targetId,'연결 대상',128); if (it.kind !== 'flag') fail('알림만 요소에 연결할 수 있습니다.'); }
+      if (it.targetId !== undefined) { text(it.targetId,'연결 대상',128); if (!['flag','sticky'].includes(it.kind)) fail('메모만 요소에 연결할 수 있습니다.'); }
       if (it.linkOffset !== undefined) finite(it.linkOffset,'연결 위치',0,1);
       if (it.linkY !== undefined) finite(it.linkY,'연결 높이',0,1);
       for (const k of ['labelDx','labelDy']) if (it[k] !== undefined) finite(it[k],k,-20000,20000);
       for (const key of ['labelBold','labelStrike']) if(it[key] !== undefined && typeof it[key] !== 'boolean') throw new Error('글자 서식 값이 올바르지 않습니다.');
+      if(it.drawingShape!==undefined && (it.kind!=='sticky'||!['rect','ellipse','diamond','line','arrow'].includes(it.drawingShape)))fail('도형 종류가 올바르지 않습니다.');
+      if(it.strokeWidth!==undefined)finite(it.strokeWidth,'선 두께',1,12);
+      for(const key of ['connectionEnabled','shapeFill','shapeReverseX','shapeReverseY'])if(it[key]!==undefined&&typeof it[key]!=='boolean')fail(key+'는 true/false여야 합니다.');
       for(const key of ['locked','collapsed'])if(it[key]!==undefined&&typeof it[key]!=='boolean')fail(key+'는 true/false여야 합니다.');
       if(it.labelVAlign!==undefined && !['top','middle','bottom'].includes(it.labelVAlign))fail('문단 세로 정렬 값이 올바르지 않습니다.');
       if(it.labelAlign!==undefined && !['left','center','right'].includes(it.labelAlign))fail('텍스트 정렬 값이 올바르지 않습니다.');
@@ -164,7 +177,7 @@
   /* 버전 비교: pair rows and items by id, report added / removed / changed with per-field detail.
      Pure data → data, so the UI only has to render the result. */
   const KIND_NAME = {chev:'일정',plain:'참고',band:'공통',marker:'마일스톤',flag:'메모',sticky:'포스트잇',image:'이미지'};
-  const FIELD_NAME = {locked:'잠금',collapsed:'접기',label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDate:'메모 날짜 숨김',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelBold:'굵게',labelStrike:'취소선',labelAlign:'텍스트 정렬',labelVAlign:'문단 세로 정렬',stackOrder:'표시 순서',markerIcon:'마일스톤 아이콘',markerIconVisible:'아이콘 표시',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
+  const FIELD_NAME = {drawingShape:'도형',strokeWidth:'선 두께',shapeFill:'도형 채우기',shapeReverseX:'가로 방향',shapeReverseY:'세로 방향',connectionEnabled:'연결점 생성',locked:'잠금',collapsed:'접기',label:'이름',memo:'메모',s:'시작',e:'종료',row:'세션',lane:'줄',span:'높이(줄 수)',color:'색상',variant:'채우기',rowFrom:'시작 세션',rowTo:'끝 세션',hideDate:'메모 날짜 숨김',hideDuration:'기간 숨김',targetId:'연결 대상',trackY:'위치(세로)',trackH:'높이',labelSize:'글자 크기',labelBold:'굵게',labelStrike:'취소선',labelAlign:'텍스트 정렬',labelVAlign:'문단 세로 정렬',stackOrder:'표시 순서',markerIcon:'마일스톤 아이콘',markerIconVisible:'아이콘 표시',labelDx:'라벨 위치(가로)',labelDy:'라벨 위치(세로)',linkOffset:'연결 위치',linkY:'연결 높이',y:'위치',w:'너비',h:'높이'};
   /* Two texts count as the same when only separators/brackets/spacing/case differ:
      "e-Care (DMS)" == "e-Care / DMS" == "e-care · dms". Real wording changes still differ. */
   const plainText = (t) => String(t == null ? '' : t).normalize('NFKC').toLowerCase().replace(/[\s()\[\]{}<>\/\\|·・•,;:~\-–—_.]+/g, ' ').trim();
@@ -346,5 +359,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {validate,parseImport,parseFile,serializeFile,fromAnalysis,analysisColors,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {drawingPath,validate,parseImport,parseFile,serializeFile,fromAnalysis,analysisColors,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });
