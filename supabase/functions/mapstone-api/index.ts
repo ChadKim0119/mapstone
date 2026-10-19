@@ -10,7 +10,18 @@ const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(24))).map
 const json = (body: unknown, status=200) => new Response(JSON.stringify(body), {status,headers:{...cors,'Content-Type':'application/json'}});
 async function db(path:string,method='GET',body?:unknown) {
   const res=await fetch(url+'/rest/v1/'+path,{method,headers:{apikey:secret,Authorization:'Bearer '+secret,'Content-Type':'application/json',Prefer:'return=representation'},body:body===undefined?undefined:JSON.stringify(body)});
-  if(!res.ok)throw new Error('database_error');
+  if(!res.ok){
+    if(path==='rpc/mapstone_save_version'){
+      const data=await res.json().catch(()=>({}));
+      let message='버전 저장 데이터베이스 요청에 실패했습니다. 잠시 후 다시 시도하세요.',status=503;
+      if(data.message==='forbidden'){message='이 작업물의 보관함 접근 키가 일치하지 않습니다. 보관함 고급 설정에서 원래 접근 키로 연결하세요.';status=403;}
+      else if(['PGRST202','42883','42P01'].includes(data.code))message='서버에 버전 저장 테이블 또는 함수가 준비되지 않았습니다. 관리자에게 버전 보관함 데이터베이스 마이그레이션 적용을 요청하세요.';
+      else if(data.code==='23505'){message='동시에 다른 저장 요청이 처리되었습니다. 다시 저장해 주세요.';status=409;}
+      else if(['42501','PGRST301','PGRST302'].includes(data.code)||res.status===401||res.status===403)message='서버의 버전 저장 데이터베이스 접근 권한에 문제가 있습니다. 관리자에게 서버 인증 설정 확인을 요청하세요.';
+      throw Object.assign(new Error(message),{versionStorageStatus:status});
+    }
+    throw new Error('database_error');
+  }
   return res.status===204?null:await res.json();
 }
 async function readBody(req:Request) {
@@ -241,5 +252,5 @@ Deno.serve(async (req:Request)=>{
       return await saveRoom(room,body.document,body.revision);
     }
     return json({error:'지원하지 않는 요청입니다.'},405);
-  }catch(e){const message=e instanceof Error?e.message:'unknown';if(message==='database_error')return json({error:'DB 요청에 실패했습니다. 잠시 후 다시 시도하세요.'},503);if(message==='body_too_large')return json({error:'요청은 9MB 이하여야 합니다.'},413);if(message==='ai_not_configured')return json({error:'AI 분석 API가 아직 설정되지 않았습니다. 관리자에게 문의하세요.'},503);if(message==='invalid_image')return json({error:'2MB 이하 PNG/JPEG/WebP 이미지를 사용하세요.'},400);if(message==='invalid_text')return json({error:'분석할 내용은 1~200,000자여야 합니다.'},400);if(message.startsWith('ai_request_failed:')){console.error(message);return json({error:'AI 분석에 실패했습니다: '+message.slice(18,300)},502);}if(message==='ai_output_missing')return json({error:'AI가 일정 데이터를 돌려주지 않았습니다. 다시 시도하거나 더 선명한 자료를 사용하세요.'},502);return json({error:message==='invalid_json'?'JSON 형식을 확인하세요.':message},400);}
+  }catch(e){const message=e instanceof Error?e.message:'unknown';if(e instanceof Error && (e as any).versionStorageStatus)return json({error:message},(e as any).versionStorageStatus);if(message==='database_error')return json({error:'DB 요청에 실패했습니다. 잠시 후 다시 시도하세요.'},503);if(message==='body_too_large')return json({error:'요청은 9MB 이하여야 합니다.'},413);if(message==='ai_not_configured')return json({error:'AI 분석 API가 아직 설정되지 않았습니다. 관리자에게 문의하세요.'},503);if(message==='invalid_image')return json({error:'2MB 이하 PNG/JPEG/WebP 이미지를 사용하세요.'},400);if(message==='invalid_text')return json({error:'분석할 내용은 1~200,000자여야 합니다.'},400);if(message.startsWith('ai_request_failed:')){console.error(message);return json({error:'AI 분석에 실패했습니다: '+message.slice(18,300)},502);}if(message==='ai_output_missing')return json({error:'AI가 일정 데이터를 돌려주지 않았습니다. 다시 시도하거나 더 선명한 자료를 사용하세요.'},502);return json({error:message==='invalid_json'?'JSON 형식을 확인하세요.':message},400);}
 });

@@ -737,6 +737,39 @@
   }
   const versionEntry=(v,projectId)=>({id:v.id,projectId,sequence:v.sequence,title:v.title || v.document?.title||'',date:new Date(v.created_at).toLocaleString('sv-SE',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}),note:v.note,snap:''});
   const versionError=e=>e.status===404?'이 보관함에서 버전을 찾을 수 없습니다. 다른 브라우저에서 저장했다면 보관함의 고급 설정에서 해당 브라우저의 접근 키로 연결하세요.':e.message;
+  // Only document content participates; history, project ownership and UI state do not.
+  function versionContent(doc){const d=C.validate({...doc,versions:[]});const stable=value=>Array.isArray(value)?value.map(stable):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,stable(value[key])])):value;return JSON.stringify(stable({title:d.title,cfg:d.cfg,rows:d.rows,items:d.items,notes:d.notes,now:d.now}));}
+  async function versionFingerprint(content){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(content)))).map(b=>b.toString(16).padStart(2,'0')).join('');}
+  async function rememberVersionBaseline(app,doc,version){
+    const content=versionContent(doc);app._versionBaseline=content;
+    // A small fingerprint survives reload without duplicating image-heavy snapshots.
+    try{const fingerprint=await versionFingerprint(content);localStorage.setItem('mapstone.version.baseline.'+version.projectId,JSON.stringify({id:version.id,fingerprint}));}catch(e){/* Restore can still compare with the server if local storage is unavailable. */}
+  }
+  async function confirmVersionRestore(app){
+    const current=()=>versionContent(JSON.parse(app.snapshot()));
+    if(app._versionBaseline===current())return true;
+    const versions=app.state.versions||[];
+    for(const v of versions.filter(v=>v.snap)){try{if(versionContent(JSON.parse(v.snap))===current())return true;}catch(e){/* unusable legacy snapshot is not a saved baseline */}}
+    const project=app.state.versionProjectId||versions.find(v=>v.projectId)?.projectId;
+    try{const baseline=JSON.parse(localStorage.getItem('mapstone.version.baseline.'+project)||'null');if(baseline&&versions.some(v=>v.projectId===project&&v.id===baseline.id)&&baseline.fingerprint===await versionFingerprint(current()))return true;}catch(e){/* Use the server baseline below. */}
+    const latest=versions.filter(v=>v.projectId).at(-1);
+    if(latest){
+      try{const saved=await request(app.sync.endpoint,'/version-projects/'+latest.projectId+'/versions/'+encodeURIComponent(latest.id),versionCode());if(versionContent(saved.document)===current())return true;}
+      catch(e){app.setState({versionStatus:'저장 상태를 확인하지 못했습니다. '+versionError(e)});}
+    }
+    return window.confirm('현재까지 작업한 내용이 저장되어 있지 않습니다. 그래도 진행하시겠습니까?');
+  }
+  function versionSaveError(e){
+    const detail=String(e.message||'알 수 없는 오류'),status=e.status;
+    if(e.name==='TimeoutError'||e.name==='AbortError')return '서버 응답 시간이 초과되었습니다. 저장 여부를 확인할 수 없으므로 연결을 확인한 뒤 다시 저장해 주세요.';
+    if(e.name==='QuotaExceededError'||e.name==='SecurityError')return '브라우저 저장 공간 또는 접근 제한으로 보관함 접근 키를 읽거나 저장하지 못했습니다. 브라우저의 사이트 저장 권한과 여유 공간을 확인해 주세요.';
+    if(status===401||status===403||status===404)return '보관함 접근 권한을 확인할 수 없습니다. 보관함의 접근 키를 확인해 주세요. ('+status+') '+detail;
+    if(status===413)return '저장할 데이터가 서버의 크기 제한을 초과했습니다. 이미지 크기를 줄여 주세요. '+detail;
+    if(status===429)return '짧은 시간에 저장 요청이 많았습니다. 잠시 후 다시 시도해 주세요. '+detail;
+    if(status>=500)return '서버에서 저장 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요. ('+status+') '+detail;
+    if(/Failed to fetch|fetch failed|network|offline|Load failed/i.test(detail))return '서버에 연결하지 못해 저장 여부를 확인할 수 없습니다. 인터넷 연결을 확인한 뒤 다시 저장해 주세요. '+detail;
+    return detail;
+  }
   function confirmVersionDelete(text){
     return new Promise(resolve=>{
       const d=el('dialog',null,{className:'ms-dialog ms-delete-confirm','aria-label':'버전 삭제 확인'}),head=el('header'),body=el('div',null,{className:'ms-dialog-body'}),actions=el('div',null,{className:'ms-version-actions'});
@@ -758,9 +791,10 @@
   }
   async function saveCloudVersion(app){
     if(app.state.readOnly||app.state.versionBusy)return;
+    let savedVersion=null;
     app.setState({versionBusy:true,versionOperation:'save',versionStatus:'클라우드에 저장하고 있습니다…'});
     try{
-      const document=C.validate({...JSON.parse(app.snapshot()),versions:[]}),code=versionCode(),source=app.state.versions;
+      const document=C.validate({...JSON.parse(app.snapshot()),versions:[]}),code=versionCode(),source=app.state.versions,note=app.state.vNote.trim();
       const legacy=app.state.versions.filter(v=>!v.projectId);
       let project=app.state.versionProjectId;
       if(!project && app.state.versions.some(v=>v.projectId)){const ps=await request(app.sync.endpoint,'/version-projects',code);project=ps.find(p=>p.title===document.title)?.id;}
@@ -769,19 +803,26 @@
       const send=(id,doc,note)=>request(app.sync.endpoint,'/version-projects/'+project+'/versions',code,'POST',{id,document:doc,note},'code',60000);
       for(const v of legacy){const saved=await send(v.id,JSON.parse(v.snap),v.note);}
       const pending=app._pendingVersion;
-      const id=pending?.project===project && pending.snap===JSON.stringify(document)?pending.id:app.uid();app._pendingVersion={id,project,snap:JSON.stringify(document)};
-      const saved=await send(id,document,app.state.vNote.trim());
+      const id=pending?.project===project && pending.snap===JSON.stringify(document)&&pending.note===note?pending.id:app.uid();app._pendingVersion={id,project,snap:JSON.stringify(document),note};
+      const saved=await send(id,document,note);savedVersion=saved;
+      if(app.state.versionProjectId!==project)return;
+      await rememberVersionBaseline(app,document,{id:saved.id,projectId:project});
+      if(app.state.versionProjectId!==project)return;
+      // The POST is durable even if the following history refresh fails.
+      const entry=versionEntry(saved,project);app.setState({versions:[...app.state.versions.filter(v=>v.id!==saved.id),entry].slice(-30),vNote:app.state.vNote.trim()===note?'':app.state.vNote});app._pendingVersion=null;
       const vs=await request(app.sync.endpoint,'/version-projects/'+project+'/versions',code);
       if(app.state.versionProjectId!==project)return;
-      app.setState({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,project)),vNote:'',versionStatus:'클라우드 저장 완료 · v'+saved.sequence+' · '+versionEntry(saved,project).date});app._pendingVersion=null;
-    }catch(e){app.setState({versionStatus:'저장하지 못했습니다. 입력한 내용은 유지됩니다. '+e.message});}
+      app.setState({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,project)),versionStatus:'클라우드 저장 완료 · v'+saved.sequence+' · '+versionEntry(saved,project).date});app._pendingVersion=null;
+    }catch(e){app.setState({versionStatus:(savedVersion?'v'+savedVersion.sequence+' 버전은 저장되었지만 목록을 새로 불러오지 못했습니다. ':'저장하지 못했습니다. 입력한 내용은 유지됩니다. ')+versionSaveError(e)});}
     finally{app.setState({versionBusy:false,versionOperation:null});}
   }
   async function restoreCloudVersion(app,v){
     if(app.state.readOnly||app.state.versionBusy)return;
+    if(!await confirmVersionRestore(app)){app.setState({versionStatus:'복원을 취소했습니다.'});return false;}
+    if(app.state.readOnly||app.state.versionBusy)return false;
     app.setState({versionBusy:true,versionOperation:'restore',versionStatus:'버전을 불러오고 있습니다…'});
-    const source=app.state.versionProjectId,title=app.state.title;
-    try{const saved=await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode());if(app.state.versionProjectId!==source||app.state.title!==title)return false;const cur=app.snapshot();app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({hist:s.hist.concat([cur]).slice(-60),future:[],versionProjectId:v.projectId,versionStatus:'v'+saved.sequence+' 불러오기 완료 · 실행 취소 가능'}));return true;}
+    const source=app.state.versionProjectId,title=app.state.title,cur=app.snapshot();
+    try{const saved=await request(app.sync.endpoint,'/version-projects/'+v.projectId+'/versions/'+encodeURIComponent(v.id),versionCode());if(app.state.versionProjectId!==source||app.state.title!==title)return false;await rememberVersionBaseline(app,saved.document,v);if(app.state.readOnly||app.snapshot()!==cur){app.setState({versionStatus:'버전을 불러오는 동안 현재 일정이 변경되어 복원을 중단했습니다. 변경 내용을 확인한 뒤 다시 시도하세요.'});return false;}app.applySnap(JSON.stringify(saved.document),true);app.setState(s=>({hist:s.hist.concat([cur]).slice(-60),future:[],versionProjectId:v.projectId,versionStatus:'v'+saved.sequence+' 불러오기 완료 · 실행 취소 가능'}));return true;}
     catch(e){app.setState({versionStatus:'불러오지 못했습니다. '+versionError(e)});return false;}finally{app.setState({versionBusy:false,versionOperation:null});}
   }
   async function deleteSavedVersion(app,v){
@@ -916,5 +957,5 @@
     window.mapstone={getDocument:()=>C.clone(app.dataDocument()),replaceDocument:data=>app.importDocument(data),exportJavaScript:()=>'const schedule = '+JSON.stringify(app.dataDocument(),null,2)+';',getConnection:()=>({connected:!!app.sync.code,roomId:app.sync.id,revision:app.sync.revision,readOnly:app.sync.readOnly})};
     return ()=>{app._calendar?.dispose();app._presentation?.dispose();app._presentation=null;app._msAlive=false;app.sync.dispose();closeModal();hideTip();label.remove();document.removeEventListener('keydown',onKey);document.removeEventListener('keydown',onSubmitKey,true);document.removeEventListener('keydown',onEnterKey,true);document.removeEventListener('keydown',onShareKey,true);document.removeEventListener('input',onGrow,true);window.removeEventListener('beforeunload',warn);document.removeEventListener('scroll',hideTip,true);if(activeApp===app)activeApp=null;};
   }
-  window.MapstoneUI={rangeKey,rangePointer,openCalendar,editSavedVersion,updateSavedVersion,versionComparePage,refreshPresentation,refreshVersionHistory,saveCloudVersion,restoreCloudVersion,deleteSavedVersion,versionLibrary,createShare,shareUrl,growAll,saveFile,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
+  window.MapstoneUI={rangeKey,rangePointer,openCalendar,editSavedVersion,updateSavedVersion,versionComparePage,refreshPresentation,refreshVersionHistory,saveCloudVersion,confirmVersionRestore,restoreCloudVersion,deleteSavedVersion,versionLibrary,createShare,shareUrl,growAll,saveFile,attach,open,download,toggleFocus,fitWidth,showTip,hideTip,toast};
 })();

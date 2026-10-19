@@ -469,6 +469,10 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     [data-drawing="true"] .ms-sticky-fold {display:none;}
     [data-drawing="true"] .ms-text-clip {inset:8px 12px;align-items:center;}
     [data-drawing="true"] .ms-text-clip > div {justify-content:center!important;}
+    .ms-line-endpoint{position:absolute;width:16px;height:16px;margin:-8px;border:2px solid var(--ms-color-action-primary);border-radius:50%;background:#fff;cursor:crosshair;touch-action:none;z-index:43;padding:0;}
+    .ms-stroke-controls{display:flex;align-items:center;gap:6px;margin-top:6px;}
+    .ms-stroke-controls input{min-width:0;width:64px;height:32px;text-align:center;border:1px solid var(--color-border-neutral-2);border-radius:var(--ms-radius-control);}
+    .ms-stroke-controls button{width:32px;height:32px;padding:0;}
     .ms-drawing-tools{display:flex;gap:4px;align-items:center;}
     .ms-drawing-tools button[aria-pressed="true"]{background:#eaf2fc;color:#3568c5;}
     [data-sticky-collapsed="true"] .ms-text-clip {right:28px;white-space:nowrap;}
@@ -777,7 +781,8 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}">
                 <div style="position:absolute;left:-3px;right:-3px;top:-3px;bottom:-3px;border:1px solid rgba(90,133,201,.5);border-radius:4px;pointer-events:none"></div>
               </sc-if>
-              <sc-if value="{{ p.resizable }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ p.lineResizable }}"><sc-for list="{{ p.endpoints }}" as="point"><button type="button" class="ms-line-endpoint" data-id="{{ p.id }}" data-resize="" data-mode="{{ point.mode }}" onPointerDown="{{ onItemDown }}" onKeyDown="{{ onLineEndpointKey }}" aria-label="{{ point.label }}" style="left:{{ point.left }};top:{{ point.top }}"></button></sc-for></sc-if>
+              <sc-if value="{{ p.boxResizable }}" hint-placeholder-val="{{ false }}">
                 <div data-id="{{ p.id }}" data-resize="" data-mode="rz" onPointerDown="{{ onItemDown }}" style="position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:3px;background:rgba(53,104,197,.45);cursor:nwse-resize;z-index:42"></div>
               </sc-if>
             </div>
@@ -842,7 +847,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
               <div style="display:flex;flex-direction:column;gap:14px">
                 <h3 class="ms-property-title">{{ selKindLabel }}</h3>
                 <sc-if value="{{ selIsSticky }}"><section class="ms-property-group"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked="{{ stickyConnectionEnabled }}" onChange="{{ toggleStickyConnection }}">연결점 생성</label><sc-if value="{{ stickyConnectionEnabled }}"><p style="font-size:12px">연결점을 원하는 일정·참고 구간·공통 구간으로 끌어 붙이세요.</p><select aria-label="포스트잇 연결 대상" value="{{ selTargetId }}" onChange="{{ onLinkTarget }}"><option value="">연결 없음</option><sc-for list="{{ linkOptions }}" as="o"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></sc-if></section></sc-if>
-                <sc-if value="{{ selIsDrawing }}"><section class="ms-property-group"><label>선 두께 <input type="number" min="1" max="12" value="{{ selStrokeWidth }}" data-field="strokeWidth" onChange="{{ onField }}"></label><sc-if value="{{ selShapeClosed }}"><label style="display:flex;gap:8px;margin-top:8px"><input type="checkbox" checked="{{ selShapeFill }}" onChange="{{ toggleShapeFill }}">도형 채우기</label></sc-if></section></sc-if>
+                <sc-if value="{{ selIsDrawing }}"><section class="ms-property-group"><label for="ms-stroke-width">선 두께</label><div class="ms-stroke-controls"><button type="button" class="ms-tool-button" data-delta="-1" onClick="{{ stepStrokeWidth }}" disabled="{{ strokeAtMin }}" aria-label="선 두께 줄이기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"></path></svg></button><input id="ms-stroke-width" aria-label="선 두께" type="number" min="1" max="12" step="1" value="{{ selStrokeWidth }}" onChange="{{ onStrokeWidth }}"><button type="button" class="ms-tool-button" data-delta="1" onClick="{{ stepStrokeWidth }}" disabled="{{ strokeAtMax }}" aria-label="선 두께 늘리기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg></button><span>px</span></div><sc-if value="{{ selShapeClosed }}"><label style="display:flex;gap:8px;margin-top:8px"><input type="checkbox" checked="{{ selShapeFill }}" onChange="{{ toggleShapeFill }}">도형 채우기</label></sc-if></section></sc-if>
                 <sc-if value="{{ selIsMarker }}"><section class="ms-property-group ms-marker-icon-settings">
                   <div class="ms-marker-icon-heading"><span class="ms-property-label">{{ L.markerIcon }}</span><button type="button" role="switch" aria-label="{{ L.markerIconDisplay }}" aria-checked="{{ markerIconVisible }}" onClick="{{ toggleMarkerIcon }}">{{ markerIconToggleLabel }}</button></div>
                   <div class="ms-marker-icon-grid"><sc-for list="{{ markerIcons }}" as="icon"><button type="button" data-icon="{{ icon.key }}" onClick="{{ onMarkerIcon }}" aria-label="{{ icon.name }}" aria-pressed="{{ icon.selected }}" data-tip="{{ icon.name }}" onMouseEnter="{{ onTipHover }}" onMouseLeave="{{ offHover }}" style="background:{{ icon.bg }};color:{{ icon.fg }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ icon.path }}"></path></svg></button></sc-for></div>
@@ -1223,6 +1228,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.57', agent: 'Codex', title: '선 양 끝점 자유 조정 · 선 두께 · 안전한 버전 복원', items: ['선·화살표 양 끝점의 자유 각도·길이 조정과 역방향·수평·수직 지원', '디자인 시스템 선 두께 버튼과 숫자 입력 반영', '미저장 변경이 있으면 버전 복원 전 확인', '버전 저장 실패 원인과 저장 후 목록 갱신 실패 구분', '[검증] 363개 테스트 · 다섯 도형 두께·양 끝점·새로고침·복원 확인/취소·오류 응답 브라우저 검증 · 42아이템 슬라이더 p95≤33.4ms/50ms 초과0회'] },
     { v: 'v0.9.56', agent: 'Codex', title: '분석 버전 보존 · 포스트잇 연결 · 도형 그리기', items: ['이미지·텍스트 분석 적용 시 기존 저장 버전과 작업물 ID 보존', '포스트잇 좌상단 고정 여백·텍스트 정렬', '포스트잇 속성 연결점 생성 · 드래그 연결·대상 이동 추적·연결 해제', '화살표·선·사각형·타원·마름모 그리기 · 이동·크기·색상·선 두께·채우기·실행 취소·파일 저장', '비교 이미지·편집 가능한 PPT에 도형과 포스트잇 연결선 반영', '[검증] 353개 테스트 · 분석 버전 보존/실행 취소/저장, 연결 대상 이동·삭제, 배율·역방향·Shift 그리기·취소·이동·크기·파일/PPT/SVG 검증 · 서버 포트 제한으로 브라우저 검증 미실행'] },
     { v: 'v0.9.55', agent: 'Codex', title: '슬라이더 포인터 추적 · 섹션별 교차 비교', items: ['메인 배율·오버랩은 native input 이벤트 대기 대신 포인터를 직접 추적하고 같은 입력에서 손잡이와 화면을 즉시 갱신', '확대 시 구분선의 1% 반올림으로 생기는 포인터 이격을 줄여 정밀하게 추적', '교차·상세 비교 이미지는 섹션마다 독립적으로 렌더링하여 다른 섹션이 섞이지 않도록 수정'] },
     { v: 'v0.9.54', agent: 'Codex', title: '슬라이더 연속 조작 성능 개선', items: ['메인 배율 드래그 중 전체 렌더링을 제거하고 좌표·폭·도형만 즉시 갱신', '드래그 종료 후 최종 레이아웃과 저장을 한 번 처리', '실제 실행 버전과 연속 드래그 프레임 검증을 작업 규칙에 추가'] },
@@ -1389,7 +1395,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.56';
+  APP_VER = 'v0.9.57';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1940,7 +1946,7 @@ class Component extends DCLogic {
       if(!g || g.settlingPeers)this.normalizeItemRows(d,st.items);
       if(st.cfg.startY===d.cfg.startY&&st.cfg.startM===d.cfg.startM)for(const old of st.items.filter(i=>i.locked)){
         const it=d.items.find(i=>i.id===old.id);if(!it?.locked || (old.row&&!d.rows.some(r=>r.id===old.row)))continue;
-        for(const key of ['s','e','row','lane','span','trackY','trackH','rowFrom','rowTo','y','w','h','labelDx','labelDy','linkOffset','linkY','markerLane','markerUserLane','markerUserOrder']){if(old[key]===undefined)delete it[key];else it[key]=old[key];}
+        for(const key of ['s','e','row','lane','span','trackY','trackH','rowFrom','rowTo','y','w','h','labelDx','labelDy','linkOffset','linkY','markerLane','markerUserLane','markerUserOrder','lineExact','shapeReverseX','shapeReverseY']){if(old[key]===undefined)delete it[key];else it[key]=old[key];}
       }
       MapstoneCore.syncLinks(d.items);
       if(g?.settlingPeers){
@@ -2039,6 +2045,31 @@ class Component extends DCLogic {
     this.mutate((d) => { d.items.push(it); });
     this.setState({ sel: id, editing: id, tab: 'prop', panel: true });
   };
+  setStrokeWidth(value) {
+    if(!Number.isFinite(value))return;
+    const width=Math.max(1,Math.min(12,Math.round(value)));
+    this.editCommon(it=>{it.strokeWidth=width;},it=>!!it.drawingShape);
+  }
+  onStrokeWidth = e => {const el=e.currentTarget;if(el.value.trim()!=='')this.setStrokeWidth(Number(el.value));el.value=String(this.selItem()?.strokeWidth||2);};
+  stepStrokeWidth = e => this.setStrokeWidth((this.selItem()?.strokeWidth||2)+Number(e.currentTarget.dataset.delta));
+  lineEndpoints(it) {return MapstoneCore.drawingEndpoints(it).map(p=>({x:this.xOf(it.s)+p.x,y:(it.y||0)+p.y}));}
+  setLineEndpoints(it,points) {
+    const [a,b]=points,x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);
+    it.s=it.e=this.mOf(x);it.y=y;it.w=Math.abs(b.x-a.x);it.h=Math.abs(b.y-a.y);it.shapeReverseX=b.x<a.x;it.shapeReverseY=b.y<a.y;it.lineExact=true;
+  }
+  moveLineEndpoint(it,points,index,dx,dy,shift=false) {
+    points=points.map(p=>({...p}));const anchor=points[1-index],p=points[index];p.x+=dx;p.y+=dy;
+    if(shift){const angle=Math.round(Math.atan2(p.y-anchor.y,p.x-anchor.x)/(Math.PI/4))*Math.PI/4,len=Math.hypot(p.x-anchor.x,p.y-anchor.y);p.x=anchor.x+Math.cos(angle)*len;p.y=anchor.y+Math.sin(angle)*len;}
+    p.x=Math.max(this.xOf(-1200),Math.min(this.xOf(1200),p.x));p.y=Math.max(-20000,Math.min(20000,p.y));
+    if(Math.abs(p.x-anchor.x)>20000||Math.abs(p.y-anchor.y)>20000)return;
+    this.setLineEndpoints(it,points);
+  }
+  onLineEndpointKey = e => {
+    e.stopPropagation();if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();
+    const it=this.state.items.find(i=>i.id===e.currentTarget.dataset.id);if(!it||it.locked||this.state.readOnly)return;
+    const index=e.currentTarget.dataset.mode==='line-start'?0:1,step=e.shiftKey?10:1;
+    this.mutate(d=>this.moveLineEndpoint(d.items.find(i=>i.id===it.id),this.lineEndpoints(it),index,e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0,e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0));
+  };
   drawingName(key) {return {rect:'사각형',ellipse:'타원',diamond:'마름모',line:'선',arrow:'화살표'}[key]||'도형';}
   chooseDrawing = e => {if(this.state.readOnly)return;this._drawingCleanup?.();this.setState({drawTool:this.state.drawTool===e.currentTarget.dataset.shape?null:e.currentTarget.dataset.shape,editing:null});};
   cancelDrawing = () => {this._drawingCleanup?.();this.setState({drawTool:null});};
@@ -2059,7 +2090,7 @@ class Component extends DCLogic {
     const point=ev=>{const r=frame.getBoundingClientRect();return {x:(ev.clientX-r.left)/this.canvasScale()-172,y:(ev.clientY-r.top)/this.heightScale()};};
     const start=point(e),id=this.uid();let end=start;
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS('http://www.w3.org/2000/svg','path');svg.append(path);Object.assign(svg.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',pointerEvents:'none',zIndex:99999});document.body.append(svg);path.setAttribute('fill','none');path.setAttribute('stroke','#3568c5');path.setAttribute('stroke-width','2');
-    const geometry=()=>({id,kind:'sticky',row:'',lane:0,span:1,s:this.mOf(Math.min(start.x,end.x)),e:this.mOf(Math.min(start.x,end.x)),y:Math.min(start.y,end.y),w:Math.max(12,Math.abs(end.x-start.x)),h:Math.max(12,Math.abs(end.y-start.y)),label:'',color:'#3568c5',drawingShape:shape,shapeReverseX:end.x<start.x,shapeReverseY:end.y<start.y,strokeWidth:2});
+    const geometry=()=>({id,kind:'sticky',row:'',lane:0,span:1,s:this.mOf(Math.min(start.x,end.x)),e:this.mOf(Math.min(start.x,end.x)),y:Math.min(start.y,end.y),w:Math.max(['line','arrow'].includes(shape)?0:12,Math.abs(end.x-start.x)),h:Math.max(['line','arrow'].includes(shape)?0:12,Math.abs(end.y-start.y)),label:'',color:'#3568c5',drawingShape:shape,shapeReverseX:end.x<start.x,shapeReverseY:end.y<start.y,lineExact:['line','arrow'].includes(shape),strokeWidth:2});
     const move=ev=>{if(ev.pointerId!==pointer)return;end=point(ev);if(ev.shiftKey){let dx=end.x-start.x,dy=end.y-start.y;if(['line','arrow'].includes(shape)){const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4,len=Math.hypot(dx,dy);end={x:start.x+Math.cos(a)*len,y:start.y+Math.sin(a)*len};}else{const size=Math.max(Math.abs(dx),Math.abs(dy));end={x:start.x+(dx<0?-size:size),y:start.y+(dy<0?-size:size)};}}const it=geometry(),r=frame.getBoundingClientRect();path.setAttribute('d',MapstoneCore.drawingPath(it));path.setAttribute('transform',`translate(${r.left+(172+this.xOf(it.s))*this.canvasScale()} ${r.top+it.y*this.heightScale()}) scale(${this.canvasScale()} ${this.heightScale()})`);};
     const finish=commit=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);document.removeEventListener('keydown',key,true);svg.remove();this._drawingCleanup=null;if(commit&&Math.hypot(end.x-start.x,end.y-start.y)>4){const it=geometry();this.mutate(d=>d.items.push(it));this.setState({sel:it.id,selection:[it.id],selectionAnchor:it.id,editing:null,tab:'prop',panel:true,drawTool:null});}};
     const up=ev=>{if(ev.pointerId!==pointer)return;move(ev);finish(true);},cancel=()=>finish(false),key=ev=>{if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();finish(false);this.setState({drawTool:null});}};
@@ -2532,6 +2563,7 @@ class Component extends DCLogic {
     clearTimeout(this._itemPanelTimer);if(this.narrowScreen())this._itemPanelTimer=setTimeout(()=>{if(!this.state.editing)this.setState({panel:true});},250);
     if (this.state.readOnly || it.locked){if(collapseOnClick)this.selectItems([d.id],d.id,d.id);return;}
     this.drag = { collapseOnClick,id: d.id, mode: d.mode || 'move', kind: it.kind, lane:it.lane, cap:this.rowLayout()[it.row]?.laneCap, span: it.span || 1, x0: e.clientX, y0: e.clientY, s: it.s, e: it.e, y: it.y || 0, w: it.w || 0, h: it.h || 0, labelDx:it.labelDx || 0, labelDy:it.labelDy || 0, snap: this.snapshot(), baseItems: JSON.stringify(this.state.items), copyPending:!!e.altKey && !d.mode, moved: false };
+    if(['line-start','line-end'].includes(d.mode))this.drag.linePoints=this.lineEndpoints(it);
     if ((!d.mode || ['top','bottom','l','r'].includes(d.mode)) && this.selectedIds().length>1) { this.drag.ids=this.selectedIds().filter(id=>!this.state.items.find(i=>i.id===id)?.locked); this.drag.groupBase=JSON.parse(this.drag.baseItems); }
     if(this.drag.mode==='move'){this.drag.moveLayout=this.rowLayout();if(this.boxKind(it.kind)){this.drag.box=this.trackBox(it,this.drag.moveLayout);this.drag.row=it.row;}}
     if(['sticky','image','flag'].includes(it.kind) && this.root){
@@ -2894,6 +2926,9 @@ class Component extends DCLogic {
     const dx = (ev.clientX - g.x0)/this.canvasScale();
     if (Math.abs(dx) > 2 || Math.abs(ev.clientY - g.y0) > 2) g.moved = true;
     if (!g.moved) return;
+    if(['line-start','line-end'].includes(g.mode)){
+      this.mutate(d=>{const it=d.items.find(i=>i.id===g.id);if(it)this.moveLineEndpoint(it,g.linePoints,g.mode==='line-start'?0:1,dx,(ev.clientY-g.y0)/this.heightScale(),ev.shiftKey);},false);return;
+    }
     if(g.mode==='move' && !g.copied && (g.copyPending || ev.altKey))this.duplicateDrag(g);
     if(g.mode==='move' && !['flag','sticky','band'].includes(g.kind) && !ev.shiftKey){const x=Math.abs(ev.clientX-g.x0),y=Math.abs(ev.clientY-g.y0);if(y<=8 || (x>y*2 && y<=Math.max(12,x*.12)))ev={clientX:ev.clientX,clientY:g.y0,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}
     if(g.mode==='move' && ev.shiftKey){g.axis ||= Math.abs(ev.clientX-g.x0)>=Math.abs(ev.clientY-g.y0)?'x':'y';ev={clientX:g.axis==='y'?g.x0:ev.clientX,clientY:g.axis==='x'?g.y0:ev.clientY,ctrlKey:ev.ctrlKey,altKey:ev.altKey,shiftKey:ev.shiftKey};}else g.axis=null;
@@ -2999,6 +3034,7 @@ class Component extends DCLogic {
       this._linkEl = null; this.setState({ linkDrag:null });
     }
     if (this._mv) { window.removeEventListener('pointermove', this._mv); window.removeEventListener('pointerup', this._up); window.removeEventListener('pointercancel',this._up); this._mv = null; }
+    if(ev?.type==='pointercancel' && this.drag?.linePoints){const snap=this.drag.snap;this.drag=null;this.applySnap(snap);return;}
     if (this.drag && this.drag.moved && this.drag.snap) {
       const snap = this.drag.snap;
       const id = this.drag.id;
@@ -3736,12 +3772,13 @@ class Component extends DCLogic {
   cancelVersionCompare = () => this.setState({versionCompareSelecting:false,versionCompareIds:[]});
   editVersion = (e) => {const v=this.state.versions.find(v=>v.id===e.currentTarget.dataset.id);if(v)return MapstoneUI.editSavedVersion(this,v);};
   runVersionCompare = () => MapstoneUI.versionComparePage(this,[...(this.state.versionCompareIds||[])].sort((a,b)=>this.versionAge(a)-this.versionAge(b)));
-  restoreVersion = (e) => {
-    if (this.state.readOnly) return;
+  restoreVersion = async (e) => {
+    if (this.state.readOnly || this.state.versionBusy) return;
     const id = e.currentTarget.dataset.id;
     const v = this.state.versions.find((x) => x.id === id);
     if (!v) return;
     if(v.projectId)return MapstoneUI.restoreCloudVersion(this,v);
+    if(!await MapstoneUI.confirmVersionRestore(this)||this.state.readOnly||this.state.versionBusy)return;
     const cur = this.snapshot();
     this.applySnap(v.snap, true);
     this.setState((s) => ({ hist: s.hist.concat([cur]).slice(-60), future: [] }));
@@ -3884,7 +3921,7 @@ class Component extends DCLogic {
     st.items.filter(i=>i.drawingShape).forEach(it=>{
       const line=['line','arrow'].includes(it.drawingShape),shape=line?S.line:it.drawingShape==='ellipse'?S.ellipse:it.drawingShape==='diamond'?'diamond':S.rect;
       const opts={x:X(LB+this.xOf(it.s)),y:Y(it.y||0),w:Sz(it.w||120),h:Sz(it.h||80),line:{color:hex(it.color),width:it.strokeWidth||2,...(it.drawingShape==='arrow'?{endArrowType:'triangle'}:{})},fill:{color:hex(it.color),transparency:it.shapeFill?85:100},flipH:!!it.shapeReverseX,flipV:!!it.shapeReverseY};
-      if(line&&it.h<=12){opts.y=Y((it.y||0)+(it.h||12)/2);opts.h=0;}if(line&&it.w<=12){opts.x=X(LB+this.xOf(it.s)+(it.w||12)/2);opts.w=0;}
+      if(line){const [a,b]=MapstoneCore.drawingEndpoints(it);opts.x=X(LB+this.xOf(it.s)+Math.min(a.x,b.x));opts.y=Y((it.y||0)+Math.min(a.y,b.y));opts.w=Sz(Math.abs(b.x-a.x));opts.h=Sz(Math.abs(b.y-a.y));}
       slide.addShape(shape,opts);if(it.label)slide.addText(it.label,{x:opts.x,y:opts.y,w:opts.w,h:opts.h,fontSize:fs(this.labelFont(it)),color:'181A1B',align:this.labelStyle(it).labelAlign,valign:'middle',margin:3});
     });
     for(const b of view.stickies){if(!b.connectionPath)continue;const nums=b.connectionPath.match(/-?[\d.]+/g).map(Number),x=parseFloat(b.left),y=parseFloat(b.top),ax=x+nums[0],ay=y+nums[1],bx=x+nums[2],by=y+nums[3];slide.addShape(S.line,{x:X(Math.min(ax,bx)),y:Y(Math.min(ay,by)),w:Sz(Math.abs(bx-ax)),h:Sz(Math.abs(by-ay)),flipH:bx<ax,flipV:by<ay,line:{color:'3568C5',width:1.5}});}
@@ -4120,8 +4157,8 @@ class Component extends DCLogic {
       const alpha = it.variant === 'tint' ? 0.55 : 1;
       const base = it.color || '#fdf3d0';
       return {
-        ...this.stickyConnectionGeometry(it,L,stripH+(this._comparisonHeaderH||(cfg.showWeek===false?36:44))+10),isDrawing:!!it.drawingShape,accessibleLabel:it.label||(it.drawingShape?this.drawingName(it.drawingShape):'포스트잇'),color:it.color,strokeWidth:it.strokeWidth||2,drawingPath:MapstoneCore.drawingPath(it),drawingFill:it.shapeFill&&!['line','arrow'].includes(it.drawingShape)?this.rgba(it.color,.15):'none',showMeta:!!cfg.showElementDates || !this.durationHidden(it),dateLabel: this.shortDate(it.s)+' – '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label:it.collapsed?String(it.label||'').split('\n')[0]:it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), dragging:!!(this.drag && (this.drag.id===it.id || this.drag.ids?.includes(it.id))), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
-        width: px(it.w || 210), height:px(it.collapsed?28/this.verticalScale():it.h||120),collapsed:!!it.collapsed,expanded:!it.collapsed,foldLabel:it.collapsed?'포스트잇 펼치기':'포스트잇 접기',foldPath:it.collapsed?'M8 3H3v5M16 21h5v-5M3 3l6 6M21 21l-6-6':'M3 9h6V3M21 15h-6v6M9 9L3 3M15 15l6 6',resizable:this.isSelected(it.id)&&!it.collapsed&&!it.locked,
+        ...this.stickyConnectionGeometry(it,L,stripH+(this._comparisonHeaderH||(cfg.showWeek===false?36:44))+10),lineResizable:this.isSelected(it.id)&&!it.locked&&!st.readOnly&&['line','arrow'].includes(it.drawingShape),boxResizable:this.isSelected(it.id)&&!it.collapsed&&!it.locked&&!st.readOnly&&!['line','arrow'].includes(it.drawingShape),endpoints:MapstoneCore.drawingEndpoints(it).map((p,i)=>({mode:i?'line-end':'line-start',label:i?'선 종료점 조절':'선 시작점 조절',left:px(p.x),top:px(p.y)})),isDrawing:!!it.drawingShape,accessibleLabel:it.label||(it.drawingShape?this.drawingName(it.drawingShape):'포스트잇'),color:it.color,strokeWidth:it.strokeWidth||2,drawingPath:MapstoneCore.drawingPath(it),drawingFill:it.shapeFill&&!['line','arrow'].includes(it.drawingShape)?this.rgba(it.color,.15):'none',showMeta:!!cfg.showElementDates || !this.durationHidden(it),dateLabel: this.shortDate(it.s)+' – '+this.shortDate(it.e), id: it.id, zIndex: this.itemZ(it.id), label:it.collapsed?String(it.label||'').split('\n')[0]:it.label, labelSize:px(this.labelFont(it)),...this.labelStyle(it), dragging:!!(this.drag && (this.drag.id===it.id || this.drag.ids?.includes(it.id))), left: px(172 + this.xOf(it.s)), top: px(it.y || 0),
+        width: px(it.lineExact?Math.max(12,it.w):it.w||210), height:px(it.lineExact?Math.max(12,it.h):it.collapsed?28/this.verticalScale():it.h||120),collapsed:!!it.collapsed,expanded:!it.collapsed,foldLabel:it.collapsed?'포스트잇 펼치기':'포스트잇 접기',foldPath:it.collapsed?'M8 3H3v5M16 21h5v-5M3 3l6 6M21 21l-6-6':'M3 9h6V3M21 15h-6v6M9 9L3 3M15 15l6 6',resizable:this.isSelected(it.id)&&!it.collapsed&&!it.locked,
         bg: alpha === 1 ? base : this.rgba(base, alpha),
         fg: this.inkOn(base, alpha),
         sel: this.isSelected(it.id), editing: editing, show: !editing
@@ -4273,9 +4310,9 @@ class Component extends DCLogic {
       stickyTint: { bg: sel && sel.variant === 'tint' ? 'var(--ms-color-action-primary)' : '#fff', fg: sel && sel.variant === 'tint' ? '#fff' : 'var(--color-text-neutral-5)', border: sel && sel.variant === 'tint' ? 'var(--ms-color-action-primary)' : 'var(--color-border-neutral-2)' },
       selHasMemo:!!sel && !['sticky','image','now'].includes(sel.kind),selNotSticky: !!sel && (!!sel.drawingShape||!['sticky','image'].includes(sel.kind)),selFillControl:!!sel&&!sel.drawingShape&&!['flag','now'].includes(sel.kind),
       rowPropLanes: focusRowObj ? Math.round(this.rowHeight(focusRowObj.id) / this.heightUnit()*100)/100 : 2,
-      selIsSticky: !!sel && sel.kind === 'sticky' && !sel.drawingShape,selIsDrawing:!!sel?.drawingShape,selShapeClosed:!!sel?.drawingShape&&!['line','arrow'].includes(sel.drawingShape),selStrokeWidth:sel?.strokeWidth||2,selShapeFill:!!sel?.shapeFill,toggleShapeFill:this.toggleShapeFill,stickyConnectionEnabled:!!sel?.connectionEnabled,toggleStickyConnection:this.toggleStickyConnection,drawingActive:!!st.drawTool,drawingCursor:st.drawTool?'crosshair':'auto',drawingTouch:st.drawTool?'none':'auto',chooseDrawing:this.chooseDrawing,cancelDrawing:this.cancelDrawing,drawingTools:['rect','ellipse','diamond','line','arrow'].map(key=>({key,name:this.drawingName(key),selected:st.drawTool===key,path:MapstoneCore.drawingPath({drawingShape:key,w:40,h:28})})),
+      selIsSticky: !!sel && sel.kind === 'sticky' && !sel.drawingShape,selIsDrawing:!!sel?.drawingShape,selShapeClosed:!!sel?.drawingShape&&!['line','arrow'].includes(sel.drawingShape),selStrokeWidth:sel?.strokeWidth||2,onStrokeWidth:this.onStrokeWidth,stepStrokeWidth:this.stepStrokeWidth,strokeAtMin:(sel?.strokeWidth||2)<=1||st.readOnly,strokeAtMax:(sel?.strokeWidth||2)>=12||st.readOnly,selShapeFill:!!sel?.shapeFill,toggleShapeFill:this.toggleShapeFill,stickyConnectionEnabled:!!sel?.connectionEnabled,toggleStickyConnection:this.toggleStickyConnection,drawingActive:!!st.drawTool,drawingCursor:st.drawTool?'crosshair':'auto',drawingTouch:st.drawTool?'none':'auto',chooseDrawing:this.chooseDrawing,cancelDrawing:this.cancelDrawing,drawingTools:['rect','ellipse','diamond','line','arrow'].map(key=>({key,name:this.drawingName(key),selected:st.drawTool===key,path:MapstoneCore.drawingPath({drawingShape:key,w:40,h:28})})),
       beginRowEdit: this.beginRowEdit, endRowEdit: this.endRowEdit, onRowTextKey: this.onRowTextKey, onRowName: this.onRowName, onRowDelete: this.onRowDelete, onRowUp: this.onRowUp, onRowDown: this.onRowDown, onRowMoveDown: this.onRowMoveDown, onRowFocus: this.onRowFocus,
-      alignItems:this.alignItems, alignConfirm:!!st.alignConfirm, alignMessage:st.alignMessage, alignApply:this.alignApply, alignCancel:this.alignCancel, alignKey:this.alignKey, smartGuides:this.smartGuides(), onItemDown: this.onItemDown,onEdgeFocus:this.onEdgeFocus, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
+      alignItems:this.alignItems, alignConfirm:!!st.alignConfirm, alignMessage:st.alignMessage, alignApply:this.alignApply, alignCancel:this.alignCancel, alignKey:this.alignKey, smartGuides:this.smartGuides(), onLineEndpointKey:this.onLineEndpointKey,onItemDown: this.onItemDown,onEdgeFocus:this.onEdgeFocus, onItemDbl: this.onItemDbl, onItemKey: this.onItemKey, onLabelInput: this.onLabelInput, endEdit: this.endEdit, onEditKey: this.onEditKey,
       onHover: this.onHover, onOutLabelEnter: this.onOutLabelEnter, offHover: this.offHover,
       onNoteDbl: this.onNoteDbl, onNoteInput: this.onNoteInput, onNoteDelete: this.onNoteDelete,
       onTrackDown: this.onTrackDown, onTrackDblClick: this.onTrackDblClick, onNowDown: this.onNowDown,

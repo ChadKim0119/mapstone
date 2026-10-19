@@ -16,13 +16,17 @@
     return rowColors.slice(1).reduce((best, c) => distance(c[1]) < distance(best) ? c[1] : best, rowColors[1][1]);
   }
   const uid = () => 'i' + (globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
+  function drawingEndpoints(it) {
+    const w=it.lineExact?(it.w??120):Math.max(12,it.w||120),h=it.lineExact?(it.h??80):Math.max(12,it.h||80),p=it.lineExact?0:Math.min(5,w/4,h/4);
+    return [{x:!it.lineExact&&w<=12?w/2:it.shapeReverseX?w-p:p,y:!it.lineExact&&h<=12?h/2:it.shapeReverseY?h-p:p},{x:!it.lineExact&&w<=12?w/2:it.shapeReverseX?p:w-p,y:!it.lineExact&&h<=12?h/2:it.shapeReverseY?p:h-p}];
+  }
   function drawingPath(it) {
     if(!it.drawingShape)return '';
     const w=Math.max(12,it.w||120),h=Math.max(12,it.h||80),p=Math.min(5,w/4,h/4),r=w-p,b=h-p;
     if(it.drawingShape==='rect')return `M ${p} ${p} H ${r} V ${b} H ${p} Z`;
     if(it.drawingShape==='ellipse')return `M ${p} ${h/2} A ${(w-2*p)/2} ${(h-2*p)/2} 0 1 0 ${r} ${h/2} A ${(w-2*p)/2} ${(h-2*p)/2} 0 1 0 ${p} ${h/2} Z`;
     if(it.drawingShape==='diamond')return `M ${w/2} ${p} L ${r} ${h/2} L ${w/2} ${b} L ${p} ${h/2} Z`;
-    const x1=w<=12?w/2:it.shapeReverseX?r:p,y1=h<=12?h/2:it.shapeReverseY?b:p,x2=w<=12?w/2:it.shapeReverseX?p:r,y2=h<=12?h/2:it.shapeReverseY?p:b,a=Math.atan2(y2-y1,x2-x1),size=Math.min(14,Math.hypot(x2-x1,y2-y1)*.4);
+    const [{x:x1,y:y1},{x:x2,y:y2}]=drawingEndpoints(it),a=Math.atan2(y2-y1,x2-x1),size=Math.min(14,Math.hypot(x2-x1,y2-y1)*.4);
     return `M ${x1} ${y1} L ${x2} ${y2}`+(it.drawingShape==='arrow'?` M ${x2-size*Math.cos(a-.5)} ${y2-size*Math.sin(a-.5)} L ${x2} ${y2} L ${x2-size*Math.cos(a+.5)} ${y2-size*Math.sin(a+.5)}`:'');
   }
   function syncLinks(items) {
@@ -78,7 +82,7 @@
       for (const key of ['labelBold','labelStrike']) if(it[key] !== undefined && typeof it[key] !== 'boolean') throw new Error('글자 서식 값이 올바르지 않습니다.');
       if(it.drawingShape!==undefined && (it.kind!=='sticky'||!['rect','ellipse','diamond','line','arrow'].includes(it.drawingShape)))fail('도형 종류가 올바르지 않습니다.');
       if(it.strokeWidth!==undefined)finite(it.strokeWidth,'선 두께',1,12);
-      for(const key of ['connectionEnabled','shapeFill','shapeReverseX','shapeReverseY'])if(it[key]!==undefined&&typeof it[key]!=='boolean')fail(key+'는 true/false여야 합니다.');
+      for(const key of ['connectionEnabled','shapeFill','shapeReverseX','shapeReverseY','lineExact'])if(it[key]!==undefined&&typeof it[key]!=='boolean')fail(key+'는 true/false여야 합니다.');
       for(const key of ['locked','collapsed'])if(it[key]!==undefined&&typeof it[key]!=='boolean')fail(key+'는 true/false여야 합니다.');
       if(it.labelVAlign!==undefined && !['top','middle','bottom'].includes(it.labelVAlign))fail('문단 세로 정렬 값이 올바르지 않습니다.');
       if(it.labelAlign!==undefined && !['left','center','right'].includes(it.labelAlign))fail('텍스트 정렬 값이 올바르지 않습니다.');
@@ -359,5 +363,5 @@
     if(!conflicts.length){try{return {document:validate(document),conflicts};}catch(e){conflicts.push('구조: '+e.message);}}
     return {document,conflicts};
   }
-  return {drawingPath,validate,parseImport,parseFile,serializeFile,fromAnalysis,analysisColors,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
+  return {drawingEndpoints,drawingPath,validate,parseImport,parseFile,serializeFile,fromAnalysis,analysisColors,compareDocuments,comparisonDocument,shareAccess,documentOf,merge,clone,equal,uid,rowColors,syncLinks};
 });

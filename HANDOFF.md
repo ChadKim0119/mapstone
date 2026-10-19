@@ -4,16 +4,24 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Codex · 2026-10-20 (기존 병합 정리 · GitHub 동기화)
-- **버전**: v0.9.56 (`package.json` 0.9.56), 기능 변경 없이 기존 리비전의 검증 건수만 353개로 정정.
-- **브랜치**: `main`. 로컬 `3c4dd6a`와 원격 최신 `02978c1`의 진행 중 병합을 사용자 승인에 따라 마무리. 원격 v0.9.55 슬라이더·교차 비교와 로컬 v0.9.56 분석 버전 보존·포스트잇 연결·도형 기능을 함께 보존.
-- **충돌 정리**: 기존 8개 파일의 내용 충돌은 복구된 원본을 유지하고 `npm run build`로 생성 파일을 재생성. 충돌 마커 없음. Git 메타데이터를 수동 삭제하거나 merge abort하지 않음.
-- **테스트**: 시작 테스트 353/353 통과. 최종 `npm run build` → `npm test` 및 `git diff --check` 확인. 로그: `/tmp/mapstone-1020-merge-tests.log`.
-- **GitHub 반영**: 사용자가 로컬 병합 커밋과 GitHub main 반영을 명시 승인. 병합 커밋 작성 후 일반 push로 반영하고 원격 해시·작업 트리 상태를 확인하는 단계.
-- **배포/화면 상태**: 이번 요청은 GitHub 병합·동기화. Vercel·Supabase의 실제 배포와 이전 v0.9.56 기능의 브라우저/슬라이더 검증은 이번 Git 검증 결과에 포함하지 않음. 과거 제한과 시도는 작업 로그 참고.
-- **다음 할 일**: GitHub 동기화 후 실제 배포 및 이전 기능의 브라우저 검증은 별도 진행·확인 필요.
+- **마지막 작업**: Codex · 2026-10-19 · 선/화살표 양 끝점 편집, 선 두께, 버전 복원 안전 확인 및 저장 오류 진단.
+- **버전**: v0.9.57 (`package.json` 0.9.57). APP_VER·RELEASES·패키지 버전 동기화.
+- **브랜치**: `main`, 시작 시 `git pull --ff-only` 최신 확인. 사용자 요청으로 v0.9.57 변경을 로컬 커밋. push·배포하지 않음.
+- **기능**: 선·화살표 선택 시 양 끝점 핸들 표시. 각 끝점 독립 이동·교차·임의 각도/길이, Shift 45도, 끝점 방향키 1px/Shift 10px. 드래그 한 번 실행 취소, pointercancel 원복, 잠금/읽기 전용 보호. 기존 도형의 표시 좌표를 유지한 채 최초 끝점 편집 시 `lineExact`로 전환. 수평/수직의 w/h=0을 지원하며 코어 SVG·편집기·비교·PPT가 drawingEndpoints를 공유.
+- **선 두께**: 디자인 시스템 ms-tool-button의 −/＋와 숫자 입력 1–12px. 선택된 도형에 공통 적용하며 비도형 제외, 경계값 버튼 비활성화. 사각형/타원/마름모/선/화살표 모두 브라우저 반영 확인.
+- **복원 안전**: 내용이 저장된 기준과 다르면 요청한 한국어 문구로 window.confirm. 로컬/클라우드/보관함 불러오기에 적용. JSONB의 객체 키 순서는 정렬해 비교하며 과거 버전 복원 후 새로고침도 SHA-256 지문으로 판정(이미지 문서를 중복 저장하지 않음). 서버 불러오기 중 새 편집이 발생하면 복원을 중단해 변경을 보존.
+- **저장 진단**: 네트워크/응답 시간/브라우저 저장 공간·권한/접근 키/요청 크기·횟수/서버 오류를 구분. POST 성공 후 목록 GET 실패는 저장 성공으로 안내하고 카드 유지. 저장 중 입력한 새 메모를 지우지 않음. Edge Function이 RPC의 접근 키 불일치, 미적용 마이그레이션, 동시 저장, DB 권한을 일반 DB 오류로 숨기던 경로를 수정(원시 DB 세부 정보는 노출하지 않음).
+- **검증**: 시작 353개 통과, 변경 후 363개 통과. `npm run build` → `npm test`, `node --check mapstone-ui.js`, Node 타입 제거 모드의 Edge Function 구문 검사 및 `git diff --check`. 상세 결과 `/tmp/mapstone-57-detailed.log`, 최종 `/tmp/mapstone-tests57-final.log`. Chromium 브라우저에서 선/화살표 양쪽 핸들 24회 이동·고정점 유지, 다섯 도형 두께 입력/증감/상한, 새로고침 유지, 실제 확인창 취소/진행, 503 응답 재현 및 안내·입력 메모 보존 확인. 캡처 `/tmp/mapstone-{line,arrow}-final57.png`, `/tmp/mapstone-version-error57.png`.
+- **슬라이더 측정**: `scripts/slider-perf.py`의 격리 origin(4174)에서 저장한 8개/42개 테스트 일정 사용. 메인 배율·오버랩·구분선 각각 3회×25 pointermove, trustedPointer=true. p95 최대33.4ms, 50ms 초과0회. 손잡이 최대오차: 배율0.034px, 오버랩0.22px, 구분선0.017px, 놓기 전 중간 geometry/opacity 연속 반영. 42개 일정의 비교 이미지133% 확대·scrollLeft45/scrollTop20·분석 패널 열림에서 추가 각3회×25 이동: p95≤33.3ms, 50ms 초과0회. 증거 `/tmp/mapstone-perf57.json`, `/tmp/mapstone-perf57-zoomed.json`. Chromium headless 마우스 입력과 스크린샷으로 검증했으며 사용자의 기존 저장 일정/실사용 탭은 이 환경에 없어서 확인하지 못함. 실제 사용자 수동 체감/GPU 표시 성능을 보장하는 측정은 아님.
+- **운영 범위**: 브라우저 오류 흐름은 격리된 재현 응답으로 검증. 운영 Supabase의 실제 저장 실패 원인/인증/마이그레이션 상태는 접속 정보와 실패 로그가 없어 확인하지 않음. 웹 프런트엔드와 Supabase Edge Function을 함께 배포해야 서버 세부 오류 안내가 운영에 적용됨.
+- **다음 작업**: 사용자 요청 시 push 및 웹/Edge Function 배포. 이후 실제 운영 저장 요청과 사용자 일정의 화면·슬라이더 체감 검증.
 - **디자인 시스템**: MapStone 디자인 시스템(한국어판) 아티팩트 https://claude.ai/artifact/JAnQNBvL7UzeNgx44bPEeb — 토큰은 `assets/design-system/tokens.css`와 같은 이름. 컴포넌트 57개 카드. 실행 중인 화면이 기준이며, 인벤토리와 다르면 화면을 따름.
-- **주의 사항**:
+- **주의 사항**: 원본은 src/timeline.dc.html·mapstone-core.js·mapstone-ui.js·supabase/functions/mapstone-api/index.ts. 생성 파일을 직접 수정하지 말고 build 사용. versions/ 과거 스냅샷은 미변경. 기존 v0.9.56 분석 preserveVersions·포스트잇 연결과 v0.9.55 슬라이더 직접 갱신/확대·교차 비교 구조를 보존. 슬라이더 pointermove에 mutate/전체 렌더링을 다시 넣지 말 것. 상세한 이전 기능 인수인계는 작업 로그 및 Git 이전 HANDOFF 참고.
+
+### 이전 리비전 구현 주의 사항 (보존)
+
+아래는 기존 기능의 주의 사항이며, v0.9.57에서 바뀐 선 끝점·두께·버전 동작은 위 현재 상태를 따릅니다.
+
   - v0.9.56: 분석 검토 적용만 `importDocument(pending,{preserveVersions:true})`로 현재 versions/versionProjectId를 유지합니다. 일반 파일 불러오기·새 문서는 기존 교체 정책을 유지합니다.
   - 포스트잇 `.ms-text-clip`은 좌상단 8px/오른쪽 30px 고정 여백, 줄바꿈 balance 해제. 사용자가 지정한 가로 정렬 설정은 유지하며 기본값은 왼쪽입니다. 최소 크기 계산도 고정 여백을 사용합니다.
   - 포스트잇 connectionEnabled/targetId/linkOffset/linkY로 일정·참고·공통 구간에 연결합니다. 연결점/드롭·키보드는 기존 연결 메모 경로를 공유하되 포스트잇 s/y/w/h는 보존합니다. 대상 삭제 시 연결만 해제, pointercancel은 연결하지 않습니다.
@@ -75,6 +83,8 @@
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-19 · Codex · v0.9.57 · 선/화살표 양 끝점 자유 조정·선 두께 버튼/입력·미저장 복원 확인·저장 오류 원인 안내. build/test363개·브라우저 다섯 도형/확인창/오류/새로고침·42개 일정 슬라이더 측정. 사용자 요청으로 로컬 커밋, push·배포 미실행, 운영 DB 오류는 미확인.
 
 - 2026-10-20 · Codex · v0.9.56 유지 · 사용자 승인으로 기존 병합 정리: 원격 02978c1과 로컬 3c4dd6a 기능 보존, 생성 파일 재빌드·353개 테스트·충돌 마커/공백 검사, 병합 커밋 및 GitHub main 동기화 진행.
 
