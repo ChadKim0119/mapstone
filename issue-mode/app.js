@@ -137,6 +137,7 @@ function refresh(parts) {
     }
     if (k === 'blocks') { el.innerHTML = blocksHTML(true); bindBlocks(el); }
   });
+  syncStickyHeads(); // 위쪽 영역 높이가 바뀌면 고정 위치도 다시 맞춤
 }
 function paintAppbar() {
   const r = ui.view === 'report';
@@ -467,6 +468,7 @@ function drawCanvas(host, ro) {
     };
   });
   ui.revealNow = false;
+  syncStickyHeads();
   // interactions
   const rows = id => $$(`.tl-row[data-row="${id}"]`, host);
   host.onmouseover = e => { const r = e.target.closest('[data-row]'); const id = r && r.dataset.row; if (host._hov === id) return; if (host._hov) rows(host._hov).forEach(x => x.classList.remove('hover')); host._hov = id; if (id) rows(id).forEach(x => x.classList.add('hover')); };
@@ -978,6 +980,23 @@ function openImport() {
   }
   draw();
 }
+
+/* ================= 타임라인 머리 고정 =================
+   타임라인은 가로 스크롤(overflow) 안에 있어 CSS sticky가 페이지 스크롤에 붙지 않는다.
+   스크롤할 때 세 열(이슈·날짜·다음 단계)의 머리를 같은 거리만큼 내려 앱 바 아래에 고정한다. */
+let stickyRaf = 0;
+function syncStickyHeads() {
+  const bar = $('.appbar'), top = bar ? bar.getBoundingClientRect().bottom : 0;
+  $$('.tl').forEach(tl => {
+    const heads = $$(':scope > .tl-col > .tl-head, :scope > .tl-mid > .tl-midin > .tl-head', tl);
+    if (!heads.length) return;
+    const rc = tl.getBoundingClientRect(), foot = tl.querySelector('.tl-foot'), hh = heads[0].offsetHeight;
+    const max = Math.max(0, rc.height - hh - (foot ? foot.offsetHeight : 0));
+    const off = Math.round(Math.min(max, Math.max(0, top - rc.top)));
+    heads.forEach(h => { h.style.transform = off ? `translateY(${off}px)` : ''; h.classList.toggle('stuck', off > 0); });
+  });
+}
+window.addEventListener('scroll', () => { if (!stickyRaf) stickyRaf = requestAnimationFrame(() => { stickyRaf = 0; syncStickyHeads(); }); }, { passive: true });
 
 /* ================= 부팅 ================= */
 load();

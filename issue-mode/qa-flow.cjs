@@ -222,6 +222,13 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   await p.evaluate(d => { doc = normalizeDoc(d); persist(true); render(); }, keepDoc); await p.waitForTimeout(200);
   ok((await st()).doc.issues.length === keepDoc.issues.length, 'NOW 검증용 문서 정리 후 기존 문서 복구');
 
+  // 21-3 스크롤해도 타임라인 머리 고정
+  await p.evaluate(() => window.scrollTo(0, document.querySelector('#canvas .tl').getBoundingClientRect().top + window.scrollY + 400)); await p.waitForTimeout(150);
+  const sk = await p.evaluate(() => ({ bar: Math.round(document.querySelector('.appbar').getBoundingClientRect().bottom), heads: [...document.querySelectorAll('#canvas .tl-head')].map(h => Math.round(h.getBoundingClientRect().top)) }));
+  ok(sk.heads.length === 3 && sk.heads.every(t => t === sk.bar), `스크롤 시 타임라인 머리 3열이 앱 바 아래 고정 (${sk.heads.join(',')} / ${sk.bar})`);
+  const nowBox = await (await p.$('.tl-now.top')).boundingBox(); ok(nowBox && Math.round(nowBox.y) >= sk.bar, '고정된 머리의 NOW 알약 표시');
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(100);
+
   // 22 보고 화면
   await p.click('#v-r'); await p.waitForTimeout(250);
   ok((await p.$$('.hero')).length === 1 && (await p.$$('#r-canvas .tl-row')).length > 0, '보고 요약: 히어로 + 읽기 전용 타임라인');

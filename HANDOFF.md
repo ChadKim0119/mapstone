@@ -4,7 +4,8 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Claude Code · 2026-10-20 · v0.9.60 모드 전환 부드럽게 + 이슈관리 모드를 마일스톤 디자인 시스템 기준으로 전면 정리. 작업 브랜치 커밋 후 main 반영·배포 완료. 직전 v0.9.59까지는 main 반영 완료.
+- **마지막 작업**: Claude Code · 2026-10-20 · v0.9.61 이슈관리 타임라인 머리 고정(작업 브랜치 푸시, main 반영은 사용자 확인 대기). 이전: v0.9.60 모드 전환 부드럽게 + 이슈관리 모드를 마일스톤 디자인 시스템 기준으로 전면 정리. 작업 브랜치 커밋 후 main 반영·배포 완료. 직전 v0.9.59까지는 main 반영 완료.
+- **타임라인 머리 고정(v0.9.61)**: 이슈관리 타임라인은 `.tl-mid`가 가로 스크롤(overflow)이라 CSS sticky가 페이지 스크롤에 붙지 않음 → `app.js syncStickyHeads()`가 스크롤(rAF 1회 병합)·`refresh()`·`drawCanvas()` 후에 세 열 `.tl-head`를 같은 `translateY`로 앱 바 아래에 고정(타임라인 하단 `.tl-foot` 위에서 멈춤, `.stuck` 그림자, z-index 6). 관리·보고 화면 공통, 표 보기는 해당 없음. qa-flow에 고정 확인 2개 추가(88개 통과). 슬라이더 v0.9.61도 기준과 동일(배율 16.7~16.8ms, 1회 이상치 116ms, 비교 50~83ms).
 - **모드 전환(v0.9.60)**: ① 두 모드 헤더 첫 줄(브랜드 30px 아이콘·14px 굵기700·버전 칩·모드 전환 32px)을 같은 좌표로 맞춤 — 1920/1600/1280/1024/760/390에서 브랜드·버전·모드 전환·각 항목 좌표와 배경색 일치를 Playwright로 확인. 1100px 이하 짧은 이름(padding 0 9px), 700px 이하 여백 8px·브랜드 44px 규칙도 마일스톤과 동일. ② `scripts/bundle-base.html` 부팅 화면을 가운데 로고+로딩바 대신 실제 헤더와 같은 좌표의 헤더 스켈레톤으로 교체(`__APP_VER__`는 build.py가 주입, 폰트 preload). ③ 문서 간 view transition: `@view-transition{navigation:auto}`를 이슈 CSS·부팅 셸·`src/timeline.dc.html`에, `view-transition-name` ms-brand/ms-mode를 양쪽 헤더에 지정(루트 교차 .16s, 모션 감소 시 끔). ④ 모드 전환 링크에 호버하면 상대 모드를 prerender(speculationrules, eagerness moderate; 이슈→마일스톤은 issues.html 정적 규칙, 마일스톤→이슈는 componentDidMount에서 동적 삽입). 안전장치: prerender 중 저장 차단(마일스톤 `flushSave`, 이슈 `persist`·`persistUI`), 활성화 시 마일스톤은 저장값이 바뀌었으면 `location.reload()`, 이슈는 `load();render()`. Playwright는 DevTools 연결 때문에 prerender가 `PrerenderingDisabledByDevTools`로 막혀 실제 활성화는 검증 불가 — 호버 시 규칙이 시도되는 것과 `document.prerendering` 모의로 저장 차단·재로딩 동작만 확인. 실제 Chrome에서 체감 확인 필요(Safari는 prerender 없이 view transition+헤더 스켈레톤만 적용).
 - **이슈관리 디자인 정렬(v0.9.60)**: 토큰을 마일스톤 값으로(컨트롤 32px·반경 12, 참조 6·카드 16·패널 20, primary 평면 #3568C5/hover #2959AF, 배경 평면 #F5F8FD, 그림자 토큰), 굵기 800 제거(최대 700), 글자 크기 11/12/13/14/16/20/24 단계로 정리(모드 전환만 12.5), 좌우 여백 20px, 세그먼트=마일스톤 모드 전환 치수, 입력 포커스 2px #EAF2FC, 타임라인 머리 평면 navy 44px, NOW 알약=마일스톤과 같은 파란 채움 `NOW`+8px 날짜, 인스펙터 탭 36px/12px, 섹션 제목 12px 슬레이트, 대화상자 반경 20·테두리·헤더 16/22px·36px 버튼·배경막 rgba(10,18,30,.48). 원본 스냅샷 비교는 `git show ade4d66:issue-mode/style.css`.
 - **검증(v0.9.60)**: `npm test` 371개 통과(부팅 로고 테스트를 CSS 배경 아이콘 기준으로 갱신, 헤더·토큰·prerender 안전장치 테스트 추가). qa-flow 86개, qa-layout 6개 폭×11개 화면 0건(390px 헤더 버튼 44px와 보기 세그먼트 높이 맞춤 포함). 슬라이더 측정 v0.9.60: 배율 p95 16.7~16.8ms(1회 100~133ms 이상치), 오버랩·구분선 50~83ms — v0.9.57~59와 동일(컨테이너 한계).
@@ -12,7 +13,7 @@
 - **입력 시 날짜 질문(v0.9.59)**: `model.js dateContext(src)`가 상대 표현(금일·오늘·당일·오전/오후(시각 동반)·어제·전일·내일·익일·명일·모레·금주 등)과 원문 기준일(“N월 N일 기준/현재”, “N/N 기준”), 최신 날짜를 찾음. 입력 창의 보고 기준일을 비워 두면(기본) 상대 표현이 있거나 날짜가 없을 때 질문 단계(원문 기준일/원문 최신 날짜/오늘(입력일)/직접 선택, 해당 문장 강조) 표시. 상대 표현이 없고 날짜만 있으면 기준일→최신 날짜로 자동 결정. 규칙 파서는 금일/어제/내일 등으로 시작하는 문장을 기준일로 환산해 이력 추가(내일 이후 plan). Claude 프롬프트에도 환산 지시 추가. 검토 단계에 기준일이 과거면 경과 안내.
 - **이슈관리 모드 구조**: 원본 `issue-mode/style.css·model.js·data.js·app.js·sample.txt` → `scripts/build.py`가 단일 `issues.html` 생성(폰트·아이콘은 `assets/` 공유, APP_VER 주입). 저장은 localStorage `mapstone.issueTracker.v2`(일정 데이터와 분리) + JSON 파일 저장·열기. 정리는 규칙 기반(로컬). Claude 분석 경로는 claude.ai 아티팩트에서만 노출.
 - **검증(v0.9.59)**: `npm run build` → `npm test` 370개 통과(`tests/issue-mode.test.cjs` 7개: 상대 날짜 감지·환산, NOW 정규화 추가). `issue-mode/qa-flow.cjs` 86개 통과(질문 단계·과거 기준일 환산·경과 표시·NOW 드래그/입력/Shift+→/더블클릭/새로 열기 포함), `issue-mode/qa-layout.cjs` 6개 폭 × 11개 화면(기준일 질문 추가) 0건. 1600/1024/390 캡처로 NOW 알약·보고 표시·모바일 날짜 입력 정렬 확인.
-- **버전**: v0.9.60 (`package.json` 0.9.60). APP_VER·RELEASES(agent Claude Code)·버전 고정 테스트 동기화.
+- **버전**: v0.9.61 (`package.json` 0.9.61). APP_VER·RELEASES(agent Claude Code)·버전 고정 테스트 동기화.
 - **브랜치**: 작업 브랜치 `claude/gifted-bardeen-nmvaup`. v0.9.59까지 main 반영, v0.9.60도 main 반영(62f25fc) · Vercel production READY(dpl_3vVFYmUiJZnCYH9hCGc7sTtjyhAv).
 - **슬라이더 측정(v0.9.59)**: 마일스톤 코드는 버전 외 변경 없음. 격리 origin 4174, 8개/42개 아이템, 메인 배율·오버랩·구분선 각 3회×25 이동 + 확대·스크롤·분석 패널 조건, trustedPointer=true, 오류 0. 배율 p95 16.7~33.3ms(1회 100~133ms 이상치), 오버랩·구분선 50~83ms로 v0.9.57/58 기준과 동일 → 컨테이너(GPU 없는 headless) 한계, 퇴행 아님. 실제 Mac 브라우저 재측정 필요.
 - **기능**: 선·화살표 선택 시 양 끝점 핸들 표시. 각 끝점 독립 이동·교차·임의 각도/길이, Shift 45도, 끝점 방향키 1px/Shift 10px. 드래그 한 번 실행 취소, pointercancel 원복, 잠금/읽기 전용 보호. 기존 도형의 표시 좌표를 유지한 채 최초 끝점 편집 시 `lineExact`로 전환. 수평/수직의 w/h=0을 지원하며 코어 SVG·편집기·비교·PPT가 drawingEndpoints를 공유.
@@ -94,6 +95,7 @@
 
 ## 작업 로그
 
+- 2026-10-20 · Claude Code · v0.9.61 이슈관리 타임라인 스크롤 시 머리 3열 고정
 - 2026-10-20 · Claude Code · v0.9.60 모드 전환(헤더 좌표 일치·부팅 헤더·view transition·호버 prerender) + 이슈관리 모드 마일스톤 디자인 시스템 정렬
 - 2026-10-20 · Claude Code · v0.9.59 이슈관리 모드 NOW(드래그·더블클릭 오늘·방향키)·보고 기준일 분리·상대 날짜 질문/환산, main 병합
 - 2026-10-20 · Claude Code · v0.9.58 · 이슈관리 모드 정식 통합(issues.html·헤더 모드 전환 KO/JA·vercel 복사), 규칙 파서 보정, build/test368·조작68·6폭 레이아웃0건·슬라이더 측정(main 대비 동일). 작업 브랜치 푸시, main 미반영.

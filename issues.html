@@ -176,7 +176,8 @@ input.doc-title:focus{outline:none;border-color:var(--blue);background:var(--whi
 .tl-col{position:relative;min-width:0}
 .tl-mid{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
 .tl-midin{position:relative}
-.tl-head{height:44px;background:var(--head);color:var(--white);position:relative}
+.tl-head{height:44px;background:var(--head);color:var(--white);position:relative;z-index:6}
+.tl-head.stuck{box-shadow:0 6px 12px -6px rgb(22 54 93/.35)}
 .tl-l .tl-head,.tl-r .tl-head{display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;gap:8px}
 .tl-r .tl-head{padding-left:28px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
 .tl-r .tl-head small{font-weight:500;opacity:.7;font-size:10px}
@@ -729,7 +730,7 @@ TC별 상세 수행 가능 여부 및 N/T 사유는 첨부한 GS 및 e-Care DVT 
 </script>
 <script>
 'use strict';
-const APP_VER = "v0.9.60";
+const APP_VER = "v0.9.61";
 /* ================= 공통 유틸 ================= */
 const uid = () => 'x' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1332,6 +1333,7 @@ function refresh(parts) {
     }
     if (k === 'blocks') { el.innerHTML = blocksHTML(true); bindBlocks(el); }
   });
+  syncStickyHeads(); // 위쪽 영역 높이가 바뀌면 고정 위치도 다시 맞춤
 }
 function paintAppbar() {
   const r = ui.view === 'report';
@@ -1662,6 +1664,7 @@ function drawCanvas(host, ro) {
     };
   });
   ui.revealNow = false;
+  syncStickyHeads();
   // interactions
   const rows = id => $$(`.tl-row[data-row="${id}"]`, host);
   host.onmouseover = e => { const r = e.target.closest('[data-row]'); const id = r && r.dataset.row; if (host._hov === id) return; if (host._hov) rows(host._hov).forEach(x => x.classList.remove('hover')); host._hov = id; if (id) rows(id).forEach(x => x.classList.add('hover')); };
@@ -2173,6 +2176,23 @@ function openImport() {
   }
   draw();
 }
+
+/* ================= 타임라인 머리 고정 =================
+   타임라인은 가로 스크롤(overflow) 안에 있어 CSS sticky가 페이지 스크롤에 붙지 않는다.
+   스크롤할 때 세 열(이슈·날짜·다음 단계)의 머리를 같은 거리만큼 내려 앱 바 아래에 고정한다. */
+let stickyRaf = 0;
+function syncStickyHeads() {
+  const bar = $('.appbar'), top = bar ? bar.getBoundingClientRect().bottom : 0;
+  $$('.tl').forEach(tl => {
+    const heads = $$(':scope > .tl-col > .tl-head, :scope > .tl-mid > .tl-midin > .tl-head', tl);
+    if (!heads.length) return;
+    const rc = tl.getBoundingClientRect(), foot = tl.querySelector('.tl-foot'), hh = heads[0].offsetHeight;
+    const max = Math.max(0, rc.height - hh - (foot ? foot.offsetHeight : 0));
+    const off = Math.round(Math.min(max, Math.max(0, top - rc.top)));
+    heads.forEach(h => { h.style.transform = off ? `translateY(${off}px)` : ''; h.classList.toggle('stuck', off > 0); });
+  });
+}
+window.addEventListener('scroll', () => { if (!stickyRaf) stickyRaf = requestAnimationFrame(() => { stickyRaf = 0; syncStickyHeads(); }); }, { passive: true });
 
 /* ================= 부팅 ================= */
 load();
