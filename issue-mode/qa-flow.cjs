@@ -1,13 +1,13 @@
 // 기본 조작 사용성 E2E 검증 (로컬 서버 http://127.0.0.1:4190/local.html)
 const { chromium } = require('/opt/node22/lib/node_modules/playwright');
 const fs = require('fs');
-const URL = 'http://127.0.0.1:4190/local.html';
+const URL = process.env.IM_URL || 'http://127.0.0.1:4191/issues.html';
 let pass = 0, fail = 0; const out = [];
 const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; out.push('FAIL ' + m); } };
 (async () => {
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
   const ctx = await b.newContext({ viewport: { width: 1600, height: 1000 }, acceptDownloads: true });
-  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:4190' });
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new globalThis.URL(URL).origin });
   const p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => m.type() === 'error' && errs.push(m.text()));
   await p.goto(URL); await p.evaluate(() => localStorage.clear()); await p.reload(); await p.waitForTimeout(300);
@@ -158,7 +158,7 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
 
   // 19 파일 저장 → 불러오기
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#b-save')]);
-  const fp = __dirname + '/saved.json'; await dl.saveAs(fp);
+  const fp = require('os').tmpdir() + '/mapstone-issues-saved.json'; await dl.saveAs(fp);
   ok(JSON.parse(fs.readFileSync(fp, 'utf8')).issues.length === 9, '파일 저장 JSON');
 
   // 20 텍스트 입력 (규칙 기반)

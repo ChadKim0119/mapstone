@@ -1,4 +1,4 @@
-@font-face{font-family:'Pretendard Variable';src:url(data:font/woff2;base64,__FONT__) format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Pretendard Variable';src:url('assets/design-system/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
 /* Layout: 앱 바 → 문서 머리 → 상태 띠 → [이슈 캔버스 | 인스펙터] → 수치 블록. 보고 화면은 같은 데이터의 읽기 전용 문서. 간격 4/8/12/16/24, 컨트롤 32/36px, 반경 10/12/16 */
 :root{
   color-scheme:light;
@@ -37,7 +37,9 @@ h1,h2,h3,h4,p{margin:0}
 .link{border:0;background:none;padding:0;color:var(--blue);font-weight:700;font-size:12.5px;display:inline-flex;align-items:center;gap:4px;height:auto}
 .link:hover{text-decoration:underline}
 .seg{display:inline-flex;background:var(--white);border:1px solid var(--blue2);border-radius:var(--r-ctl);padding:3px;gap:2px;flex:none;height:var(--h-md)}
-.seg button{border:0;background:none;height:100%;padding:0 13px;border-radius:7px;font-weight:600;color:var(--slate6);font-size:13px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;line-height:1}
+.seg button,.seg a,.seg>span{border:0;background:none;height:100%;padding:0 13px;border-radius:7px;font-weight:600;color:var(--slate6);font-size:13px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;line-height:1;text-decoration:none}
+.seg a:hover{background:var(--blue05)}
+.seg>span[aria-current]{background:var(--blue);color:var(--white)}
 .seg button:hover:not([aria-pressed=true]){background:var(--blue05)}
 .seg button[aria-pressed=true]{background:var(--blue);color:var(--white)}
 .seg.navy button[aria-pressed=true]{background:var(--navy)}
@@ -83,6 +85,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .appbar-in{max-width:1880px;margin:0 auto;padding-block:12px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.01em;margin-right:4px;flex:none}
 .brand i{width:32px;height:32px;border-radius:9px;background:var(--navy);display:grid;place-items:center}
+.brand .ver{height:22px;padding:0 8px;border-radius:8px;border:1px solid var(--blue2);background:var(--white);color:var(--blue);font-size:12px;font-weight:700;display:inline-flex;align-items:center;line-height:1}
 .save-state{font-size:12px;color:var(--slate);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .save-state .dot{background:var(--green)}
 .grow{flex:1 1 auto}

@@ -87,7 +87,7 @@ function parseRules(src, opt = {}) {
   const iso = (m, d) => { const v = `${year}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; return isDate(v) ? v : ''; };
   const dateIn = s => { let m = s.match(/(\d{1,2})월\s*(\d{1,2})일/); if (m) return iso(m[1], m[2]); m = s.match(/(?:^|[^\d./])(\d{1,2})\/(\d{1,2})(?![\d/])/); if (m && +m[1] <= 12) return iso(m[1], m[2]); return ''; };
   const kindOf = s => /오류|실패|불가|Timeout|파손|미수신|미확보|미구현|미구성/i.test(s) ? 'fail' : /정상|성공|완료/.test(s) ? 'ok' : /정정|추정|지연|변경|안내 오류/.test(s) ? 'warn' : /예정|계획/.test(s) ? 'plan' : 'fact';
-  const statusOf = s => /오류|실패|불가|미확보|미구성|미구현|N\/T/i.test(s) ? 'blocked' : /진행|전달/.test(s) ? 'progress' : 'pending';
+  const statusOf = s => /오류|실패|불가|미확보|미구성|미구현|부족|제약|N\/T/i.test(s) ? 'blocked' : /예정|계획|대기/.test(s) ? 'pending' : /진행|전달/.test(s) ? 'progress' : 'pending';
   const cells = l => l.includes('\t') ? l.split('\t').map(s => s.trim()) : l.split(/\s{2,}/).map(s => s.trim());
   const isHeading = l => /^\d+(\.\d+)*\.?\s+\S/.test(l) && !l.includes('\t') && l.length < 80 && !/^\d+\s*(건|개|대)/.test(l);
   const TOK = s => (s.match(/[A-Za-z][A-Za-z0-9#\-]{1,}/g) || []).map(x => x.toUpperCase()).filter(x => !/^(API|TC|N\/T|E2E|LG|U\+|ID|URL|IP|CV|STG|IF|N|T|SU|CY|DVT|REST|MQTT|GS|ECARE|E-CARE|QA|FW)$/.test(x));
@@ -119,9 +119,9 @@ function parseRules(src, opt = {}) {
     const cg = col(issueT, /구분/), cx = col(issueT, /주요 이슈/), cs = col(issueT, /상태/), cf = col(issueT, /영향/);
     issueT.rows.forEach(r => {
       const g = r[cg] || '', x = r[cx] || '', st = r[cs] || '', f = cf >= 0 ? r[cf] || '' : '';
-      const toks = TOK(g + ' ' + x);
-      let it = issues.find(i => toks.includes(i.key.toUpperCase())) || issues.find(i => g.toUpperCase().endsWith(i.key.toUpperCase()));
-      if (!it) { const k = (g.split(/\s+/).slice(1).join(' ') || x.split(/\s+/)[0] || g).trim(); it = byKey[k.toUpperCase()] || mk(k, { priority: Math.min(9, issues.length + 1) }); }
+      const toks = TOK(g + ' ' + x), gt = TOK(g);
+      let it = gt.length ? (byKey[gt[0]] || mk(gt[0], { priority: Math.min(9, issues.length + 1) })) : issues.find(i => TOK(x).includes(i.key.toUpperCase()));
+      if (!it) { const k = (x.split(/\s+/)[0] || g).trim(); it = byKey[k.toUpperCase()] || mk(k, { priority: Math.min(9, issues.length + 1) }); }
       toks.forEach(t => it.tokens.add(t));
       if (!it.group) it.group = GROUP(g);
       if (!it.title) it.title = x;
@@ -138,7 +138,7 @@ function parseRules(src, opt = {}) {
     const heads = lines.map((l, i) => ({ l, i })).filter(x => isHeading(x.l) && !/현황|요약|계획|의견|결론|범위/.test(x.l));
     const bullets = lines.map((l, i) => ({ l, i })).filter(x => /^[-•]\s+/.test(x.l));
     const src2 = heads.length ? heads : bullets;
-    src2.slice(0, 30).forEach(({ l, i }, n) => { const t = l.replace(/^\d+(\.\d+)*\.?\s*|^[-•]\s*/, ''); const it = mk(TOK(t)[0] || 'I' + (n + 1), { title: clip(t, 60) }); const end = src2[n + 1] ? src2[n + 1].i : lines.length; const body = lines.slice(i + 1, end); it.evidence = body.slice(0, 10); it.summary = clip(body.find(b => /현재|불가|오류|지연|실패/.test(b)) || body[0] || t, 180); it.status = statusOf(body.join(' ')); TOK(t + ' ' + body.join(' ')).slice(0, 6).forEach(x => it.tokens.add(x)); const ow = body.join('\n').match(/(?:담당자?|관련 부문)\s*[:：]\s*([^\n]+)/); if (ow) it.owner = ow[1].trim(); body.filter(b => /조치\s*[:：]|필요|예정/.test(b)).slice(0, 4).forEach(b => it.actions.push(b.replace(/^.*?[:：]\s*/, ''))); });
+    src2.slice(0, 30).forEach(({ l, i }, n) => { const t = l.replace(/^\d+(\.\d+)*\.?\s*|^[-•]\s*/, ''); const it = mk(TOK(t)[0] || 'I' + (n + 1), { title: clip(t, 60) }); const end = src2[n + 1] ? src2[n + 1].i : lines.length; const body = lines.slice(i + 1, end); body.forEach(b => { const dd = dateIn(b); if (dd) it.events.push({ date: dd, kind: kindOf(b), text: clip(b.replace(/^\d{1,2}(월\s*\d{1,2}일|\/\d{1,2})\s*/, ''), 90), flag: '', corrected: false, evidence: b }); }); it.evidence = body.slice(0, 10); it.summary = clip(body.find(b => /현재|불가|오류|지연|실패/.test(b)) || body[0] || t, 180); it.status = statusOf(body.join(' ')); TOK(t + ' ' + body.join(' ')).slice(0, 6).forEach(x => it.tokens.add(x)); const ow = body.join('\n').match(/(?:담당자?|관련 부문)\s*[:：]\s*([^\n]+)/); if (ow) it.owner = ow[1].trim(); body.filter(b => /조치\s*[:：]|필요|예정/.test(b)).slice(0, 4).forEach(b => it.actions.push(b.replace(/^.*?[:：]\s*/, ''))); });
     if (!issues.length) mk('I1', { title: clip(opt.title || lines[0], 60), summary: clip(lines.slice(1, 3).join(' '), 180), evidence: lines.slice(0, 8) });
   }
   issues.forEach(i => { i.tokens.add(i.key.toUpperCase()); if (!i.group) i.group = i.key === 'QA' ? 'QA' : '기타'; if (!i.title) i.title = clip(i.gate || i.key, 60); });
@@ -190,13 +190,14 @@ function parseRules(src, opt = {}) {
   // 8) 영향 수치 보정
   issues.forEach(i => {
     const near = lines.filter((l, k) => TOK(l).includes(i.key.toUpperCase()));
-    const api = near.join(' ').match(/(\d+)\s*개\s*API/); if (api && i.impact.count === null) { i.impact = { count: +api[1], unit: 'API', text: `${api[1]}개 API 검증 · TC 건수와 별도` }; }
+    const own = lines.filter((l, k) => TOK(secOf[k] || '').includes(i.key.toUpperCase()) || (l.includes('\t') && TOK(l.split('\t')[0]).includes(i.key.toUpperCase())));
+    const api = own.join(' ').match(/(\d+)\s*개\s*API/); if (api && i.impact.count === null) { i.impact = { count: +api[1], unit: 'API', text: `${api[1]}개 API 검증 · TC 건수와 별도` }; }
     const dep = near.join(' ').match(/([A-Z]{2,5})\s*(?:연동|연계)(?:가|이)?\s*필요/); if (dep && dep[1] !== i.key.toUpperCase() && byKey[dep[1]]) i.dependsOn.push(dep[1]);
     if (!i.evidence.length) i.evidence = near.slice(0, 4);
     if (!i.actions.length && i.gate) i.actions.push(i.gate);
   });
   // VDP 연계가 선행 조건인 영역
-  lines.forEach((l, i) => { const m = l.match(/([A-Z]{2,5})\s*(?:연계|API)[^.]{0,40}선행 조건/); if (m && byKey[m[1]]) { const it = best(secOf[i], 2); if (it && it !== byKey[m[1]] && !it.dependsOn.includes(m[1])) it.dependsOn.push(m[1]); } });
+  lines.forEach((l, i) => { const m = l.match(/([A-Z]{2,5})\s*(?:연계|API|의존)[^.]{0,40}선행 조건/); if (m && byKey[m[1]]) { const it = l.includes('\t') ? byKey[TOK(l.split('\t')[0])[0]] : best(secOf[i], 2); if (it && it !== byKey[m[1]] && !it.dependsOn.includes(m[1])) it.dependsOn.push(m[1]); } });
   // 9) QA 분류 / 사유
   const metrics = [];
   const mT = tables.find(t => col(t, /전체\s*TC/) >= 0);

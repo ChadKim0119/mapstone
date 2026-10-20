@@ -1,0 +1,47 @@
+const { test } = require('node:test'); const assert = require('node:assert/strict'); const fs = require('node:fs'), vm = require('node:vm');
+const sample = fs.readFileSync('issue-mode/sample.txt', 'utf8');
+function load() {
+  const ctx = { console, document: { getElementById: id => id === 'sample-text' ? { textContent: sample } : null } };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync('issue-mode/model.js', 'utf8') + '\n' + fs.readFileSync('issue-mode/data.js', 'utf8') + '\n;this.M={normalizeDoc,parseRules,metricTotals,metricWarnings,sampleDoc,claudePrompt};', ctx);
+  return ctx.M;
+}
+test('Rule-based parsing turns the DVT report into tracked issues without inventing dates or owners', () => {
+  const M = load(), d = M.normalizeDoc(M.parseRules(sample, {}));
+  assert.equal(d.asOf, '2026-10-20');
+  assert.ok(d.issues.length >= 7 && d.issues.length <= 12);
+  const t = M.metricTotals(d.metrics); assert.deepEqual([t.total, t.blocked, t.limited, t.other], [854, 343, 142, 369]);
+  const vdp = d.issues.find(i => i.key === 'VDP'); assert.ok(vdp.events.length >= 8); assert.ok(vdp.requests.length >= 8);
+  assert.ok(vdp.events.some(e => e.flag === '*')); assert.ok(vdp.events.some(e => e.corrected));
+  assert.ok(d.issues.every(i => i.checkDate === ''), 'no invented check dates');
+  assert.ok(d.issues.find(i => i.key === 'DCM').scenario.success.includes('50건'));
+  assert.equal(d.reasons.reported, 84); assert.equal(d.reasons.rows.reduce((a, r) => a + r.count, 0), 78);
+  assert.ok(d.issues.find(i => i.key === 'DMS').impact.unit === 'API');
+  assert.ok(d.conclusion.points.length === 3);
+});
+test('Plain bullet memo without tables still yields editable issues', () => {
+  const M = load(), d = M.normalizeDoc(M.parseRules('- 결제 API 인증 오류\n현재 인증 오류로 주문 확인 불가\n담당: 플랫폼팀\n- 검색 색인 지연\n10/20 색인 재처리 실패', { asOf: '2026-10-20' }));
+  assert.equal(d.issues.length, 2); assert.equal(d.issues[0].owner, '플랫폼팀'); assert.equal(d.issues[1].events[0].date, '2026-10-20');
+  assert.throws(() => M.parseRules('짧음', {}));
+});
+test('Document normalization clamps values, maps dependency keys and drops broken links', () => {
+  const M = load();
+  const d = M.normalizeDoc({ asOf: 'bad', issues: [{ key: 'A', title: '', priority: 99, status: 'x', dependsOn: ['B', 'missing'], events: [{ date: '2026-13-40', text: 't' }], impact: { count: -3, unit: 'API' } }, { key: 'B', title: 'b' }] });
+  assert.equal(d.issues[0].title, '새 이슈'); assert.equal(d.issues[0].priority, 9); assert.equal(d.issues[0].status, 'pending');
+  assert.equal(JSON.stringify(d.issues[0].dependsOn), JSON.stringify([d.issues[1].id])); assert.equal(d.issues[0].events[0].date, ''); assert.equal(d.issues[0].impact.count, 0);
+  assert.throws(() => M.normalizeDoc(null));
+  assert.equal(M.metricWarnings([{ label: 'X', total: 10, blocked: 3, limited: 3, other: 3 }]).length, 1);
+});
+test('Example document and Claude prompt keep QA classification separate from Pass/Fail', () => {
+  const M = load(), d = M.sampleDoc();
+  assert.equal(d.issues.length, 9); assert.ok(d.issues.find(i => i.key === 'OPW').dependsOn.length === 1);
+  assert.match(M.claudePrompt('원문', { asOf: '2026-10-20' }), /Pass\/Fail 결과가 아니다/);
+});
+test('Build exposes issue mode as a separate entry linked from the milestone header', () => {
+  const src = fs.readFileSync('src/timeline.dc.html', 'utf8'), issues = fs.readFileSync('issues.html', 'utf8'), vercel = fs.readFileSync('vercel.json', 'utf8');
+  assert.match(src, /class="ms-mode-switch"[\s\S]*?href="\{\{ issueModeHref \}\}"/);
+  assert.match(src, /modeIssue: '이슈관리 모드'/); assert.match(src, /modeIssue: '課題管理モード'/);
+  const ver = src.match(/APP_VER = '([^']+)'/)[1]; assert.ok(issues.includes(`const APP_VER = "${ver}"`));
+  assert.ok(issues.includes("assets/design-system/PretendardVariable.woff2")); assert.ok(!/__FONT__/.test(issues));
+  assert.match(vercel, /issues\.html/);
+});

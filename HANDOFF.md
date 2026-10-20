@@ -4,12 +4,12 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Codex · 2026-10-20 · 독립 이슈관리 모드 목업 구현·브라우저 검증 완료. 관리 기본 화면과 보고용 요약/시나리오, 텍스트 초안 검토/반영, 담당·조치·점검·이력·로컬 저장 구현. 커밋·푸시·배포 없음.
-- **독립 목업**: `/Users/kcm/Documents/GitHub/0_Design/mapstone_design/prototypes/issue-management/` → http://127.0.0.1:4180/ (`npm run dev -- --host 127.0.0.1 --port 4180 --strictPort`, 실행 세션99793, IAB 탭3 유지). 내비게이션은 ‘마일스톤 모드’ / ‘이슈관리 모드’. 기존 앱 기능·리비전은 그대로 v0.9.57이며 이번 목업을 기존 앱에 통합하지 않음. 원본 tokens.css·Pretendard·SVG 로고 복사. 원문은 외부 전송 없이 로컬 규칙으로 초안 추출하고 검토 후 반영함. 범용 AI 의미 추론은 미연결. origin4180의 전용 localStorage와 JSON 파일로 저장하며 기존 일정·클라우드와 분리함.
-- **목업 검증**: 독립 build·4개 통합 테스트 통과, 원본 build·363개 테스트 통과. 실제 브라우저에서 제공 원문→7개 이슈/3개 QA 영역/총계854·343·142·369, 별도 결제/검색 텍스트→2개 이슈, 담당·상태·점검일·체크리스트·메모·새로고침 유지, JSON 왕복, 검색/상태 필터, 보고 요약/시나리오 가정 분리,390px 화면 확인. 최종 브라우저 오류·경고 없음. `design-qa.md` passed와 `qa/` 캡처는 목업 폴더에 저장. 시나리오 및 상태 변경으로 QA 건수를 자동 차감하지 않음. 사용자 원문 DVT 예제로 복원해 관리 기본 화면을 열어 둠. 원본 앱 기능 수정은 없어 원본 슬라이더 성능 재측정은 수행하지 않음.
-- **버전**: v0.9.57 (`package.json` 0.9.57). APP_VER·RELEASES·패키지 버전 동기화.
-- **브랜치**: `main`, `git pull --ff-only`로 02978c1 → 57a4c45 최신 반영. 시작 시 미커밋 변경 없음. 이번 준비 작업은 커밋·푸시·배포하지 않음.
-- **로컬 환경**: Node v26.10.0 / npm 11.19.1 / Python 3.9.6. 별도 설치 의존성 없음. `npm start` → http://127.0.0.1:4173/index.html 실행 중(세션42873), IAB 탭2를 유지. 브라우저 v0.9.57·기존 일정 제목/아이템 표시, 오류·경고 로그 없음. 최종 테스트 로그 `/tmp/mapstone-env-20261020-tests.log`. 환경 준비만 수행해 기능/리비전 변경·슬라이더 성능 재측정 없음. 재빌드한 index.html은 압축 리소스 14개의 gzip 바이트만 달라졌으며 압축 해제 내용·template는 동일함. HANDOFF.md와 함께 미커밋 상태로 유지.
+- **마지막 작업**: Claude Code · 2026-10-20 · v0.9.58 이슈관리 모드 정식 통합. `issues.html`(원본 `issue-mode/`) 추가, 마일스톤 모드 헤더에 `마일스톤 모드 | 이슈관리 모드` 전환(KO/JA, 1100px 이하 짧은 이름 · 900px 이하 제목 다음 줄). 작업 브랜치 `claude/gifted-bardeen-nmvaup`에 커밋·푸시, main 반영·배포는 사용자 확인 대기.
+- **이슈관리 모드 구조**: 원본 `issue-mode/style.css·model.js·data.js·app.js·sample.txt` → `scripts/build.py`가 단일 `issues.html` 생성(폰트·아이콘은 `assets/` 공유, APP_VER 주입). 저장은 localStorage `mapstone.issueTracker.v2`(일정 데이터와 분리) + JSON 파일 저장·열기. 정리는 규칙 기반(로컬). Claude 분석 경로는 claude.ai 아티팩트에서만 노출. Codex 4180 목업과 Claude 시안을 결합한 v2가 기준이며 `prototypes/issue-mode-v2`는 `issue-mode/`로 이동·삭제, v1 `prototypes/issue-mode/`는 사용자 커밋 그대로 유지.
+- **검증(v0.9.58)**: `npm run build` → `npm test` 368개 통과(신규 `tests/issue-mode.test.cjs` 5개 포함, 버전 고정 테스트 0.9.58로 갱신). `issue-mode/qa-flow.cjs` 기본 조작 68개 통과, `issue-mode/qa-layout.cjs` 1920/1600/1440/1280/1024/390 × 10개 화면 정렬·잘림·겹침 0건. 마일스톤 헤더 1920~1024 세로 중심 일치·가로 스크롤 없음, 760/390 줄바꿈 정상, 모드 왕복·일본어 표시 확인. 규칙 파서 정확도 수정(이슈 표 구분 키 우선, '진행 예정'=확인 대기, VDP 의존 감지, 글머리 메모 날짜 이력).
+- **버전**: v0.9.58 (`package.json` 0.9.58). APP_VER·RELEASES(agent Claude Code)·패키지 버전 동기화.
+- **브랜치**: `claude/gifted-bardeen-nmvaup` (origin/main abb4182 병합 후 작업). main에는 아직 미반영. 사용자 승인 시 main 병합 → Vercel 자동 배포(`vercel.json`이 `issues.html` 복사).
+- **슬라이더 측정(v0.9.58)**: 격리 origin 4174(`scripts/slider-perf.py`), 8개/42개 아이템 + 로컬 버전 2개, 메인 배율·오버랩·구분선 각 3회×25 이동 + 비교 확대·scroll(45,20)·변경·분석 패널 조건 추가 3회씩, trustedPointer=true, pointerError 0. p95 중앙값: 배율16.8/33.4ms, 오버랩66.7/83.3ms, 구분선66.6/83.3ms. 같은 컨테이너에서 main v0.9.57도 배율16.8/33.3·오버랩66.7/83.3·구분선66.7/66.8ms로 동일 수준 → 이번 변경의 퇴행 아님, 이 클라우드 컨테이너(GPU 없는 headless) 한계로 비교 화면 33.4ms 기준 미충족. 실제 Mac 브라우저 재측정 필요. 증거 `/tmp/mapstone-perf58.json`, `/tmp/mapstone-perf57-base.json`(세션 종료 시 소실).
 - **기능**: 선·화살표 선택 시 양 끝점 핸들 표시. 각 끝점 독립 이동·교차·임의 각도/길이, Shift 45도, 끝점 방향키 1px/Shift 10px. 드래그 한 번 실행 취소, pointercancel 원복, 잠금/읽기 전용 보호. 기존 도형의 표시 좌표를 유지한 채 최초 끝점 편집 시 `lineExact`로 전환. 수평/수직의 w/h=0을 지원하며 코어 SVG·편집기·비교·PPT가 drawingEndpoints를 공유.
 - **선 두께**: 디자인 시스템 ms-tool-button의 −/＋와 숫자 입력 1–12px. 선택된 도형에 공통 적용하며 비도형 제외, 경계값 버튼 비활성화. 사각형/타원/마름모/선/화살표 모두 브라우저 반영 확인.
 - **복원 안전**: 내용이 저장된 기준과 다르면 요청한 한국어 문구로 window.confirm. 로컬/클라우드/보관함 불러오기에 적용. JSONB의 객체 키 순서는 정렬해 비교하며 과거 버전 복원 후 새로고침도 SHA-256 지문으로 판정(이미지 문서를 중복 저장하지 않음). 서버 불러오기 중 새 편집이 발생하면 복원을 중단해 변경을 보존.
@@ -81,17 +81,15 @@
   - 원격에 미병합 브랜치 `chore/repo-hygiene`(PR #1), `feat/v9-board-tools`(PR #2)가 있습니다. 관련 작업 시 먼저 확인하세요.
   - `supabase/.temp/`가 Git에 포함되어 있습니다(Supabase CLI 캐시).
 
-- **이슈관리 모드 프로토타입 (2026-10-20, Claude Code)**: 사용자 명명 — 기존 기능 "마일스톤 모드", 새 기능 "이슈관리 모드". 본 앱(src/·RELEASES·버전) 미변경, 작업 브랜치 `claude/gifted-bardeen-nmvaup`에만 푸시(main 미반영).
-  - v1 `prototypes/issue-mode/` (레인 타임라인 첫 시안), **v2 `prototypes/issue-mode-v2/`가 현재안**: Claude 시안 + 사용자가 준 Codex 4180 시안(React, 이슈 중심 인스펙터·What-if)을 결합. 아티팩트 https://claude.ai/artifact/6uTo4UPuDbeAzC8aLhZ9JU
-  - v2 구조: 이슈 중심 데이터(담당·점검일·완료 조건·게이트 단계·조치·메모·확인 요청·이력·지속 제약·선행 이슈·시나리오) / 관리 화면 = 상태 띠 + [좌 이슈 · 중 날짜 비례 타임라인(빈 기간 +N일 접기) · 우 다음 단계] + 인스펙터 3탭 + QA·사유·관리 공백 블록 / 보고 화면 = 요약·시나리오(What-if, 실제 상태 불변)·회신 요청(상대 부문별 문안 복사) / 입력 3단계(원문→초안 검토→반영, Claude 또는 규칙 기반) / JSON 파일 저장·열기 / 되돌리기(Ctrl+Z, 선택 상태 포함).
-  - 원본은 `prototypes/issue-mode-v2/src/*`, `python3 prototypes/issue-mode-v2/src/build.py`로 index.html 생성(직접 수정 금지). 검증 스크립트 `qa-flow.cjs`(기본 조작 68개 통과), `qa-layout.cjs`(1920/1600/1440/1280/1024/390 × 10개 화면, 정렬·잘림·겹침 0건).
-  - 원칙: 날짜·담당 추측 금지, QA 분류≠Pass/Fail, API≠TC, 시나리오는 실제 상태를 바꾸지 않음. 사용자는 버튼·여백·정렬 어긋남에 매우 민감 — 변경 후 qa-layout 재실행 필수.
+- **이슈관리 모드 이력**: v1 시안(`prototypes/issue-mode/`), v2 결합 시안(아티팩트 https://claude.ai/artifact/6uTo4UPuDbeAzC8aLhZ9JU) → v0.9.58에서 정식 `issues.html`로 통합. 원칙: 날짜·담당 추측 금지, QA 분류≠Pass/Fail, API≠TC, 시나리오는 실제 상태 불변. 사용자는 버튼·여백·정렬 어긋남에 매우 민감 — 변경 후 qa-layout 재실행 필수.
 
 ## 미해결 질문
 
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-20 · Claude Code · v0.9.58 · 이슈관리 모드 정식 통합(issues.html·헤더 모드 전환 KO/JA·vercel 복사), 규칙 파서 보정, build/test368·조작68·6폭 레이아웃0건·슬라이더 측정(main 대비 동일). 작업 브랜치 푸시, main 미반영.
 
 - 2026-10-20 · Claude Code · v0.9.57 유지 · 이슈관리 모드 결합 프로토타입 v2(prototypes/issue-mode-v2, 작업 브랜치), 조작 68개·6개 폭 레이아웃 검수 통과, 아티팩트 공개.
 - 2026-10-20 · Claude Code · v0.9.57 유지 · 이슈관리 모드 단독 프로토타입(prototypes/issue-mode, 미커밋)·아티팩트 공개, 관리/보고 화면, 텍스트 반영(Claude·규칙 기반). 앱 본체 변경 없음.

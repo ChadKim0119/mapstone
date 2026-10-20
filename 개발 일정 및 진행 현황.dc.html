@@ -220,6 +220,14 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-month-value > span { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:12px;font-weight:600; }
     .ms-month-value:focus-within { outline:2px solid var(--ms-color-action-primary);outline-offset:-2px; }
     .ms-now-direction { display:none;position:fixed;align-items:center;gap:6px;pointer-events:auto;z-index:24900;padding:5px 9px;border:1px solid var(--ms-color-action-primary);border-radius:9999px;background:#fff;color:var(--ms-color-action-primary);font-size:12px;font-weight:700;box-shadow:0 2px 8px #17365718;cursor:pointer; }
+    .ms-mode-switch { flex:none;display:inline-flex;align-items:center;gap:2px;height:32px;box-sizing:border-box;padding:2px;border:1px solid var(--ms-color-border-default);border-radius:var(--ms-radius-control);background:var(--ms-color-surface-default); }
+    .ms-mode-switch > * { display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:600;line-height:1;white-space:nowrap;color:var(--ms-color-text-secondary);text-decoration:none; }
+    .ms-mode-switch > [aria-current] { background:var(--ms-color-action-primary);color:var(--ms-color-text-inverse); }
+    .ms-mode-switch > a:hover { background:var(--ms-color-surface-subtle);color:var(--ms-color-text-primary); }
+    .ms-mode-switch > a:focus-visible { outline:2px solid var(--ms-color-focus-ring);outline-offset:1px; }
+    .ms-mode-short { display:none; }
+    @media (max-width:1100px) { .ms-mode-full { display:none; } .ms-mode-short { display:inline; } .ms-mode-switch > * { padding:0 9px; } [data-toolbar] > div:first-child { flex-wrap:wrap; } }
+    @media (max-width:900px) { [data-toolbar] > div:first-child > .ms-title-edit { order:10;flex:1 1 100%; } }
     .ms-title-edit { display:flex;align-items:center;gap:8px;flex:1;min-width:100px;padding:3px 10px;border:1px solid var(--ms-color-border-default);border-radius:8px;background:#fff;cursor:text; }
     .ms-title-edit > span { flex:none;font-size:11px;font-weight:600;color:var(--ms-color-text-secondary); }
     .ms-title-edit input { flex:1;min-width:0;width:100%;border:0;background:transparent;padding:4px 0;font-family:inherit;font-size:18px;font-weight:700;color:var(--ms-color-text-primary);outline:none; }
@@ -528,6 +536,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
   <div data-toolbar="" data-noprint="" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 20px;border-bottom:1px solid var(--color-border-neutral-2)">
     <div style="display:flex;align-items:center;gap:10px">
       <button onClick="{{ openRel }}" title="{{ L.relTitle }}" style="flex:none;padding:5px 15px 5px 8px;display:inline-flex;align-items:center;gap:8px;border:none;border-radius:9999px;background:var(--ms-color-action-primary);font-size:14px;font-weight:700;color:#fff;letter-spacing:.01em;cursor:pointer" aria-label="MapStone {{ appVer }}"><svg width="22" height="22" viewBox="0 0 512 512" aria-hidden="true" style="flex:none;display:block"><rect x="0" y="0" width="512" height="512" rx="116" fill="#181A1B"></rect><rect x="112" y="136" width="176" height="56" rx="28" fill="#FFFFFF"></rect><rect x="184" y="228" width="216" height="56" rx="28" fill="#E30084"></rect><rect x="112" y="320" width="104" height="56" rx="28" fill="#FFFFFF"></rect><path d="M296 320l28 28-28 28-28-28z" fill="#FFFFFF"></path><rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="1" vector-effect="non-scaling-stroke"></rect></svg>MapStone <span class="ms-version-button">{{ appVer }}</span></button>
+      <nav class="ms-mode-switch" aria-label="{{ L.modeNav }}"><span aria-current="page" title="{{ L.modeMilestone }}"><span class="ms-mode-full">{{ L.modeMilestone }}</span><span class="ms-mode-short">{{ L.modeMilestoneS }}</span></span><a href="{{ issueModeHref }}" onClick="{{ goIssueMode }}" title="{{ L.modeIssue }}"><span class="ms-mode-full">{{ L.modeIssue }}</span><span class="ms-mode-short">{{ L.modeIssueS }}</span></a></nav>
       <sc-if value="{{ comparing }}" hint-placeholder-val="{{ false }}"><span class="ms-cmp-badge">비교 중</span></sc-if>
       <label class="ms-title-edit"><input data-comparing="{{ comparing }}" value="{{ title }}" placeholder="{{ L.titleF }}" onChange="{{ onTitle }}" onFocus="{{ beginTextEdit }}" onBlur="{{ endTextEdit }}" aria-label="{{ L.titleF }}"></label>
       <sc-if value="{{ comparing }}" hint-placeholder-val="{{ false }}"><button type="button" class="ms-cmp-end" onClick="{{ endComparison }}">비교 끝내기</button></sc-if>
@@ -1228,6 +1237,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.58', agent: 'Claude Code', title: '[주요 사항] 이슈관리 모드 추가', items: ['[모드] 상단에 마일스톤 모드 · 이슈관리 모드 전환 추가 (issues.html, 일정 데이터와 분리 저장)', '[관리 화면] 이슈별 담당·다음 점검일·완료 조건·게이트 단계·조치·점검 메모·확인 요청·이력 관리 · 상태 변경 자동 기록', '[타임라인] 이슈 행 기준 날짜 비례 타임라인 · 빈 기간 +N일 접기 · 지속 제약 바 · 점검일 표시 · 선택 이슈 의존 연결선 · 영역 접기 · 표 보기 정렬', '[추적] 판정 배너 · 핵심 게이트 진행 · 관리 공백(담당·점검일 미정, 점검일 경과, 회신 대기) 필터 · 검색·상태·영역 필터 · 되돌리기', '[보고 화면] 요약(핵심 판단·다음 점검 큐·Blocker 표·QA 분류·N/T 사유) · 시나리오(해소 가정, 실제 상태 불변) · 회신 요청(상대 부문별 문안 복사)', '[입력] 이슈 텍스트 → 정리 초안 검토 → 반영(교체·추가) · 표·날짜·질의·분기 규칙 기반 정리 · JSON 파일 저장·열기', '[원칙] 날짜·담당 추측 금지 · QA 수행 가능 분류와 Pass/Fail, API와 TC 구분'] },
     { v: 'v0.9.57', agent: 'Codex', title: '선 양 끝점 자유 조정 · 선 두께 · 안전한 버전 복원', items: ['선·화살표 양 끝점의 자유 각도·길이 조정과 역방향·수평·수직 지원', '디자인 시스템 선 두께 버튼과 숫자 입력 반영', '미저장 변경이 있으면 버전 복원 전 확인', '버전 저장 실패 원인과 저장 후 목록 갱신 실패 구분', '[검증] 363개 테스트 · 다섯 도형 두께·양 끝점·새로고침·복원 확인/취소·오류 응답 브라우저 검증 · 42아이템 슬라이더 p95≤33.4ms/50ms 초과0회'] },
     { v: 'v0.9.56', agent: 'Codex', title: '분석 버전 보존 · 포스트잇 연결 · 도형 그리기', items: ['이미지·텍스트 분석 적용 시 기존 저장 버전과 작업물 ID 보존', '포스트잇 좌상단 고정 여백·텍스트 정렬', '포스트잇 속성 연결점 생성 · 드래그 연결·대상 이동 추적·연결 해제', '화살표·선·사각형·타원·마름모 그리기 · 이동·크기·색상·선 두께·채우기·실행 취소·파일 저장', '비교 이미지·편집 가능한 PPT에 도형과 포스트잇 연결선 반영', '[검증] 353개 테스트 · 분석 버전 보존/실행 취소/저장, 연결 대상 이동·삭제, 배율·역방향·Shift 그리기·취소·이동·크기·파일/PPT/SVG 검증 · 서버 포트 제한으로 브라우저 검증 미실행'] },
     { v: 'v0.9.55', agent: 'Codex', title: '슬라이더 포인터 추적 · 섹션별 교차 비교', items: ['메인 배율·오버랩은 native input 이벤트 대기 대신 포인터를 직접 추적하고 같은 입력에서 손잡이와 화면을 즉시 갱신', '확대 시 구분선의 1% 반올림으로 생기는 포인터 이격을 줄여 정밀하게 추적', '교차·상세 비교 이미지는 섹션마다 독립적으로 렌더링하여 다른 섹션이 섞이지 않도록 수정'] },
@@ -1395,7 +1405,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.57';
+  APP_VER = 'v0.9.58';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1440,7 +1450,7 @@ class Component extends DCLogic {
       pptFail: 'PPT 내보내기 모듈을 불러오지 못했습니다. 네트워크 확인 후 다시 시도해 주세요.',
       newChev: '새 일정', newPlain: '참고 내용을 입력하세요', newBand: '새 공통 구간', newMarker: '새 마일스톤', newFlag: '새 연결 메모', newRow: '새로운 세션 입력', newNote: '공지 메모를 입력하세요',
       zoom: '배율', magnetF: '눈금 맞춤', magnetHint: '아이템을 이동할 경우 주요 기준선에 쉽게 맞춰지는 snap 기능입니다.',
-      helpT: '사용법', rowProp: '세션', rowName: '세션 이름', rowHF: '높이 세밀 조정 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '세션 배경색', rowColorNone: '없음', rowDel: '세션 삭제', rowAdd: '아래에 세션 추가',
+      modeNav: 'MapStone 모드', modeMilestone: '마일스톤 모드', modeIssue: '이슈관리 모드', modeMilestoneS: '마일스톤', modeIssueS: '이슈관리', helpT: '사용법', rowProp: '세션', rowName: '세션 이름', rowHF: '높이 세밀 조정 (px)', rowAutoBtn: '내용에 맞게 자동', rowColorF: '세션 배경색', rowColorNone: '없음', rowDel: '세션 삭제', rowAdd: '아래에 세션 추가',
       rowHint: '세션 경계선을 마우스로 드래그해도 높이를 조정할 수 있어요.',
       textBtn: 'Text', textTitle: '내용 요약', fmtF: '형식', dl: '다운로드', close: '닫기', memoDel: '메모 삭제',
       clearAll: '전체 지우기', clearTitle: '전체 지우기', nowOutTitle: '오늘이 일정 기간 밖에 있어요', nowOutMsg: '오늘({today})은 현재 일정 기간({from} ~ {to})을 벗어납니다.\n일정 기간을 오늘까지 넓히고 NOW를 오늘로 옮길까요? 아이템의 날짜는 바뀌지 않습니다.', nowOutYes: '기간 넓히고 이동', clearConfirm: '새로 시작', clearMsg: '모든 아이템과 일정표가 사라지고 새로운 일정표가 생성됩니다.', titlePrompt: '일정 제목을 입력해주세요', unlockEdit: '편집 모드 전환', compareBtn: '버전 비교', labelSmaller: '글자 작게', labelBigger: '글자 크게', weekdays: '일월화수목금토', credit: '제작 : 커넥티드카 사업팀 김창목', focusExit: '발표모드 종료', rowNamePh: '새로운 세션 입력', importShort: '이미지/텍스트 분석', tipHoldF: '툴팁 표시 시간', tip3s: '3초', tipHold: '계속 표시', tipRange: '기간', tipSchedule: '일정', tipMemo: '툴팁 메모', tipLink: '연결', cancel: '취소', moveUp: '위로 이동', moveDown: '아래로 이동'
@@ -1482,7 +1492,7 @@ class Component extends DCLogic {
       pptFail: 'PPT書き出しモジュールを読み込めませんでした。ネットワークを確認して再試行してください。',
       newChev: '新しい予定', newPlain: '参考内容を入力', newBand: '新しい共通期間', newMarker: '新しいマイルストーン', newFlag: '新しいメモ', newRow: '新規セッション', newNote: 'お知らせメモを入力',
       zoom: '倍率', magnetF: 'グリッドに合わせる', magnetHint: 'ONにすると0.25ヶ月グリッドと隣接ブロックの端に吸着します。OFFなら自由に配置できます。',
-      helpT: '使い方', rowProp: 'セッション', rowName: 'セッション名', rowHF: '微調整 (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: 'セッションの背景色', rowColorNone: 'なし', rowDel: 'セッションを削除', rowAdd: '下にセッションを追加',
+      modeNav: 'MapStone モード', modeMilestone: 'マイルストーンモード', modeIssue: '課題管理モード', modeMilestoneS: 'マイルストーン', modeIssueS: '課題管理', helpT: '使い方', rowProp: 'セッション', rowName: 'セッション名', rowHF: '微調整 (px)', rowAutoBtn: '内容に合わせて自動', rowColorF: 'セッションの背景色', rowColorNone: 'なし', rowDel: 'セッションを削除', rowAdd: '下にセッションを追加',
       rowHint: 'セッションの境界線をドラッグしても高さを変えられます。',
       textBtn: 'Text', textTitle: '内容サマリー', fmtF: '形式', dl: 'ダウンロード', close: '閉じる', memoDel: 'メモを削除',
       clearAll: '全て削除', clearTitle: '全て削除', clearConfirm: '新しく開始', nowOutTitle: '今日が期間外です', nowOutMsg: '今日（{today}）は現在の期間（{from} ~ {to}）の外です。\n期間を今日まで広げてNOWを今日へ移動しますか？項目の日付は変わりません。', nowOutYes: '期間を広げて移動', clearMsg: 'すべてのアイテムと予定表が消え、新しい予定表が作成されます。', titlePrompt: 'スケジュールのタイトルを入力してください', unlockEdit: '編集モードに切り替え', compareBtn: 'バージョン比較', labelSmaller: '文字を小さく', labelBigger: '文字を大きく', weekdays: '日月火水木金土', credit: '制作 : 커넥티드카 사업팀 김창목', focusExit: '全体表示を終了', rowNamePh: 'セッション名を入力してください', importShort: '画像/テキスト分析', tipHoldF: 'ツールチップ表示時間', tip3s: '3秒', tipHold: '表示し続ける', tipRange: '期間', tipSchedule: '予定', tipMemo: 'ツールチップメモ', tipLink: '接続', cancel: 'キャンセル', moveUp: '上へ移動', moveDown: '下へ移動'
@@ -3055,6 +3065,8 @@ class Component extends DCLogic {
 
   L() { return this.DICT[this.state.lang] || this.DICT.ko; }
   toggleLang = () => this.setState((s) => ({ lang: s.lang === 'ko' ? 'ja' : 'ko' }));
+  issueModeHref() { const p = typeof location === 'object' && location ? location.pathname || '' : ''; return /\/(share|prototypes)\//.test(p) ? '../issues.html' : 'issues.html'; }
+  goIssueMode = () => { try { this.flushSave(); } catch (e) {} };
   selectAll = (e) => { const el = e.currentTarget; if (el && el.select) { try { el.select(); } catch (err) { /* ignore */ } } };
   beginTextEdit = (e) => { this._textPush = true;this._editingSelection=true;this._settledSelection=null;this.selectAll(e);this.setState({}); };
   endTextEdit = () => { this._textPush = null;this._editingSelection=false;this._settledSelection=new Set(this.selectedIds());this.setState({}); };
@@ -4223,7 +4235,7 @@ class Component extends DCLogic {
       indThumbW: Math.round(Math.min(100, (st.cw / st.sw) * 100) * 100) / 100 + '%',
       indThumbL: Math.round((st.sx / st.sw) * 100 * 100) / 100 + '%',
       onIndDown: this.onIndDown, onIndTrack: this.onIndTrack,
-      openCalendar:this.openCalendar,viewDockBottom:'30px',canvasScale:this.canvasScale(),verticalScale:this.verticalScale(),textRatio:1/this.verticalScale(),captureMinWidth:this.canvasScale()<1?'0':'100%',captureWidth:this.canvasScale()<1?px((O[cfg.months]||0)+218):'auto',L: T, langLabel: T.lang, toggleLang: this.toggleLang, selectAll: this.selectAll, beginTextEdit: this.beginTextEdit, endTextEdit: this.endTextEdit, appVer: this.APP_VER,
+      openCalendar:this.openCalendar,viewDockBottom:'30px',canvasScale:this.canvasScale(),verticalScale:this.verticalScale(),textRatio:1/this.verticalScale(),captureMinWidth:this.canvasScale()<1?'0':'100%',captureWidth:this.canvasScale()<1?px((O[cfg.months]||0)+218):'auto',L: T, langLabel: T.lang, toggleLang: this.toggleLang, selectAll: this.selectAll, beginTextEdit: this.beginTextEdit, endTextEdit: this.endTextEdit, appVer: this.APP_VER, issueModeHref: this.issueModeHref(), goIssueMode: this.goIssueMode,
       ovShrink: ovBtn('shrink'), ovMoveOther: ovBtn('moveOther'), ovMoveSelf: ovBtn('moveSelf'), setOverlap: this.setOverlap,shrinkChecked:cfg.shrinkOthers!==false?'true':'false',shrinkTrack:cfg.shrinkOthers!==false?'#3568c5':'#cbd2db',shrinkKnob:cfg.shrinkOthers!==false?'23px':'3px',smartChecked:cfg.smartGuides!==false?'true':'false',smartTrack:cfg.smartGuides!==false?'#3568c5':'#cbd2db',smartKnob:cfg.smartGuides!==false?'23px':'3px',toggleSmartGuides:this.toggleSmartGuides, overlapName: this.L()[{ shrink: 'opShrink', moveOther: 'opMoveOther', moveSelf: 'opMoveSelf' }[cfg.overlap] || 'opShrink'], overlapDesc: this.L()['opDesc_' + (cfg.overlap || 'shrink')],
       addPlain: this.addPlain, onHandleDbl: this.onHandleDbl,
       title: st.title, savedLabel: st.saved, panel: st.panel, panelLabel: st.panel ? T.panelClose : T.panelOpen,

@@ -1,5 +1,6 @@
 /* ================= 상태 ================= */
 const STORE = 'mapstone.issueTracker.v2';
+const MILESTONE_HREF = /\/(share|prototypes)\//.test(location.pathname) ? '../index.html' : 'index.html';
 const clone = o => JSON.parse(JSON.stringify(o));
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -125,15 +126,15 @@ function refresh(parts) {
 }
 function paintAppbar() {
   const r = ui.view === 'report';
-  $('#appbar').innerHTML = `<div class="brand"><i>${I.logo}</i>MapStone</div>
-    <div class="seg" role="group" aria-label="모드"><button id="m-ms" aria-pressed="false">마일스톤 모드</button><button aria-pressed="true">이슈관리 모드</button></div>
+  $('#appbar').innerHTML = `<div class="brand"><i>${I.logo}</i>MapStone${typeof APP_VER === 'string' ? `<span class="ver">${esc(APP_VER)}</span>` : ''}</div>
+    <nav class="seg" aria-label="MapStone 모드"><a id="m-ms" href="${MILESTONE_HREF}">마일스톤 모드</a><span aria-current="page">이슈관리 모드</span></nav>
     <span class="grow"></span>
     <span class="save-state" id="save-state"></span>
     <button class="btn" id="b-save">${I.save}파일 저장</button>
     <div class="seg navy" role="group" aria-label="화면"><button id="v-m" aria-pressed="${!r}">관리 화면</button><button id="v-r" aria-pressed="${r}">보고 화면</button></div>
     <button class="btn primary" id="b-import">${I.text}이슈 텍스트 입력</button>`;
   paintSave();
-  $('#m-ms').onclick = () => { const u = new URL('/', location.href); if (/^127\.0\.0\.1|localhost$/.test(location.hostname) && location.port) { u.port = '4173'; window.open(u.href, '_blank', 'noopener'); } else toast('마일스톤 모드는 MapStone 본 앱에서 열립니다. 이 프로토타입은 이슈관리 모드만 동작합니다.'); };
+  $('#m-ms').onclick = e => { if (window.top !== window) { e.preventDefault(); toast('마일스톤 모드는 MapStone 앱에서 열립니다.'); } else persist(true); };
   $('#v-m').onclick = () => { if (ui.view !== 'manage') { ui.view = 'manage'; persistUI(); render(); window.scrollTo(0, 0); } };
   $('#v-r').onclick = () => { if (ui.view !== 'report') { ui.view = 'report'; persistUI(); render(); window.scrollTo(0, 0); } };
   $('#b-import').onclick = () => openImport();
@@ -145,7 +146,7 @@ function paintSave() {
   el.innerHTML = savedAt ? `<i class="dot"></i>이 브라우저에 저장 ${new Date(savedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}` : `<i class="dot" style="background:var(--slate3)"></i>예제 문서`;
 }
 function footHTML() {
-  return `<footer class="foot"><span>MapStone · 이슈관리 모드 프로토타입 · QA 수행 가능 분류는 실제 Pass/Fail과 별도로 관리합니다</span>
+  return `<footer class="foot"><span>MapStone${typeof APP_VER === 'string' ? ' ' + esc(APP_VER) : ''} · 이슈관리 모드 · QA 수행 가능 분류는 실제 Pass/Fail과 별도로 관리합니다</span>
     <span class="foot-r"><button class="link" id="f-src">입력 원문 보기</button><button class="link" id="f-reset">예제로 초기화</button></span></footer>`;
 }
 function bindFoot() {
@@ -803,10 +804,10 @@ function openImport() {
       box.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
         <div class="pair im-pair"><div class="field"><label for="im-title">문서 제목<small>비우면 원문 첫 문장에서 추출</small></label><input class="input" id="im-title" value="${esc(title)}" placeholder="예: 2차 DVT 진입 점검" maxlength="150"></div>
           <div class="field"><label for="im-asof">기준일</label><input class="input" type="date" id="im-asof" value="${asOf}"></div></div>
-        <div class="field"><span class="label">정리 방식</span><div class="seg" role="group" aria-label="정리 방식" style="align-self:flex-start"><button id="im-ai" aria-pressed="${engine === 'ai'}" ${sampleFn ? '' : 'disabled title="이 환경에서는 쓸 수 없습니다"'}>Claude 분석</button><button id="im-rule" aria-pressed="${engine === 'rule'}">규칙 기반 (로컬)</button></div></div>
+        ${sampleFn ? `<div class="field"><span class="label">정리 방식</span><div class="seg" role="group" aria-label="정리 방식" style="align-self:flex-start"><button id="im-ai" aria-pressed="${engine === 'ai'}">Claude 분석</button><button id="im-rule" aria-pressed="${engine === 'rule'}">규칙 기반 (로컬)</button></div></div>` : ''}
         <div class="field"><label for="im-src">이슈 원문<small id="im-count">${src.length.toLocaleString()} / 100,000자</small></label><textarea class="textarea src" id="im-src" maxlength="100000" placeholder="이슈가 정리된 글을 그대로 붙여 넣으세요. 표는 탭으로 구분된 상태 그대로 붙여 넣으면 됩니다.">${esc(src)}</textarea></div>
         <div class="tools"><button class="btn sm" id="im-ex">제공한 DVT 예제 채우기</button><button class="btn sm" id="im-file">텍스트 · JSON 파일 열기</button><button class="btn sm ghost" id="im-clear">비우기</button><input type="file" id="im-fin" accept=".txt,.md,.json" hidden></div>
-        <p class="disclose">${engine === 'ai' ? 'Claude가 원문을 읽고 이슈·이력·확인 요청·시나리오로 정리합니다. 처음 쓸 때 사용 허용을 묻고, 1~2분 걸릴 수 있습니다. 결과는 반영 전에 검토합니다.' : '로컬 규칙 기반 정리입니다. 원문은 외부로 보내지 않습니다. 표·날짜·번호 목록을 읽으며 복잡한 인과관계는 초안에서 확인해야 합니다.'}${sampleFn ? '' : ' (Claude 분석은 claude.ai 아티팩트에서만 쓸 수 있습니다.)'}</p></div>`;
+        <p class="disclose">${engine === 'ai' ? 'Claude가 원문을 읽고 이슈·이력·확인 요청·시나리오로 정리합니다. 처음 쓸 때 사용 허용을 묻고, 1~2분 걸릴 수 있습니다. 결과는 반영 전에 검토합니다.' : '로컬 규칙 기반 정리입니다. 원문은 외부로 보내지 않습니다. 표·날짜·번호 목록을 읽으며 복잡한 인과관계는 초안에서 확인해야 합니다.'}</p></div>`;
       st.textContent = '날짜·담당이 원문에 없으면 비워 두고 확인 필요로 표시합니다.';
       act.innerHTML = `<button class="btn" id="im-cancel">취소</button><button class="btn primary" id="im-run">${busy ? '정리하는 중…' : '텍스트 정리하기'}</button>`;
       const ta = $('#im-src');
@@ -814,8 +815,7 @@ function openImport() {
       ta.oninput = sync; sync();
       $('#im-title').oninput = e => title = e.target.value;
       $('#im-asof').onchange = e => { if (isDate(e.target.value)) asOf = e.target.value; };
-      $('#im-ai').onclick = () => { engine = 'ai'; draw(); };
-      $('#im-rule').onclick = () => { engine = 'rule'; draw(); };
+      if ($('#im-ai')) { $('#im-ai').onclick = () => { engine = 'ai'; draw(); }; $('#im-rule').onclick = () => { engine = 'rule'; draw(); }; }
       $('#im-ex').onclick = () => { src = ($('#sample-text') || {}).textContent.trim(); title = '27CY SU#2 · 2차 DVT 진입 점검'; asOf = '2026-10-20'; draw(); };
       $('#im-clear').onclick = () => { src = ''; draw(); $('#im-src').focus(); };
       $('#im-file').onclick = () => $('#im-fin').click();

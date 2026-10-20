@@ -1,6 +1,6 @@
 // 레이아웃 정렬·잘림·겹침 자동 검수
 const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const URL = 'http://127.0.0.1:4190/local.html';
+const URL = process.env.IM_URL || 'http://127.0.0.1:4191/issues.html';
 const WIDTHS = (process.argv[2] || '1920,1600,1440,1280,1024,390').split(',').map(Number);
 const SHOT = process.argv[3] === 'shot';
 const audit = () => {
@@ -70,7 +70,7 @@ const audit = () => {
       ['관리-이력탭', async () => { await p.click('[data-itab="history"]'); }],
       ['관리-표', async () => { await p.click('#lv-l'); }],
       ['입력1', async () => { await p.click('#lv-t'); await p.click('#b-import'); await p.click('#im-ex'); }],
-      ['입력2', async () => { await p.click('#im-rule'); await p.click('#im-run'); await p.waitForTimeout(200); }],
+      ['입력2', async () => { if (await p.$('#im-rule')) await p.click('#im-rule'); await p.click('#im-run'); await p.waitForTimeout(200); }],
       ['QA편집', async () => { await p.keyboard.press('Escape'); await p.click('#b-qa'); }],
       ['보고-요약', async () => { await p.keyboard.press('Escape'); await p.click('#v-r'); }],
       ['보고-시나리오', async () => { await p.click('#rt-scenario'); }],
