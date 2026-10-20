@@ -78,7 +78,11 @@
   - 원격에 미병합 브랜치 `chore/repo-hygiene`(PR #1), `feat/v9-board-tools`(PR #2)가 있습니다. 관련 작업 시 먼저 확인하세요.
   - `supabase/.temp/`가 Git에 포함되어 있습니다(Supabase CLI 캐시).
 
-- **이슈관리 모드 프로토타입 (2026-10-20, Claude Code, 미커밋)**: 사용자 요청으로 기존 기능을 "마일스톤 모드", 새 기능을 "이슈관리 모드"로 부름. 단독 동작 웹페이지 `prototypes/issue-mode/index.html`(Git 미추적, 커밋 금지 지시)와 아티팩트 https://claude.ai/artifact/FLcw3u3Kk6fk6fQ5zMPncK. 관리 화면(레인 타임라인·날짜 미정 칸·Blocker 보드·확인 요청·속성 편집·변경 이력)과 보고 화면(요약·핵심 판단·게이트 시나리오·Blocker 표·TC 표·읽기 전용 타임라인). 이슈 텍스트 반영은 아티팩트에서 Claude(sample) 분석, 로컬에서는 규칙 기반 파서. 상태는 브라우저 localStorage만 사용. 원본은 세션 스크래치패드였으므로 이어서 고치려면 위 index.html을 직접 수정. 앱 본체(src/·RELEASES)는 변경 없음. 사용자가 보고 본 앱 반영 여부를 결정할 예정.
+- **이슈관리 모드 프로토타입 (2026-10-20, Claude Code)**: 사용자 명명 — 기존 기능 "마일스톤 모드", 새 기능 "이슈관리 모드". 본 앱(src/·RELEASES·버전) 미변경, 작업 브랜치 `claude/gifted-bardeen-nmvaup`에만 푸시(main 미반영).
+  - v1 `prototypes/issue-mode/` (레인 타임라인 첫 시안), **v2 `prototypes/issue-mode-v2/`가 현재안**: Claude 시안 + 사용자가 준 Codex 4180 시안(React, 이슈 중심 인스펙터·What-if)을 결합. 아티팩트 https://claude.ai/artifact/6uTo4UPuDbeAzC8aLhZ9JU
+  - v2 구조: 이슈 중심 데이터(담당·점검일·완료 조건·게이트 단계·조치·메모·확인 요청·이력·지속 제약·선행 이슈·시나리오) / 관리 화면 = 상태 띠 + [좌 이슈 · 중 날짜 비례 타임라인(빈 기간 +N일 접기) · 우 다음 단계] + 인스펙터 3탭 + QA·사유·관리 공백 블록 / 보고 화면 = 요약·시나리오(What-if, 실제 상태 불변)·회신 요청(상대 부문별 문안 복사) / 입력 3단계(원문→초안 검토→반영, Claude 또는 규칙 기반) / JSON 파일 저장·열기 / 되돌리기(Ctrl+Z, 선택 상태 포함).
+  - 원본은 `prototypes/issue-mode-v2/src/*`, `python3 prototypes/issue-mode-v2/src/build.py`로 index.html 생성(직접 수정 금지). 검증 스크립트 `qa-flow.cjs`(기본 조작 68개 통과), `qa-layout.cjs`(1920/1600/1440/1280/1024/390 × 10개 화면, 정렬·잘림·겹침 0건).
+  - 원칙: 날짜·담당 추측 금지, QA 분류≠Pass/Fail, API≠TC, 시나리오는 실제 상태를 바꾸지 않음. 사용자는 버튼·여백·정렬 어긋남에 매우 민감 — 변경 후 qa-layout 재실행 필수.
 
 ## 미해결 질문
 
@@ -86,6 +90,7 @@
 
 ## 작업 로그
 
+- 2026-10-20 · Claude Code · v0.9.57 유지 · 이슈관리 모드 결합 프로토타입 v2(prototypes/issue-mode-v2, 작업 브랜치), 조작 68개·6개 폭 레이아웃 검수 통과, 아티팩트 공개.
 - 2026-10-20 · Claude Code · v0.9.57 유지 · 이슈관리 모드 단독 프로토타입(prototypes/issue-mode, 미커밋)·아티팩트 공개, 관리/보고 화면, 텍스트 반영(Claude·규칙 기반). 앱 본체 변경 없음.
 
 - 2026-10-19 · Codex · v0.9.57 유지 · 운영 웹 자동 배포 READY(dpl_DYqqJsxNFtXt6y79E3DD1mVfkcPm, commit843920f), mapstone-hazel.vercel.app HTTP200·v0.9.57 확인. Supabase 함수 배포는 인증 미연결, runtime logs403, Chromium 운영 TLS 신뢰 오류는 미해결. README/HANDOFF에 완료/미완료 구분.
