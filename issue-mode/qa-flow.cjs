@@ -222,12 +222,14 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   await p.evaluate(d => { doc = normalizeDoc(d); persist(true); render(); }, keepDoc); await p.waitForTimeout(200);
   ok((await st()).doc.issues.length === keepDoc.issues.length, 'NOW 검증용 문서 정리 후 기존 문서 복구');
 
-  // 21-3 스크롤해도 타임라인 머리 고정
-  await p.evaluate(() => window.scrollTo(0, document.querySelector('#canvas .tl').getBoundingClientRect().top + window.scrollY + 400)); await p.waitForTimeout(150);
-  const sk = await p.evaluate(() => ({ bar: Math.round(document.querySelector('.appbar').getBoundingClientRect().bottom), heads: [...document.querySelectorAll('#canvas .tl-head')].map(h => Math.round(h.getBoundingClientRect().top)) }));
-  ok(sk.heads.length === 3 && sk.heads.every(t => t === sk.bar), `스크롤 시 타임라인 머리 3열이 앱 바 아래 고정 (${sk.heads.join(',')} / ${sk.bar})`);
-  const nowBox = await (await p.$('.tl-now.top')).boundingBox(); ok(nowBox && Math.round(nowBox.y) >= sk.bar, '고정된 머리의 NOW 알약 표시');
-  await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(100);
+  // 21-3 스크롤해도 타임라인 머리 고정 (스크롤 성능·떨림 수치 검증은 qa-scroll.cjs)
+  await p.evaluate(() => { const s = document.querySelector('#canvas .tl-scroll'); s.scrollIntoView({ block: 'start' }); window.scrollBy(0, -90); s.scrollTop = 500; }); await p.waitForTimeout(150);
+  const sk = await p.evaluate(() => { const s = document.querySelector('#canvas .tl-scroll'); return { top: Math.round(s.getBoundingClientRect().top), st: s.scrollTop, heads: [...s.querySelectorAll('.tl-head')].map(h => Math.round(h.getBoundingClientRect().top)) }; });
+  ok(sk.st > 0 && sk.heads.length === 3 && sk.heads.every(t => t === sk.top), `타임라인 스크롤 시 머리 3열 고정 (${sk.heads.join(',')} / ${sk.top})`);
+  const nowBox = await (await p.$('.tl-now.top')).boundingBox(); ok(nowBox && Math.round(nowBox.y) >= sk.top, '고정된 머리의 NOW 알약 표시');
+  await p.evaluate(() => select(sorted(doc.issues)[0].id, 'manage')); await p.waitForTimeout(150); await p.fill('#i-owner', '스크롤 유지 확인'); await p.waitForTimeout(400);
+  ok(await p.evaluate(() => document.querySelector('#canvas .tl-scroll').scrollTop) === sk.st, '인스펙터 편집으로 다시 그려도 타임라인 스크롤 위치 유지');
+  await p.evaluate(() => { document.querySelector('#canvas .tl-scroll').scrollTop = 0; window.scrollTo(0, 0); }); await p.waitForTimeout(100);
 
   // 22 보고 화면
   await p.click('#v-r'); await p.waitForTimeout(250);

@@ -158,22 +158,24 @@ input.doc-title:focus{outline:none;border-color:var(--blue);background:var(--whi
 .ws{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
 
 /* ---------- canvas ---------- */
-.canvas{overflow:hidden;display:flex;flex-direction:column}
+.canvas{overflow:hidden;display:flex;flex-direction:column;max-height:calc(100dvh - var(--bar-h,65px) - 32px)}
+/* 타임라인 스크롤 영역: 머리·좌우 열·아래 NOW 줄을 CSS sticky로 고정(브라우저 합성 단계에서 처리되어 스크롤 중 떨리지 않음) */
+.tl-scroll{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
 .canvas-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;border-bottom:1px solid var(--blue1);flex-wrap:wrap;min-height:44px}
 .legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--slate6)}
 .legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .legend i{width:10px;height:10px;border-radius:3px;flex:none;display:inline-block}
-.tl{display:grid;grid-template-columns:var(--lw) minmax(0,1fr) var(--rw);position:relative}
+.tl{display:grid;grid-template-columns:var(--lw) var(--mw,minmax(0,1fr)) var(--rw);position:relative;min-width:100%}
 .tl-col{position:relative;min-width:0}
-.tl-mid{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.tl-mid{z-index:1}
 .tl-midin{position:relative}
-.tl-head{height:44px;background:var(--head);color:var(--white);position:relative;z-index:6}
-.tl-head.stuck{box-shadow:0 6px 12px -6px rgb(22 54 93/.35)}
+.tl-head{height:44px;background:var(--head);color:var(--white);position:sticky;top:0;z-index:6}
+.tl-scroll.scrolled .tl-head{box-shadow:0 6px 12px -6px rgb(22 54 93/.35)}
 .tl-l .tl-head,.tl-r .tl-head{display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:700;gap:8px}
 .tl-r .tl-head{padding-left:28px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
 .tl-r .tl-head small{font-weight:500;opacity:.7;font-size:10px}
-.tl-l{border-right:1px solid var(--blue2);background:var(--white);z-index:3}
-.tl-r{border-left:1px solid var(--blue2);background:var(--white);z-index:3}
+.tl-l{border-right:1px solid var(--blue2);background:var(--white);z-index:3;position:sticky;left:0}
+.tl-r{border-left:1px solid var(--blue2);background:var(--white);z-index:3;position:sticky;right:0}
 .tl-day{position:absolute;top:0;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:700;line-height:1}
 .tl-day small{font-size:10px;font-weight:500;color:#B3C2D4}
 .tl-day.we{color:#A4C4EF}
@@ -253,7 +255,7 @@ tr.total td,tr.total th{background:var(--blue05);font-weight:700}
 .sort svg{opacity:.35}
 
 /* ---------- inspector ---------- */
-.insp{position:sticky;top:81px;max-height:calc(100vh - 97px);display:flex;flex-direction:column;overflow:hidden}
+.insp{position:sticky;top:calc(var(--bar-h,65px) + 16px);max-height:calc(100dvh - var(--bar-h,65px) - 32px);display:flex;flex-direction:column;overflow:hidden}
 .insp-head{padding:16px 16px 12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--blue1)}
 .insp-head .row1{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .insp-head h2{font-size:16px;font-weight:700;line-height:24px;text-wrap:balance}
@@ -463,7 +465,7 @@ pre.full{white-space:pre-wrap;font-family:var(--font);font-size:13px;line-height
   .stepper{padding:0 16px}
   .dlg-f{flex-wrap:wrap}
   .dlg-f .status{flex-basis:100%}
-  .tl{grid-template-columns:var(--lw) minmax(0,1fr)}
+  .tl{grid-template-columns:var(--lw) var(--mw,minmax(0,1fr))}
   .dochead-r{flex:1 1 100%;flex-direction:column;align-items:stretch;gap:8px}
   .dochead-r>.btn{align-self:flex-start}
   .dochead-r .asof{display:grid;grid-template-columns:80px minmax(0,180px);gap:8px}
@@ -475,7 +477,7 @@ pre.full{white-space:pre-wrap;font-family:var(--font);font-size:13px;line-height
 @media (max-width:1100px){.mode-full{display:none}.mode-short{display:inline}.seg.mode-switch>*{padding:0 9px}}
 @media (max-width:700px){.appbar-in{--pad-x:8px;padding-block:8px}.brand{height:44px;min-height:44px}.appbar .btn{min-height:44px}.appbar .seg:not(.mode-switch){height:44px}.appbar .seg:not(.mode-switch)>*{height:38px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-@media print{.appbar,.rtabs .btn,.foot-r{display:none}body{background:#fff}.card{box-shadow:none}}
+@media print{.canvas{max-height:none}.tl-scroll{overflow:visible}.appbar,.rtabs .btn,.foot-r{display:none}body{background:#fff}.card{box-shadow:none}}
 
 /* NOW · 보고 기준일 (마일스톤 모드 NOW와 같은 조작) */
 .tl-now{position:absolute;height:24px;padding:4px 11px;border-radius:9999px;background:var(--blue);color:var(--white);font-size:12px;font-weight:700;line-height:16px;display:flex;align-items:center;white-space:nowrap;transform:translateX(-50%);box-shadow:0 0 0 1.5px rgb(255 255 255/.9);z-index:4;cursor:ew-resize;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -490,7 +492,7 @@ pre.full{white-space:pre-wrap;font-family:var(--font);font-size:13px;line-height
 .tl-rep{position:absolute;top:11px;height:22px;padding:0 9px;border-radius:9999px;border:1px dashed rgb(255 255 255/.7);color:#DCE7F5;font-size:11px;font-weight:700;display:flex;align-items:center;white-space:nowrap;transform:translateX(-50%);line-height:1;z-index:2}
 .tl-nowline{position:absolute;width:2px;top:0;bottom:0;background:var(--blue);opacity:.8}
 .tl-repline{position:absolute;width:0;top:0;bottom:0;border-left:2px dashed var(--slate);opacity:.45}
-.tl-foot{height:36px;background:var(--head);position:relative;color:var(--slate3);font-size:11px;font-weight:600;display:flex;align-items:center;padding:0 16px;white-space:nowrap;overflow:hidden}
+.tl-foot{height:36px;background:var(--head);position:sticky;bottom:0;z-index:6;color:var(--slate3);font-size:11px;font-weight:600;display:flex;align-items:center;padding:0 16px;white-space:nowrap;overflow:hidden}
 .tl-mid .tl-foot{padding:0;overflow:visible}
 .ev.due{border-color:var(--amber2);border-left-color:var(--amberline)!important;background:var(--amber1)}
 .ev.due .d{color:var(--amber)!important}

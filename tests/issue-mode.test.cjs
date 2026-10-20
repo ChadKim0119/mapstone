@@ -72,3 +72,10 @@ test('Mode switch keeps the milestone header geometry and design tokens across b
   assert.match(issues, /<script type="speculationrules">\{"prerender":\[\{"where":\{"selector_matches":"#m-ms"\}/);
   assert.match(src, /if \(this\._saveBlocked \|\| document\.prerendering\) return;/); assert.match(fs.readFileSync('issue-mode/app.js', 'utf8'), /if \(document\.prerendering\) return; \/\/ 미리 준비 중에는 저장하지 않음/);
 });
+test('Timeline header pinning uses native sticky inside one scroller, not scroll-event JS', () => {
+  const css = fs.readFileSync('issue-mode/style.css', 'utf8'), app = fs.readFileSync('issue-mode/app.js', 'utf8');
+  assert.match(css, /\.tl-scroll\{[^}]*overflow:auto/); assert.match(css, /\.tl-head\{[^}]*position:sticky;top:0/);
+  assert.match(css, /\.tl-l\{[^}]*position:sticky;left:0/); assert.match(css, /\.tl-r\{[^}]*position:sticky;right:0/); assert.match(css, /\.tl-foot\{[^}]*position:sticky;bottom:0/);
+  assert.doesNotMatch(app, /syncStickyHeads|addEventListener\('scroll'/); assert.doesNotMatch(app, /R\.style\.position/);
+  assert.ok(fs.existsSync('issue-mode/qa-scroll.cjs'));
+});

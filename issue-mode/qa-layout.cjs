@@ -37,7 +37,7 @@ const audit = () => {
   document.querySelectorAll('.card,.dlg').forEach(card => {
     if (!vis(card)) return; const R = card.getBoundingClientRect();
     card.querySelectorAll('*').forEach(e => {
-      if (!vis(e) || e.closest('.tw,.tl-mid,.dep-svg,.insp-body,.dlg-b,.deps') || e.matches('svg *,option,datalist')) return;
+      if (!vis(e) || e.closest('.tw,.tl,.dep-svg,.insp-body,.dlg-b,.deps') || e.matches('svg *,option,datalist')) return;
       const r = e.getBoundingClientRect();
       if (r.left < R.left - 1 || r.right > R.right + 1) issues.push(`카드 밖으로 나감: ${name(e)} in ${name(card).slice(0, 30)} (${Math.round(r.left)}-${Math.round(r.right)} vs ${Math.round(R.left)}-${Math.round(R.right)})`);
     });

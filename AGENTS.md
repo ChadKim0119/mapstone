@@ -32,7 +32,8 @@
 - 편집 원본: `src/timeline.dc.html`, `mapstone-core.js`, `mapstone-ui.js`, `mapstone-help.js`, `support.js`, `vendor/`, `assets/`, `supabase/functions/`(단, 아래 복사본 제외), `issue-mode/`(이슈관리 모드: `style.css`·`model.js`·`data.js`·`app.js`·`sample.txt`).
 - 생성 파일(직접 수정 금지, `npm run build`로 재생성): `index.html`, `issues.html`, `share-timeline.dc.html`, `개발 일정 및 진행 현황.dc.html`, `share/` 전체, `supabase/functions/mapstone-api/mapstone-core.js`.
 - `versions/`는 과거 스냅샷이므로 수정하지 않습니다.
-- 모드 이름: 기존 일정 기능은 **마일스톤 모드**(`index.html`), 이슈 추적 기능은 **이슈관리 모드**(`issues.html`)입니다. 두 모드는 헤더의 모드 전환으로 오가며 저장 공간이 분리되어 있습니다. 이슈관리 모드 변경 후에는 `node issue-mode/qa-flow.cjs`(기본 조작)와 `node issue-mode/qa-layout.cjs`(6개 폭 정렬·잘림·겹침)를 저장소 루트를 4191 포트로 띄운 뒤 실행합니다.
+- 모드 이름: 기존 일정 기능은 **마일스톤 모드**(`index.html`), 이슈 추적 기능은 **이슈관리 모드**(`issues.html`)입니다. 두 모드는 헤더의 모드 전환으로 오가며 저장 공간이 분리되어 있습니다. 이슈관리 모드 변경 후에는 `node issue-mode/qa-flow.cjs`(기본 조작)와 `node issue-mode/qa-layout.cjs`(6개 폭 정렬·잘림·겹침), `node issue-mode/qa-scroll.cjs`(스크롤 성능·떨림)를 저장소 루트를 4191 포트로 띄운 뒤 실행합니다.
+- 이슈관리 모드 스크롤 필수 확인: 고정 요소(타임라인 머리·좌우 열·아래 NOW 줄)는 CSS sticky 등 브라우저가 처리하는 방식으로 만들고, 스크롤 이벤트에서 JS로 위치를 옮기지 않습니다(한 프레임 늦어 떨림). `qa-scroll.cjs`로 1600/1024/390 폭에서 실제 휠 입력의 세로·가로·페이지 스크롤을 각 3회 이상 측정해 고정 요소 오차 0.5px 이하, 프레임 간격 p95 33.4ms 이하, 50ms 초과 0회를 확인하고 결과를 `HANDOFF.md`에 남깁니다.
 - Vercel 배포는 `vercel.json`이 `npm run build` 후 `index.html`·`issues.html`·`share/`·`assets/`·`*.dc.html`만 `public/`으로 복사해 올립니다. `public/`은 생성 폴더이며 커밋하지 않습니다. 런타임에 새 파일이 필요하면 `vercel.json`의 복사 목록에 추가합니다.
 - 작업 후 `npm test`를 실행하고, 화면 확인은 루트 `index.html`을 사용합니다(`npm start` → http://127.0.0.1:4173).
 
