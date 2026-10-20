@@ -62,3 +62,13 @@ test('NOW is stored separately from the report date and only kept when moved by 
   const app = fs.readFileSync('issue-mode/app.js', 'utf8');
   assert.match(app, /if \(!doc\.nowManual\) doc\.now = todayISO\(\)/); assert.match(app, /ondblclick = e => \{ e\.stopPropagation\(\); setNow\(todayISO\(\), false\)/);
 });
+test('Mode switch keeps the milestone header geometry and design tokens across both modes', () => {
+  const css = fs.readFileSync('issue-mode/style.css', 'utf8'), shell = fs.readFileSync('scripts/bundle-base.html', 'utf8'), src = fs.readFileSync('src/timeline.dc.html', 'utf8'), issues = fs.readFileSync('issues.html', 'utf8'), index = fs.readFileSync('index.html', 'utf8').slice(0, 20000);
+  assert.doesNotMatch(css, /font-weight:800/); assert.doesNotMatch(css, /linear-gradient\(110deg/);
+  assert.match(css, /--h-ctl:32px/); assert.match(css, /--r-ctl:12px/); assert.match(css, /\.brand\{[^}]*padding:5px 15px 5px 0[^}]*view-transition-name:ms-brand/);
+  for (const t of [css, shell, src]) assert.match(t, /@view-transition\s*\{\s*navigation:\s*auto;?\s*\}/);
+  assert.match(src, /\.ms-mode-switch \{ view-transition-name:ms-mode; \}/); assert.match(shell, /view-transition-name: ms-mode/);
+  assert.match(index, /class="ms-boot-switch"/); assert.ok(index.includes('<span class="ms-boot-ver">' + src.match(/APP_VER = '([^']+)'/)[1] + '</span>'));
+  assert.match(issues, /<script type="speculationrules">\{"prerender":\[\{"where":\{"selector_matches":"#m-ms"\}/);
+  assert.match(src, /if \(this\._saveBlocked \|\| document\.prerendering\) return;/); assert.match(fs.readFileSync('issue-mode/app.js', 'utf8'), /if \(document\.prerendering\) return; \/\/ 미리 준비 중에는 저장하지 않음/);
+});

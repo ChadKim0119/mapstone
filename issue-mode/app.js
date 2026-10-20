@@ -26,13 +26,14 @@ let saveTimer;
 function persist(now) {
   clearTimeout(saveTimer);
   const run = () => {
+    if (document.prerendering) return; // 미리 준비 중에는 저장하지 않음(실제로 열 때 다시 읽음)
     try { doc.updatedAt = new Date().toISOString(); localStorage.setItem(STORE, JSON.stringify(doc)); savedAt = doc.updatedAt; storageError = ''; }
     catch (e) { storageError = '브라우저 저장 공간을 쓸 수 없습니다. 파일 저장으로 현재 내용을 보관하세요.'; }
     persistUI(); paintSave();
   };
   if (now) run(); else saveTimer = setTimeout(run, 300);
 }
-function persistUI() { try { localStorage.setItem(STORE + '.ui', JSON.stringify({ view: ui.view, rtab: ui.rtab, list: ui.list, sel: ui.sel, itab: ui.itab, hideResolved: ui.hideResolved, compress: ui.compress, sort: ui.sort, collapsed: ui.collapsed })); } catch (e) { } }
+function persistUI() { if (document.prerendering) return; try { localStorage.setItem(STORE + '.ui', JSON.stringify({ view: ui.view, rtab: ui.rtab, list: ui.list, sel: ui.sel, itab: ui.itab, hideResolved: ui.hideResolved, compress: ui.compress, sort: ui.sort, collapsed: ui.collapsed })); } catch (e) { } }
 window.addEventListener('pagehide', () => persist(true));
 
 const issueById = id => doc.issues.find(i => i.id === id);
@@ -139,12 +140,12 @@ function refresh(parts) {
 }
 function paintAppbar() {
   const r = ui.view === 'report';
-  $('#appbar').innerHTML = `<div class="brand"><i>${I.logo}</i>MapStone${typeof APP_VER === 'string' ? `<span class="ver">${esc(APP_VER)}</span>` : ''}</div>
-    <nav class="seg" aria-label="MapStone 모드"><a id="m-ms" href="${MILESTONE_HREF}">마일스톤 모드</a><span aria-current="page">이슈관리 모드</span></nav>
+  $('#appbar').innerHTML = `<span class="brand">MapStone${typeof APP_VER === 'string' ? `<span class="ver">${esc(APP_VER)}</span>` : ''}</span>
+    <nav class="seg mode-switch" aria-label="MapStone 모드"><a id="m-ms" href="${MILESTONE_HREF}" title="마일스톤 모드"><span class="mode-full">마일스톤 모드</span><span class="mode-short">마일스톤</span></a><span aria-current="page" title="이슈관리 모드"><span class="mode-full">이슈관리 모드</span><span class="mode-short">이슈관리</span></span></nav>
     <span class="grow"></span>
     <span class="save-state" id="save-state"></span>
     <button class="btn" id="b-save">${I.save}파일 저장</button>
-    <div class="seg navy" role="group" aria-label="화면"><button id="v-m" aria-pressed="${!r}">관리 화면</button><button id="v-r" aria-pressed="${r}">보고 화면</button></div>
+    <div class="seg" role="group" aria-label="화면"><button id="v-m" aria-pressed="${!r}">관리 화면</button><button id="v-r" aria-pressed="${r}">보고 화면</button></div>
     <button class="btn primary" id="b-import">${I.text}이슈 텍스트 입력</button>`;
   paintSave();
   $('#m-ms').onclick = e => { if (window.top !== window) { e.preventDefault(); toast('마일스톤 모드는 MapStone 앱에서 열립니다.'); } else persist(true); };
@@ -327,9 +328,9 @@ function drawCanvas(host, ro) {
   // NOW는 접힌 구간 안에서도 날짜 비율로 위치한다
   const xAt = d => { const c = colOf(d); return c.t === 'd' ? c.x + c.w / 2 : c.x + (Math.max(0, Math.min(c.n - 1, diffD(c.from, d))) + 0.5) / c.n * c.w; };
   const dateAt = px => { const c = cols.find(c => px >= c.x && px < c.x + c.w) || (px < 0 ? cols[0] : cols[cols.length - 1]); return c.t === 'd' ? c.date : addD(c.from, Math.max(0, Math.min(c.n - 1, Math.floor((px - c.x) / c.w * c.n)))); };
-  const pillW = DAYW < 60 ? 58 : 84, todayX = xAt(doc.now), repX = xAt(doc.asOf), showRep = doc.asOf !== doc.now && Math.abs(repX - todayX) >= pillW + 4;
-  const nowLabel = d => pillW < 60 ? dl(d) : `NOW ${dl(d)}`;
-  const nowPill = pos => `<div class="tl-now ${pos}" data-now="${pos}" role="slider" tabindex="0" aria-label="NOW 날짜" aria-valuetext="${doc.now}" title="NOW ${doc.now} · 드래그로 이동 · 더블클릭(Enter)으로 오늘 · ←/→ 하루, Shift 7일" style="left:${todayX}px;width:${pillW}px"><b>${nowLabel(doc.now)}</b></div>`;
+  const pillW = 80, todayX = xAt(doc.now), repX = xAt(doc.asOf), showRep = doc.asOf !== doc.now && Math.abs(repX - todayX) >= pillW + 4;
+  const nowLabel = d => `NOW<small>${dl(d)}</small>`;
+  const nowPill = pos => `<div class="tl-now ${pos}" data-now="${pos}" role="slider" tabindex="0" aria-label="NOW 날짜" aria-valuetext="${doc.now}" title="NOW ${doc.now} · 드래그로 이동 · 더블클릭(Enter)으로 오늘 · ←/→ 하루, Shift 7일" style="left:${todayX}px"><b>${nowLabel(doc.now)}</b></div>`;
   cols.forEach(c => {
     if (c.t === 'g') { head += `<div class="tl-day gap" style="left:${c.x}px;width:${c.w}px" title="${dl(c.from)}–${dl(c.to)} (${c.n}일)">⋯<small>+${c.n}일</small></div>`; return; }
     const m = c.date.slice(0, 7), dd = parseD(c.date), we = [0, 6].includes(dd.getUTCDay());
@@ -337,7 +338,7 @@ function drawCanvas(host, ro) {
     if (c.date === doc.now || Math.abs(c.x + c.w / 2 - todayX) < pillW / 2 + 9 || (showRep && Math.abs(c.x + c.w / 2 - repX) < pillW / 2 + 4)) return;
     head += `<div class="tl-day${we ? ' we' : ''}" style="left:${c.x}px;width:${c.w}px;padding-top:12px">${+c.date.slice(8)}<small>${wd(c.date)}</small></div>`;
   });
-  if (showRep) head += `<div class="tl-rep" style="left:${repX}px;width:${pillW - 6}px" title="보고 기준일 ${doc.asOf}">${pillW < 60 ? dl(doc.asOf) : '보고 ' + dl(doc.asOf)}</div>`;
+  if (showRep) head += `<div class="tl-rep" style="left:${repX}px" title="보고 기준일 ${doc.asOf}">보고 ${dl(doc.asOf)}</div>`;
   head += nowPill('top');
   // background layer
   let bg = '';
@@ -438,7 +439,7 @@ function drawCanvas(host, ro) {
   M.onscroll = () => { if (ro) ui.rScrollX = M.scrollLeft; else ui.scrollX = M.scrollLeft; };
   // NOW: 드래그 이동 · 더블클릭/Enter 오늘 · 방향키 하루(Shift 7일)
   const nowEls = $$('[data-now]', MI), nowLine = $('.tl-nowline', MI);
-  const paintNow = d => { const x = xAt(d); nowEls.forEach(el => { el.style.left = x + 'px'; el.firstChild.textContent = nowLabel(d); el.setAttribute('aria-valuetext', d); }); nowLine.style.left = (x - 1) + 'px'; };
+  const paintNow = d => { const x = xAt(d); nowEls.forEach(el => { el.style.left = x + 'px'; el.firstChild.innerHTML = nowLabel(d); el.setAttribute('aria-valuetext', d); }); nowLine.style.left = (x - 1) + 'px'; };
   nowEls.forEach(el => {
     el.onpointerdown = e => {
       if (e.button !== 0) return; e.preventDefault(); e.stopPropagation(); el.focus({ preventScroll: true });
@@ -981,6 +982,8 @@ function openImport() {
 /* ================= 부팅 ================= */
 load();
 render();
+// 마일스톤 모드에서 미리 준비(prerender)됐다가 실제로 열리면 최신 저장본으로 다시 그림
+if (document.prerendering) document.addEventListener('prerenderingchange', () => { load(); render(); }, { once: true });
 let rz, lastW = window.innerWidth;
 window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (Math.abs(window.innerWidth - lastW) < 2) return; lastW = window.innerWidth; if (ui.view === 'manage') refresh(['canvas']); else { const rc = $('#r-canvas'); if (rc) drawCanvas(rc, true); } }, 150); });
 document.addEventListener('keydown', e => {

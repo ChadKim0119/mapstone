@@ -226,6 +226,12 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
     .ms-mode-switch > a:hover { background:var(--ms-color-surface-subtle);color:var(--ms-color-text-primary); }
     .ms-mode-switch > a:focus-visible { outline:2px solid var(--ms-color-focus-ring);outline-offset:1px; }
     .ms-mode-short { display:none; }
+    /* 모드 전환: 문서 간 view transition — 브랜드·모드 전환은 같은 좌표에 고정, 본문만 짧게 교차 */
+    @view-transition { navigation:auto; }
+    ::view-transition-group(root) { animation-duration:.16s; }
+    @media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation:none !important; } }
+    [data-toolbar] > div:first-child > button:first-child { view-transition-name:ms-brand; }
+    .ms-mode-switch { view-transition-name:ms-mode; }
     @media (max-width:1100px) { .ms-mode-full { display:none; } .ms-mode-short { display:inline; } .ms-mode-switch > * { padding:0 9px; } [data-toolbar] > div:first-child { flex-wrap:wrap; } }
     @media (max-width:900px) { [data-toolbar] > div:first-child > .ms-title-edit { order:10;flex:1 1 100%; } }
     .ms-title-edit { display:flex;align-items:center;gap:8px;flex:1;min-width:100px;padding:3px 10px;border:1px solid var(--ms-color-border-default);border-radius:8px;background:#fff;cursor:text; }
@@ -1237,6 +1243,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.60', agent: 'Claude Code', title: '모드 전환 · 이슈관리 모드 디자인 시스템 정렬', items: ['[모드 전환] 두 모드의 브랜드·버전·모드 전환 버튼을 같은 좌표·크기로 고정(1920~390px 6개 폭 일치) · 배경 #F5F8FD 통일', '[모드 전환] 마일스톤 부팅 화면을 가운데 로고 대신 실제 헤더와 같은 좌표의 헤더로 표시 · 문서 간 view transition(본문만 0.16초 교차)', '[모드 전환] 모드 전환 버튼에 올리면 상대 모드를 미리 준비(prerender) · 준비 중 저장 차단, 열 때 저장 데이터가 바뀌었으면 다시 읽음', '[이슈관리 모드] 마일스톤 기준으로 컨트롤 32px·반경 12px·굵기 700 이하·평면 primary·글자 크기 단계(11/12/13/14/16/20/24)·여백 20px로 전면 정리', '[이슈관리 모드] 타임라인 머리 평면 navy 44px · NOW 알약 마일스톤과 동일(파란 채움, NOW+날짜) · 인스펙터 탭 36px · 대화상자 반경 20px/헤더 16·22px/36px 버튼 · 1100px 이하 짧은 모드 이름, 700px 이하 8px 여백·44px 터치'] },
     { v: 'v0.9.59', agent: 'Claude Code', title: '이슈관리 모드 NOW · 보고 기준일 분리', items: ['[NOW] 이슈관리 타임라인 위·아래 NOW 표시 · 드래그로 날짜 이동 · 더블클릭/Enter로 오늘 · ←/→ 하루, Shift 7일 (마일스톤 모드 NOW와 같은 조작)', '[시간 흐름] 보고 기준일과 NOW(논의 시점) 분리 · 직접 옮기지 않으면 열 때마다 오늘 · 보고 후 N일 경과 표시 · 보고일 점선 · 그 사이 날짜는 접지 않음', '[추적] 점검일 경과·예정 이력 판단을 NOW 기준으로 · 지난 예정 이력은 "예정일 지남 · 결과 확인" 표시', '[입력] 원문에 금일·오전·어제 등 상대 날짜가 있거나 날짜가 없으면 보고 기준일을 질문(원문 기준일·최신 날짜·오늘·직접 선택) · 상대 날짜 문장을 기준일로 환산해 이력 기록'] },
     { v: 'v0.9.58', agent: 'Claude Code', title: '[주요 사항] 이슈관리 모드 추가', items: ['[모드] 상단에 마일스톤 모드 · 이슈관리 모드 전환 추가 (issues.html, 일정 데이터와 분리 저장)', '[관리 화면] 이슈별 담당·다음 점검일·완료 조건·게이트 단계·조치·점검 메모·확인 요청·이력 관리 · 상태 변경 자동 기록', '[타임라인] 이슈 행 기준 날짜 비례 타임라인 · 빈 기간 +N일 접기 · 지속 제약 바 · 점검일 표시 · 선택 이슈 의존 연결선 · 영역 접기 · 표 보기 정렬', '[추적] 판정 배너 · 핵심 게이트 진행 · 관리 공백(담당·점검일 미정, 점검일 경과, 회신 대기) 필터 · 검색·상태·영역 필터 · 되돌리기', '[보고 화면] 요약(핵심 판단·다음 점검 큐·Blocker 표·QA 분류·N/T 사유) · 시나리오(해소 가정, 실제 상태 불변) · 회신 요청(상대 부문별 문안 복사)', '[입력] 이슈 텍스트 → 정리 초안 검토 → 반영(교체·추가) · 표·날짜·질의·분기 규칙 기반 정리 · JSON 파일 저장·열기', '[원칙] 날짜·담당 추측 금지 · QA 수행 가능 분류와 Pass/Fail, API와 TC 구분'] },
     { v: 'v0.9.57', agent: 'Codex', title: '선 양 끝점 자유 조정 · 선 두께 · 안전한 버전 복원', items: ['선·화살표 양 끝점의 자유 각도·길이 조정과 역방향·수평·수직 지원', '디자인 시스템 선 두께 버튼과 숫자 입력 반영', '미저장 변경이 있으면 버전 복원 전 확인', '버전 저장 실패 원인과 저장 후 목록 갱신 실패 구분', '[검증] 363개 테스트 · 다섯 도형 두께·양 끝점·새로고침·복원 확인/취소·오류 응답 브라우저 검증 · 42아이템 슬라이더 p95≤33.4ms/50ms 초과0회'] },
@@ -1406,7 +1413,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.59';
+  APP_VER = 'v0.9.60';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1592,6 +1599,9 @@ class Component extends DCLogic {
   };
   closePickedMenu = (e) => { const b = e.target && e.target.closest ? e.target.closest('.ms-tool-popover button') : null; if (b) {const menu=b.closest('details');if(menu && getComputedStyle(menu.querySelector('summary')).display!=='none')menu.removeAttribute('open');} };
   componentDidMount() {
+    // 이슈관리 모드에서 미리 준비(prerender)된 경우: 준비 중엔 저장하지 않고, 실제로 열 때 저장 데이터가 바뀌었으면 새로 읽는다
+    if (document.prerendering) { let raw0 = null; try { raw0 = window.localStorage.getItem(this.KEY); } catch (e) {} document.addEventListener('prerenderingchange', () => { try { if (window.localStorage.getItem(this.KEY) !== raw0) location.reload(); } catch (e) {} }, { once: true }); }
+    try { if (window.HTMLScriptElement?.supports?.('speculationrules') && !document.querySelector('script[data-ms-mode-spec]')) { const sr = document.createElement('script'); sr.type = 'speculationrules'; sr.dataset.msModeSpec = ''; sr.textContent = JSON.stringify({ prerender: [{ where: { selector_matches: '.ms-mode-switch a' }, eagerness: 'moderate' }] }); document.head.appendChild(sr); } } catch (e) {}
     let raw = null;
     try {
       raw = window.localStorage.getItem(this.KEY) || window.localStorage.getItem('ucmp.dev-progress-timeline.v5');
@@ -1794,7 +1804,7 @@ class Component extends DCLogic {
     if (this.sync) this.sync.schedule();
   }
   flushSave() {
-    if (this._saveBlocked) return;
+    if (this._saveBlocked || document.prerendering) return;
     clearTimeout(this._t);
     const json = JSON.stringify(this.dataDocument());
     if (json === this._savedData) return;

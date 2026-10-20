@@ -33,6 +33,7 @@ for kind,data in [('manifest',manifest),('template',template),('ext_resources',[
     body=json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('</','<\\/')
     shell=re.sub(r'(<script type="__bundler/'+kind+r'">).*?(</script>)',lambda m:m.group(1)+'\n'+body+'\n'+m.group(2),shell,flags=re.S)
 shell=shell.replace('<title>Bundled Page</title>','<title>MapStone · 일정 Maker</title>')
+shell=shell.replace('__APP_VER__',re.search(r"APP_VER = '([^']+)'",source).group(1))
 (ROOT/'index.html').write_text(shell)
 print('Built index.html and 3 entry points from src/timeline.dc.html')
 
@@ -50,6 +51,7 @@ issues=f'''<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>MapStone · 이슈관리 모드</title>
 <link rel="icon" type="image/svg+xml" href="assets/design-system/mapstone-icon-flat.svg">
+<script type="speculationrules">{{"prerender":[{{"where":{{"selector_matches":"#m-ms"}},"eagerness":"moderate"}}]}}</script>
 <style>
 {im_css}
 </style>
