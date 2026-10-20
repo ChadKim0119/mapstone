@@ -176,7 +176,6 @@ input.doc-title:focus{outline:none;border-color:var(--blue);background:var(--whi
 .tl-day.we small{color:#7FA3D6}
 .tl-day.gap{color:#A4C4EF;font-size:10.5px;font-weight:700}
 .tl-month{position:absolute;top:6px;font-size:10.5px;font-weight:800;color:#fff;opacity:.85;padding-left:6px;border-left:1px solid rgb(255 255 255/.35);line-height:1}
-.tl-today{position:absolute;top:13px;height:26px;padding:0;justify-content:center;border-radius:13px;background:var(--white);color:var(--blue7);font-size:11px;font-weight:800;display:flex;align-items:center;white-space:nowrap;transform:translateX(-50%);box-shadow:0 0 0 2px var(--blue);line-height:1;z-index:2}
 .tl-grp{height:34px;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:11.5px;font-weight:800;color:var(--slate6);background:var(--blue05);border-top:1px solid var(--blue2);letter-spacing:.02em;white-space:nowrap;overflow:hidden}
 .tl-mid .tl-grp,.tl-r .tl-grp{padding:0}
 .tl-row{position:relative;border-top:1px solid var(--blue1);transition:background .1s}
@@ -460,6 +459,40 @@ pre.full{white-space:pre-wrap;font-family:var(--font);font-size:12.8px;line-heig
   .dlg-f{flex-wrap:wrap}
   .dlg-f .status{flex-basis:100%}
   .tl{grid-template-columns:var(--lw) minmax(0,1fr)}
+  .dochead-r{flex:1 1 100%;flex-direction:column;align-items:stretch;gap:8px}
+  .dochead-r>.btn{align-self:flex-start}
+  .dochead-r .asof{display:grid;grid-template-columns:80px minmax(0,180px);gap:8px}
+  .dochead-r .asof .input{width:100%}
+  .nowctl{gap:8px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{.appbar,.rtabs .btn,.foot-r{display:none}body{background:#fff}.card{box-shadow:none}}
+
+/* NOW · 보고 기준일 (마일스톤 모드 NOW와 같은 조작) */
+.tl-now{position:absolute;height:26px;border-radius:13px;background:var(--white);color:var(--blue7);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;white-space:nowrap;transform:translateX(-50%);box-shadow:0 0 0 2px var(--blue);line-height:1;z-index:4;cursor:ew-resize;touch-action:none;user-select:none;-webkit-user-select:none}
+.tl-now.top{top:13px}
+.tl-now.bottom{top:7px}
+.tl-now:hover{background:var(--blue05)}
+.tl-now:focus-visible{outline:2px solid var(--white);outline-offset:3px}
+.tl-now b{font-weight:800;pointer-events:none}
+.now-drag,.now-drag *{cursor:ew-resize!important;user-select:none}
+.now-drag .tl-now{background:var(--blue);color:var(--white);box-shadow:0 0 0 2px var(--white)}
+.tl-rep{position:absolute;top:15px;height:22px;border-radius:11px;border:1.5px dashed rgb(255 255 255/.7);color:#DCE7F5;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;white-space:nowrap;transform:translateX(-50%);line-height:1;z-index:2}
+.tl-nowline{position:absolute;width:2px;top:0;bottom:0;background:var(--blue);opacity:.75}
+.tl-repline{position:absolute;width:0;top:0;bottom:0;border-left:2px dashed var(--slate);opacity:.45}
+.tl-foot{height:40px;background:var(--band);position:relative;color:#B3C2D4;font-size:10.5px;font-weight:600;display:flex;align-items:center;padding:0 14px;white-space:nowrap;overflow:hidden}
+.tl-mid .tl-foot{padding:0;overflow:visible}
+.ev.due{border-color:var(--amber2);border-left-color:var(--amberline)!important;background:var(--amber1)}
+.ev.due .d{color:var(--amber)!important}
+.nowctl{display:flex;align-items:center;gap:6px}
+.nowctl.moved .asof{color:var(--blue7)}
+.nowctl.moved .input{box-shadow:inset 0 0 0 1.5px var(--blue)}
+.doc-eyebrow .lag{font-weight:800;color:var(--amber);background:var(--amber1);border:1px solid var(--amber2);border-radius:999px;padding:1px 8px;letter-spacing:0}
+.doc-eyebrow .lag.fwd{color:var(--blue7);background:var(--blue05);border-color:var(--blue2)}
+.im-ask{display:flex;flex-direction:column;gap:12px}
+.im-ask h3{margin:0;font-size:16px;color:var(--navy)}
+.im-snips{margin:0;padding:10px 14px;list-style:none;display:flex;flex-direction:column;gap:6px;background:var(--blue05);border:1px solid var(--blue2);border-radius:12px;font-size:12.5px;color:var(--slate6);line-height:1.5}
+.im-snips mark{background:var(--amber1);color:var(--amber);font-weight:800;border-radius:4px;padding:0 3px}
+.im-snips .more{color:var(--slate);font-size:11.5px}
+.im-ask .radio small .input{margin-top:6px;width:170px}
+.im-lag{margin:0}

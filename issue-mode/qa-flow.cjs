@@ -166,6 +166,10 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   ok(await p.evaluate(() => document.activeElement.id === 'im-src'), '입력 창 열면 원문 칸 포커스');
   ok(await p.$eval('#im-run', b => b.disabled) || (await p.inputValue('#im-src')).length > 12, '빈 원문이면 정리 버튼 비활성');
   await p.click('#im-ex'); await p.click('#im-run'); await p.waitForTimeout(300);
+  ok(await p.$('.im-ask') && (await p.textContent('.im-ask h3')).includes('금일'), '원문에 "금일" → 보고 기준일 질문');
+  ok(await p.$eval('[name=im-ask]:checked', x => x.value) === '2026-10-20' && (await p.textContent('.im-ask')).includes('10월 20일 기준'), '질문 기본값 = 원문 기준일(10월 20일 기준)');
+  await p.click('#im-ask-ok'); await p.waitForTimeout(300);
+  ok((await p.textContent('.rv-sum')).includes('보고 기준일 2026-10-20'), '선택한 날짜가 보고 기준일로 표시');
   const rvN = await p.$$eval('.rv', x => x.length);
   ok(rvN >= 7, `규칙 기반 정리 → 이슈 ${rvN}개 초안`);
   await p.fill('.rv input[data-k="title"]', '검토 중 수정한 제목'); await p.click('#im-apply'); await p.waitForTimeout(300);
@@ -180,6 +184,43 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   ok((await p.$$('.rv')).length === 9, 'JSON 파일 열기 → 검토 단계');
   await p.keyboard.press('Escape'); await p.waitForTimeout(100);
   ok(!(await p.$('.modal')), 'Esc로 입력 창 닫기');
+
+  // 21-1 상대 날짜 원문 → 과거 보고 기준일로 해석
+  const keepDoc = (await st()).doc;
+  await p.click('#b-import'); await p.fill('#im-src', '1. 결제 API 장애\n금일 오전 10시 서버 재기동 완료\n어제 오후 인증 오류 발생\n내일 재배포 예정\n담당: 플랫폼팀'); await p.click('#im-run'); await p.waitForTimeout(200);
+  ok((await p.$$('.im-snips li')).length >= 2 && (await p.$$('.im-snips mark')).length >= 2, '상대 날짜가 쓰인 문장을 강조해 보여줌');
+  await p.click('[name=im-ask][value=custom]'); await p.fill('#im-ask-d', '2026-10-15'); await p.click('#im-ask-ok'); await p.waitForTimeout(300);
+  ok((await p.textContent('.rv-sum')).includes('2026-10-15') && (await p.textContent('.im-lag')).includes('5일 전'), '직접 고른 과거 기준일 + 경과 안내');
+  await p.click('#im-apply'); await p.waitForTimeout(300);
+  const rd = (await st()).doc, rev = rd.issues[0].events.map(e => e.date + e.kind).sort();
+  ok(JSON.stringify(rev) === JSON.stringify(['2026-10-14fail', '2026-10-15ok', '2026-10-16plan']), '금일/어제/내일 → 기준일로 환산 ' + rev.join(','));
+  ok(rd.asOf === '2026-10-15' && rd.now === '2026-10-20' && !rd.nowManual, '보고 기준일과 NOW(오늘) 분리');
+  ok((await p.textContent('.doc-eyebrow')).includes('보고 후 5일 경과'), '보고 후 경과일 표시');
+  ok((await p.$$('.tl-mid .ev.due')).length === 1 && (await p.textContent('.ev.due')).includes('예정일 지남'), '지난 예정 이력 → "예정일 지남 · 결과 확인"');
+  ok((await p.$$('.tl-rep')).length === 1 && (await p.$$('.tl-now')).length === 2, 'NOW 위·아래 표시 + 보고 기준일 표시');
+
+  // 21-2 NOW 드래그 · 더블클릭 · 방향키
+  const pill = await p.$('.tl-now.top'), bx = await pill.boundingBox();
+  const tx = await p.evaluate(() => { const d = [...document.querySelectorAll('.tl-mid .tl-day:not(.gap)')].find(e => e.firstChild.textContent.trim() === '18'); const r = d.getBoundingClientRect(); return r.left + r.width / 2; });
+  await p.mouse.move(bx.x + bx.width / 2, bx.y + bx.height / 2); await p.mouse.down();
+  for (let k = 1; k <= 12; k++) { await p.mouse.move(bx.x + bx.width / 2 + (tx - bx.x - bx.width / 2) * k / 12, bx.y + bx.height / 2); await p.waitForTimeout(16); }
+  const mid = await p.evaluate(() => [document.querySelector('.tl-now.top').textContent, document.querySelector('.tl-now.bottom').textContent]);
+  ok(mid[0] === mid[1] && mid[0].includes('10.18'), '드래그 중 NOW 위·아래 라벨이 함께 이동 ' + mid[0]);
+  await p.mouse.up(); await p.waitForTimeout(250);
+  let nd = (await st()).doc;
+  ok(nd.now === '2026-10-18' && nd.nowManual, 'NOW 드래그 → 날짜 이동 저장');
+  ok(await p.$('#b-now-today') && (await p.inputValue('#now-in')) === '2026-10-18', 'NOW 이동 → 문서 머리에 NOW 날짜 + 오늘로 버튼');
+  await p.fill('#now-in', '2026-10-15'); await p.dispatchEvent('#now-in', 'change'); await p.waitForTimeout(200);
+  ok((await p.$$('.tl-mid .ev.due')).length === 0 && (await p.textContent('.doc-eyebrow')).includes('보고 후') === false, 'NOW 입력으로 예정일 이전 이동 → 예정 표시 복귀');
+  await p.focus('.tl-now.top'); await p.keyboard.press('Shift+ArrowRight'); await p.waitForTimeout(200);
+  ok((await st()).doc.now === '2026-10-22' && await p.evaluate(() => document.activeElement.dataset.now === 'top'), 'Shift+→ 7일 이동 · 포커스 유지');
+  await p.dblclick('.tl-now.bottom'); await p.waitForTimeout(250);
+  nd = (await st()).doc;
+  ok(nd.now === '2026-10-20' && !nd.nowManual && !(await p.$('#b-now-today')), 'NOW 더블클릭 → 오늘로 복귀');
+  await p.reload(); await p.waitForTimeout(300);
+  ok((await st()).doc.now === '2026-10-20', '새로 열면 NOW는 오늘');
+  await p.evaluate(d => { doc = normalizeDoc(d); persist(true); render(); }, keepDoc); await p.waitForTimeout(200);
+  ok((await st()).doc.issues.length === keepDoc.issues.length, 'NOW 검증용 문서 정리 후 기존 문서 복구');
 
   // 22 보고 화면
   await p.click('#v-r'); await p.waitForTimeout(250);

@@ -184,7 +184,6 @@ input.doc-title:focus{outline:none;border-color:var(--blue);background:var(--whi
 .tl-day.we small{color:#7FA3D6}
 .tl-day.gap{color:#A4C4EF;font-size:10.5px;font-weight:700}
 .tl-month{position:absolute;top:6px;font-size:10.5px;font-weight:800;color:#fff;opacity:.85;padding-left:6px;border-left:1px solid rgb(255 255 255/.35);line-height:1}
-.tl-today{position:absolute;top:13px;height:26px;padding:0;justify-content:center;border-radius:13px;background:var(--white);color:var(--blue7);font-size:11px;font-weight:800;display:flex;align-items:center;white-space:nowrap;transform:translateX(-50%);box-shadow:0 0 0 2px var(--blue);line-height:1;z-index:2}
 .tl-grp{height:34px;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:11.5px;font-weight:800;color:var(--slate6);background:var(--blue05);border-top:1px solid var(--blue2);letter-spacing:.02em;white-space:nowrap;overflow:hidden}
 .tl-mid .tl-grp,.tl-r .tl-grp{padding:0}
 .tl-row{position:relative;border-top:1px solid var(--blue1);transition:background .1s}
@@ -468,9 +467,43 @@ pre.full{white-space:pre-wrap;font-family:var(--font);font-size:12.8px;line-heig
   .dlg-f{flex-wrap:wrap}
   .dlg-f .status{flex-basis:100%}
   .tl{grid-template-columns:var(--lw) minmax(0,1fr)}
+  .dochead-r{flex:1 1 100%;flex-direction:column;align-items:stretch;gap:8px}
+  .dochead-r>.btn{align-self:flex-start}
+  .dochead-r .asof{display:grid;grid-template-columns:80px minmax(0,180px);gap:8px}
+  .dochead-r .asof .input{width:100%}
+  .nowctl{gap:8px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{.appbar,.rtabs .btn,.foot-r{display:none}body{background:#fff}.card{box-shadow:none}}
+
+/* NOW · 보고 기준일 (마일스톤 모드 NOW와 같은 조작) */
+.tl-now{position:absolute;height:26px;border-radius:13px;background:var(--white);color:var(--blue7);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;white-space:nowrap;transform:translateX(-50%);box-shadow:0 0 0 2px var(--blue);line-height:1;z-index:4;cursor:ew-resize;touch-action:none;user-select:none;-webkit-user-select:none}
+.tl-now.top{top:13px}
+.tl-now.bottom{top:7px}
+.tl-now:hover{background:var(--blue05)}
+.tl-now:focus-visible{outline:2px solid var(--white);outline-offset:3px}
+.tl-now b{font-weight:800;pointer-events:none}
+.now-drag,.now-drag *{cursor:ew-resize!important;user-select:none}
+.now-drag .tl-now{background:var(--blue);color:var(--white);box-shadow:0 0 0 2px var(--white)}
+.tl-rep{position:absolute;top:15px;height:22px;border-radius:11px;border:1.5px dashed rgb(255 255 255/.7);color:#DCE7F5;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;white-space:nowrap;transform:translateX(-50%);line-height:1;z-index:2}
+.tl-nowline{position:absolute;width:2px;top:0;bottom:0;background:var(--blue);opacity:.75}
+.tl-repline{position:absolute;width:0;top:0;bottom:0;border-left:2px dashed var(--slate);opacity:.45}
+.tl-foot{height:40px;background:var(--band);position:relative;color:#B3C2D4;font-size:10.5px;font-weight:600;display:flex;align-items:center;padding:0 14px;white-space:nowrap;overflow:hidden}
+.tl-mid .tl-foot{padding:0;overflow:visible}
+.ev.due{border-color:var(--amber2);border-left-color:var(--amberline)!important;background:var(--amber1)}
+.ev.due .d{color:var(--amber)!important}
+.nowctl{display:flex;align-items:center;gap:6px}
+.nowctl.moved .asof{color:var(--blue7)}
+.nowctl.moved .input{box-shadow:inset 0 0 0 1.5px var(--blue)}
+.doc-eyebrow .lag{font-weight:800;color:var(--amber);background:var(--amber1);border:1px solid var(--amber2);border-radius:999px;padding:1px 8px;letter-spacing:0}
+.doc-eyebrow .lag.fwd{color:var(--blue7);background:var(--blue05);border-color:var(--blue2)}
+.im-ask{display:flex;flex-direction:column;gap:12px}
+.im-ask h3{margin:0;font-size:16px;color:var(--navy)}
+.im-snips{margin:0;padding:10px 14px;list-style:none;display:flex;flex-direction:column;gap:6px;background:var(--blue05);border:1px solid var(--blue2);border-radius:12px;font-size:12.5px;color:var(--slate6);line-height:1.5}
+.im-snips mark{background:var(--amber1);color:var(--amber);font-weight:800;border-radius:4px;padding:0 3px}
+.im-snips .more{color:var(--slate);font-size:11.5px}
+.im-ask .radio small .input{margin-top:6px;width:170px}
+.im-lag{margin:0}
 
 </style>
 </head>
@@ -686,7 +719,7 @@ TC별 상세 수행 가능 여부 및 N/T 사유는 첨부한 GS 및 e-Care DVT 
 </script>
 <script>
 'use strict';
-const APP_VER = "v0.9.58";
+const APP_VER = "v0.9.59";
 /* ================= 공통 유틸 ================= */
 const uid = () => 'x' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -758,6 +791,7 @@ function normalizeDoc(raw) {
   const C = raw.conclusion || {};
   return {
     schema: 2, title: S(raw.title || '이슈 현황', 200), subtitle: S(raw.subtitle, 300), asOf, example: !!raw.example,
+    now: isDate(raw.now) ? raw.now : todayISO(), nowManual: !!raw.nowManual && isDate(raw.now),
     groupOrder: A(raw.groupOrder).filter(g => groups.includes(g)).concat(groups.filter(g => !A(raw.groupOrder).includes(g))),
     issues, metrics, reasons, notes: A(raw.notes).map(x => S(x, 500)).filter(Boolean).slice(0, 30),
     conclusion: { points: A(C.points).slice(0, 6).map(p => ({ title: S(p.title, 200), body: S(p.body, 1200) })).filter(p => p.title), summary: S(C.summary, 800) },
@@ -766,6 +800,30 @@ function normalizeDoc(raw) {
 }
 function metricTotals(rows) { return rows.reduce((a, r) => ({ total: a.total + r.total, blocked: a.blocked + r.blocked, limited: a.limited + r.limited, other: a.other + r.other }), { total: 0, blocked: 0, limited: 0, other: 0 }); }
 function metricWarnings(rows) { return rows.filter(r => r.total !== r.blocked + r.limited + r.other).map(r => `${r.label || '(이름 없음)'}: 전체 ${r.total}건 ≠ N/T+제한적+기타 ${r.blocked + r.limited + r.other}건`); }
+
+/* ================= 날짜 맥락 ================= */
+// 상대 날짜 표현과 원문 속 기준일 후보를 찾는다. 상대 표현이 있으면 입력일이 아닐 수 있어 사용자에게 묻는다.
+const REL_WORDS = [['금일', 0], ['오늘', 0], ['당일', 0], ['오전', 0], ['오후', 0], ['어제', -1], ['전일', -1], ['내일', 1], ['익일', 1], ['명일', 1], ['모레', 2], ['금주', null], ['이번 주', null], ['지난주', null], ['다음 주', null], ['차주', null]];
+function dateContext(src, fallbackYear) {
+  const text = String(src || ''), yearM = text.match(/\b(20\d\d)\b/), year = yearM ? +yearM[1] : (fallbackYear || +todayISO().slice(0, 4));
+  const iso = (m, d) => { const v = `${year}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; return isDate(v) ? v : ''; };
+  // 한 줄에 여러 표현이 있어도 원문 문장은 한 번만 보여준다
+  const rel = [];
+  text.split(/\r?\n/).forEach(line => {
+    if (rel.length >= 12) return;
+    const words = REL_WORDS.map(([w]) => w).filter(w => { const k = line.indexOf(w); if (k < 0) return false; if (w !== '오전' && w !== '오후') return true; return /금일|오늘|당일|\d+시/.test(line) || /^\s*\d/.test(line.slice(k + w.length)); });
+    if (!words.length) return;
+    const k = Math.min(...words.map(w => line.indexOf(w))), t = line.trim();
+    rel.push({ word: words[0], words, snippet: (k > 24 ? '…' + line.slice(k - 18) : t).slice(0, 64) + (t.length > 64 ? '…' : '') });
+  });
+  let basis = '', basisText = '';
+  const bm = text.match(/(\d{1,2})월\s*(\d{1,2})일\s*(?:\([^)]*\)\s*)?(기준|현재)/) || text.match(/(\d{1,2})\/(\d{1,2})\s*(?:\([^)]*\)\s*)?(기준|현재)/);
+  if (bm) { basis = iso(bm[1], bm[2]); basisText = bm[0]; }
+  const all = []; const re = /(\d{1,2})월\s*(\d{1,2})일|(?:^|[^\d/.])(\d{1,2})\/(\d{1,2})(?![\d/])/g; let m;
+  while ((m = re.exec(text))) { const a = m[1] || m[3], b = m[2] || m[4]; if (+a <= 12) { const v = iso(a, b); if (v) all.push(v); } }
+  all.sort();
+  return { rel, basis, basisText, latest: all[all.length - 1] || '', hasDates: all.length > 0, year };
+}
 
 /* ================= 규칙 기반 정리 ================= */
 function parseRules(src, opt = {}) {
@@ -783,7 +841,7 @@ function parseRules(src, opt = {}) {
   const GROUP = s => /^GS\b|Global South/i.test(s) ? 'Global South' : /^e-?Care/i.test(s) ? 'e-Care' : (s.split(/\s+/)[0] || '기타');
   // asOf
   let asOf = isDate(opt.asOf) ? opt.asOf : '';
-  if (!asOf) { const all = []; lines.forEach(l => { const d = dateIn(l); if (d) all.push(d); }); all.sort(); asOf = all.pop() || todayISO(); }
+  if (!asOf) { const ctx = dateContext(text, year); asOf = ctx.basis || ctx.latest || todayISO(); }
   // tables & sections
   const tables = []; let cur = null; const secOf = []; let h1 = '', h2 = '';
   lines.forEach((l, i) => {
@@ -823,11 +881,12 @@ function parseRules(src, opt = {}) {
     });
   }
   // 3) 표가 없으면 제목 단위
+  const lineIssue = [];
   if (!issues.length) {
     const heads = lines.map((l, i) => ({ l, i })).filter(x => isHeading(x.l) && !/현황|요약|계획|의견|결론|범위/.test(x.l));
     const bullets = lines.map((l, i) => ({ l, i })).filter(x => /^[-•]\s+/.test(x.l));
     const src2 = heads.length ? heads : bullets;
-    src2.slice(0, 30).forEach(({ l, i }, n) => { const t = l.replace(/^\d+(\.\d+)*\.?\s*|^[-•]\s*/, ''); const it = mk(TOK(t)[0] || 'I' + (n + 1), { title: clip(t, 60) }); const end = src2[n + 1] ? src2[n + 1].i : lines.length; const body = lines.slice(i + 1, end); body.forEach(b => { const dd = dateIn(b); if (dd) it.events.push({ date: dd, kind: kindOf(b), text: clip(b.replace(/^\d{1,2}(월\s*\d{1,2}일|\/\d{1,2})\s*/, ''), 90), flag: '', corrected: false, evidence: b }); }); it.evidence = body.slice(0, 10); it.summary = clip(body.find(b => /현재|불가|오류|지연|실패/.test(b)) || body[0] || t, 180); it.status = statusOf(body.join(' ')); TOK(t + ' ' + body.join(' ')).slice(0, 6).forEach(x => it.tokens.add(x)); const ow = body.join('\n').match(/(?:담당자?|관련 부문)\s*[:：]\s*([^\n]+)/); if (ow) it.owner = ow[1].trim(); body.filter(b => /조치\s*[:：]|필요|예정/.test(b)).slice(0, 4).forEach(b => it.actions.push(b.replace(/^.*?[:：]\s*/, ''))); });
+    src2.slice(0, 30).forEach(({ l, i }, n) => { const t = l.replace(/^\d+(\.\d+)*\.?\s*|^[-•]\s*/, ''); const it = mk(TOK(t)[0] || 'I' + (n + 1), { title: clip(t, 60) }); const end = src2[n + 1] ? src2[n + 1].i : lines.length; const body = lines.slice(i + 1, end); for (let k = i; k < end; k++) lineIssue[k] = it; body.forEach(b => { const dd = dateIn(b); if (dd) it.events.push({ date: dd, kind: kindOf(b), text: clip(b.replace(/^\d{1,2}(월\s*\d{1,2}일|\/\d{1,2})\s*/, ''), 90), flag: '', corrected: false, evidence: b }); }); it.evidence = body.slice(0, 10); it.summary = clip(body.find(b => /현재|불가|오류|지연|실패/.test(b)) || body[0] || t, 180); it.status = statusOf(body.join(' ')); TOK(t + ' ' + body.join(' ')).slice(0, 6).forEach(x => it.tokens.add(x)); const ow = body.join('\n').match(/(?:담당자?|관련 부문)\s*[:：]\s*([^\n]+)/); if (ow) it.owner = ow[1].trim(); body.filter(b => /조치\s*[:：]|필요|예정/.test(b)).slice(0, 4).forEach(b => it.actions.push(b.replace(/^.*?[:：]\s*/, ''))); });
     if (!issues.length) mk('I1', { title: clip(opt.title || lines[0], 60), summary: clip(lines.slice(1, 3).join(' '), 180), evidence: lines.slice(0, 8) });
   }
   issues.forEach(i => { i.tokens.add(i.key.toUpperCase()); if (!i.group) i.group = i.key === 'QA' ? 'QA' : '기타'; if (!i.title) i.title = clip(i.gate || i.key, 60); });
@@ -854,6 +913,16 @@ function parseRules(src, opt = {}) {
     if (t.length < 14 && lines[i + 1]) t = lines[i + 1];
     if (it.events.some(e => e.date === date && (e.kind === kindOf(l) || e.text.slice(0, 8) === t.slice(0, 8)))) return;
     it.events.push({ date, kind: kindOf(t), text: clip(t, 90), flag: '', corrected: false, evidence: l });
+  });
+  // 5-1) 상대 날짜로 시작하는 문장(금일 오전 …, 어제 …) → 보고 기준일 기준으로 환산한 이력
+  const relStart = /^(금일|오늘|당일|어제|전일|내일|익일|명일|모레)\s*(오전|오후)?\s*[,·:]?\s*/;
+  lines.forEach((l, i) => {
+    const m = l.match(relStart); if (!m || l.length > 200 || l.includes('\t')) return;
+    const off = { 금일: 0, 오늘: 0, 당일: 0, 어제: -1, 전일: -1, 내일: 1, 익일: 1, 명일: 1, 모레: 2 }[m[1]];
+    const date = addD(asOf, off); const it = lineIssue[i] || best(secOf[i] + ' ' + l) || (issues.length === 1 ? issues[0] : null); if (!it) return;
+    const t = l.replace(relStart, '') || l;
+    if (it.events.some(e => e.date === date && e.text.slice(0, 8) === clip(t, 90).slice(0, 8))) return;
+    it.events.push({ date, kind: off > 0 ? 'plan' : kindOf(t), text: clip(`${m[2] ? m[2] + ' ' : ''}${t}`, 90), flag: '', corrected: false, evidence: l });
   });
   // 6) 확인 필요 질의 → 요청, 우선 확인 사항 → 조치
   let inQ = false, party = '', grpT = '', curIt = null;
@@ -943,6 +1012,7 @@ function claudePrompt(src, opt) {
 규칙
 - 출력은 JSON 객체 하나. 설명·코드펜스 금지. 문자열은 한국어(고유명사·약어는 원문 유지).
 - 원문에 없는 날짜·담당·숫자를 지어내지 마라. 모르면 빈 문자열/null. 연도가 없으면 ${(opt.asOf || todayISO()).slice(0, 4)}년.
+- '금일·오늘·당일·오전·오후·어제·전일·내일·익일' 같은 상대 날짜 표현은 보고 기준일 ${opt.asOf || '(원문 기준일)'}을 기준으로 환산하라. 입력한 날과 같다고 가정하지 마라.
 - 이슈는 담당자가 따로 추적해야 하는 단위(시스템·환경 단위)로 5~10개. 대응 계획/우선순위 표가 있으면 그 순서를 우선순위로.
 - 일자별 경과 표의 각 행은 해당 이슈의 events 하나. 나중에 틀린 것으로 밝혀진 안내는 corrected:true, kind:"warn".
 - 결과에 따라 범위가 갈리는 판단('정상 수행 시/실패 시')은 해당 이슈의 scenario와 steps로.
@@ -1120,7 +1190,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 let doc;
-const ui = { view: 'manage', rtab: 'summary', list: false, sel: null, itab: 'manage', q: '', fStatus: 'all', fGroup: 'all', fGap: '', hideResolved: false, compress: true, sort: { k: 'priority', dir: 1 }, assume: {}, collapsed: {}, scrollX: null, flash: null, editEvent: null };
+const ui = { view: 'manage', rtab: 'summary', list: false, sel: null, itab: 'manage', q: '', fStatus: 'all', fGroup: 'all', fGap: '', hideResolved: false, compress: true, sort: { k: 'priority', dir: 1 }, assume: {}, collapsed: {}, scrollX: null, rScrollX: null, revealNow: false, flash: null, editEvent: null };
 const undoStack = [];
 let savedAt = '', storageError = '';
 let sampleFn = null, downloadsFn = null;
@@ -1133,6 +1203,8 @@ function load() {
     if (u) ['view', 'rtab', 'list', 'sel', 'itab', 'hideResolved', 'compress', 'sort', 'collapsed'].forEach(k => { if (u[k] !== undefined) ui[k] = u[k]; });
     savedAt = doc.updatedAt || '';
   } catch (e) { doc = sampleDoc(); storageError = '저장된 문서를 읽지 못해 예제를 열었습니다. 파일로 저장해 둔 문서가 있으면 이슈 텍스트 입력에서 불러오세요.'; }
+  // NOW는 직접 옮기지 않았다면 열 때마다 오늘로 따라온다 (보고 기준일과 별개)
+  if (!doc.nowManual) doc.now = todayISO();
   if (!doc.issues.some(i => i.id === ui.sel)) ui.sel = (sorted(doc.issues)[0] || {}).id || null;
 }
 let saveTimer;
@@ -1153,7 +1225,18 @@ const sorted = list => [...list].sort((a, b) => a.priority - b.priority || a.tit
 const groupColor = g => GROUP_COLORS[Math.max(0, doc.groupOrder.indexOf(g)) % GROUP_COLORS.length];
 const openReq = i => i.requests.filter(q => q.state !== 'done').length;
 const daysSince = iso => iso ? Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 864e5)) : null;
-const checkState = i => !i.checkDate ? 'none' : i.checkDate < doc.asOf ? 'late' : diffD(doc.asOf, i.checkDate) <= 2 ? 'soon' : 'ok';
+const checkState = i => !i.checkDate ? 'none' : i.checkDate < doc.now ? 'late' : diffD(doc.now, i.checkDate) <= 2 ? 'soon' : 'ok';
+const planDue = e => e.kind === 'plan' && e.date && e.date < doc.now;
+const nowLag = () => diffD(doc.asOf, doc.now);
+const lagText = () => { const n = nowLag(); return n > 0 ? `보고 후 ${n}일 경과` : n < 0 ? `보고 ${-n}일 전` : ''; };
+/* NOW 이동: 논의 시점만 바꾸며 실행 취소 이력·예제 표시에는 넣지 않는다 */
+function setNow(date, manual) {
+  if (!isDate(date)) return;
+  const today = todayISO(); manual = manual && date !== today;
+  if (doc.now === date && doc.nowManual === manual) return;
+  doc.now = date; doc.nowManual = manual; ui.revealNow = true; persist();
+  if (ui.view === 'manage') refresh(['dochead', 'strip', 'canvas', 'insp', 'blocks']); else render();
+}
 
 function snapshot(label) { undoStack.push({ label, doc: clone(doc), sel: ui.sel, itab: ui.itab }); if (undoStack.length > 30) undoStack.shift(); }
 function undo() {
@@ -1271,14 +1354,17 @@ function bindFoot() {
 
 /* ================= 문서 머리 / 상태 띠 ================= */
 function docheadHTML() {
-  return `<div class="dochead-l"><div class="doc-eyebrow"><span>MANAGE · 이슈관리</span><span>${doc.issues.length}개 이슈 · 미해결 ${doc.issues.filter(i => i.status !== 'resolved').length}개</span></div>
+  return `<div class="dochead-l"><div class="doc-eyebrow"><span>MANAGE · 이슈관리</span><span>${doc.issues.length}개 이슈 · 미해결 ${doc.issues.filter(i => i.status !== 'resolved').length}개</span>${lagText() ? `<span class="lag${nowLag() > 0 ? '' : ' fwd'}" title="보고 기준일 ${doc.asOf} → NOW ${doc.now}">${lagText()}</span>` : ''}</div>
     <label class="sr" for="doc-title">문서 제목</label><input class="doc-title" id="doc-title" value="${esc(doc.title)}" maxlength="200">
     <p class="doc-sub">${esc(doc.subtitle || '이력을 연결하고, 차단 조건과 다음 점검을 관리하세요.')}</p></div>
-    <div class="dochead-r">${undoStack.length ? `<button class="btn" id="b-undo">${I.undo}되돌리기</button>` : ''}<label class="asof" for="asof">기준일<input class="input" type="date" id="asof" value="${doc.asOf}"></label></div>`;
+    <div class="dochead-r">${undoStack.length ? `<button class="btn" id="b-undo">${I.undo}되돌리기</button>` : ''}<label class="asof" for="asof" title="원문 보고서가 작성된 날짜. 금일·오전 같은 표현을 이 날짜로 해석합니다.">보고 기준일<input class="input" type="date" id="asof" value="${doc.asOf}"></label>
+      <div class="nowctl${doc.nowManual ? ' moved' : ''}"><label class="asof" for="now-in" title="논의 중인 시점. 타임라인의 NOW를 드래그하거나 더블클릭하면 오늘로 돌아갑니다.">NOW<input class="input" type="date" id="now-in" value="${doc.now}"></label>${doc.nowManual ? `<button class="btn sm" id="b-now-today" title="NOW를 오늘(${todayISO()})로 이동">오늘로</button>` : ''}</div></div>`;
 }
 function bindDochead() {
   $('#doc-title').oninput = e => { doc.title = e.target.value; doc.example = false; persist(); };
   $('#asof').onchange = e => { if (isDate(e.target.value)) mutate(d => { d.asOf = e.target.value; }, { parts: ['strip', 'canvas', 'blocks'] }); else e.target.value = doc.asOf; };
+  $('#now-in').onchange = e => { if (isDate(e.target.value)) setNow(e.target.value, true); else e.target.value = doc.now; };
+  const nt = $('#b-now-today'); if (nt) nt.onclick = () => setNow(todayISO(), false);
   const u = $('#b-undo'); if (u) u.onclick = undo;
 }
 function verdict() {
@@ -1311,7 +1397,7 @@ function gatesHTML(interactive) {
 }
 function stripHTML(interactive) {
   const v = verdict();
-  return `<div class="card verdict"><span class="lab">기준일 ${doc.asOf} (${wd(doc.asOf)}) · 이슈 ${doc.issues.length}건</span><span class="big">${esc(v.text)}</span><span class="pills">${statusPills(false)}</span></div>${kpiHTML()}${gatesHTML(interactive)}`;
+  return `<div class="card verdict"><span class="lab">NOW ${dl(doc.now)} (${wd(doc.now)}) · ${nowLag() ? `보고 ${dl(doc.asOf)} (${nowLag() > 0 ? '+' : ''}${nowLag()}일)` : '보고 기준일 동일'} · 이슈 ${doc.issues.length}건</span><span class="big">${esc(v.text)}</span><span class="pills">${statusPills(false)}</span></div>${kpiHTML()}${gatesHTML(interactive)}`;
 }
 function bindStrip(el) {
   $$('[data-step]', el).forEach(b => b.onclick = e => {
@@ -1375,7 +1461,7 @@ function select(id, tab, flash) {
 
 /* ================= 캔버스 ================= */
 function buildAxis(issues, compress) {
-  const asOf = doc.asOf, keys = new Set([asOf]);
+  const asOf = doc.now, keys = new Set([asOf, doc.asOf]);
   issues.forEach(i => {
     i.events.forEach(e => e.date && keys.add(e.date));
     if (i.constraint && i.constraint.start && i.status !== 'resolved') keys.add(i.constraint.start);
@@ -1387,6 +1473,8 @@ function buildAxis(issues, compress) {
   const days = []; for (let d = start; d <= end; d = addD(d, 1)) days.push(d);
   if (!compress) return days.map(date => ({ t: 'd', date }));
   const keep = new Set(ks); for (let k = -1; k <= 3; k++) keep.add(addD(asOf, k));
+  // 보고 기준일 ~ NOW 사이(2주 이내)는 접지 않아 경과한 날짜를 그대로 보여준다
+  const [ra, rb] = [doc.asOf, doc.now].sort(); if (diffD(ra, rb) <= 14) for (let d = ra; d <= rb; d = addD(d, 1)) keep.add(d);
   const cols = []; let run = [];
   const flush = () => { if (run.length >= 2) cols.push({ t: 'g', from: run[0], to: run[run.length - 1], n: run.length }); else run.forEach(date => cols.push({ t: 'd', date })); run = []; };
   days.forEach(d => { if (keep.has(d)) { flush(); cols.push({ t: 'd', date: d }); } else run.push(d); });
@@ -1421,22 +1509,29 @@ function drawCanvas(host, ro) {
   // header
   let head = '';
   let lastMonth = '';
-  const pillW = DAYW < 60 ? 52 : 80, todayX = xC(doc.asOf);
+  // NOW는 접힌 구간 안에서도 날짜 비율로 위치한다
+  const xAt = d => { const c = colOf(d); return c.t === 'd' ? c.x + c.w / 2 : c.x + (Math.max(0, Math.min(c.n - 1, diffD(c.from, d))) + 0.5) / c.n * c.w; };
+  const dateAt = px => { const c = cols.find(c => px >= c.x && px < c.x + c.w) || (px < 0 ? cols[0] : cols[cols.length - 1]); return c.t === 'd' ? c.date : addD(c.from, Math.max(0, Math.min(c.n - 1, Math.floor((px - c.x) / c.w * c.n)))); };
+  const pillW = DAYW < 60 ? 58 : 84, todayX = xAt(doc.now), repX = xAt(doc.asOf), showRep = doc.asOf !== doc.now && Math.abs(repX - todayX) >= pillW + 4;
+  const nowLabel = d => pillW < 60 ? dl(d) : `NOW ${dl(d)}`;
+  const nowPill = pos => `<div class="tl-now ${pos}" data-now="${pos}" role="slider" tabindex="0" aria-label="NOW 날짜" aria-valuetext="${doc.now}" title="NOW ${doc.now} · 드래그로 이동 · 더블클릭(Enter)으로 오늘 · ←/→ 하루, Shift 7일" style="left:${todayX}px;width:${pillW}px"><b>${nowLabel(doc.now)}</b></div>`;
   cols.forEach(c => {
     if (c.t === 'g') { head += `<div class="tl-day gap" style="left:${c.x}px;width:${c.w}px" title="${dl(c.from)}–${dl(c.to)} (${c.n}일)">⋯<small>+${c.n}일</small></div>`; return; }
     const m = c.date.slice(0, 7), dd = parseD(c.date), we = [0, 6].includes(dd.getUTCDay());
     if (m !== lastMonth) { head += `<div class="tl-month" style="left:${c.x + 3}px">${+c.date.slice(5, 7)}월</div>`; lastMonth = m; }
-    if (c.date === doc.asOf || Math.abs(c.x + c.w / 2 - todayX) < pillW / 2 + 9) return;
+    if (c.date === doc.now || Math.abs(c.x + c.w / 2 - todayX) < pillW / 2 + 9 || (showRep && Math.abs(c.x + c.w / 2 - repX) < pillW / 2 + 4)) return;
     head += `<div class="tl-day${we ? ' we' : ''}" style="left:${c.x}px;width:${c.w}px;padding-top:12px">${+c.date.slice(8)}<small>${wd(c.date)}</small></div>`;
   });
-  head += `<div class="tl-today" style="left:${todayX}px;width:${pillW}px" title="오늘(기준일) ${doc.asOf}">${pillW < 60 ? dl(doc.asOf) : '오늘 ' + dl(doc.asOf)}</div>`;
+  if (showRep) head += `<div class="tl-rep" style="left:${repX}px;width:${pillW - 6}px" title="보고 기준일 ${doc.asOf}">${pillW < 60 ? dl(doc.asOf) : '보고 ' + dl(doc.asOf)}</div>`;
+  head += nowPill('top');
   // background layer
   let bg = '';
   cols.forEach(c => {
     if (c.t === 'g') bg += `<div style="position:absolute;left:${c.x}px;width:${c.w}px;top:0;bottom:0;background:repeating-linear-gradient(135deg,#F5F8FD 0 6px,#E9F0FA 6px 12px)"></div>`;
     else { const w = parseD(c.date).getUTCDay(); if (w === 0 || w === 6) bg += `<div style="position:absolute;left:${c.x}px;width:${c.w}px;top:0;bottom:0;background:rgb(210 226 247/.28)"></div>`; bg += `<div style="position:absolute;left:${c.x}px;width:1px;top:0;bottom:0;background:${w === 1 ? 'var(--blue2)' : 'rgb(210 226 247/.55)'}"></div>`; }
   });
-  bg += `<div style="position:absolute;left:${xC(doc.asOf) - 1}px;width:2px;top:0;bottom:0;background:var(--blue);opacity:.75"></div>`;
+  if (doc.asOf !== doc.now) bg += `<div class="tl-repline" style="left:${repX - 1}px"></div>`;
+  bg += `<div class="tl-nowline" style="left:${todayX - 1}px"></div>`;
   // rows
   let lh = `<div class="tl-head">우선순위 · 이슈</div>`, mh = `<div class="tl-head">${head}</div><div class="tl-bg" style="width:${MW}px">${bg}</div>`, rh = `<div class="tl-head">다음 단계 · 검증 게이트<small>완료 조건 · 점검일 · 조치 · 선행 조건</small></div>`;
   groups.forEach(g => {
@@ -1452,6 +1547,7 @@ function drawCanvas(host, ro) {
       rh += `<div class="tl-row${sel}" data-row="${i.id}">${rightCell(i, ro)}</div>`;
     });
   });
+  lh += `<div class="tl-foot"><span>NOW 드래그 · 더블클릭 오늘</span></div>`; mh += `<div class="tl-foot">${nowPill('bottom')}</div>`; rh += `<div class="tl-foot"></div>`;
   L.innerHTML = lh; MI.insertAdjacentHTML('beforeend', mh); R.innerHTML = rh;
   // fill middle rows & pack
   const rowH = {};
@@ -1471,13 +1567,14 @@ function drawCanvas(host, ro) {
     i.events.filter(e => e.date).forEach(e => {
       const el = document.createElement('button');
       const k = KIND[e.kind];
-      el.className = `ev${e.kind === 'plan' ? ' plan' : ''}${e.corrected ? ' corr' : ''}${ui.flash === e.id ? ' flash' : ''}`;
+      const due = planDue(e);
+      el.className = `ev${e.kind === 'plan' ? ' plan' : ''}${due ? ' due' : ''}${e.corrected ? ' corr' : ''}${ui.flash === e.id ? ' flash' : ''}`;
       el.dataset.ev = e.id; el.dataset.issue = i.id;
       let left = xL(e.date) + 2; if (left + CW > MW - 2) left = Math.max(0, MW - 2 - CW);
       el.style.left = left + 'px'; el.style.width = CW + 'px'; el.style.borderLeftColor = k.color;
-      el.title = `${e.date}${e.flag === '*' ? ' (날짜 재확인)' : ''} · ${e.text}`;
+      el.title = `${e.date}${e.flag === '*' ? ' (날짜 재확인)' : ''}${due ? ' · 예정일 지남, 결과 확인 필요' : ''} · ${e.text}`;
       el.innerHTML = `<span class="pin" style="left:${Math.max(-4, xC(e.date) - left - 7)}px;background:${e.kind === 'plan' ? 'var(--white)' : k.color};box-shadow:0 0 0 1px ${k.color}"></span>
-        <span class="d" style="color:${k.ink}">${dl(e.date)}${e.flag === '*' ? '<b style="color:var(--amber)">*</b>' : ''}${e.flag === '~' ? ' 추정' : ''} · ${e.corrected ? '정정됨' : k.label}</span><span class="x">${esc(e.text)}</span>`;
+        <span class="d" style="color:${k.ink}">${dl(e.date)}${e.flag === '*' ? '<b style="color:var(--amber)">*</b>' : ''}${e.flag === '~' ? ' 추정' : ''} · ${e.corrected ? '정정됨' : due ? '예정일 지남' : k.label}</span><span class="x">${esc(e.text)}</span>`;
       m.appendChild(el); items.push({ el, x: left, w: CW });
     });
     if (i.checkDate && i.status !== 'resolved') {
@@ -1520,9 +1617,40 @@ function drawCanvas(host, ro) {
     R.insertAdjacentHTML('beforeend', svg + '</svg>'); R.style.position = 'relative';
   }
   // scroll position
-  if (ui.scrollX !== null && !ro) M.scrollLeft = ui.scrollX;
-  else M.scrollLeft = Math.max(0, xC(doc.asOf) - avail * 0.72);
-  M.onscroll = () => { if (!ro) ui.scrollX = M.scrollLeft; };
+  const keep = ro ? ui.rScrollX : ui.scrollX;
+  if (keep !== null) M.scrollLeft = keep; else M.scrollLeft = Math.max(0, todayX - avail * 0.72);
+  if (ui.revealNow && (todayX < M.scrollLeft + 40 || todayX > M.scrollLeft + M.clientWidth - 40)) M.scrollLeft = Math.max(0, todayX - M.clientWidth / 2);
+  M.onscroll = () => { if (ro) ui.rScrollX = M.scrollLeft; else ui.scrollX = M.scrollLeft; };
+  // NOW: 드래그 이동 · 더블클릭/Enter 오늘 · 방향키 하루(Shift 7일)
+  const nowEls = $$('[data-now]', MI), nowLine = $('.tl-nowline', MI);
+  const paintNow = d => { const x = xAt(d); nowEls.forEach(el => { el.style.left = x + 'px'; el.firstChild.textContent = nowLabel(d); el.setAttribute('aria-valuetext', d); }); nowLine.style.left = (x - 1) + 'px'; };
+  nowEls.forEach(el => {
+    el.onpointerdown = e => {
+      if (e.button !== 0) return; e.preventDefault(); e.stopPropagation(); el.focus({ preventScroll: true });
+      let cur = doc.now, moved = false; const x0 = e.clientX;
+      try { el.setPointerCapture(e.pointerId); } catch (_) { }
+      host.classList.add('now-drag');
+      el.onpointermove = ev => {
+        if (!moved && Math.abs(ev.clientX - x0) < 3) return; moved = true;
+        const mr = M.getBoundingClientRect();
+        if (ev.clientX > mr.right - 24) M.scrollLeft += 14; else if (ev.clientX < mr.left + 24) M.scrollLeft -= 14;
+        const d = dateAt(ev.clientX - MI.getBoundingClientRect().left); if (d !== cur) { cur = d; paintNow(d); }
+      };
+      el.onpointerup = el.onpointercancel = ev => {
+        el.onpointermove = el.onpointerup = el.onpointercancel = null; host.classList.remove('now-drag');
+        try { el.releasePointerCapture(ev.pointerId); } catch (_) { }
+        if (moved && cur !== doc.now) setNow(cur, true);
+      };
+    };
+    el.ondblclick = e => { e.stopPropagation(); setNow(todayISO(), false); };
+    el.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNow(todayISO(), false); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setNow(addD(doc.now, (e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 7 : 1)), true); }
+      else return;
+      const f = $(`[data-now="${el.dataset.now}"]`); if (f) f.focus({ preventScroll: true });
+    };
+  });
+  ui.revealNow = false;
   // interactions
   const rows = id => $$(`.tl-row[data-row="${id}"]`, host);
   host.onmouseover = e => { const r = e.target.closest('[data-row]'); const id = r && r.dataset.row; if (host._hov === id) return; if (host._hov) rows(host._hov).forEach(x => x.classList.remove('hover')); host._hov = id; if (id) rows(id).forEach(x => x.classList.add('hover')); };
@@ -1649,15 +1777,15 @@ function histTab(i) {
   const list = [...i.events].sort((a, b) => (a.date || '9999') < (b.date || '9999') ? -1 : (a.date || '9999') > (b.date || '9999') ? 1 : 0);
   return `<div class="sec"><div class="sec-h"><h3>확인 이력 <small>${list.length}건</small></h3></div>
       <div class="hist">${list.map(e => ui.editEvent === e.id ? evEdit(e) : `<div class="he${e.corrected ? ' corr' : ''}${ui.flash === e.id ? ' flash' : ''}" data-he="${e.id}"><time>${e.date ? dl(e.date) : '미정'}<small>${e.date ? wd(e.date) + '요일' : '날짜 미상'}</small></time>
-        <div class="body"><div class="top"><span class="badge sm" style="background:${e.kind === 'plan' ? 'var(--blue05)' : 'transparent'};color:${KIND[e.kind].ink};box-shadow:inset 0 0 0 1px ${KIND[e.kind].color}">${KIND[e.kind].label}</span>${e.corrected ? '<span class="badge sm b-red">정정됨</span>' : ''}${e.flag === '*' ? '<span class="badge sm b-amber">날짜 재확인</span>' : ''}${e.flag === '~' ? '<span class="badge sm b-amber">추정</span>' : ''}</div>
+        <div class="body"><div class="top"><span class="badge sm" style="background:${e.kind === 'plan' ? 'var(--blue05)' : 'transparent'};color:${KIND[e.kind].ink};box-shadow:inset 0 0 0 1px ${KIND[e.kind].color}">${KIND[e.kind].label}</span>${planDue(e) ? '<span class="badge sm b-amber">예정일 지남 · 결과 확인</span>' : ''}${e.corrected ? '<span class="badge sm b-red">정정됨</span>' : ''}${e.flag === '*' ? '<span class="badge sm b-amber">날짜 재확인</span>' : ''}${e.flag === '~' ? '<span class="badge sm b-amber">추정</span>' : ''}</div>
         <p>${esc(e.text)}</p>${e.evidence && e.evidence !== e.text ? `<blockquote class="quote">${esc(e.evidence)}</blockquote>` : ''}
         <div class="acts"><button class="link" data-editev="${e.id}">편집</button><button class="link" style="color:var(--red)" data-rmev="${e.id}">삭제</button></div></div></div>`).join('') || '<p class="caption">날짜가 있는 확인 이력이 없습니다. 아래에서 추가하세요.</p>'}</div></div>
     <div class="sec"><div class="sec-h"><h3>이력 추가</h3></div>
       <form id="f-ev" style="display:flex;flex-direction:column;gap:8px">
-        <div class="pair"><div class="field"><label for="n-evd">날짜<small>비우면 미정</small></label><input class="input sm" type="date" id="n-evd" value="${doc.asOf}"></div>
+        <div class="pair"><div class="field"><label for="n-evd">날짜<small>비우면 미정</small></label><input class="input sm" type="date" id="n-evd" value="${doc.now}"></div>
           <div class="field"><label for="n-evk">종류</label><select class="select sm" id="n-evk">${Object.entries(KIND).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select></div></div>
         <div class="field"><label for="n-evt">확인한 내용</label><textarea class="textarea" id="n-evt" rows="2" maxlength="1000"></textarea></div>
-        <p class="caption">기준일 이후 날짜는 자동으로 '예정'이 됩니다.</p>
+        <p class="caption">NOW(${dl(doc.now)}) 이후 날짜는 자동으로 '예정'이 됩니다.</p>
         <button class="btn primary sm" style="align-self:flex-end" disabled>이력 기록</button></form></div>
     ${i.evidence.length ? `<div class="sec"><div class="sec-h"><h3>원문 근거</h3></div>${i.evidence.map(t => `<blockquote class="quote">${esc(t)}</blockquote>`).join('')}</div>` : ''}`;
 }
@@ -1716,7 +1844,7 @@ function bindInsp() {
   $$('[data-rmreq]', box).forEach(b => b.onclick = () => mutate(() => i.requests = i.requests.filter(r => r.id !== b.dataset.rmreq), { parts: ['canvas', 'insp', 'blocks'], touch: i.id, undo: '요청 삭제', toast: '확인 요청을 삭제했습니다' }));
   wireAdd('#f-req', '#n-req', v => mutate(() => i.requests.push({ id: uid(), party: $('#n-party').value.trim(), text: v, state: 'open', at: '' }), { parts: ['canvas', 'insp', 'blocks'], touch: i.id, toast: '확인 요청을 추가했습니다' }));
   // 이력
-  wireAdd('#f-ev', '#n-evt', v => { const d = $('#n-evd').value; let k = $('#n-evk').value; if (d && d > doc.asOf) k = 'plan'; mutate(() => i.events.push({ id: uid(), date: isDate(d) ? d : '', kind: k, text: v, flag: '', corrected: false, evidence: '' }), { parts: ['canvas', 'insp'], touch: i.id, toast: '이력을 기록했습니다' }); });
+  wireAdd('#f-ev', '#n-evt', v => { const d = $('#n-evd').value; let k = $('#n-evk').value; if (d && d > doc.now) k = 'plan'; mutate(() => i.events.push({ id: uid(), date: isDate(d) ? d : '', kind: k, text: v, flag: '', corrected: false, evidence: '' }), { parts: ['canvas', 'insp'], touch: i.id, toast: '이력을 기록했습니다' }); });
   $$('[data-editev]', box).forEach(b => b.onclick = () => { ui.editEvent = b.dataset.editev; refresh(['insp']); setTimeout(() => $('#e-t') && $('#e-t').focus(), 0); });
   $$('[data-rmev]', box).forEach(b => b.onclick = () => mutate(() => i.events = i.events.filter(e => e.id !== b.dataset.rmev), { parts: ['canvas', 'insp'], touch: i.id, undo: '이력 삭제', toast: '이력을 삭제했습니다' }));
   const ef = $('[data-evform]', box);
@@ -1778,7 +1906,7 @@ function bindBlocks(el) {
 function reportHTML() {
   const v = verdict(), oq = doc.issues.reduce((a, i) => a + openReq(i), 0);
   const tab = (k, l, n) => `<button id="rt-${k}" aria-pressed="${ui.rtab === k}">${l}${n !== undefined ? `<span class="count">${n}</span>` : ''}</button>`;
-  const head = `<section class="hero"><div><div class="ey">REPORT · 이해관계자 보고 · 기준일 ${doc.asOf} (${wd(doc.asOf)})</div><h1>${esc(doc.title)}</h1><div class="sub">${esc(doc.subtitle || '환경 정상화 → 수행 범위 재분류 → 테스트 계획 확정')}</div></div>
+  const head = `<section class="hero"><div><div class="ey">REPORT · 이해관계자 보고 · 보고 기준일 ${doc.asOf} (${wd(doc.asOf)}) · NOW ${dl(doc.now)}${lagText() ? ` · ${lagText()}` : ''}</div><h1>${esc(doc.title)}</h1><div class="sub">${esc(doc.subtitle || '환경 정상화 → 수행 범위 재분류 → 테스트 계획 확정')}</div></div>
       <div class="hero-r"><span class="verdict-pill" style="background:${v.tone === 'red' ? 'var(--red)' : v.tone === 'green' ? 'var(--green)' : 'var(--amberline)'};color:#fff">${esc(v.text)}</span><div class="pills">${statusPills(true)}${oq ? `<span class="badge">회신 대기 ${oq}</span>` : ''}</div></div></section>
     <div class="rtabs"><div class="rtabs-l"><div class="seg" role="group" aria-label="보고 탭">${tab('summary', '요약')}${tab('scenario', '시나리오')}${tab('requests', '회신 요청', oq)}</div>
       <span class="caption">관리 화면의 현재 상태가 그대로 반영됩니다</span></div>${window.top === window ? '<button class="btn" id="b-print">인쇄 / PDF</button>' : ''}</div>`;
@@ -1908,17 +2036,17 @@ function openQA() {
 
 /* ================= 이슈 텍스트 입력 ================= */
 function openImport() {
-  let step = 1, draft = null, how = '', engine = sampleFn ? 'ai' : 'rule', src = '', title = '', asOf = doc.asOf, strategy = 'replace', busy = false, ctrl = null;
+  let step = 1, draft = null, how = '', engine = sampleFn ? 'ai' : 'rule', src = '', title = '', asOf = '', asOfHow = '', ask = null, askPick = '', askCustom = '', strategy = 'replace', busy = false, ctrl = null;
   try { src = localStorage.getItem(STORE + '.draft') || ''; } catch (e) { }
   const m = openModal('이슈 텍스트 입력', `<div id="im"></div>`, { stepper: '<div class="stepper" id="im-steps"></div>', foot: '<span class="status" id="im-status"></span><span id="im-actions" style="display:flex;gap:8px"></span>', focus: '#im-src' });
-  const paintSteps = () => { $('#im-steps').innerHTML = [['1', '원문 입력'], ['2', '정리 초안 검토'], ['3', '관리 화면에 반영']].map(([n, l], k) => `<span class="${k + 1 === step ? 'on' : k + 1 < step ? 'ok' : ''}">${k + 1 < step ? '✓' : n}<span class="lbl"> · ${l}</span></span>`).join(''); };
+  const paintSteps = () => { const sn = step === 'ask' ? 1 : step; $('#im-steps').innerHTML = [['1', '원문 입력'], ['2', '정리 초안 검토'], ['3', '관리 화면에 반영']].map(([n, l], k) => `<span class="${k + 1 === sn ? 'on' : k + 1 < sn ? 'ok' : ''}">${k + 1 < sn ? '✓' : n}<span class="lbl"> · ${l}</span></span>`).join(''); };
   const draw = () => {
     paintSteps();
     const box = $('#im'), act = $('#im-actions'), st = $('#im-status');
     if (step === 1) {
       box.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
         <div class="pair im-pair"><div class="field"><label for="im-title">문서 제목<small>비우면 원문 첫 문장에서 추출</small></label><input class="input" id="im-title" value="${esc(title)}" placeholder="예: 2차 DVT 진입 점검" maxlength="150"></div>
-          <div class="field"><label for="im-asof">기준일</label><input class="input" type="date" id="im-asof" value="${asOf}"></div></div>
+          <div class="field"><label for="im-asof">보고 기준일<small>비우면 원문에서 판단</small></label><input class="input" type="date" id="im-asof" value="${asOf}"></div></div>
         ${sampleFn ? `<div class="field"><span class="label">정리 방식</span><div class="seg" role="group" aria-label="정리 방식" style="align-self:flex-start"><button id="im-ai" aria-pressed="${engine === 'ai'}">Claude 분석</button><button id="im-rule" aria-pressed="${engine === 'rule'}">규칙 기반 (로컬)</button></div></div>` : ''}
         <div class="field"><label for="im-src">이슈 원문<small id="im-count">${src.length.toLocaleString()} / 100,000자</small></label><textarea class="textarea src" id="im-src" maxlength="100000" placeholder="이슈가 정리된 글을 그대로 붙여 넣으세요. 표는 탭으로 구분된 상태 그대로 붙여 넣으면 됩니다.">${esc(src)}</textarea></div>
         <div class="tools"><button class="btn sm" id="im-ex">제공한 DVT 예제 채우기</button><button class="btn sm" id="im-file">텍스트 · JSON 파일 열기</button><button class="btn sm ghost" id="im-clear">비우기</button><input type="file" id="im-fin" accept=".txt,.md,.json" hidden></div>
@@ -1929,9 +2057,9 @@ function openImport() {
       const sync = () => { src = ta.value; $('#im-count').textContent = `${src.length.toLocaleString()} / 100,000자`; $('#im-run').disabled = busy || src.trim().length < 12; try { localStorage.setItem(STORE + '.draft', src); } catch (e) { } };
       ta.oninput = sync; sync();
       $('#im-title').oninput = e => title = e.target.value;
-      $('#im-asof').onchange = e => { if (isDate(e.target.value)) asOf = e.target.value; };
+      $('#im-asof').onchange = e => { asOf = isDate(e.target.value) ? e.target.value : ''; asOfHow = asOf ? '직접 입력' : ''; };
       if ($('#im-ai')) { $('#im-ai').onclick = () => { engine = 'ai'; draw(); }; $('#im-rule').onclick = () => { engine = 'rule'; draw(); }; }
-      $('#im-ex').onclick = () => { src = ($('#sample-text') || {}).textContent.trim(); title = '27CY SU#2 · 2차 DVT 진입 점검'; asOf = '2026-10-20'; draw(); };
+      $('#im-ex').onclick = () => { src = ($('#sample-text') || {}).textContent.trim(); title = '27CY SU#2 · 2차 DVT 진입 점검'; asOf = ''; asOfHow = ''; draw(); };
       $('#im-clear').onclick = () => { src = ''; draw(); $('#im-src').focus(); };
       $('#im-file').onclick = () => $('#im-fin').click();
       $('#im-fin').onchange = async e => {
@@ -1943,9 +2071,34 @@ function openImport() {
       };
       $('#im-cancel').onclick = () => { if (ctrl) ctrl.abort(); m.close(); };
       $('#im-run').onclick = run;
+    } else if (step === 'ask') {
+      // 원문 속 '금일·오전' 등은 입력한 날이 아닐 수 있어 보고 기준일을 먼저 묻는다
+      const today = todayISO(), opts = [];
+      if (ask.basis) opts.push([ask.basis, '원문에 적힌 기준일', `“${ask.basisText}” 문구`]);
+      if (ask.latest && ask.latest !== ask.basis) opts.push([ask.latest, '원문의 가장 늦은 날짜', '본문에 나온 날짜 중 마지막']);
+      if (!opts.some(o => o[0] === today)) opts.push([today, '오늘 (텍스트 입력일)', '방금 작성한 보고라면']);
+      if (!askPick) askPick = opts[0][0];
+      const hl = t => esc(t).replace(/(금일|오늘|당일|오전|오후|어제|전일|내일|익일|명일|모레|금주|이번 주|지난주|다음 주|차주)/g, '<mark>$1</mark>');
+      box.innerHTML = `<div class="im-ask"><h3>${ask.rel.length ? `원문의 ‘${[...new Set(ask.rel.flatMap(x => x.words))].slice(0, 3).join('·')}’은 언제인가요?` : '이 보고는 언제 기준인가요?'}</h3>
+        <p class="caption">${ask.rel.length ? '붙여 넣은 보고서가 오늘 쓴 글이 아닐 수 있습니다. 상대 날짜를 어느 날짜로 해석할지 골라 주세요. 고른 날짜가 보고 기준일이 되고, NOW는 오늘로 따로 표시됩니다.' : '원문에서 날짜를 찾지 못했습니다. 보고 기준일을 정해 주세요.'}</p>
+        ${ask.rel.length ? `<ul class="im-snips">${ask.rel.slice(0, 4).map(x => `<li>${hl(x.snippet)}</li>`).join('')}${ask.rel.length > 4 ? `<li class="more">외 ${ask.rel.length - 4}곳</li>` : ''}</ul>` : ''}
+        <fieldset class="radio"><legend>보고 기준일</legend>
+          ${opts.map(([d, l, sub]) => `<label><input type="radio" name="im-ask" value="${d}" ${askPick === d ? 'checked' : ''}><span>${l} · <b>${dl(d)} (${wd(d)})</b><small>${esc(sub)}</small></span></label>`).join('')}
+          <label><input type="radio" name="im-ask" value="custom" ${askPick === 'custom' ? 'checked' : ''}><span>직접 선택<small><input class="input sm" type="date" id="im-ask-d" value="${askCustom || today}" aria-label="보고 기준일 직접 선택"></small></span></label></fieldset></div>`;
+      st.textContent = '고른 날짜는 정리 후 관리 화면의 보고 기준일에서 바꿀 수 있습니다.';
+      act.innerHTML = `<button class="btn" id="im-back">원문 다시 수정</button><button class="btn primary" id="im-ask-ok">이 날짜로 정리하기</button>`;
+      $$('[name=im-ask]').forEach(x => x.onchange = () => { askPick = x.value; });
+      $('#im-ask-d').oninput = e => { askCustom = e.target.value; askPick = 'custom'; $('[name=im-ask][value=custom]').checked = true; };
+      $('#im-ask-d').onclick = () => { askPick = 'custom'; $('[name=im-ask][value=custom]').checked = true; };
+      $('#im-back').onclick = () => { step = 1; draw(); };
+      $('#im-ask-ok').onclick = () => {
+        const v = askPick === 'custom' ? (askCustom || $('#im-ask-d').value) : askPick; if (!isDate(v)) return;
+        asOf = v; asOfHow = askPick === 'custom' ? '직접 선택' : (opts.find(o => o[0] === v) || [, '선택'])[1]; step = 1; run();
+      };
     } else {
       const d = draft, ev = d.issues.reduce((a, i) => a + i.events.length, 0), rq = d.issues.reduce((a, i) => a + i.requests.length, 0);
-      box.innerHTML = `<div class="rv-sum"><div><h3>${esc(d.title)}</h3><div class="stats"><span class="badge b-blue">이슈 ${d.issues.length}</span><span class="badge b-slate">이력 ${ev}</span><span class="badge b-slate">확인 요청 ${rq}</span><span class="badge b-slate">TC 분류 ${d.metrics.length}개 영역</span><span class="badge b-slate">기준일 ${d.asOf}</span></div></div><span class="badge b-violet">${esc(how)}</span></div>
+      box.innerHTML = `<div class="rv-sum"><div><h3>${esc(d.title)}</h3><div class="stats"><span class="badge b-blue">이슈 ${d.issues.length}</span><span class="badge b-slate">이력 ${ev}</span><span class="badge b-slate">확인 요청 ${rq}</span><span class="badge b-slate">TC 분류 ${d.metrics.length}개 영역</span><span class="badge b-slate">보고 기준일 ${d.asOf}${asOfHow ? ` · ${esc(asOfHow)}` : ''}</span></div></div><span class="badge b-violet">${esc(how)}</span></div>
+        ${d.asOf < todayISO() ? `<p class="caption im-lag">보고 기준일(${dl(d.asOf)})이 오늘보다 ${diffD(d.asOf, todayISO())}일 전입니다. 반영하면 NOW는 오늘(${dl(todayISO())})로 표시되고, 그 사이 지난 점검일·예정 이력은 결과 확인 대상으로 보입니다.</p>` : ''}
         <p class="qnote">자동 정리 초안입니다. 제목·상태·담당·완료 조건을 확인한 뒤 반영하세요. 반영 후에도 모두 수정할 수 있고, 원문도 함께 보존됩니다.</p>
         <div class="rv-list">${sorted(d.issues).map(i => `<article class="rv"><div class="rv-h"><span class="eyebrow"><b style="color:var(--navy7)">P${i.priority}</b><span>·</span><span>${esc(i.area)}</span></span><span class="caption">이력 ${i.events.length} · 요청 ${i.requests.length} · 조치 ${i.actions.length}</span><button class="btn sm ghost danger" data-rvdel="${i.id}">제외</button></div>
           <div class="grid"><div class="field"><label for="rv-t-${i.id}">이슈 제목</label><input class="input sm" id="rv-t-${i.id}" data-rv="${i.id}" data-k="title" value="${esc(i.title)}"></div>
@@ -1962,12 +2115,17 @@ function openImport() {
       $$('[data-rv]').forEach(inp => { const h = () => { const i = d.issues.find(x => x.id === inp.dataset.rv), k = inp.dataset.k; i[k] = k === 'priority' ? +inp.value : inp.value; $('#im-apply').disabled = !d.issues.length || d.issues.some(x => !x.title.trim()); }; inp.oninput = h; inp.onchange = h; });
       $$('[data-rvdel]').forEach(b => b.onclick = () => { d.issues = d.issues.filter(x => x.id !== b.dataset.rvdel); d.issues.forEach(x => x.dependsOn = x.dependsOn.filter(y => y !== b.dataset.rvdel)); draw(); });
       $$('[name=im-st]').forEach(r => r.onchange = () => strategy = r.value);
-      $('#im-back').onclick = () => { step = 1; draw(); };
+      $('#im-back').onclick = () => { step = 1; if (asOfHow !== '직접 입력') { asOf = ''; asOfHow = ''; } draw(); };
       $('#im-apply').onclick = () => { apply(); };
     }
   };
   async function run() {
     if (busy || src.trim().length < 12) return;
+    if (!isDate(asOf)) {
+      const c = dateContext(src);
+      if (c.rel.length || !c.hasDates) { ask = c; askPick = ''; step = 'ask'; draw(); return; }
+      asOf = c.basis || c.latest; asOfHow = c.basis ? `원문 “${c.basisText}”` : '원문 최신 날짜';
+    }
     busy = true; draw(); const st = $('#im-status');
     try {
       let raw;

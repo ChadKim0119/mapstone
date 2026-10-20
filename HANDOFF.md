@@ -4,12 +4,14 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Claude Code · 2026-10-20 · v0.9.58 이슈관리 모드 정식 통합. `issues.html`(원본 `issue-mode/`) 추가, 마일스톤 모드 헤더에 `마일스톤 모드 | 이슈관리 모드` 전환(KO/JA, 1100px 이하 짧은 이름 · 900px 이하 제목 다음 줄). 작업 브랜치 `claude/gifted-bardeen-nmvaup`에 커밋·푸시, main 반영·배포는 사용자 확인 대기.
-- **이슈관리 모드 구조**: 원본 `issue-mode/style.css·model.js·data.js·app.js·sample.txt` → `scripts/build.py`가 단일 `issues.html` 생성(폰트·아이콘은 `assets/` 공유, APP_VER 주입). 저장은 localStorage `mapstone.issueTracker.v2`(일정 데이터와 분리) + JSON 파일 저장·열기. 정리는 규칙 기반(로컬). Claude 분석 경로는 claude.ai 아티팩트에서만 노출. Codex 4180 목업과 Claude 시안을 결합한 v2가 기준이며 `prototypes/issue-mode-v2`는 `issue-mode/`로 이동·삭제, v1 `prototypes/issue-mode/`는 사용자 커밋 그대로 유지.
-- **검증(v0.9.58)**: `npm run build` → `npm test` 368개 통과(신규 `tests/issue-mode.test.cjs` 5개 포함, 버전 고정 테스트 0.9.58로 갱신). `issue-mode/qa-flow.cjs` 기본 조작 68개 통과, `issue-mode/qa-layout.cjs` 1920/1600/1440/1280/1024/390 × 10개 화면 정렬·잘림·겹침 0건. 마일스톤 헤더 1920~1024 세로 중심 일치·가로 스크롤 없음, 760/390 줄바꿈 정상, 모드 왕복·일본어 표시 확인. 규칙 파서 정확도 수정(이슈 표 구분 키 우선, '진행 예정'=확인 대기, VDP 의존 감지, 글머리 메모 날짜 이력).
-- **버전**: v0.9.58 (`package.json` 0.9.58). APP_VER·RELEASES(agent Claude Code)·패키지 버전 동기화.
-- **브랜치**: `claude/gifted-bardeen-nmvaup` (origin/main abb4182 병합 후 작업). main에는 아직 미반영. 사용자 승인 시 main 병합 → Vercel 자동 배포(`vercel.json`이 `issues.html` 복사).
-- **슬라이더 측정(v0.9.58)**: 격리 origin 4174(`scripts/slider-perf.py`), 8개/42개 아이템 + 로컬 버전 2개, 메인 배율·오버랩·구분선 각 3회×25 이동 + 비교 확대·scroll(45,20)·변경·분석 패널 조건 추가 3회씩, trustedPointer=true, pointerError 0. p95 중앙값: 배율16.8/33.4ms, 오버랩66.7/83.3ms, 구분선66.6/83.3ms. 같은 컨테이너에서 main v0.9.57도 배율16.8/33.3·오버랩66.7/83.3·구분선66.7/66.8ms로 동일 수준 → 이번 변경의 퇴행 아님, 이 클라우드 컨테이너(GPU 없는 headless) 한계로 비교 화면 33.4ms 기준 미충족. 실제 Mac 브라우저 재측정 필요. 증거 `/tmp/mapstone-perf58.json`, `/tmp/mapstone-perf57-base.json`(세션 종료 시 소실).
+- **마지막 작업**: Claude Code · 2026-10-20 · v0.9.59 이슈관리 모드 NOW · 보고 기준일 분리. v0.9.58(이슈관리 모드 통합)과 함께 main 병합·푸시(사용자 요청).
+- **NOW · 시간 흐름(v0.9.59)**: 문서에 `asOf`(보고 기준일, 원문 작성 시점)와 `now`/`nowManual`(논의 시점)을 분리 저장. `nowManual`이 false면 열 때마다 NOW=오늘(`load()`), 직접 옮기면 유지. 타임라인 위(헤더)·아래(새 `.tl-foot` 줄) NOW 알약: 드래그(포인터 캡처, 이동 중 위치·라벨만 갱신, 놓을 때 `setNow` 한 번), 더블클릭/Enter/Space=오늘, ←/→ 하루·Shift 7일. 관리·보고 화면 모두 동작. NOW 이동은 실행 취소 이력·예제 표시에 넣지 않음. 보고 기준일≠NOW면 점선+“보고 MM.DD” 표시, 그 사이(14일 이내)는 +N일로 접지 않음. 점검일 경과·자동 '예정' 판단은 NOW 기준, 지난 예정 이력은 “예정일 지남”(인스펙터는 “예정일 지남 · 결과 확인”). 문서 머리: 보고 기준일 입력 · NOW 입력 · 오늘로 버튼 · “보고 후 N일 경과” 칩.
+- **입력 시 날짜 질문(v0.9.59)**: `model.js dateContext(src)`가 상대 표현(금일·오늘·당일·오전/오후(시각 동반)·어제·전일·내일·익일·명일·모레·금주 등)과 원문 기준일(“N월 N일 기준/현재”, “N/N 기준”), 최신 날짜를 찾음. 입력 창의 보고 기준일을 비워 두면(기본) 상대 표현이 있거나 날짜가 없을 때 질문 단계(원문 기준일/원문 최신 날짜/오늘(입력일)/직접 선택, 해당 문장 강조) 표시. 상대 표현이 없고 날짜만 있으면 기준일→최신 날짜로 자동 결정. 규칙 파서는 금일/어제/내일 등으로 시작하는 문장을 기준일로 환산해 이력 추가(내일 이후 plan). Claude 프롬프트에도 환산 지시 추가. 검토 단계에 기준일이 과거면 경과 안내.
+- **이슈관리 모드 구조**: 원본 `issue-mode/style.css·model.js·data.js·app.js·sample.txt` → `scripts/build.py`가 단일 `issues.html` 생성(폰트·아이콘은 `assets/` 공유, APP_VER 주입). 저장은 localStorage `mapstone.issueTracker.v2`(일정 데이터와 분리) + JSON 파일 저장·열기. 정리는 규칙 기반(로컬). Claude 분석 경로는 claude.ai 아티팩트에서만 노출.
+- **검증(v0.9.59)**: `npm run build` → `npm test` 370개 통과(`tests/issue-mode.test.cjs` 7개: 상대 날짜 감지·환산, NOW 정규화 추가). `issue-mode/qa-flow.cjs` 86개 통과(질문 단계·과거 기준일 환산·경과 표시·NOW 드래그/입력/Shift+→/더블클릭/새로 열기 포함), `issue-mode/qa-layout.cjs` 6개 폭 × 11개 화면(기준일 질문 추가) 0건. 1600/1024/390 캡처로 NOW 알약·보고 표시·모바일 날짜 입력 정렬 확인.
+- **버전**: v0.9.59 (`package.json` 0.9.59). APP_VER·RELEASES(agent Claude Code)·버전 고정 테스트 동기화.
+- **브랜치**: 작업 브랜치 `claude/gifted-bardeen-nmvaup` → main 병합·푸시 → Vercel 자동 배포.
+- **슬라이더 측정(v0.9.59)**: 마일스톤 코드는 버전 외 변경 없음. 격리 origin 4174, 8개/42개 아이템, 메인 배율·오버랩·구분선 각 3회×25 이동 + 확대·스크롤·분석 패널 조건, trustedPointer=true, 오류 0. 배율 p95 16.7~33.3ms(1회 100~133ms 이상치), 오버랩·구분선 50~83ms로 v0.9.57/58 기준과 동일 → 컨테이너(GPU 없는 headless) 한계, 퇴행 아님. 실제 Mac 브라우저 재측정 필요.
 - **기능**: 선·화살표 선택 시 양 끝점 핸들 표시. 각 끝점 독립 이동·교차·임의 각도/길이, Shift 45도, 끝점 방향키 1px/Shift 10px. 드래그 한 번 실행 취소, pointercancel 원복, 잠금/읽기 전용 보호. 기존 도형의 표시 좌표를 유지한 채 최초 끝점 편집 시 `lineExact`로 전환. 수평/수직의 w/h=0을 지원하며 코어 SVG·편집기·비교·PPT가 drawingEndpoints를 공유.
 - **선 두께**: 디자인 시스템 ms-tool-button의 −/＋와 숫자 입력 1–12px. 선택된 도형에 공통 적용하며 비도형 제외, 경계값 버튼 비활성화. 사각형/타원/마름모/선/화살표 모두 브라우저 반영 확인.
 - **복원 안전**: 내용이 저장된 기준과 다르면 요청한 한국어 문구로 window.confirm. 로컬/클라우드/보관함 불러오기에 적용. JSONB의 객체 키 순서는 정렬해 비교하며 과거 버전 복원 후 새로고침도 SHA-256 지문으로 판정(이미지 문서를 중복 저장하지 않음). 서버 불러오기 중 새 편집이 발생하면 복원을 중단해 변경을 보존.
@@ -89,6 +91,7 @@
 
 ## 작업 로그
 
+- 2026-10-20 · Claude Code · v0.9.59 이슈관리 모드 NOW(드래그·더블클릭 오늘·방향키)·보고 기준일 분리·상대 날짜 질문/환산, main 병합
 - 2026-10-20 · Claude Code · v0.9.58 · 이슈관리 모드 정식 통합(issues.html·헤더 모드 전환 KO/JA·vercel 복사), 규칙 파서 보정, build/test368·조작68·6폭 레이아웃0건·슬라이더 측정(main 대비 동일). 작업 브랜치 푸시, main 미반영.
 
 - 2026-10-20 · Claude Code · v0.9.57 유지 · 이슈관리 모드 결합 프로토타입 v2(prototypes/issue-mode-v2, 작업 브랜치), 조작 68개·6개 폭 레이아웃 검수 통과, 아티팩트 공개.

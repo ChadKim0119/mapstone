@@ -3,7 +3,7 @@ const sample = fs.readFileSync('issue-mode/sample.txt', 'utf8');
 function load() {
   const ctx = { console, document: { getElementById: id => id === 'sample-text' ? { textContent: sample } : null } };
   vm.createContext(ctx);
-  vm.runInContext(fs.readFileSync('issue-mode/model.js', 'utf8') + '\n' + fs.readFileSync('issue-mode/data.js', 'utf8') + '\n;this.M={normalizeDoc,parseRules,metricTotals,metricWarnings,sampleDoc,claudePrompt};', ctx);
+  vm.runInContext(fs.readFileSync('issue-mode/model.js', 'utf8') + '\n' + fs.readFileSync('issue-mode/data.js', 'utf8') + '\n;this.M={normalizeDoc,parseRules,metricTotals,metricWarnings,sampleDoc,claudePrompt,dateContext,todayISO};', ctx);
   return ctx.M;
 }
 test('Rule-based parsing turns the DVT report into tracked issues without inventing dates or owners', () => {
@@ -44,4 +44,21 @@ test('Build exposes issue mode as a separate entry linked from the milestone hea
   const ver = src.match(/APP_VER = '([^']+)'/)[1]; assert.ok(issues.includes(`const APP_VER = "${ver}"`));
   assert.ok(issues.includes("assets/design-system/PretendardVariable.woff2")); assert.ok(!/__FONT__/.test(issues));
   assert.match(vercel, /issues\.html/);
+});
+test('Relative date words are detected and resolved against the report date, not the input day', () => {
+  const M = load(), c = M.dateContext(sample);
+  assert.equal(c.basis, '2026-10-20'); assert.ok(c.rel.some(r => r.word === '금일'));
+  const memo = '1. 결제 API 장애\n금일 오전 10시 서버 재기동 완료\n어제 오후 인증 오류 발생\n내일 재배포 예정\n담당: 플랫폼팀';
+  const m = M.dateContext(memo); assert.equal(m.hasDates, false); assert.equal(m.rel.length, 3); assert.deepEqual([...m.rel[0].words], ['금일', '오전']);
+  const d = M.normalizeDoc(M.parseRules(memo, { asOf: '2026-10-15' }));
+  assert.equal(JSON.stringify(d.issues[0].events.map(e => e.date + ' ' + e.kind).sort()), JSON.stringify(['2026-10-14 fail', '2026-10-15 ok', '2026-10-16 plan']));
+  assert.match(M.claudePrompt(memo, { asOf: '2026-10-15' }), /상대 날짜 표현은 보고 기준일 2026-10-15/);
+});
+test('NOW is stored separately from the report date and only kept when moved by hand', () => {
+  const M = load(), today = M.todayISO();
+  const a = M.normalizeDoc({ asOf: '2026-10-15', issues: [] }); assert.equal(a.asOf, '2026-10-15'); assert.equal(a.now, today); assert.equal(a.nowManual, false);
+  const b = M.normalizeDoc({ asOf: '2026-10-15', now: '2026-10-18', nowManual: true, issues: [] }); assert.equal(b.now, '2026-10-18'); assert.equal(b.nowManual, true);
+  assert.equal(M.normalizeDoc({ now: 'bad', nowManual: true, issues: [] }).nowManual, false);
+  const app = fs.readFileSync('issue-mode/app.js', 'utf8');
+  assert.match(app, /if \(!doc\.nowManual\) doc\.now = todayISO\(\)/); assert.match(app, /ondblclick = e => \{ e\.stopPropagation\(\); setNow\(todayISO\(\), false\)/);
 });

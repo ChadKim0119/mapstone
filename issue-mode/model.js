@@ -69,6 +69,7 @@ function normalizeDoc(raw) {
   const C = raw.conclusion || {};
   return {
     schema: 2, title: S(raw.title || '이슈 현황', 200), subtitle: S(raw.subtitle, 300), asOf, example: !!raw.example,
+    now: isDate(raw.now) ? raw.now : todayISO(), nowManual: !!raw.nowManual && isDate(raw.now),
     groupOrder: A(raw.groupOrder).filter(g => groups.includes(g)).concat(groups.filter(g => !A(raw.groupOrder).includes(g))),
     issues, metrics, reasons, notes: A(raw.notes).map(x => S(x, 500)).filter(Boolean).slice(0, 30),
     conclusion: { points: A(C.points).slice(0, 6).map(p => ({ title: S(p.title, 200), body: S(p.body, 1200) })).filter(p => p.title), summary: S(C.summary, 800) },
@@ -77,6 +78,30 @@ function normalizeDoc(raw) {
 }
 function metricTotals(rows) { return rows.reduce((a, r) => ({ total: a.total + r.total, blocked: a.blocked + r.blocked, limited: a.limited + r.limited, other: a.other + r.other }), { total: 0, blocked: 0, limited: 0, other: 0 }); }
 function metricWarnings(rows) { return rows.filter(r => r.total !== r.blocked + r.limited + r.other).map(r => `${r.label || '(이름 없음)'}: 전체 ${r.total}건 ≠ N/T+제한적+기타 ${r.blocked + r.limited + r.other}건`); }
+
+/* ================= 날짜 맥락 ================= */
+// 상대 날짜 표현과 원문 속 기준일 후보를 찾는다. 상대 표현이 있으면 입력일이 아닐 수 있어 사용자에게 묻는다.
+const REL_WORDS = [['금일', 0], ['오늘', 0], ['당일', 0], ['오전', 0], ['오후', 0], ['어제', -1], ['전일', -1], ['내일', 1], ['익일', 1], ['명일', 1], ['모레', 2], ['금주', null], ['이번 주', null], ['지난주', null], ['다음 주', null], ['차주', null]];
+function dateContext(src, fallbackYear) {
+  const text = String(src || ''), yearM = text.match(/\b(20\d\d)\b/), year = yearM ? +yearM[1] : (fallbackYear || +todayISO().slice(0, 4));
+  const iso = (m, d) => { const v = `${year}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; return isDate(v) ? v : ''; };
+  // 한 줄에 여러 표현이 있어도 원문 문장은 한 번만 보여준다
+  const rel = [];
+  text.split(/\r?\n/).forEach(line => {
+    if (rel.length >= 12) return;
+    const words = REL_WORDS.map(([w]) => w).filter(w => { const k = line.indexOf(w); if (k < 0) return false; if (w !== '오전' && w !== '오후') return true; return /금일|오늘|당일|\d+시/.test(line) || /^\s*\d/.test(line.slice(k + w.length)); });
+    if (!words.length) return;
+    const k = Math.min(...words.map(w => line.indexOf(w))), t = line.trim();
+    rel.push({ word: words[0], words, snippet: (k > 24 ? '…' + line.slice(k - 18) : t).slice(0, 64) + (t.length > 64 ? '…' : '') });
+  });
+  let basis = '', basisText = '';
+  const bm = text.match(/(\d{1,2})월\s*(\d{1,2})일\s*(?:\([^)]*\)\s*)?(기준|현재)/) || text.match(/(\d{1,2})\/(\d{1,2})\s*(?:\([^)]*\)\s*)?(기준|현재)/);
+  if (bm) { basis = iso(bm[1], bm[2]); basisText = bm[0]; }
+  const all = []; const re = /(\d{1,2})월\s*(\d{1,2})일|(?:^|[^\d/.])(\d{1,2})\/(\d{1,2})(?![\d/])/g; let m;
+  while ((m = re.exec(text))) { const a = m[1] || m[3], b = m[2] || m[4]; if (+a <= 12) { const v = iso(a, b); if (v) all.push(v); } }
+  all.sort();
+  return { rel, basis, basisText, latest: all[all.length - 1] || '', hasDates: all.length > 0, year };
+}
 
 /* ================= 규칙 기반 정리 ================= */
 function parseRules(src, opt = {}) {
@@ -94,7 +119,7 @@ function parseRules(src, opt = {}) {
   const GROUP = s => /^GS\b|Global South/i.test(s) ? 'Global South' : /^e-?Care/i.test(s) ? 'e-Care' : (s.split(/\s+/)[0] || '기타');
   // asOf
   let asOf = isDate(opt.asOf) ? opt.asOf : '';
-  if (!asOf) { const all = []; lines.forEach(l => { const d = dateIn(l); if (d) all.push(d); }); all.sort(); asOf = all.pop() || todayISO(); }
+  if (!asOf) { const ctx = dateContext(text, year); asOf = ctx.basis || ctx.latest || todayISO(); }
   // tables & sections
   const tables = []; let cur = null; const secOf = []; let h1 = '', h2 = '';
   lines.forEach((l, i) => {
@@ -134,11 +159,12 @@ function parseRules(src, opt = {}) {
     });
   }
   // 3) 표가 없으면 제목 단위
+  const lineIssue = [];
   if (!issues.length) {
     const heads = lines.map((l, i) => ({ l, i })).filter(x => isHeading(x.l) && !/현황|요약|계획|의견|결론|범위/.test(x.l));
     const bullets = lines.map((l, i) => ({ l, i })).filter(x => /^[-•]\s+/.test(x.l));
     const src2 = heads.length ? heads : bullets;
-    src2.slice(0, 30).forEach(({ l, i }, n) => { const t = l.replace(/^\d+(\.\d+)*\.?\s*|^[-•]\s*/, ''); const it = mk(TOK(t)[0] || 'I' + (n + 1), { title: clip(t, 60) }); const end = src2[n + 1] ? src2[n + 1].i : lines.length; const body = lines.slice(i + 1, end); body.forEach(b => { const dd = dateIn(b); if (dd) it.events.push({ date: dd, kind: kindOf(b), text: clip(b.replace(/^\d{1,2}(월\s*\d{1,2}일|\/\d{1,2})\s*/, ''), 90), flag: '', corrected: false, evidence: b }); }); it.evidence = body.slice(0, 10); it.summary = clip(body.find(b => /현재|불가|오류|지연|실패/.test(b)) || body[0] || t, 180); it.status = statusOf(body.join(' ')); TOK(t + ' ' + body.join(' ')).slice(0, 6).forEach(x => it.tokens.add(x)); const ow = body.join('\n').match(/(?:담당자?|관련 부문)\s*[:：]\s*([^\n]+)/); if (ow) it.owner = ow[1].trim(); body.filter(b => /조치\s*[:：]|필요|예정/.test(b)).slice(0, 4).forEach(b => it.actions.push(b.replace(/^.*?[:：]\s*/, ''))); });
+    src2.slice(0, 30).forEach(({ l, i }, n) => { const t = l.replace(/^\d+(\.\d+)*\.?\s*|^[-•]\s*/, ''); const it = mk(TOK(t)[0] || 'I' + (n + 1), { title: clip(t, 60) }); const end = src2[n + 1] ? src2[n + 1].i : lines.length; const body = lines.slice(i + 1, end); for (let k = i; k < end; k++) lineIssue[k] = it; body.forEach(b => { const dd = dateIn(b); if (dd) it.events.push({ date: dd, kind: kindOf(b), text: clip(b.replace(/^\d{1,2}(월\s*\d{1,2}일|\/\d{1,2})\s*/, ''), 90), flag: '', corrected: false, evidence: b }); }); it.evidence = body.slice(0, 10); it.summary = clip(body.find(b => /현재|불가|오류|지연|실패/.test(b)) || body[0] || t, 180); it.status = statusOf(body.join(' ')); TOK(t + ' ' + body.join(' ')).slice(0, 6).forEach(x => it.tokens.add(x)); const ow = body.join('\n').match(/(?:담당자?|관련 부문)\s*[:：]\s*([^\n]+)/); if (ow) it.owner = ow[1].trim(); body.filter(b => /조치\s*[:：]|필요|예정/.test(b)).slice(0, 4).forEach(b => it.actions.push(b.replace(/^.*?[:：]\s*/, ''))); });
     if (!issues.length) mk('I1', { title: clip(opt.title || lines[0], 60), summary: clip(lines.slice(1, 3).join(' '), 180), evidence: lines.slice(0, 8) });
   }
   issues.forEach(i => { i.tokens.add(i.key.toUpperCase()); if (!i.group) i.group = i.key === 'QA' ? 'QA' : '기타'; if (!i.title) i.title = clip(i.gate || i.key, 60); });
@@ -165,6 +191,16 @@ function parseRules(src, opt = {}) {
     if (t.length < 14 && lines[i + 1]) t = lines[i + 1];
     if (it.events.some(e => e.date === date && (e.kind === kindOf(l) || e.text.slice(0, 8) === t.slice(0, 8)))) return;
     it.events.push({ date, kind: kindOf(t), text: clip(t, 90), flag: '', corrected: false, evidence: l });
+  });
+  // 5-1) 상대 날짜로 시작하는 문장(금일 오전 …, 어제 …) → 보고 기준일 기준으로 환산한 이력
+  const relStart = /^(금일|오늘|당일|어제|전일|내일|익일|명일|모레)\s*(오전|오후)?\s*[,·:]?\s*/;
+  lines.forEach((l, i) => {
+    const m = l.match(relStart); if (!m || l.length > 200 || l.includes('\t')) return;
+    const off = { 금일: 0, 오늘: 0, 당일: 0, 어제: -1, 전일: -1, 내일: 1, 익일: 1, 명일: 1, 모레: 2 }[m[1]];
+    const date = addD(asOf, off); const it = lineIssue[i] || best(secOf[i] + ' ' + l) || (issues.length === 1 ? issues[0] : null); if (!it) return;
+    const t = l.replace(relStart, '') || l;
+    if (it.events.some(e => e.date === date && e.text.slice(0, 8) === clip(t, 90).slice(0, 8))) return;
+    it.events.push({ date, kind: off > 0 ? 'plan' : kindOf(t), text: clip(`${m[2] ? m[2] + ' ' : ''}${t}`, 90), flag: '', corrected: false, evidence: l });
   });
   // 6) 확인 필요 질의 → 요청, 우선 확인 사항 → 조치
   let inQ = false, party = '', grpT = '', curIt = null;
@@ -254,6 +290,7 @@ function claudePrompt(src, opt) {
 규칙
 - 출력은 JSON 객체 하나. 설명·코드펜스 금지. 문자열은 한국어(고유명사·약어는 원문 유지).
 - 원문에 없는 날짜·담당·숫자를 지어내지 마라. 모르면 빈 문자열/null. 연도가 없으면 ${(opt.asOf || todayISO()).slice(0, 4)}년.
+- '금일·오늘·당일·오전·오후·어제·전일·내일·익일' 같은 상대 날짜 표현은 보고 기준일 ${opt.asOf || '(원문 기준일)'}을 기준으로 환산하라. 입력한 날과 같다고 가정하지 마라.
 - 이슈는 담당자가 따로 추적해야 하는 단위(시스템·환경 단위)로 5~10개. 대응 계획/우선순위 표가 있으면 그 순서를 우선순위로.
 - 일자별 경과 표의 각 행은 해당 이슈의 events 하나. 나중에 틀린 것으로 밝혀진 안내는 corrected:true, kind:"warn".
 - 결과에 따라 범위가 갈리는 판단('정상 수행 시/실패 시')은 해당 이슈의 scenario와 steps로.
