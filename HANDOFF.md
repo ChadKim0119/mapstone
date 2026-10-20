@@ -78,11 +78,15 @@
   - 원격에 미병합 브랜치 `chore/repo-hygiene`(PR #1), `feat/v9-board-tools`(PR #2)가 있습니다. 관련 작업 시 먼저 확인하세요.
   - `supabase/.temp/`가 Git에 포함되어 있습니다(Supabase CLI 캐시).
 
+- **이슈관리 모드 프로토타입 (2026-10-20, Claude Code, 미커밋)**: 사용자 요청으로 기존 기능을 "마일스톤 모드", 새 기능을 "이슈관리 모드"로 부름. 단독 동작 웹페이지 `prototypes/issue-mode/index.html`(Git 미추적, 커밋 금지 지시)와 아티팩트 https://claude.ai/artifact/FLcw3u3Kk6fk6fQ5zMPncK. 관리 화면(레인 타임라인·날짜 미정 칸·Blocker 보드·확인 요청·속성 편집·변경 이력)과 보고 화면(요약·핵심 판단·게이트 시나리오·Blocker 표·TC 표·읽기 전용 타임라인). 이슈 텍스트 반영은 아티팩트에서 Claude(sample) 분석, 로컬에서는 규칙 기반 파서. 상태는 브라우저 localStorage만 사용. 원본은 세션 스크래치패드였으므로 이어서 고치려면 위 index.html을 직접 수정. 앱 본체(src/·RELEASES)는 변경 없음. 사용자가 보고 본 앱 반영 여부를 결정할 예정.
+
 ## 미해결 질문
 
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-20 · Claude Code · v0.9.57 유지 · 이슈관리 모드 단독 프로토타입(prototypes/issue-mode, 미커밋)·아티팩트 공개, 관리/보고 화면, 텍스트 반영(Claude·규칙 기반). 앱 본체 변경 없음.
 
 - 2026-10-19 · Codex · v0.9.57 유지 · 운영 웹 자동 배포 READY(dpl_DYqqJsxNFtXt6y79E3DD1mVfkcPm, commit843920f), mapstone-hazel.vercel.app HTTP200·v0.9.57 확인. Supabase 함수 배포는 인증 미연결, runtime logs403, Chromium 운영 TLS 신뢰 오류는 미해결. README/HANDOFF에 완료/미완료 구분.
 
