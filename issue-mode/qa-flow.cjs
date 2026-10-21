@@ -201,7 +201,7 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
 
   // 21-2 NOW 드래그 · 더블클릭 · 방향키
   const pill = await p.$('.tl-now.top'), bx = await pill.boundingBox();
-  const tx = await p.evaluate(() => { const d = [...document.querySelectorAll('.tl-mid .tl-day:not(.gap)')].find(e => e.firstChild.textContent.trim() === '18'); const r = d.getBoundingClientRect(); return r.left + r.width / 2; });
+  const tx = await p.evaluate(() => { const d = [...document.querySelectorAll('#canvas .tl-hin .tl-day:not(.gap)')].find(e => e.firstChild.textContent.trim() === '18'); const r = d.getBoundingClientRect(); return r.left + r.width / 2; });
   await p.mouse.move(bx.x + bx.width / 2, bx.y + bx.height / 2); await p.mouse.down();
   for (let k = 1; k <= 12; k++) { await p.mouse.move(bx.x + bx.width / 2 + (tx - bx.x - bx.width / 2) * k / 12, bx.y + bx.height / 2); await p.waitForTimeout(16); }
   const mid = await p.evaluate(() => [document.querySelector('.tl-now.top').textContent, document.querySelector('.tl-now.bottom').textContent]);
@@ -222,14 +222,15 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   await p.evaluate(d => { doc = normalizeDoc(d); persist(true); render(); }, keepDoc); await p.waitForTimeout(200);
   ok((await st()).doc.issues.length === keepDoc.issues.length, 'NOW 검증용 문서 정리 후 기존 문서 복구');
 
-  // 21-3 스크롤해도 타임라인 머리 고정 (스크롤 성능·떨림 수치 검증은 qa-scroll.cjs)
-  await p.evaluate(() => { const s = document.querySelector('#canvas .tl-scroll'); s.scrollIntoView({ block: 'start' }); window.scrollBy(0, -90); s.scrollTop = 500; }); await p.waitForTimeout(150);
-  const sk = await p.evaluate(() => { const s = document.querySelector('#canvas .tl-scroll'); return { top: Math.round(s.getBoundingClientRect().top), st: s.scrollTop, heads: [...s.querySelectorAll('.tl-head')].map(h => Math.round(h.getBoundingClientRect().top)) }; });
-  ok(sk.st > 0 && sk.heads.length === 3 && sk.heads.every(t => t === sk.top), `타임라인 스크롤 시 머리 3열 고정 (${sk.heads.join(',')} / ${sk.top})`);
-  const nowBox = await (await p.$('.tl-now.top')).boundingBox(); ok(nowBox && Math.round(nowBox.y) >= sk.top, '고정된 머리의 NOW 알약 표시');
+  // 21-3 페이지를 스크롤하면 타임라인 머리는 화면 맨 위, 아래 NOW 줄은 화면 맨 아래에 고정 (성능·떨림 수치는 qa-scroll.cjs)
+  await p.evaluate(() => window.scrollTo(0, document.querySelector('#canvas .tl').getBoundingClientRect().top + window.scrollY + 400)); await p.waitForTimeout(150);
+  const sk = await p.evaluate(() => { const h = document.querySelector('#canvas .tl-hrow').getBoundingClientRect(), f = document.querySelector('#canvas .tl-frow').getBoundingClientRect(); return { y: Math.round(window.scrollY), ht: Math.round(h.top), fb: Math.round(f.bottom), ih: innerHeight, nested: [...document.querySelectorAll('#canvas *')].some(e => { const o = getComputedStyle(e).overflowY; return (o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight + 1; }) }; });
+  ok(sk.y > 0 && sk.ht === 0 && sk.fb === sk.ih, `머리 줄 화면 맨 위(${sk.ht}) · 아래 NOW 줄 화면 맨 아래(${sk.fb}/${sk.ih}) 고정`);
+  ok(!sk.nested, '타임라인 안에 별도 세로 스크롤 영역 없음(페이지 스크롤 하나)');
+  const nowBox = await (await p.$('.tl-now.top')).boundingBox(); ok(nowBox && Math.round(nowBox.y) >= 0 && nowBox.y < 44, '고정된 머리의 NOW 알약 표시');
   await p.evaluate(() => select(sorted(doc.issues)[0].id, 'manage')); await p.waitForTimeout(150); await p.fill('#i-owner', '스크롤 유지 확인'); await p.waitForTimeout(400);
-  ok(await p.evaluate(() => document.querySelector('#canvas .tl-scroll').scrollTop) === sk.st, '인스펙터 편집으로 다시 그려도 타임라인 스크롤 위치 유지');
-  await p.evaluate(() => { document.querySelector('#canvas .tl-scroll').scrollTop = 0; window.scrollTo(0, 0); }); await p.waitForTimeout(100);
+  ok(Math.round(await p.evaluate(() => window.scrollY)) === sk.y, '인스펙터 편집으로 타임라인을 다시 그려도 페이지 스크롤 위치 유지');
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(100);
 
   // 22 보고 화면
   await p.click('#v-r'); await p.waitForTimeout(250);

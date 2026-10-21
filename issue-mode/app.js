@@ -5,7 +5,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 let doc;
-const ui = { view: 'manage', rtab: 'summary', list: false, sel: null, itab: 'manage', q: '', fStatus: 'all', fGroup: 'all', fGap: '', hideResolved: false, compress: true, sort: { k: 'priority', dir: 1 }, assume: {}, collapsed: {}, scrollX: null, rScrollX: null, scrollY: 0, rScrollY: 0, revealNow: false, flash: null, editEvent: null };
+const ui = { view: 'manage', rtab: 'summary', list: false, sel: null, itab: 'manage', q: '', fStatus: 'all', fGroup: 'all', fGap: '', hideResolved: false, compress: true, sort: { k: 'priority', dir: 1 }, assume: {}, collapsed: {}, scrollX: null, rScrollX: null, revealNow: false, flash: null, editEvent: null };
 const undoStack = [];
 let savedAt = '', storageError = '';
 let sampleFn = null, downloadsFn = null;
@@ -244,7 +244,7 @@ function wsbarHTML() {
 function bindWsbar() {
   $('#lv-t').onclick = () => { ui.list = false; persistUI(); refresh(['wsbar', 'canvas']); };
   $('#lv-l').onclick = () => { ui.list = true; persistUI(); refresh(['wsbar', 'canvas']); };
-  $('#t-comp').onclick = () => { ui.compress = !ui.compress; ui.scrollX = null; ui.scrollY = 0; persistUI(); refresh(['wsbar', 'canvas']); };
+  $('#t-comp').onclick = () => { ui.compress = !ui.compress; ui.scrollX = null; persistUI(); refresh(['wsbar', 'canvas']); };
   $('#t-res').onclick = () => { ui.hideResolved = !ui.hideResolved; persistUI(); refresh(['wsbar', 'canvas']); };
   const q = $('#q'); let qt;
   q.oninput = () => { clearTimeout(qt); qt = setTimeout(() => { ui.q = q.value; refresh(['canvas']); const c = $('#wsbar .caption'); refreshWsbarKeepFocus(); }, 160); };
@@ -297,7 +297,13 @@ function buildAxis(issues, compress) {
   flush();
   return cols;
 }
+const SCROLL_TIMELINE = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: --a'));
 function drawCanvas(host, ro) {
+  // 다시 그리는 동안 카드 높이를 유지해 페이지 스크롤 위치가 줄어든 높이에 맞춰 당겨지지 않게 함
+  host.style.minHeight = host.offsetHeight ? host.offsetHeight + 'px' : '';
+  try { drawCanvasIn(host, ro); } finally { host.style.minHeight = ''; }
+}
+function drawCanvasIn(host, ro) {
   const issues = ro ? sorted(doc.issues) : visibleIssues();
   const groups = doc.groupOrder.filter(g => issues.some(i => i.group === g));
   const cols = buildAxis(issues.length ? issues : doc.issues, ui.compress);
@@ -306,25 +312,27 @@ function drawCanvas(host, ro) {
       <span><i style="background:var(--blue)"></i>확인 이력</span><span><i style="background:var(--red)"></i>실패·오류</span><span><i style="background:var(--green)"></i>정상</span><span><i style="background:var(--amberline)"></i>정정·지연</span><span><i style="background:var(--white);border:1.5px dashed var(--slate)"></i>예정</span>
       <span><i style="background:var(--red1);border:1px solid var(--red2);width:16px"></i>지속 제약</span><span style="color:var(--violet)">${I.lock}선행 조건</span></div>
       <span class="caption">${ui.compress ? '날짜 간격 비례 · 빈 기간은 +N일로 접음' : '날짜 간격 비례'} · 오른쪽은 다음 단계</span></div>
-    <div class="tl-scroll"><div class="tl" style="--lw:${LW}px;--rw:${RW}px"><div class="tl-col tl-l"></div><div class="tl-col tl-mid"><div class="tl-midin"></div></div><div class="tl-col tl-r"></div></div></div>`;
-  // 타임라인 머리·좌우 열 고정은 하나의 스크롤 영역(.tl-scroll) 안의 CSS sticky로 처리한다(스크롤 이벤트로 위치를 옮기지 않음 → 떨림 없음)
-  const SC = $('.tl-scroll', host), TL = $('.tl', host), L = $('.tl-l', host), MI = $('.tl-midin', host), R = $('.tl-r', host);
-  const keepY = ro ? ui.rScrollY : ui.scrollY;
+    <div class="tl-band tl-hrow"><div class="tl-head tl-hl">우선순위 · 이슈</div><div class="tl-clip"><div class="tl-head tl-hin"></div></div><div class="tl-head tl-hr">다음 단계 · 검증 게이트<small>완료 조건 · 점검일 · 조치 · 선행 조건</small></div></div>
+    <div class="tl"><div class="tl-col tl-l"></div><div class="tl-col tl-mid"><div class="tl-midin"></div></div><div class="tl-col tl-r"></div></div>
+    <div class="tl-band tl-frow"><div class="tl-foot tl-fl"><span>NOW 드래그 · 더블클릭 오늘</span></div><div class="tl-clip"><div class="tl-foot tl-fin"></div></div><div class="tl-foot tl-fr"></div></div>`;
+  /* 세로 스크롤은 페이지 하나. 머리(.tl-hrow)·아래 NOW 줄(.tl-frow)은 화면 맨 위/아래에 CSS sticky로 고정하고,
+     가로 스크롤은 본문 가운데 열(.tl-mid)만 가진다. 머리·아래 줄의 날짜 축은 CSS 스크롤 연동 애니메이션(animation-timeline)으로
+     본문 가로 스크롤을 따라가므로 스크롤 이벤트 JS 없이 같은 프레임에 움직인다(미지원 브라우저만 가로 이동을 JS로 보조). */
+  host.style.setProperty('--lw', LW + 'px'); host.style.setProperty('--rw', RW + 'px');
+  const M = $('.tl-mid', host), L = $('.tl-l', host), MI = $('.tl-midin', host), R = $('.tl-r', host), HI = $('.tl-hin', host), FI = $('.tl-fin', host);
   if (!issues.length) {
-    TL.style.gridTemplateColumns = `${LW}px minmax(0,1fr) ${RW}px`;
-    L.innerHTML = `<div class="tl-head">우선순위 · 이슈</div>`; R.innerHTML = `<div class="tl-head">다음 단계 · 검증 게이트</div>`;
-    MI.innerHTML = `<div class="tl-head"></div><div class="empty"><b>${doc.issues.length ? '조건에 맞는 이슈가 없습니다' : '아직 이슈가 없습니다'}</b>${doc.issues.length ? '검색어나 필터를 바꾸거나 필터를 해제하세요.' : '이슈 텍스트 입력으로 원문을 정리하거나 이슈를 추가하세요.'}</div>`;
+    MI.innerHTML = `<div class="empty"><b>${doc.issues.length ? '조건에 맞는 이슈가 없습니다' : '아직 이슈가 없습니다'}</b>${doc.issues.length ? '검색어나 필터를 바꾸거나 필터를 해제하세요.' : '이슈 텍스트 입력으로 원문을 정리하거나 이슈를 추가하세요.'}</div>`;
     return;
   }
   // widths
-  const avail = Math.max(320, SC.clientWidth - LW - RW);
+  const avail = Math.max(320, M.clientWidth);
   const nd = cols.filter(c => c.t === 'd').length, ng = cols.length - nd;
   const DAYW = Math.max(narrow ? 44 : 30, Math.min(120, Math.floor((avail - ng * GAPW) / Math.max(1, nd))));
   let x = 0; cols.forEach(c => { c.x = x; c.w = c.t === 'd' ? DAYW : GAPW; x += c.w; });
   const MW = Math.max(x, avail);
   const colOf = d => cols.find(c => c.t === 'd' ? c.date === d : d >= c.from && d <= c.to) || (d < cols[0].date ? cols[0] : cols[cols.length - 1]);
   const xL = d => colOf(d).x, xC = d => { const c = colOf(d); return c.x + c.w / 2; }, xR = d => { const c = colOf(d); return c.x + c.w; };
-  MI.style.width = MW + 'px'; TL.style.setProperty('--mw', MW + 'px'); TL.style.width = (LW + MW + RW) + 'px';
+  MI.style.width = HI.style.width = FI.style.width = MW + 'px';
   // header
   let head = '';
   let lastMonth = '';
@@ -352,7 +360,8 @@ function drawCanvas(host, ro) {
   if (doc.asOf !== doc.now) bg += `<div class="tl-repline" style="left:${repX - 1}px"></div>`;
   bg += `<div class="tl-nowline" style="left:${todayX - 1}px"></div>`;
   // rows
-  let lh = `<div class="tl-head">우선순위 · 이슈</div>`, mh = `<div class="tl-head">${head}</div><div class="tl-bg" style="width:${MW}px">${bg}</div>`, rh = `<div class="tl-head">다음 단계 · 검증 게이트<small>완료 조건 · 점검일 · 조치 · 선행 조건</small></div>`;
+  HI.innerHTML = head; FI.innerHTML = nowPill('bottom');
+  let lh = '', mh = `<div class="tl-bg" style="width:${MW}px">${bg}</div>`, rh = '';
   groups.forEach(g => {
     const gi = issues.filter(i => i.group === g), col = !!ui.collapsed[g];
     const gh = `<div class="tl-grp" data-grp="${esc(g)}"`;
@@ -366,7 +375,6 @@ function drawCanvas(host, ro) {
       rh += `<div class="tl-row${sel}" data-row="${i.id}">${rightCell(i, ro)}</div>`;
     });
   });
-  lh += `<div class="tl-foot"><span>NOW 드래그 · 더블클릭 오늘</span></div>`; mh += `<div class="tl-foot">${nowPill('bottom')}</div>`; rh += `<div class="tl-foot"></div>`;
   L.innerHTML = lh; MI.insertAdjacentHTML('beforeend', mh); R.innerHTML = rh;
   // fill middle rows & pack
   const rowH = {};
@@ -437,14 +445,15 @@ function drawCanvas(host, ro) {
   }
   // scroll position
   const keep = ro ? ui.rScrollX : ui.scrollX;
-  if (keep !== null) SC.scrollLeft = keep; else SC.scrollLeft = Math.max(0, todayX - avail * 0.72);
-  if (ui.revealNow && (todayX < SC.scrollLeft + 40 || todayX > SC.scrollLeft + avail - 40)) SC.scrollLeft = Math.max(0, todayX - avail / 2);
-  if (keepY) SC.scrollTop = keepY;
-  const markScrolled = () => SC.classList.toggle('scrolled', SC.scrollTop > 0);
-  markScrolled();
-  SC.onscroll = () => { if (ro) { ui.rScrollX = SC.scrollLeft; ui.rScrollY = SC.scrollTop; } else { ui.scrollX = SC.scrollLeft; ui.scrollY = SC.scrollTop; } markScrolled(); };
+  // 가로 스크롤 범위 → 머리·아래 줄 축 이동량(스크롤 연동 애니메이션의 끝 값)
+  host.style.setProperty('--tl-shift', -Math.max(0, M.scrollWidth - M.clientWidth) + 'px');
+  if (keep !== null) M.scrollLeft = keep; else M.scrollLeft = Math.max(0, todayX - avail * 0.72);
+  if (ui.revealNow && (todayX < M.scrollLeft + 40 || todayX > M.scrollLeft + avail - 40)) M.scrollLeft = Math.max(0, todayX - avail / 2);
+  const follow = SCROLL_TIMELINE ? null : () => { const t = `translateX(${-M.scrollLeft}px)`; HI.style.transform = FI.style.transform = t; };
+  if (follow) follow();
+  M.onscroll = () => { if (ro) ui.rScrollX = M.scrollLeft; else ui.scrollX = M.scrollLeft; if (follow) follow(); };
   // NOW: 드래그 이동 · 더블클릭/Enter 오늘 · 방향키 하루(Shift 7일)
-  const nowEls = $$('[data-now]', MI), nowLine = $('.tl-nowline', MI);
+  const nowEls = $$('[data-now]', host), nowLine = $('.tl-nowline', MI);
   const paintNow = d => { const x = xAt(d); nowEls.forEach(el => { el.style.left = x + 'px'; el.firstChild.innerHTML = nowLabel(d); el.setAttribute('aria-valuetext', d); }); nowLine.style.left = (x - 1) + 'px'; };
   nowEls.forEach(el => {
     el.onpointerdown = e => {
@@ -454,8 +463,8 @@ function drawCanvas(host, ro) {
       host.classList.add('now-drag');
       el.onpointermove = ev => {
         if (!moved && Math.abs(ev.clientX - x0) < 3) return; moved = true;
-        const mr = SC.getBoundingClientRect(), ml = mr.left + LW, mrt = mr.right - RW;
-        if (ev.clientX > mrt - 24) SC.scrollLeft += 14; else if (ev.clientX < ml + 24) SC.scrollLeft -= 14;
+        const mr = M.getBoundingClientRect();
+        if (ev.clientX > mr.right - 24) M.scrollLeft += 14; else if (ev.clientX < mr.left + 24) M.scrollLeft -= 14;
         const d = dateAt(ev.clientX - MI.getBoundingClientRect().left); if (d !== cur) { cur = d; paintNow(d); }
       };
       el.onpointerup = el.onpointercancel = ev => {
@@ -977,7 +986,7 @@ function openImport() {
     } else {
       snapshot('이슈 텍스트 반영'); doc = d; doc.example = false; persist();
     }
-    ui.sel = (sorted(d.issues)[0] || {}).id || null; ui.view = 'manage'; ui.itab = 'manage'; ui.q = ''; ui.fStatus = 'all'; ui.fGroup = 'all'; ui.fGap = ''; ui.hideResolved = false; ui.scrollX = null; ui.scrollY = 0; ui.assume = {};
+    ui.sel = (sorted(d.issues)[0] || {}).id || null; ui.view = 'manage'; ui.itab = 'manage'; ui.q = ''; ui.fStatus = 'all'; ui.fGroup = 'all'; ui.fGap = ''; ui.hideResolved = false; ui.scrollX = null; ui.assume = {};
     try { localStorage.removeItem(STORE + '.draft'); } catch (e) { }
     m.close(); render(); window.scrollTo(0, 0);
     toast(`${d.issues.length}개 이슈를 반영했습니다. 담당·점검일을 이어서 관리하세요.`, { label: '되돌리기', fn: undo });
