@@ -5,6 +5,7 @@
 ## 현재 상태
 
 - **마지막 작업**: Claude Code · 2026-10-21 · v0.9.63 타임라인 머리 화면 맨 위 고정·페이지 스크롤 하나로, main 반영(사용자 요청). 이전: v0.9.62 카드 내부 스크롤(폐기), v0.9.61 JS 이동(폐기), v0.9.60 모드 전환 부드럽게 + 이슈관리 모드를 마일스톤 디자인 시스템 기준으로 전면 정리. 작업 브랜치 커밋 후 main 반영·배포 완료. 직전 v0.9.59까지는 main 반영 완료.
+- **서버 함수 재배포(2026-10-21, 리비전 없음)**: 마일스톤 모드 버전 저장 실패 “저장하지 못했습니다… 알림만 요소에 연결할 수 있습니다.” — 원인: Supabase Edge Function `mapstone-api`(프로젝트 mffysunppwqscbljooda)가 v24로 예전 `mapstone-core.js`(targetId는 flag만 허용)를 쓰고 있어, v0.9.56부터 가능한 포스트잇(sticky) 연결이 있는 문서를 서버가 거부. Supabase 연결 도구로 저장소의 `supabase/functions/mapstone-api/{index.ts,mapstone-core.js,deno.json}`을 v25로 배포(verify_jwt=false 유지). 배포본을 다시 내려받아 세 파일이 저장소와 바이트 단위로 같음을 확인, 같은 문서가 예전 core는 실패·현재 core는 통과함을 재현. 이 컨테이너는 supabase.co 접속이 프록시로 막혀 실서버 요청 검증은 못 함 → 사용자 브라우저에서 버전 저장 재시도로 확인 필요. **`mapstone-core.js` 검증 규칙을 바꾸면 Edge Function도 반드시 재배포할 것**(클라이언트와 서버 검증이 어긋나면 저장이 막힘).
 - **타임라인 고정 구조(v0.9.63 — 현재 기준)**: 사용자 피드백 — v0.9.62의 카드 내부 세로 스크롤은 페이지 스크롤이 까다롭고 보이는 영역이 작음 → 페이지 스크롤 하나로 복귀. 구조: `.canvas`(overflow:**clip** — hidden이면 sticky 깨짐) 안에 ① `.tl-hrow`(sticky top:0, 화면 맨 위) = 왼쪽 머리·`.tl-clip>.tl-hin`(날짜 축·NOW 위 알약)·오른쪽 머리, ② `.tl` 본문(가운데 `.tl-mid`만 overflow-x:auto, `scroll-timeline:--tlx x`), ③ `.tl-frow`(sticky bottom:0) = 아래 NOW 줄. `.tl-hin/.tl-fin`은 `animation-timeline:--tlx`로 `translateX(var(--tl-shift))`(= −가로 스크롤 범위, 그릴 때 설정) — 스크롤 이벤트 JS 없이 같은 프레임에 이동. 미지원 브라우저(`SCROLL_TIMELINE=false`, Safari 26 미만·Firefox)만 `.tl-mid` onscroll에서 transform 보조. 앱 바는 sticky 해제(스크롤과 함께 올라감), 인스펙터 sticky top 12px. `drawCanvas`는 다시 그리는 동안 카드 min-height를 유지해 페이지 스크롤이 당겨지지 않게 함. 좁은 폭(≤760) 오른쪽 셀 숨김은 `.tl-band>.tl-hr/.tl-fr`로 지정(뒤쪽 `.tl-foot{display:flex}`가 덮어써 아래 줄이 2줄 되던 버그 수정). v0.9.61(JS 이동·떨림)·v0.9.62(카드 내부 스크롤) 방식은 다시 쓰지 말 것.
 - **스크롤 성능 검증(v0.9.63, AGENTS 필수)**: `node issue-mode/qa-scroll.cjs`(+ `IM_FALLBACK=1`로 미지원 경로) — 1600/1024/390, 실제 휠: 타임라인 위 세로 3회(페이지 스크롤)·가로 3회(빈 기간 접기 끔)·페이지 바깥 휠 1회. 매 rAF: 머리 줄 top=min(max(0,본문 top−44), 카드 안쪽 bottom−44), 아래 줄 top=max(min(화면높이−36, 본문 bottom), 카드 top), 머리·아래 축 left=본문 축 left, 위·아래 NOW 알약=NOW 선, 줄 높이 44/36. 결과: 고정 오차 항상 0px, p95 16.7~16.8ms. 9회 반복(189 제스처) 중 50ms 초과 단일 프레임 3회(제스처 중간 1프레임, 위치 오차 0) — 정적 페이지 대조(측정 부하 포함 40제스처)와 이슈관리 동일 조건 40제스처 모두 0회라 컨테이너 잡음으로 판단, 마지막 4회 연속 21/21 통과. 실제 Mac에서 체감 확인 필요.
 - **검증(v0.9.63)**: npm test 372개, qa-flow 90개(머리 화면 맨 위·아래 줄 맨 아래·내부 세로 스크롤 없음·다시 그려도 페이지 스크롤 유지), qa-layout 0건(`.tl`·`.tl-clip` 내부는 카드 이탈 검사 제외), 슬라이더 배율 16.7~16.8ms(1회 이상치 100~116ms), 비교 50~83ms(기존 범위).
@@ -97,6 +98,7 @@
 
 ## 작업 로그
 
+- 2026-10-21 · Claude Code · 버전 저장 실패 수정: mapstone-api Edge Function을 저장소 최신 core로 v25 재배포(포스트잇 연결 허용), 리비전 없음
 - 2026-10-21 · Claude Code · v0.9.63 타임라인 머리 화면 맨 위 sticky·페이지 스크롤 하나·축 동기화 scroll-timeline, qa-scroll 새 구조 기준 갱신, main 반영
 - 2026-10-20 · Claude Code · v0.9.62 타임라인 머리 고정을 CSS sticky로 교체(떨림 26/98프레임→0), qa-scroll.cjs 스크롤 성능 검증 추가·AGENTS 필수화, main 반영
 - 2026-10-20 · Claude Code · v0.9.61 이슈관리 타임라인 스크롤 시 머리 3열 고정
