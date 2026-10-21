@@ -789,15 +789,17 @@
       app.setState({versionProjectId:project || null,versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,project))});
     }catch(e){app.setState({versionStatus:'히스토리를 새로 불러오지 못했습니다. '+e.message});}
   }
-  async function saveCloudVersion(app){
+  // opt.fork: 이 브라우저의 접근 키로 새 작업물을 만들어 저장(다른 주소·브라우저 보관함에 연결돼 403이 날 때의 우회)
+  async function saveCloudVersion(app,opt={}){
     if(app.state.readOnly||app.state.versionBusy)return;
     let savedVersion=null;
-    app.setState({versionBusy:true,versionOperation:'save',versionStatus:'클라우드에 저장하고 있습니다…'});
+    if(opt.fork){if(!window.confirm('이 브라우저의 보관함에 새 작업물로 저장할까요? 이전 버전은 원래 브라우저(접근 키)에서 계속 볼 수 있고, 이 일정의 버전 목록은 새 작업물 기준으로 바뀝니다.'))return;app.setState({versionProjectId:null,versions:app.state.versions.filter(v=>!v.projectId)});}
+    app.setState({versionBusy:true,versionOperation:'save',versionForbidden:false,versionStatus:'클라우드에 저장하고 있습니다…'});
     try{
       const document=C.validate({...JSON.parse(app.snapshot()),versions:[]}),code=versionCode(),source=app.state.versions,note=app.state.vNote.trim();
       const legacy=app.state.versions.filter(v=>!v.projectId);
-      let project=app.state.versionProjectId;
-      if(!project && app.state.versions.some(v=>v.projectId)){const ps=await request(app.sync.endpoint,'/version-projects',code);project=ps.find(p=>p.title===document.title)?.id;}
+      let project=opt.fork?null:app.state.versionProjectId;
+      if(!project && !opt.fork && app.state.versions.some(v=>v.projectId)){const ps=await request(app.sync.endpoint,'/version-projects',code);project=ps.find(p=>p.title===document.title)?.id;}
       if(app.state.versions!==source)return;
       project=project || crypto.randomUUID();app.setState({versionProjectId:project});document.versionProjectId=project;
       const send=(id,doc,note)=>request(app.sync.endpoint,'/version-projects/'+project+'/versions',code,'POST',{id,document:doc,note},'code',60000);
@@ -813,7 +815,11 @@
       const vs=await request(app.sync.endpoint,'/version-projects/'+project+'/versions',code);
       if(app.state.versionProjectId!==project)return;
       app.setState({versions:vs.slice(0,30).reverse().map(v=>versionEntry(v,project)),versionStatus:'클라우드 저장 완료 · v'+saved.sequence+' · '+versionEntry(saved,project).date});app._pendingVersion=null;
-    }catch(e){app.setState({versionStatus:(savedVersion?'v'+savedVersion.sequence+' 버전은 저장되었지만 목록을 새로 불러오지 못했습니다. ':'저장하지 못했습니다. 입력한 내용은 유지됩니다. ')+versionSaveError(e)});}
+    }catch(e){
+      // 서버 403 'forbidden' = 이 일정의 작업물이 다른 접근 키(다른 주소·브라우저) 소유
+      const forbidden=!savedVersion&&e.status===403&&/접근 키가 일치하지/.test(String(e.message||''));
+      app.setState({versionForbidden:forbidden,versionStatus:forbidden?'저장하지 못했습니다. 입력한 내용은 유지됩니다. 이 일정의 버전 보관함은 다른 주소(예: 로컬 127.0.0.1 ↔ 배포 주소)나 다른 브라우저의 접근 키로 만들어져, 이 브라우저 키로는 저장할 수 없습니다. 원래 브라우저의 버전 보관함 › 고급에서 ‘내 코드 복사’한 키를 이 브라우저에 연결하면 이어서 저장되고, 바로 저장하려면 ‘새 작업물로 저장’을 누르세요.':(savedVersion?'v'+savedVersion.sequence+' 버전은 저장되었지만 목록을 새로 불러오지 못했습니다. ':'저장하지 못했습니다. 입력한 내용은 유지됩니다. ')+versionSaveError(e)});
+    }
     finally{app.setState({versionBusy:false,versionOperation:null});}
   }
   async function restoreCloudVersion(app,v){

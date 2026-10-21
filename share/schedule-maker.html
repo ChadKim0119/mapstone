@@ -1097,6 +1097,7 @@ if (/\.dc\.html$|\/share\/schedule-maker\.html$/.test(location.pathname)) {
             </label>
             <button onClick="{{ saveVersion }}" disabled="{{ versionBusy }}" style="height:40px;border-radius:var(--ms-radius-control);font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ vSaveBorder }};background:{{ vSaveBg }};color:{{ vSaveFg }}">{{ versionSaveLabel }}</button>
             <sc-if value="{{ vHint }}"><span role="status" style="font-size:11px;line-height:1.6;color:var(--color-text-neutral-3)">{{ vHint }}</span></sc-if>
+            <sc-if value="{{ versionForbidden }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><button type="button" class="ms-tool-button" onClick="{{ openVersionLibrary }}" disabled="{{ versionBusy }}" style="flex:1">접근 키 연결</button><button type="button" class="ms-tool-button" onClick="{{ saveVersionFork }}" disabled="{{ versionBusy }}" style="flex:1;border-color:var(--ms-color-action-primary);color:var(--ms-color-action-primary)">새 작업물로 저장</button></div></sc-if>
 
             <div style="height:1px;background:var(--color-border-neutral-2)"></div>
             <div class="ms-version-history-heading"><span style="font-size:14px;font-weight:700">{{ L.history }}</span><div class="ms-version-compare-actions"><button class="ms-version-compare-button ms-version-compare-launch" onClick="{{ onVersionCompareAction }}" disabled="{{ versionCompareDisabled }}" data-ready="{{ versionCompareReady }}" title="{{ versionCompareHint }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h7v16H3zM14 4h7v16h-7M10 9h4m-4 6h4"/></svg><span>{{ versionCompareActionLabel }}</span></button><sc-if value="{{ versionCompareSelecting }}"><button class="ms-version-compare-button" onClick="{{ cancelVersionCompare }}">{{ L.cancel }}</button></sc-if></div></div>
@@ -1243,6 +1244,7 @@ class Component extends DCLogic {
     return cr(false) >= cr(true) ? '#181a1b' : '#ffffff';
   }
   RELEASES = [
+    { v: 'v0.9.64', agent: 'Claude Code', title: '버전 저장 실패 해결 · 다른 접근 키 보관함 안내', items: ['[서버] 버전 저장 서버 함수(mapstone-api)를 최신 검증 규칙으로 재배포 — 포스트잇이 연결된 일정의 “알림만 요소에 연결할 수 있습니다” 저장 실패 해결', '[버전] 일정이 다른 주소(로컬↔배포)·다른 브라우저의 접근 키 보관함에 연결돼 저장이 거부(403)되면 원인과 해결 방법을 안내하고 ‘접근 키 연결’·‘새 작업물로 저장’ 버튼 제공', '[버전] ‘새 작업물로 저장’은 확인 후 이 브라우저 키로 새 작업물을 만들어 저장(이전 버전은 원래 키로 계속 열람 가능)'] },
     { v: 'v0.9.63', agent: 'Claude Code', title: '이슈관리 타임라인 머리 화면 맨 위 고정 · 페이지 스크롤 하나로', items: ['[이슈관리 모드] 타임라인 카드 안의 별도 세로 스크롤을 없애고 페이지 스크롤 하나로 복귀 — 화면에 보이는 타임라인 영역이 다시 넓어짐', '[이슈관리 모드] 타임라인 머리 줄은 화면 맨 위(top 0), 아래 NOW 줄은 화면 맨 아래에 CSS sticky로 고정 · 앱 바는 스크롤과 함께 올라감 · 인스펙터는 화면 위 12px에 고정', '[이슈관리 모드] 가로 스크롤은 본문 날짜 영역만 갖고, 머리·아래 줄 날짜 축은 CSS 스크롤 연동 애니메이션으로 같은 프레임에 따라감(미지원 브라우저는 가로만 JS 보조) · 카드는 overflow:clip으로 sticky 유지 · 다시 그려도 페이지 스크롤 위치 유지', '[검증] qa-scroll.cjs를 새 구조 기준(머리 화면 맨 위·아래 줄 화면 맨 아래·축 동기화·줄 높이)으로 갱신 — 1600/1024/390 세로·가로·페이지 21항목 오차 0px, p95 16.8ms 이하, 50ms 초과 0회(미지원 경로도 동일)'] },
     { v: 'v0.9.62', agent: 'Claude Code', title: '이슈관리 타임라인 스크롤 떨림 수정', items: ['[이슈관리 모드] 타임라인 머리 고정을 스크롤 이벤트 JS 이동에서 CSS sticky로 교체 — 타임라인 카드가 자체 스크롤 영역(화면 높이)이 되고 머리·왼쪽 이슈 열·오른쪽 다음 단계 열·아래 NOW 줄이 브라우저 합성 단계에서 고정되어 떨림 없음', '[이슈관리 모드] 다시 그려도 타임라인 세로·가로 스크롤 위치 유지 · 오른쪽 열 고정을 막던 인라인 position 제거 · 인스펙터 높이를 실제 앱 바 높이 기준으로 계산', '[검증] issue-mode/qa-scroll.cjs 추가 — 실제 휠 입력으로 세로·가로·페이지 스크롤 중 매 프레임 고정 오차·프레임 간격 측정(이전 방식: 98프레임 중 26프레임 최대 50px 어긋남 → 수정 후 0)'] },
     { v: 'v0.9.61', agent: 'Claude Code', title: '이슈관리 타임라인 머리 고정', items: ['[이슈관리 모드] 타임라인 보기에서 아래로 스크롤해도 머리(우선순위·이슈 / 날짜·NOW / 다음 단계)가 앱 바 아래에 고정 · 세 열 동시 이동, 타임라인 끝에서는 함께 올라감 · 고정 시 그림자 · 관리·보고 화면 공통'] },
@@ -1416,7 +1418,7 @@ class Component extends DCLogic {
     { v: 'v2.0', agent: 'Claude Design', items: ['라벨 겹침 자동 정리(단계·라벨 스트립)', '텍스트 대비 4.5:1 개선'] },
     { v: 'v1.0', agent: 'Claude Design', items: ['이미지 2장을 편집 가능한 웹 타임라인으로 재구성', '드래그 이동·기간 조정 · 속성 패널 편집', '브라우저 자동 저장 · PNG · 인쇄'] }
   ];
-  APP_VER = 'v0.9.63';
+  APP_VER = 'v0.9.64';
   KEY = 'mapstone.timeline.v1';
   TIP_KEY = 'mapstone.mouseTip.muted';
   /* zoom slider: weekPx is mapped exponentially so each slider step is a
@@ -1910,7 +1912,7 @@ class Component extends DCLogic {
   importDocument(data, options = {}) {
     if (this.state.readOnly) return;
     const d = MapstoneCore.validate(data);this._drawingCleanup?.();if(options.preserveVersions){d.versions=MapstoneCore.clone(this.state.versions);d.versionProjectId=this.state.versionProjectId||null;}this._lastPlacement=null;this._deleteFinish?.(); const before=JSON.stringify({...JSON.parse(this.snapshot()),versions:this.state.versions}); this._pendingVersion=null; this._saveBlocked=false; this._recoveryData=null;
-    this.setState({...d,drawTool:null,vNote:'',versionStatus:'', sel:null,selection:[],selectionAnchor:null,focusRow:null,editing:null,hover:null,hist:this.state.hist.concat([before]).slice(-60),future:[]});
+    this.setState({...d,drawTool:null,vNote:'',versionStatus:'',versionForbidden:false, sel:null,selection:[],selectionAnchor:null,focusRow:null,editing:null,hover:null,hist:this.state.hist.concat([before]).slice(-60),future:[]});
   }
 
   snapshot() { const s = this.state; return JSON.stringify({ title: s.title, cfg: s.cfg, rows: s.rows, items: s.items, notes: s.notes, now: s.now, versionProjectId:s.versionProjectId || null }); }
@@ -3786,6 +3788,7 @@ class Component extends DCLogic {
   // ── versions ──────────────────────────────────
   onVField = (e) => { const k = e.currentTarget.dataset.v; const v = e.currentTarget.value; const p = {}; p['v' + k.charAt(0).toUpperCase() + k.slice(1)] = v; this.setState(p); };
   saveVersion = () => MapstoneUI.saveCloudVersion(this);
+  saveVersionFork = () => MapstoneUI.saveCloudVersion(this, { fork: true });
   openVersionLibrary = () => MapstoneUI.versionLibrary(this);
   openVersionCompare = () => this.setState({tab:'ver',panel:true,versionCompareSelecting:!this.state.versionCompareSelecting,versionCompareIds:[]});
   onVersionComparePick = (e) => {const ids=new Set(this.state.versionCompareIds||[]),id=e.currentTarget.dataset.id;if(e.currentTarget.checked){if(ids.size<2)ids.add(id);}else ids.delete(id);this.setState({versionCompareIds:[...ids]});};
@@ -4345,7 +4348,7 @@ class Component extends DCLogic {
       onField: this.onField, onStep: this.onStep, onColor: this.onColor, onVariant: this.onVariant, toggleFill:this.toggleFill, selFillTint:!!sel && sel.variant==='tint', fillSolidColor:sel?.variant==='tint'?'var(--color-text-neutral-3)':'var(--ms-color-action-primary)', fillTintColor:sel?.variant==='tint'?'var(--ms-color-action-primary)':'var(--color-text-neutral-3)', onCfg: this.onCfg,
       onWeekMode: this.onWeekMode, toggleWeekMode: this.toggleWeekMode, toggleInteract: this.toggleInteract, nowToday: this.nowToday,
       copySel: this.copySel, cutSel: this.cutSel, pasteClip: this.pasteClip,
-      openVersionLibrary:this.openVersionLibrary,openVersionCompare:this.openVersionCompare,onVField: this.onVField, saveVersion: this.saveVersion, restoreVersion: this.restoreVersion, deleteVersion: this.deleteVersion,
+      openVersionLibrary:this.openVersionLibrary,openVersionCompare:this.openVersionCompare,onVField: this.onVField, saveVersion: this.saveVersion, saveVersionFork: this.saveVersionFork, versionForbidden: !!st.versionForbidden, restoreVersion: this.restoreVersion, deleteVersion: this.deleteVersion,
       deleteSel: this.deleteSel, undo: this.undo, redo: this.redo, reset: this.reset,
       exportPng: this.exportPng, exportPptx: this.exportPptx, doPrint: this.doPrint
     };
