@@ -4,7 +4,10 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Claude Code · 2026-10-21 · v0.9.63 타임라인 머리 화면 맨 위 고정·페이지 스크롤 하나로, main 반영(사용자 요청). 이전: v0.9.62 카드 내부 스크롤(폐기), v0.9.61 JS 이동(폐기), v0.9.60 모드 전환 부드럽게 + 이슈관리 모드를 마일스톤 디자인 시스템 기준으로 전면 정리. 작업 브랜치 커밋 후 main 반영·배포 완료. 직전 v0.9.59까지는 main 반영 완료.
+- **마지막 작업**: Codex · 2026-10-22 · 기존 병합·GitHub 반영·배포 요청 마무리 확인. 병합 커밋 `87b63fa`를 10/20 main에 push했고, 이후 Claude Code의 v0.9.57~64 변경을 보존해 최신 main `bf3501a`까지 fast-forward. 이번에는 기능 변경·리비전 증가 없음.
+- **최종 동기화/검증**: v0.9.64, 로컬 `main`과 GitHub `origin/main` 동일(기능 기준 `bf3501a`). 최종 `npm run build` → `npm test` 373/373 및 `git diff --check` 통과(`/tmp/mapstone-1022-final-tests.log`). 생성 파일 추가 차이 없음. 아래 과거 작업 브랜치·배포 차단 기록은 당시 상태이며 현재 기준은 이 항목.
+- **운영 웹 확인**: `https://mapstone-app.vercel.app/`와 `https://mapstone-hazel.vercel.app/` 모두 v0.9.64 제공. Vercel mapstone-app production READY·source `bf3501a` 확인. 두 운영 index의 부팅 셸과 압축 해제한 14개 리소스가 로컬과 모두 일치(빌드 OS별 gzip 메타데이터·폰트 MIME 2개 차이만 존재), 이슈관리 `issues.html`과 공개 core는 바이트 단위 일치.
+- **운영 API 확인**: Supabase 대시보드에서 mapstone-api 배포 횟수 25 확인. 10/21 배포 기록 커밋 `731012f` 이후 함수 소스 변경 없음. 10/22 실서버 OPTIONS 204·CORS, 복구 코드 없는 `/version-projects` GET 401 및 정확한 한국어 안내 확인. 사용자의 실제 보관함 저장·접근 키 연결은 수행하지 않음. 배포 소스 재다운로드 검증은 브라우저 다운로드가 멈춰 이번에 완료하지 못했으며, 이전 Claude Code의 세 파일 바이트 검증 기록은 아래 보존.
 - **버전 저장 403 안내(v0.9.64)**: 서버 재배포 후 사용자 화면에서 403 “이 작업물의 보관함 접근 키가 일치하지 않습니다” — DB 조회 결과 ‘GS 개발 일정 (09/03 Version)’(5버전, 10/19 저장) 등 대부분 작업물은 owner_hash 9dc47de2… 소유. 현재 브라우저의 `localStorage['mapstone.version.owner']`가 다른 키(다른 주소 origin: 로컬 127.0.0.1 ↔ 배포 도메인, 또는 다른 브라우저)로 판단. DB 소유권은 바꾸지 않음. `mapstone-ui.js saveCloudVersion(app,opt)`: 403+접근 키 불일치면 `versionForbidden` 상태로 원인·해결 안내, 패널에 ‘접근 키 연결’(보관함 열기 → 고급 키 입력)·‘새 작업물로 저장’(`opt.fork`: 확인 후 versionProjectId 비우고 이 브라우저 키로 새 작업물 생성, 클라우드 버전 목록은 새 작업물 기준) 버튼. 가짜 서버 응답으로 403 안내→새 작업물 저장 성공 확인. 슬라이더 v0.9.64 배율 16.7~16.8ms(이상치 50~67ms 1회), 비교 33~50ms.
 - **서버 함수 재배포(2026-10-21, 리비전 없음)**: 마일스톤 모드 버전 저장 실패 “저장하지 못했습니다… 알림만 요소에 연결할 수 있습니다.” — 원인: Supabase Edge Function `mapstone-api`(프로젝트 mffysunppwqscbljooda)가 v24로 예전 `mapstone-core.js`(targetId는 flag만 허용)를 쓰고 있어, v0.9.56부터 가능한 포스트잇(sticky) 연결이 있는 문서를 서버가 거부. Supabase 연결 도구로 저장소의 `supabase/functions/mapstone-api/{index.ts,mapstone-core.js,deno.json}`을 v25로 배포(verify_jwt=false 유지). 배포본을 다시 내려받아 세 파일이 저장소와 바이트 단위로 같음을 확인, 같은 문서가 예전 core는 실패·현재 core는 통과함을 재현. 이 컨테이너는 supabase.co 접속이 프록시로 막혀 실서버 요청 검증은 못 함 → 사용자 브라우저에서 버전 저장 재시도로 확인 필요. **`mapstone-core.js` 검증 규칙을 바꾸면 Edge Function도 반드시 재배포할 것**(클라이언트와 서버 검증이 어긋나면 저장이 막힘).
 - **타임라인 고정 구조(v0.9.63 — 현재 기준)**: 사용자 피드백 — v0.9.62의 카드 내부 세로 스크롤은 페이지 스크롤이 까다롭고 보이는 영역이 작음 → 페이지 스크롤 하나로 복귀. 구조: `.canvas`(overflow:**clip** — hidden이면 sticky 깨짐) 안에 ① `.tl-hrow`(sticky top:0, 화면 맨 위) = 왼쪽 머리·`.tl-clip>.tl-hin`(날짜 축·NOW 위 알약)·오른쪽 머리, ② `.tl` 본문(가운데 `.tl-mid`만 overflow-x:auto, `scroll-timeline:--tlx x`), ③ `.tl-frow`(sticky bottom:0) = 아래 NOW 줄. `.tl-hin/.tl-fin`은 `animation-timeline:--tlx`로 `translateX(var(--tl-shift))`(= −가로 스크롤 범위, 그릴 때 설정) — 스크롤 이벤트 JS 없이 같은 프레임에 이동. 미지원 브라우저(`SCROLL_TIMELINE=false`, Safari 26 미만·Firefox)만 `.tl-mid` onscroll에서 transform 보조. 앱 바는 sticky 해제(스크롤과 함께 올라감), 인스펙터 sticky top 12px. `drawCanvas`는 다시 그리는 동안 카드 min-height를 유지해 페이지 스크롤이 당겨지지 않게 함. 좁은 폭(≤760) 오른쪽 셀 숨김은 `.tl-band>.tl-hr/.tl-fr`로 지정(뒤쪽 `.tl-foot{display:flex}`가 덮어써 아래 줄이 2줄 되던 버그 수정). v0.9.61(JS 이동·떨림)·v0.9.62(카드 내부 스크롤) 방식은 다시 쓰지 말 것.
@@ -98,6 +101,8 @@
 - (없음)
 
 ## 작업 로그
+
+- 2026-10-22 · Codex · v0.9.64 유지 · 기존 병합 요청 마무리: GitHub 최신 main 동기화, 웹 두 곳 v64·배포 리소스 정합, API v25·OPTIONS 204/인증 401 확인, build/test373개 통과. 실제 보관함 저장은 미실행.
 
 - 2026-10-21 · Claude Code · v0.9.64 버전 저장 403(다른 접근 키 보관함) 원인 안내·‘접근 키 연결’/‘새 작업물로 저장’ 추가, main 반영
 - 2026-10-21 · Claude Code · 버전 저장 실패 수정: mapstone-api Edge Function을 저장소 최신 core로 v25 재배포(포스트잇 연결 허용), 리비전 없음
