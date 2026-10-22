@@ -7,7 +7,7 @@
 //    머리·아래 줄 날짜 축 left ↔ 본문 날짜 축 left, 위·아래 NOW 알약 중심 ↔ 본문 NOW 선 중심
 //  - 프레임 간격 p95 / 50ms 초과 횟수
 // 기준: 고정 오차 최대 0.5px 이하, p95 33.4ms 이하, 50ms 초과 0회 (AGENTS.md 기준)
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright');
 const URL = process.env.IM_URL || 'http://127.0.0.1:4191/issues.html';
 const WIDTHS = (process.env.IM_WIDTHS || '1600,1024,390').split(',').map(Number);
 
@@ -45,7 +45,7 @@ const stats = q => {
 };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+  const b = await chromium.launch({ executablePath: process.env.IM_CHROMIUM || '/opt/pw-browsers/chromium' });
   let fail = 0; const rows = [];
   for (const W of WIDTHS) {
     const p = await b.newPage({ viewport: { width: W, height: W < 500 ? 844 : 900 } });
@@ -75,7 +75,7 @@ const stats = q => {
     // 1) 타임라인 위에서 세로 휠 → 페이지 스크롤 (머리가 화면 맨 위에 붙고, 아래 NOW 줄은 화면 맨 아래에 붙음) 3회
     for (let k = 0; k < 3; k++) await run(`세로 스크롤 ${k + 1}`, async () => {
       const top = await tlTop();
-      await p.evaluate(([k, top]) => window.scrollTo(0, k === 0 ? Math.max(0, top - 300) : k === 1 ? top : document.documentElement.scrollHeight), [k, top]);
+      await p.evaluate(([k, top]) => window.scrollTo(0, k === 0 ? Math.max(0, top - 300) : k === 1 ? top : top + Math.min(1200,document.querySelector('#canvas .tl').offsetHeight - innerHeight*.5)), [k, top]);
       await p.waitForTimeout(150); const m = await overMid(); await p.mouse.move(m.x, m.y);
     }, async () => { for (let i = 0; i < 24; i++) { await p.mouse.wheel(0, k === 2 ? -70 : 70); await p.waitForTimeout(16); } });
     // 2) 가로 스크롤 (deltaX, 머리가 붙은 상태) — 빈 기간 접기를 꺼서 날짜 축을 화면보다 넓게 만든 뒤 측정
@@ -87,8 +87,8 @@ const stats = q => {
       const m = await overMid(); await p.mouse.move(m.x, m.y);
     }, async () => { for (let i = 0; i < 24; i++) { await p.mouse.wheel(k === 1 ? -40 : 40, 0); await p.waitForTimeout(16); } });
     // 3) 페이지 맨 위부터 타임라인 바깥(왼쪽 여백)에서 휠 — 머리가 화면 맨 위로 들어와 붙는 순간 포함
-    await run('페이지 스크롤', async () => { await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(100); await p.mouse.move(4, vh - 8); },
-      async () => { for (let i = 0; i < 30; i++) { await p.mouse.wheel(0, 70); await p.waitForTimeout(16); } });
+    for (let k = 0; k < 3; k++) await run(`페이지 스크롤 ${k+1}`, async () => { await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(100); await p.mouse.move(4, vh - 8); },
+      async () => { for (let i = 0; i < 24; i++) { await p.mouse.wheel(0, 70); await p.waitForTimeout(16); } });
     if (errs.length) { fail++; rows.push(`FAIL [${W}] 페이지 오류: ${errs.join(' | ')}`); }
     await p.close();
   }

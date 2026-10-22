@@ -1,11 +1,11 @@
-// 기본 조작 사용성 E2E 검증 (로컬 서버 http://127.0.0.1:4190/local.html)
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+// 기본 조작 사용성 E2E 검증 (저장소 루트를 4191 포트로 실행)
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright');
 const fs = require('fs');
 const URL = process.env.IM_URL || 'http://127.0.0.1:4191/issues.html';
 let pass = 0, fail = 0; const out = [];
 const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; out.push('FAIL ' + m); } };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+  const b = await chromium.launch({ executablePath: process.env.IM_CHROMIUM || '/opt/pw-browsers/chromium' });
   const ctx = await b.newContext({ viewport: { width: 1600, height: 1000 }, acceptDownloads: true });
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new globalThis.URL(URL).origin });
   const p = await ctx.newPage();
@@ -21,6 +21,27 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   ok((await p.textContent('#insp-head h2')).includes('VDP API 인증 오류'), '이슈 행 클릭 → 인스펙터에 선택 이슈 표시');
   ok(await p.$eval(`.tl-l .tl-row[data-row="${vdp}"]`, e => e.classList.contains('sel')), '선택 행 강조');
   ok((await p.$$('.dep-svg path')).length > 0, '선택 이슈의 의존 연결선 표시');
+  ok(JSON.stringify(await p.$$eval('.tl-l .project-toggle strong', ns => ns.map(n=>n.textContent))) === JSON.stringify(['e-Care','GS','ACOS','기타']), '4개 메인 프로젝트를 빈 프로젝트까지 표시');
+  ok((await p.$$('.issue-card')).length === 9 && (await p.$$('.tl-l .group-select')).length === 9, '프로젝트 아래 이슈그룹과 속성 미니카드 표시');
+  ok((await p.textContent('.issue-context')).includes('DMS 24 API'), '우측 패널에 선택 이슈의 후속 연관관계 표시');
+  // 카드 선택은 타임라인 DOM·세로/가로 위치를 보존하고 이력 스크롤은 패널 안에서만 처리한다.
+  await p.evaluate(() => { window.scrollTo(0,document.querySelector('#canvas').offsetTop+50); window.__oldMid=document.querySelector('.tl-midin'); window.__selectionY=scrollY; window.__selectionX=document.querySelector('.tl-mid').scrollLeft; });
+  const card = await p.$(`.issue-card[data-card="${vdp}"]`);
+  await card.click();
+  // 마우스가 목표를 보이게 하는 스크롤과 앱 선택으로 인한 스크롤을 분리해, 보이는 카드에서 반복 확인한다.
+  const clickPoint = await card.boundingBox();
+  const position = await p.evaluate(() => ({y:scrollY,x:document.querySelector('.tl-mid').scrollLeft,h:document.querySelector('#canvas').offsetHeight}));
+  for(let k=0;k<3;k++) await p.mouse.click(clickPoint.x+20,clickPoint.y+20);
+  ok(await p.evaluate(pos => document.querySelector('.tl-midin')===window.__oldMid && Math.abs(scrollY-pos.y)<0.5 && document.querySelector('.tl-mid').scrollLeft===pos.x && document.querySelector('#canvas').offsetHeight===pos.h,position), '카드 3회 반복 선택: DOM·페이지 위치·가로 위치·높이 유지');
+  await p.click('.tl-l .group-select', {strict:false});
+  await p.keyboard.press('ArrowRight');
+  ok(await p.evaluate(() => !!ui.flash && document.activeElement.matches('.ev.flash') && !document.querySelector('.issue-tracker').hidden), '그룹 선택 → 오른쪽 키: 미니카드 포커스와 추적선 이동');
+  const firstTrack = await p.$eval('.issue-tracker',n=>n.style.left), navY = await p.evaluate(()=>scrollY);
+  await p.keyboard.press('ArrowRight');
+  ok(await p.evaluate(([x,y])=>document.querySelector('.issue-tracker').style.left!==x && Math.abs(scrollY-y)<.5,[firstTrack,navY]), '다음 날짜 카드로 추적선 이동·세로 스크롤 없음');
+  await p.keyboard.press('ArrowLeft');
+  ok(await p.$eval('.issue-tracker',n=>n.style.left)===firstTrack,'왼쪽 키로 이전 날짜 복귀');
+  await p.click(`.tl-l .tl-row[data-row="${vdp}"]`); await p.click('[data-itab="manage"]');
 
   // 2 담당 입력 → 캔버스 반영 + 포커스 유지
   await p.fill('#i-owner', '일본 VDP / LG U+ 이준제');
@@ -63,7 +84,7 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
 
   // 8 이력 추가/편집/삭제·되돌리기
   await p.click('[data-itab="history"]');
-  await p.fill('#n-evd', '2026-10-22'); await p.fill('#n-evt', '일본 측 인증 정책 회신 예정'); await p.click('#f-ev button'); await p.waitForTimeout(200);
+  await p.fill('#n-evd', await p.evaluate(() => addD(doc.now, 2))); await p.fill('#n-evt', '일본 측 인증 정책 회신 예정'); await p.click('#f-ev button'); await p.waitForTimeout(200);
   const evs = (await issue('VDP')).events; const ne = evs.find(e => e.text.includes('회신 예정'));
   ok(ne && ne.kind === 'plan', '기준일 이후 이력 → 자동 "예정"');
   ok((await p.$$(`.tl-mid .tl-row[data-row="${vdp}"] .ev.plan`)).length >= 1, '예정 이력 → 타임라인 점선 카드');
@@ -100,9 +121,9 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   await p.selectOption('#f-gap', ''); await p.waitForTimeout(100);
 
   // 12 그룹 접기
-  await p.click('.tl-l [data-grp="Global South"]'); await p.waitForTimeout(150);
+  await p.click('.tl-l [data-collapse="project:GS"]'); await p.waitForTimeout(150);
   ok((await p.$$('.tl-l .tl-row')).length === 5, '영역 접기 → 4건 숨김');
-  await p.click('.tl-l [data-grp="Global South"]'); await p.waitForTimeout(150);
+  await p.click('.tl-l [data-collapse="project:GS"]'); await p.waitForTimeout(150);
 
   // 13 키보드 이동
   await p.focus(`.tl-l .tl-row[data-row="${dcm}"]`); await p.keyboard.press('ArrowDown'); await p.waitForTimeout(150);
@@ -185,17 +206,18 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   await p.keyboard.press('Escape'); await p.waitForTimeout(100);
   ok(!(await p.$('.modal')), 'Esc로 입력 창 닫기');
 
+  const today = await p.evaluate(() => todayISO()), elapsed = await p.evaluate(() => diffD('2026-10-15',todayISO()));
   // 21-1 상대 날짜 원문 → 과거 보고 기준일로 해석
   const keepDoc = (await st()).doc;
   await p.click('#b-import'); await p.fill('#im-src', '1. 결제 API 장애\n금일 오전 10시 서버 재기동 완료\n어제 오후 인증 오류 발생\n내일 재배포 예정\n담당: 플랫폼팀'); await p.click('#im-run'); await p.waitForTimeout(200);
   ok((await p.$$('.im-snips li')).length >= 2 && (await p.$$('.im-snips mark')).length >= 2, '상대 날짜가 쓰인 문장을 강조해 보여줌');
   await p.click('[name=im-ask][value=custom]'); await p.fill('#im-ask-d', '2026-10-15'); await p.click('#im-ask-ok'); await p.waitForTimeout(300);
-  ok((await p.textContent('.rv-sum')).includes('2026-10-15') && (await p.textContent('.im-lag')).includes('5일 전'), '직접 고른 과거 기준일 + 경과 안내');
+  ok((await p.textContent('.rv-sum')).includes('2026-10-15') && (await p.textContent('.im-lag')).includes(elapsed+'일 전'), '직접 고른 과거 기준일 + 경과 안내');
   await p.click('#im-apply'); await p.waitForTimeout(300);
   const rd = (await st()).doc, rev = rd.issues[0].events.map(e => e.date + e.kind).sort();
   ok(JSON.stringify(rev) === JSON.stringify(['2026-10-14fail', '2026-10-15ok', '2026-10-16plan']), '금일/어제/내일 → 기준일로 환산 ' + rev.join(','));
-  ok(rd.asOf === '2026-10-15' && rd.now === '2026-10-20' && !rd.nowManual, '보고 기준일과 NOW(오늘) 분리');
-  ok((await p.textContent('.doc-eyebrow')).includes('보고 후 5일 경과'), '보고 후 경과일 표시');
+  ok(rd.asOf === '2026-10-15' && rd.now === today && !rd.nowManual, '보고 기준일과 NOW(오늘) 분리');
+  ok((await p.textContent('.doc-eyebrow')).includes('보고 후 '+elapsed+'일 경과'), '보고 후 경과일 표시');
   ok((await p.$$('.tl-mid .ev.due')).length === 1 && (await p.textContent('.ev.due')).includes('예정일 지남'), '지난 예정 이력 → "예정일 지남 · 결과 확인"');
   ok((await p.$$('.tl-rep')).length === 1 && (await p.$$('.tl-now')).length === 2, 'NOW 위·아래 표시 + 보고 기준일 표시');
 
@@ -216,9 +238,9 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   ok((await st()).doc.now === '2026-10-22' && await p.evaluate(() => document.activeElement.dataset.now === 'top'), 'Shift+→ 7일 이동 · 포커스 유지');
   await p.dblclick('.tl-now.bottom'); await p.waitForTimeout(250);
   nd = (await st()).doc;
-  ok(nd.now === '2026-10-20' && !nd.nowManual && !(await p.$('#b-now-today')), 'NOW 더블클릭 → 오늘로 복귀');
+  ok(nd.now === today && !nd.nowManual && !(await p.$('#b-now-today')), 'NOW 더블클릭 → 오늘로 복귀');
   await p.reload(); await p.waitForTimeout(300);
-  ok((await st()).doc.now === '2026-10-20', '새로 열면 NOW는 오늘');
+  ok((await st()).doc.now === today, '새로 열면 NOW는 오늘');
   await p.evaluate(d => { doc = normalizeDoc(d); persist(true); render(); }, keepDoc); await p.waitForTimeout(200);
   ok((await st()).doc.issues.length === keepDoc.issues.length, 'NOW 검증용 문서 정리 후 기존 문서 복구');
 
@@ -254,7 +276,32 @@ const ok = (c, m) => { if (c) { pass++; out.push('PASS ' + m); } else { fail++; 
   await p.click('.queue .qi'); await p.waitForTimeout(200);
   ok((await st()).view === 'manage', '보고 화면 항목 클릭 → 관리 화면 이동');
 
+  // 같은 그룹의 여러 세부 이슈·동명 그룹·일정 미정·프로젝트 간 연결을 별도 문서로 검증한다.
+  const original = (await st()).doc;
+  await p.evaluate(() => {
+    doc = normalizeDoc({issues:[
+      {id:'fixture-a',project:'e-Care',group:'인증',title:'선행 인증',date:'2026-10-01'},
+      {id:'fixture-b',project:'e-Care',group:'인증',title:'후속 연동',date:'2026-10-05',dependsOn:['fixture-a']},
+      {id:'fixture-c',project:'GS',group:'인증',title:'다른 프로젝트 인증',date:'2026-10-02',dependsOn:['fixture-b']},
+      {id:'fixture-d',project:'ACOS',group:'환경',title:'날짜 확인 필요'}
+    ]}); ui.sel='fixture-a'; ui.flash=null; render();
+  });
+  await p.click('.group-select',{strict:false});
+  const fixtureY=await p.evaluate(()=>scrollY);
+  await p.keyboard.press('ArrowRight');
+  ok(await p.evaluate(y=>ui.sel==='fixture-b' && document.activeElement.dataset.card==='fixture-b' && Math.abs(scrollY-y)<.5,fixtureY),'같은 그룹의 다음 세부 이슈로 포커스 이동·세로 위치 유지');
+  await p.keyboard.press('ArrowRight');
+  ok((await st()).sel==='fixture-b','그룹 끝에서는 다른 프로젝트의 동명 그룹으로 넘어가지 않음');
+  await p.keyboard.press('ArrowLeft');
+  ok((await st()).sel==='fixture-a','왼쪽 키로 이전 세부 이슈 탐색');
+  ok(await p.$eval('[data-card="fixture-d"]',n=>n.dataset.date==='') && (await p.textContent('[data-card="fixture-d"]')).includes('일정 미정'),'날짜 없는 이슈는 날짜를 추정하지 않고 일정 미정으로 표시');
+  ok((await p.$$('.dep-svg g')).length===2,'같은 그룹 및 프로젝트 간 선행→후속 연결선');
+  await p.selectOption('#f-project','GS');
+  ok((await p.$$('.tl-l .tl-row')).length===1,'프로젝트 필터는 동명 그룹을 분리');
+  await p.evaluate(d=>{doc=normalizeDoc(d);ui.fProject='all';ui.fGroup='all';ui.sel=sorted(doc.issues)[0].id;persist(true);render();},original);
+
   ok(errs.length === 0, '콘솔/페이지 오류 없음' + (errs.length ? ': ' + errs.join(' | ') : ''));
   console.log(out.join('\n')); console.log(`\n${pass} passed, ${fail} failed`);
   await b.close();
+  process.exitCode = fail ? 1 : 0;
 })().catch(e => { console.log(out.join('\n')); console.log('CRASH', e.message); process.exit(1); });

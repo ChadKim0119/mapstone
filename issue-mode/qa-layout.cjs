@@ -1,5 +1,5 @@
 // 레이아웃 정렬·잘림·겹침 자동 검수
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright');
 const URL = process.env.IM_URL || 'http://127.0.0.1:4191/issues.html';
 const WIDTHS = (process.argv[2] || '1920,1600,1440,1280,1024,390').split(',').map(Number);
 const SHOT = process.argv[3] === 'shot';
@@ -44,7 +44,7 @@ const audit = () => {
   });
   // 5 timeline item overlap & row overflow
   document.querySelectorAll('.tl-mid .tl-row').forEach(row => {
-    const its = [...row.querySelectorAll('.ev,.band,.flag')].map(e => ({ e, r: e.getBoundingClientRect() }));
+    const its = [...row.querySelectorAll('.issue-card,.ev,.band,.flag')].map(e => ({ e, r: e.getBoundingClientRect() }));
     const RR = row.getBoundingClientRect();
     its.forEach((a, i) => {
       if (a.r.bottom > RR.bottom + 1) issues.push(`타임라인 행 밖으로 나감: ${name(a.e)}`);
@@ -59,16 +59,16 @@ const audit = () => {
   return [...new Set(issues)];
 };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+  const b = await chromium.launch({ executablePath: process.env.IM_CHROMIUM || '/opt/pw-browsers/chromium' });
   let total = 0;
   for (const W of WIDTHS) {
     const p = await b.newPage({ viewport: { width: W, height: W < 500 ? 844 : 1000 } });
     await p.goto(URL); await p.evaluate(() => { localStorage.clear(); }); await p.reload(); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(300);
     const states = [
       ['관리', async () => { }],
-      ['관리-요청탭', async () => { await p.click('[data-itab="requests"]'); }],
+      ['관리-요청탭', async () => { await p.click('.tl-l .tl-row'); await p.click('[data-itab="requests"]'); }],
       ['관리-이력탭', async () => { await p.click('[data-itab="history"]'); }],
-      ['관리-표', async () => { await p.click('#lv-l'); }],
+      ['관리-표', async () => { if (W<=1100) await p.click('#i-close'); await p.click('#lv-l'); }],
       ['입력1', async () => { await p.click('#lv-t'); await p.click('#b-import'); await p.click('#im-ex'); }],
       ['입력-기준일질문', async () => { if (await p.$('#im-rule')) await p.click('#im-rule'); await p.click('#im-run'); await p.waitForTimeout(200); }],
       ['입력2', async () => { await p.click('#im-ask-ok'); await p.waitForTimeout(200); }],
@@ -87,4 +87,5 @@ const audit = () => {
   }
   console.log('TOTAL', total);
   await b.close();
+  process.exitCode = total ? 1 : 0;
 })();

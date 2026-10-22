@@ -3,7 +3,7 @@ const sample = fs.readFileSync('issue-mode/sample.txt', 'utf8');
 function load() {
   const ctx = { console, document: { getElementById: id => id === 'sample-text' ? { textContent: sample } : null } };
   vm.createContext(ctx);
-  vm.runInContext(fs.readFileSync('issue-mode/model.js', 'utf8') + '\n' + fs.readFileSync('issue-mode/data.js', 'utf8') + '\n;this.M={normalizeDoc,parseRules,metricTotals,metricWarnings,sampleDoc,claudePrompt,dateContext,todayISO};', ctx);
+  vm.runInContext(fs.readFileSync('issue-mode/model.js', 'utf8') + '\n' + fs.readFileSync('issue-mode/data.js', 'utf8') + '\n;this.M={normalizeDoc,parseRules,metricTotals,metricWarnings,sampleDoc,claudePrompt,dateContext,todayISO,issueDate,issueGroupKey};', ctx);
   return ctx.M;
 }
 test('Rule-based parsing turns the DVT report into tracked issues without inventing dates or owners', () => {
@@ -18,6 +18,22 @@ test('Rule-based parsing turns the DVT report into tracked issues without invent
   assert.equal(d.reasons.reported, 84); assert.equal(d.reasons.rows.reduce((a, r) => a + r.count, 0), 78);
   assert.ok(d.issues.find(i => i.key === 'DMS').impact.unit === 'API');
   assert.ok(d.conclusion.points.length === 3);
+});
+test('Legacy issue documents gain project/group hierarchy without changing evidence, dates or links', () => {
+  const M = load(), old = { issues: [
+    {id:'a',key:'VDP',group:'e-Care',area:'e-Care · VDP',events:[{id:'ev',date:'2026-10-06',text:'인증 오류'}]},
+    {id:'b',key:'DMS',group:'DMS',dependsOn:['a'],events:[]},
+    {id:'c',project:'ACOS',group:'인증',date:'2026-10-08'},
+    {id:'d',project:'GS',group:'인증'}
+  ]};
+  const d = M.normalizeDoc(old);
+  assert.equal(JSON.stringify(d.issues.map(i => [i.project,i.group])), JSON.stringify([['e-Care','VDP'],['기타','DMS'],['ACOS','인증'],['GS','인증']]));
+  assert.equal(M.issueDate(d.issues[0]),'2026-10-06'); assert.equal(M.issueDate(d.issues[1]),'');
+  assert.equal(M.issueDate(d.issues[2]),'2026-10-08');
+  assert.notEqual(M.issueGroupKey(d.issues[2]),M.issueGroupKey(d.issues[3]));
+  assert.equal(JSON.stringify(d.issues[1].dependsOn),'["a"]');
+  assert.equal(JSON.stringify(M.normalizeDoc(JSON.parse(JSON.stringify(d)))),JSON.stringify(d));
+  assert.equal(d.issues[0].events[0].text,'인증 오류');
 });
 test('Plain bullet memo without tables still yields editable issues', () => {
   const M = load(), d = M.normalizeDoc(M.parseRules('- 결제 API 인증 오류\n현재 인증 오류로 주문 확인 불가\n담당: 플랫폼팀\n- 검색 색인 지연\n10/20 색인 재처리 실패', { asOf: '2026-10-20' }));
