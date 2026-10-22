@@ -4,7 +4,8 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Claude Code · 2026-10-21 · v0.9.63 타임라인 머리 화면 맨 위 고정·페이지 스크롤 하나로, main 반영(사용자 요청). 이전: v0.9.62 카드 내부 스크롤(폐기), v0.9.61 JS 이동(폐기), v0.9.60 모드 전환 부드럽게 + 이슈관리 모드를 마일스톤 디자인 시스템 기준으로 전면 정리. 작업 브랜치 커밋 후 main 반영·배포 완료. 직전 v0.9.59까지는 main 반영 완료.
+- **마지막 작업**: Codex · 2026-10-22 · v0.9.64 유지, 작업 환경 점검 완료. 시작 시 `claude/gifted-bardeen-nmvaup` 브랜치 클린, `git pull --ff-only` 원격 최신 확인. Node v26.10.0 · npm 11.19.1 · Python 3.9.6. 시작 테스트 373개, `npm run build` → 최종 테스트 373개 통과(로그 `/tmp/mapstone-env-20261022-tests.log`). `npm start`로 http://127.0.0.1:4173/index.html 실행, ego-browser에서 v0.9.64와 기존 일정 표시 확인. 기능 변경·커밋·푸시·배포 없음. 기능 수정이 없어 슬라이더/이슈관리 성능 검사는 재실행하지 않음.
+- **직전 기능 작업**: Claude Code · 2026-10-21 · v0.9.63 타임라인 머리 화면 맨 위 고정·페이지 스크롤 하나로, main 반영(사용자 요청). 이전: v0.9.62 카드 내부 스크롤(폐기), v0.9.61 JS 이동(폐기), v0.9.60 모드 전환 부드럽게 + 이슈관리 모드를 마일스톤 디자인 시스템 기준으로 전면 정리. 작업 브랜치 커밋 후 main 반영·배포 완료. 직전 v0.9.59까지는 main 반영 완료.
 - **버전 저장 403 안내(v0.9.64)**: 서버 재배포 후 사용자 화면에서 403 “이 작업물의 보관함 접근 키가 일치하지 않습니다” — DB 조회 결과 ‘GS 개발 일정 (09/03 Version)’(5버전, 10/19 저장) 등 대부분 작업물은 owner_hash 9dc47de2… 소유. 현재 브라우저의 `localStorage['mapstone.version.owner']`가 다른 키(다른 주소 origin: 로컬 127.0.0.1 ↔ 배포 도메인, 또는 다른 브라우저)로 판단. DB 소유권은 바꾸지 않음. `mapstone-ui.js saveCloudVersion(app,opt)`: 403+접근 키 불일치면 `versionForbidden` 상태로 원인·해결 안내, 패널에 ‘접근 키 연결’(보관함 열기 → 고급 키 입력)·‘새 작업물로 저장’(`opt.fork`: 확인 후 versionProjectId 비우고 이 브라우저 키로 새 작업물 생성, 클라우드 버전 목록은 새 작업물 기준) 버튼. 가짜 서버 응답으로 403 안내→새 작업물 저장 성공 확인. 슬라이더 v0.9.64 배율 16.7~16.8ms(이상치 50~67ms 1회), 비교 33~50ms.
 - **서버 함수 재배포(2026-10-21, 리비전 없음)**: 마일스톤 모드 버전 저장 실패 “저장하지 못했습니다… 알림만 요소에 연결할 수 있습니다.” — 원인: Supabase Edge Function `mapstone-api`(프로젝트 mffysunppwqscbljooda)가 v24로 예전 `mapstone-core.js`(targetId는 flag만 허용)를 쓰고 있어, v0.9.56부터 가능한 포스트잇(sticky) 연결이 있는 문서를 서버가 거부. Supabase 연결 도구로 저장소의 `supabase/functions/mapstone-api/{index.ts,mapstone-core.js,deno.json}`을 v25로 배포(verify_jwt=false 유지). 배포본을 다시 내려받아 세 파일이 저장소와 바이트 단위로 같음을 확인, 같은 문서가 예전 core는 실패·현재 core는 통과함을 재현. 이 컨테이너는 supabase.co 접속이 프록시로 막혀 실서버 요청 검증은 못 함 → 사용자 브라우저에서 버전 저장 재시도로 확인 필요. **`mapstone-core.js` 검증 규칙을 바꾸면 Edge Function도 반드시 재배포할 것**(클라이언트와 서버 검증이 어긋나면 저장이 막힘).
 - **타임라인 고정 구조(v0.9.63 — 현재 기준)**: 사용자 피드백 — v0.9.62의 카드 내부 세로 스크롤은 페이지 스크롤이 까다롭고 보이는 영역이 작음 → 페이지 스크롤 하나로 복귀. 구조: `.canvas`(overflow:**clip** — hidden이면 sticky 깨짐) 안에 ① `.tl-hrow`(sticky top:0, 화면 맨 위) = 왼쪽 머리·`.tl-clip>.tl-hin`(날짜 축·NOW 위 알약)·오른쪽 머리, ② `.tl` 본문(가운데 `.tl-mid`만 overflow-x:auto, `scroll-timeline:--tlx x`), ③ `.tl-frow`(sticky bottom:0) = 아래 NOW 줄. `.tl-hin/.tl-fin`은 `animation-timeline:--tlx`로 `translateX(var(--tl-shift))`(= −가로 스크롤 범위, 그릴 때 설정) — 스크롤 이벤트 JS 없이 같은 프레임에 이동. 미지원 브라우저(`SCROLL_TIMELINE=false`, Safari 26 미만·Firefox)만 `.tl-mid` onscroll에서 transform 보조. 앱 바는 sticky 해제(스크롤과 함께 올라감), 인스펙터 sticky top 12px. `drawCanvas`는 다시 그리는 동안 카드 min-height를 유지해 페이지 스크롤이 당겨지지 않게 함. 좁은 폭(≤760) 오른쪽 셀 숨김은 `.tl-band>.tl-hr/.tl-fr`로 지정(뒤쪽 `.tl-foot{display:flex}`가 덮어써 아래 줄이 2줄 되던 버그 수정). v0.9.61(JS 이동·떨림)·v0.9.62(카드 내부 스크롤) 방식은 다시 쓰지 말 것.
@@ -99,6 +100,7 @@
 
 ## 작업 로그
 
+- 2026-10-22 · Codex · v0.9.64 유지 · 환경 준비: 현재 브랜치 원격 최신·시작 클린, 빌드 및 시작/최종 테스트373개 통과, 로컬4173·브라우저 버전/기존 일정 표시 확인. 기능 변경·커밋·푸시·배포 없음.
 - 2026-10-21 · Claude Code · v0.9.64 버전 저장 403(다른 접근 키 보관함) 원인 안내·‘접근 키 연결’/‘새 작업물로 저장’ 추가, main 반영
 - 2026-10-21 · Claude Code · 버전 저장 실패 수정: mapstone-api Edge Function을 저장소 최신 core로 v25 재배포(포스트잇 연결 허용), 리비전 없음
 - 2026-10-21 · Claude Code · v0.9.63 타임라인 머리 화면 맨 위 sticky·페이지 스크롤 하나·축 동기화 scroll-timeline, qa-scroll 새 구조 기준 갱신, main 반영
