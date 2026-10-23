@@ -4,7 +4,8 @@
 
 ## 현재 상태
 
-- **마지막 작업**: Codex · 2026-10-23 · PR #4의 `mergeable=false / dirty` 원인인 `HANDOFF.md` 병합 충돌 해결. `origin/main`의 `6d54001`을 작업 브랜치에 병합하면서 v0.9.65 기능/검증 기록과 main의 10/22 운영 웹/API 검증 기록을 모두 보존. 기능 코드·생성 파일은 `bc29a18`과 동일, 버전은 v0.9.65 유지. 시작 테스트 374개 및 최종 `npm run build` → `npm test` 374개 통과(`/tmp/mapstone-git-resolve-{start,build,final}.log`). PR: https://github.com/ChadKim0119/mapstone/pull/4 . main 반영·운영 배포는 별도.
+- **마지막 작업**: Codex · 2026-10-23 · 사용자 요청으로 PR #4를 `main`에 병합 완료. GitHub 병합 커밋 `d4d47f508baaafa825857e2c2041ccadcb232403`, 포함된 기능 버전 v0.9.65. 병합 전 PR 충돌 없음·Vercel 두 프로젝트 검사 성공 확인, 로컬도 원격 main으로 fast-forward. 병합 후 `npm run build` → `npm test` 374개 및 `git diff --check` 통과(`/tmp/mapstone-main-merge-{start,build,final}.log`), 빌드 추가 차이 없음. 이번 작업은 병합/기록 갱신이며 기능 수정·리비전 증가는 없음. 운영 배포 완료 여부는 이 기록에서 확인하지 않음.
+- **직전 충돌 해결**: Codex · 2026-10-23 · PR #4의 `mergeable=false / dirty` 원인인 `HANDOFF.md` 병합 충돌 해결. `origin/main`의 `6d54001`을 작업 브랜치에 병합하면서 v0.9.65 기능/검증 기록과 main의 10/22 운영 웹/API 검증 기록을 모두 보존. 기능 코드·생성 파일은 `bc29a18`과 동일, 버전은 v0.9.65 유지. 시작 테스트 374개 및 최종 `npm run build` → `npm test` 374개 통과(`/tmp/mapstone-git-resolve-{start,build,final}.log`). PR: https://github.com/ChadKim0119/mapstone/pull/4 . main 반영·운영 배포는 별도.
 - **직전 기능 작업(v0.9.65)**: Codex · 2026-10-23 · v0.9.65 이슈관리 모드 프로젝트 → 이슈그룹 → 속성 미니카드 구조, 선행→후속 연결선, 그룹 좌우 탐색·날짜 추적선, 선택 시 페이지 흔들림 수정. 작업 브랜치의 기능 커밋 `bc29a18`을 원격에 푸시 완료. main 병합·운영 배포는 별도.
 - **검증(v0.9.65)**: 시작 373개 → 최종 `npm run build`·`npm test` 374개 통과. `qa-flow.cjs` 103개(다중 세부 이슈·동명 그룹 분리·프로젝트 간 연결·미정 날짜·선택 DOM/높이/세로/가로 위치 유지·키보드 탐색 포함), `qa-layout.cjs` 6개 폭×11개 화면 잘림/겹침/정렬 0건. `qa-scroll.cjs` 1600/1024/390에서 세로·가로·페이지 휠 각 3회(총 27회), 고정 오차 0px, p95 최대 33.4ms, 50ms 초과 0회. 기존 sticky/scroll-timeline 구조와 미지원 브라우저 보조 경로 유지. QA의 Playwright/Chromium 경로는 기존 컨테이너 기본값을 보존하고 `PLAYWRIGHT_MODULE`·`IM_CHROMIUM` 환경 변수로 Mac 경로 지정 가능.
 - **슬라이더(v0.9.65)**: 루트 index.html의 표시 v0.9.65와 기존 저장 일정 43개 유지 확인. `scripts/slider-perf.py` 격리 origin 4174에서 대표 일정 복사본 43개와 별도 42개 일정으로 배율·오버랩·구분선 각각 3회×25 이동, 추가로 42개 일정의 비교 151% 확대·scrollLeft45/scrollTop20·분석 패널 열림에서 오버랩/구분선 각 3회×25 이동(총 24제스처). Chrome의 자동 마우스 입력 `trustedPointer=true`, p95 최대 16.8ms, 50ms 초과 0회, 포인터 오차 최대 0.289px 미만, 놓기 전 중간 geometry/opacity 반영·최종 배율 저장 일치·아이템 내용 불변·Shift 방향키 10배 확인. 사용자 일정/클라우드는 변경하지 않음. Ego 측정 탭은 visible 상태에서도 rAF가 약 1초 간격으로 제한되어 성능 통과 근거에서 제외하고 QA에 쓰는 Chrome에서 재측정함. rAF 콜백과 자동 입력 검증이며 사용자 수동 체감/GPU 표시 속도 보장은 아님.
@@ -111,6 +112,7 @@
 
 ## 작업 로그
 
+- 2026-10-23 · Codex · v0.9.65 유지 · PR #4 main 병합(`d4d47f5`), 로컬 main 동기화·최종 build/test374개 통과, 생성 파일 차이 없음.
 - 2026-10-23 · Codex · v0.9.65 유지 · PR #4의 HANDOFF 기록 충돌 해결: 최신 main을 작업 브랜치에 병합하고 양쪽 이력 보존, 기능 코드 불변·build/test374개 통과.
 - 2026-10-23 · Codex · v0.9.65 · 이슈관리 프로젝트/그룹 계층·속성 미니카드·양방향 연관관계·그룹 키보드 탐색/날짜 추적선·선택 시 DOM/스크롤 보존. 사용자 요청으로 현재 브랜치 커밋·푸시.
 - 2026-10-22 · Codex · v0.9.64 유지 · 환경 준비: 현재 브랜치 원격 최신·시작 클린, 빌드 및 시작/최종 테스트373개 통과, 로컬4173·브라우저 버전/기존 일정 표시 확인. 기능 변경·커밋·푸시·배포 없음.
