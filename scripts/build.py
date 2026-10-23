@@ -48,6 +48,7 @@ issues=f'''<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<script>/* 주소 통일: 예전 주소면 데이터 옮기기 페이지로(옮긴 뒤에는 새 주소로 바로 이동) */(function(){{var O=['mapstone-hazel.vercel.app','mapstone-vibe-code-class.vercel.app','mapstone-git-main-vibe-code-class.vercel.app','mapstone-v9-2-public.vercel.app','mapstone-app-vibe-code-class.vercel.app','mapstone-app-git-main-vibe-code-class.vercel.app'];if(O.indexOf(location.host)<0)return;var p=location.pathname+location.search+location.hash,d=null;try{{d=localStorage.getItem('mapstone.migratedTo')}}catch(e){{}}location.replace(d?d+p:'/migrate.html?next='+encodeURIComponent(p));}})();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>MapStone · 이슈관리 모드</title>
 <link rel="icon" type="image/svg+xml" href="assets/design-system/mapstone-icon-flat.svg">

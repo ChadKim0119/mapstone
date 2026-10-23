@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "npm run build && rm -rf public && mkdir public && cp -R index.html issues.html share assets *.dc.html public/",
+  "buildCommand": "npm run build && rm -rf public && mkdir public && cp -R index.html issues.html migrate.html share assets *.dc.html public/",
   "outputDirectory": "public"
 }

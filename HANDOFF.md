@@ -4,6 +4,11 @@
 
 ## 현재 상태
 
+- **마지막 작업**: Claude Code · 2026-10-23 · v0.9.66 주소 통일 — 운영 주소를 **https://mapstone-app.vercel.app** 하나로. 사용자 요청으로 main 푸시.
+- **주소 통일 구조(v0.9.66)**: 두 Vercel 프로젝트(`mapstone`=mapstone-hazel…, `mapstone-app`=mapstone-app·mapstone-v9-2-public…)가 같은 저장소 main을 배포하지만 주소(origin)마다 브라우저 저장소가 달라 일정·이슈 문서·버전 접근 키(`mapstone.version.owner`)가 갈라짐(10/21 버전 저장 403의 원인). ① `index.html`(scripts/bundle-base.html)·`issues.html`(build.py) 머리의 작은 스크립트: 예전 주소 6개(mapstone-hazel, mapstone-vibe-code-class, mapstone-git-main-vibe-code-class, mapstone-v9-2-public, mapstone-app-vibe-code-class, mapstone-app-git-main-vibe-code-class)면 `localStorage['mapstone.migratedTo']`가 있으면 새 주소 같은 경로(쿼리·해시 포함, 공유 링크 유지)로, 없으면 `/migrate.html?next=…`. ② `migrate.html`(새 원본, vercel 복사 목록 추가): 예전 주소에서는 mapstone.*/ucmp.* 저장소 전체를 백업 JSON으로 내려받고 mapstone-app의 migrate.html을 새 탭으로 열어 postMessage(origin 검사)로 전달. 새 주소에서는 덮어쓰지 않고 합침 — 일정·이슈 문서는 비어 있으면 가져오고 겹치면 현재 유지 + `mapstone.migrated.<예전주소>.<키>`에 보관(바꾸기 버튼, 바꿔도 이전 것 보관), 버전 접근 키는 새 주소 키가 없거나 보관함이 비면 예전 키 채택, 둘 다 있으면 서버 `POST /version-projects/transfer`(헤더=새 키, body.from=예전 키)로 예전 키 소유 작업물을 새 키로 이전(이력·번호 유지), 예전 일정은 버전 보관함에도 자동 저장(note “주소 통일 자동 보관”). 나머지 설정 키는 없는 것만 채움. 예전 주소 데이터는 지우지 않고 `mapstone.migratedTo`만 기록.
+- **서버(v0.9.66)**: Edge Function `mapstone-api` v26 배포 — transfer 경로 추가(두 키 모두 필요, 시간당 20회 제한, 같은 키 거부). 배포본 3파일이 저장소와 바이트 단위 동일 확인. 사용자 실데이터의 소유권은 직접 바꾸지 않음(사용자 브라우저에서 옮기기를 누를 때 이전됨).
+- **검증(v0.9.66)**: `npm run build` → `npm test` 375개, `node scripts/qa-migrate.cjs`(가짜 두 주소+가짜 API: 새 주소 빈 경우/데이터 있는 경우 — 백업 파일 4개 키, 합치기, 키 채택·이전, 클라우드 v6 저장, 바꾸기, 재방문 시 같은 경로 이동), qa-flow 103개, qa-layout 0건, qa-scroll 27/27, 슬라이더 배율 16.7~16.8ms(이상치 83~117ms 1회)·비교 50~83ms(기존 범위). 실제 운영 주소 간 옮기기는 사용자가 각 브라우저에서 예전 주소를 한 번 열어 ‘옮기기’를 눌러야 완료됨.
+- **버전**: v0.9.66 (`package.json` 0.9.66).
 - **마지막 작업**: Codex · 2026-10-23 · 사용자 요청으로 PR #4를 `main`에 병합 완료. GitHub 병합 커밋 `d4d47f508baaafa825857e2c2041ccadcb232403`, 포함된 기능 버전 v0.9.65. 병합 전 PR 충돌 없음·Vercel 두 프로젝트 검사 성공 확인, 로컬도 원격 main으로 fast-forward. 병합 후 `npm run build` → `npm test` 374개 및 `git diff --check` 통과(`/tmp/mapstone-main-merge-{start,build,final}.log`), 빌드 추가 차이 없음. 이번 작업은 병합/기록 갱신이며 기능 수정·리비전 증가는 없음. 운영 배포 완료 여부는 이 기록에서 확인하지 않음.
 - **직전 충돌 해결**: Codex · 2026-10-23 · PR #4의 `mergeable=false / dirty` 원인인 `HANDOFF.md` 병합 충돌 해결. `origin/main`의 `6d54001`을 작업 브랜치에 병합하면서 v0.9.65 기능/검증 기록과 main의 10/22 운영 웹/API 검증 기록을 모두 보존. 기능 코드·생성 파일은 `bc29a18`과 동일, 버전은 v0.9.65 유지. 시작 테스트 374개 및 최종 `npm run build` → `npm test` 374개 통과(`/tmp/mapstone-git-resolve-{start,build,final}.log`). PR: https://github.com/ChadKim0119/mapstone/pull/4 . main 반영·운영 배포는 별도.
 - **직전 기능 작업(v0.9.65)**: Codex · 2026-10-23 · v0.9.65 이슈관리 모드 프로젝트 → 이슈그룹 → 속성 미니카드 구조, 선행→후속 연결선, 그룹 좌우 탐색·날짜 추적선, 선택 시 페이지 흔들림 수정. 작업 브랜치의 기능 커밋 `bc29a18`을 원격에 푸시 완료. main 병합·운영 배포는 별도.
@@ -112,6 +117,7 @@
 
 ## 작업 로그
 
+- 2026-10-23 · Claude Code · v0.9.66 주소 통일(mapstone-app.vercel.app): migrate.html 백업·합치기·키 이전, 예전 주소 안내/이동, mapstone-api v26(transfer), main 푸시
 - 2026-10-23 · Codex · v0.9.65 유지 · PR #4 main 병합(`d4d47f5`), 로컬 main 동기화·최종 build/test374개 통과, 생성 파일 차이 없음.
 - 2026-10-23 · Codex · v0.9.65 유지 · PR #4의 HANDOFF 기록 충돌 해결: 최신 main을 작업 브랜치에 병합하고 양쪽 이력 보존, 기능 코드 불변·build/test374개 통과.
 - 2026-10-23 · Codex · v0.9.65 · 이슈관리 프로젝트/그룹 계층·속성 미니카드·양방향 연관관계·그룹 키보드 탐색/날짜 추적선·선택 시 DOM/스크롤 보존. 사용자 요청으로 현재 브랜치 커밋·푸시.

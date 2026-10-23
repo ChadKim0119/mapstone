@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MapStone · 주소 통일</title>
+<link rel="icon" type="image/svg+xml" href="assets/design-system/mapstone-icon-flat.svg">
+<style>
+@font-face{font-family:'Pretendard Variable';src:url('assets/design-system/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-display:swap}
+:root{--navy:#16365D;--blue:#3568C5;--blue7:#2959AF;--blue2:#D2E2F7;--blue1:#EAF2FC;--canvas:#F5F8FD;--slate:#5E7694;--slate6:#4E6380;--red:#C83543;--red1:#FFF2F3;--green:#147447;--green1:#E9F7EF;--amber:#805400;--amber1:#FFF0C7}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--navy);font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.55;word-break:keep-all}
+.bar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--blue2)}
+.brand{display:inline-flex;align-items:center;gap:8px;height:40px;font-weight:700;letter-spacing:.01em}
+.brand::before{content:'';width:30px;height:30px;background:url('assets/design-system/mapstone-icon-flat.svg') center/contain no-repeat}
+main{max-width:720px;margin:32px auto;padding:0 20px}
+.card{background:#fff;border:1px solid var(--blue2);border-radius:16px;box-shadow:0 4px 16px rgb(22 54 93/8%);padding:24px;display:flex;flex-direction:column;gap:16px}
+h1{font-size:20px;line-height:32px;margin:0}
+p{margin:0;color:var(--slate6)}
+.list{margin:0;padding:12px 16px;list-style:none;background:var(--canvas);border:1px solid var(--blue1);border-radius:12px;display:flex;flex-direction:column;gap:6px}
+.list li{display:flex;justify-content:space-between;gap:12px}
+.list b{font-weight:600;color:var(--navy)}
+.list span{color:var(--slate6);text-align:right}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{height:36px;padding:0 14px;border-radius:12px;border:1px solid var(--blue2);background:#fff;color:var(--navy);font:600 13px/1 inherit;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+button.primary,.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+.note{font-size:12px;color:var(--slate)}
+.ok{background:var(--green1);color:var(--green);border-radius:12px;padding:10px 14px;font-weight:600}
+.warn{background:var(--amber1);color:var(--amber);border-radius:12px;padding:10px 14px}
+.err{background:var(--red1);color:var(--red);border-radius:12px;padding:10px 14px;font-weight:600}
+.log{margin:0;padding-left:18px;color:var(--slate6)}
+.log li+li{margin-top:4px}
+</style>
+</head>
+<body>
+<div class="bar"><span class="brand">MapStone</span></div>
+<main><section class="card" id="box"><h1>확인하는 중…</h1></section></main>
+<script>
+'use strict';
+/* MapStone 주소 통일: 예전 주소(브라우저 저장소)에 있던 일정·이슈 문서·버전 보관함 키·설정을 mapstone-app.vercel.app으로 옮긴다.
+   - 예전 주소에서 열리면(보내기): 저장소 전체를 백업 파일로 내려받고, 새 주소의 이 페이지를 새 탭으로 열어 postMessage로 넘긴다.
+   - 새 주소에서 열리면(받기): 덮어쓰지 않고 합친다. 겹치면 현재 것을 유지하고 가져온 것은 보관 키·클라우드 버전으로 남긴다.
+   예전 주소의 데이터는 지우지 않는다(옮김 표시만 남김). */
+const TARGET = 'https://mapstone-app.vercel.app';
+const OLD = ['mapstone-hazel.vercel.app', 'mapstone-vibe-code-class.vercel.app', 'mapstone-git-main-vibe-code-class.vercel.app', 'mapstone-v9-2-public.vercel.app', 'mapstone-app-vibe-code-class.vercel.app', 'mapstone-app-git-main-vibe-code-class.vercel.app'];
+const API = 'https://mffysunppwqscbljooda.supabase.co/functions/v1/mapstone-api';
+const TL = 'mapstone.timeline.v1', IT = 'mapstone.issueTracker.v2', VK = 'mapstone.version.owner', DONE = 'mapstone.migratedTo';
+const $ = s => document.querySelector(s), box = $('#box');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const params = new URLSearchParams(location.search);
+const next = (() => { const n = params.get('next') || '/'; return n.startsWith('/') && !n.startsWith('//') ? n : '/'; })();
+const isOurs = k => /^(mapstone\.|ucmp\.)/.test(k) && k !== DONE && !k.startsWith('mapstone.migrated.');
+function dump() { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (isOurs(k)) o[k] = localStorage.getItem(k); } return o; }
+const parse = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+function describe(items) {
+  const t = parse(items[TL] || items['ucmp.dev-progress-timeline.v5']), d = parse(items[IT]), out = [];
+  if (t) out.push(['마일스톤 일정', `${t.title || '제목 없음'} · 항목 ${(t.items || []).length}개 · 버전 ${(t.versions || []).length}개`]);
+  if (d) out.push(['이슈관리 문서', `${d.title || '제목 없음'} · 이슈 ${(d.issues || []).length}개${d.example ? ' (예제)' : ''}`]);
+  if (items[VK]) out.push(['버전 보관함 접근 키', '있음 (클라우드 버전 목록)']);
+  const other = Object.keys(items).filter(k => ![TL, IT, VK].includes(k)).length;
+  if (other) out.push(['설정·보조 데이터', `${other}개`]);
+  return out;
+}
+const listHTML = rows => `<ul class="list">${rows.map(([a, b]) => `<li><b>${esc(a)}</b><span>${esc(b)}</span></li>`).join('')}</ul>`;
+function download(items) {
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+  const blob = new Blob([JSON.stringify({ format: 'mapstone-browser-backup', from: location.host, at: new Date().toISOString(), items }, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `mapstone-backup-${location.host.split('.')[0]}-${stamp}.json`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+}
+
+/* ---------- 보내기 (예전 주소) ---------- */
+function exportSide() {
+  const items = dump(), rows = describe(items), go = () => location.replace(TARGET + next);
+  let done = null; try { done = localStorage.getItem(DONE); } catch (e) { }
+  if (!Object.keys(items).length) { try { localStorage.setItem(DONE, TARGET); } catch (e) { } return go(); }
+  box.innerHTML = `<h1>MapStone 주소가 mapstone-app.vercel.app으로 통일되었습니다</h1>
+    <p>이 주소(${esc(location.host)})의 브라우저에 아래 데이터가 남아 있습니다. 옮기기를 누르면 <b>백업 파일을 먼저 내려받고</b>, 새 주소로 합쳐서 옮깁니다. 이 주소의 데이터는 지우지 않습니다.</p>
+    ${listHTML(rows)}
+    <p class="note">옮기기 전에 열려 있는 다른 mapstone-app 탭은 닫아 주세요(열린 탭이 닫히면서 옮긴 일정을 덮어쓸 수 있습니다).</p>
+    ${done ? '<p class="warn">이미 한 번 옮겼습니다. 그 뒤에 이 주소에서 바꾼 내용이 있다면 다시 옮겨도 됩니다(덮어쓰지 않고 합칩니다).</p>' : ''}
+    <div class="row"><button class="primary" id="mv">백업 받고 mapstone-app으로 옮기기</button><button id="dl">백업 파일만 받기</button>${done ? '<a class="btn" href="' + TARGET + esc(next) + '">새 주소로 이동</a>' : ''}</div>
+    <div id="st"></div>`;
+  $('#dl').onclick = () => download(items);
+  $('#mv').onclick = () => {
+    download(items);
+    const st = $('#st'), btn = $('#mv'); btn.disabled = true;
+    const win = window.open(TARGET + '/migrate.html?mode=import&from=' + encodeURIComponent(location.host) + '&next=' + encodeURIComponent(next), 'mapstone-migrate');
+    if (!win) { st.innerHTML = '<p class="err">새 탭이 차단되었습니다. 팝업을 허용한 뒤 다시 눌러 주세요.</p>'; btn.disabled = false; return; }
+    st.innerHTML = '<p class="note">새 탭(mapstone-app)에서 합치는 중입니다…</p>';
+    let sent = false;
+    const onMsg = e => {
+      if (e.origin !== TARGET || !e.data || e.data.mapstoneMigrate === undefined) return;
+      if (e.data.mapstoneMigrate === 'ready' && !sent) { sent = true; win.postMessage({ mapstoneMigrate: 'data', from: location.host, items }, TARGET); }
+      if (e.data.mapstoneMigrate === 'done') {
+        window.removeEventListener('message', onMsg);
+        try { localStorage.setItem(DONE, TARGET); localStorage.setItem('mapstone.migratedAt', new Date().toISOString()); } catch (er) { }
+        st.innerHTML = `<p class="ok">옮기기 완료. 결과는 새 탭(mapstone-app)에서 확인하세요. 이 탭은 닫아도 됩니다.</p><p class="note">다음부터 이 주소로 들어오면 mapstone-app으로 바로 이동합니다.</p>`;
+      }
+      if (e.data.mapstoneMigrate === 'error') { st.innerHTML = `<p class="err">옮기지 못했습니다: ${esc(e.data.message || '')} — 백업 파일은 내려받아 두었습니다.</p>`; btn.disabled = false; }
+    };
+    window.addEventListener('message', onMsg);
+  };
+}
+
+/* ---------- 받기 (새 주소) ---------- */
+async function api(method, path, code, body) {
+  const res = await fetch(API + path, { method, headers: { 'Content-Type': 'application/json', 'X-Mapstone-Code': code }, body: body === undefined ? undefined : JSON.stringify(body), cache: 'no-store', signal: AbortSignal.timeout(60000) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data && data.error) || ('서버 오류 ' + res.status));
+  return data;
+}
+const validKey = k => /^[a-f0-9]{48}$/.test(k || '');
+const emptyTimeline = d => !d || !Array.isArray(d.items) || !d.items.length;
+const emptyIssues = d => !d || d.example || !Array.isArray(d.issues) || !d.issues.length;
+async function merge(from, items) {
+  const L = localStorage, log = [], keep = k => 'mapstone.migrated.' + from + '.' + k;
+  const set = (k, v) => L.setItem(k, v);
+  // 1) 버전 보관함 접근 키: 예전 키 소유 작업물을 이 주소의 키로 합친다(서버 이전, 이력 보존)
+  const srcKey = items[VK], dstKey = L.getItem(VK);
+  if (validKey(srcKey)) {
+    if (!validKey(dstKey) || dstKey === srcKey) { set(VK, srcKey); log.push(['ok', '버전 보관함: 예전 주소의 접근 키를 그대로 사용합니다(클라우드 버전 목록 유지).']); }
+    else {
+      set(keep(VK), srcKey);
+      try {
+        const mine = await api('GET', '/version-projects', dstKey);
+        if (!mine.length) { set(keep('replaced.' + VK), dstKey); set(VK, srcKey); log.push(['ok', '버전 보관함: 이 주소 보관함이 비어 있어 예전 주소의 접근 키로 바꿨습니다.']); }
+        else { const r = await api('POST', '/version-projects/transfer', dstKey, { from: srcKey }); log.push(['ok', `버전 보관함: 예전 주소의 작업물 ${r.moved}개를 이 주소 보관함으로 합쳤습니다(버전 이력 그대로).`]); }
+      } catch (e) { log.push(['warn', `버전 보관함 합치기 실패(${e.message}). 예전 접근 키를 이 브라우저에 보관했습니다 — 버전 보관함 › 고급에서 연결할 수 있습니다.`]); }
+    }
+  }
+  // 2) 마일스톤 일정: 비어 있으면 가져오고, 겹치면 현재 것을 유지 + 가져온 것을 보관
+  const legacy = 'ucmp.dev-progress-timeline.v5', srcTl = items[TL] || items[legacy];
+  if (srcTl) {
+    const cur = L.getItem(TL), curDoc = parse(cur), srcDoc = parse(srcTl);
+    if (cur === srcTl) log.push(['ok', '마일스톤 일정: 이미 같은 일정이 있습니다.']);
+    else if (emptyTimeline(curDoc)) { if (cur) set(keep('replaced.' + TL), cur); set(TL, srcTl); log.push(['ok', `마일스톤 일정: “${(srcDoc && srcDoc.title) || '제목 없음'}”을 가져왔습니다.`]); }
+    else { set(keep(TL), srcTl); log.push(['warn', `마일스톤 일정: 이 주소에도 “${(curDoc && curDoc.title) || '제목 없음'}”이 있어 그대로 두고, 예전 주소의 “${(srcDoc && srcDoc.title) || '제목 없음'}”은 보관했습니다(아래 버튼으로 바꿀 수 있음).`, 'swap-tl']); }
+    // 클라우드 버전으로도 저장(주소와 무관하게 보관)
+    if (srcDoc && !emptyTimeline(srcDoc) && validKey(L.getItem(VK))) {
+      try {
+        const project = /^[0-9a-f-]{36}$/i.test(srcDoc.versionProjectId || '') ? srcDoc.versionProjectId : crypto.randomUUID();
+        const saved = await api('POST', '/version-projects/' + project + '/versions', L.getItem(VK), { id: 'move-' + Date.now().toString(36), document: { ...srcDoc, versions: [] }, note: `주소 통일 자동 보관 · ${from} · ${new Date().toLocaleString('ko-KR')}` });
+        log.push(['ok', `클라우드 저장: 예전 주소의 일정을 버전 보관함에 v${saved.sequence}로 저장했습니다.`]);
+      } catch (e) { log.push(['warn', `클라우드 저장 실패(${e.message}). 일정은 이 브라우저와 백업 파일에 보관되어 있습니다.`]); }
+    }
+  }
+  // 3) 이슈관리 문서
+  if (items[IT]) {
+    const cur = L.getItem(IT), curDoc = parse(cur), srcDoc = parse(items[IT]);
+    if (cur === items[IT]) log.push(['ok', '이슈관리 문서: 이미 같은 문서가 있습니다.']);
+    else if (emptyIssues(srcDoc)) log.push(['ok', '이슈관리 문서: 예전 주소에는 예제 문서만 있어 그대로 두었습니다.']);
+    else if (emptyIssues(curDoc)) { if (cur) set(keep('replaced.' + IT), cur); set(IT, items[IT]); log.push(['ok', `이슈관리 문서: “${(srcDoc && srcDoc.title) || '제목 없음'}”을 가져왔습니다.`]); }
+    else { set(keep(IT), items[IT]); log.push(['warn', `이슈관리 문서: 이 주소에도 “${(curDoc && curDoc.title) || '제목 없음'}”이 있어 그대로 두고, 예전 주소의 문서는 보관했습니다(아래 버튼으로 바꿀 수 있음).`, 'swap-it']); }
+  }
+  // 4) 나머지(버전 기준점·화면 설정 등): 없는 것만 채운다
+  let filled = 0;
+  for (const [k, v] of Object.entries(items)) { if ([TL, IT, VK, legacy].includes(k)) continue; if (L.getItem(k) === null) { set(k, v); filled++; } }
+  if (legacy in items && L.getItem(legacy) === null) set(legacy, items[legacy]);
+  if (filled) log.push(['ok', `설정·보조 데이터 ${filled}개를 채웠습니다.`]);
+  set('mapstone.migratedFrom.' + from, new Date().toISOString());
+  return log;
+}
+function importSide() {
+  const from = params.get('from') || '', opener = window.opener;
+  if (!OLD.includes(from) || !opener) { box.innerHTML = '<h1>MapStone</h1><p>옮길 데이터가 없습니다. 예전 주소에서 “옮기기”를 눌러 주세요.</p><div class="row"><a class="btn primary" href="/">마일스톤 모드 열기</a></div>'; return; }
+  box.innerHTML = '<h1>예전 주소의 데이터를 합치는 중…</h1><p>창을 닫지 마세요.</p>';
+  const origin = 'https://' + from;
+  window.addEventListener('message', async e => {
+    if (e.origin !== origin || !e.data || e.data.mapstoneMigrate !== 'data' || e.data.from !== from || typeof e.data.items !== 'object') return;
+    const items = {}; for (const [k, v] of Object.entries(e.data.items)) if (isOurs(k) && typeof v === 'string') items[k] = v;
+    try {
+      const log = await merge(from, items);
+      opener.postMessage({ mapstoneMigrate: 'done' }, origin);
+      const keep = k => 'mapstone.migrated.' + from + '.' + k;
+      box.innerHTML = `<h1>옮기기 완료</h1><p>${esc(from)} → mapstone-app.vercel.app. 예전 주소의 데이터와 백업 파일은 그대로 남아 있습니다.</p>
+        <ul class="log">${log.map(([t, m, act]) => `<li class="${t === 'warn' ? '' : ''}">${t === 'warn' ? '⚠️ ' : '✓ '}${esc(m)}${act ? ` <button data-swap="${act}">${act === 'swap-tl' ? '가져온 일정으로 바꾸기' : '가져온 이슈 문서로 바꾸기'}</button>` : ''}</li>`).join('')}</ul>
+        <div class="row"><a class="btn primary" href="${esc(next.startsWith('/issues') ? next : '/')}">마일스톤 모드 열기</a><a class="btn" href="/issues.html">이슈관리 모드 열기</a></div>
+        <p class="note">바꾸기를 누르면 지금 쓰던 문서는 지워지지 않고 보관 키로 옮겨집니다.</p>`;
+      box.querySelectorAll('[data-swap]').forEach(b => b.onclick = () => {
+        const k = b.dataset.swap === 'swap-tl' ? TL : IT, cur = localStorage.getItem(k), mine = localStorage.getItem(keep(k));
+        if (!mine) return; localStorage.setItem(keep('replaced.' + k), cur || ''); localStorage.setItem(k, mine); localStorage.setItem(keep(k), cur || '');
+        b.outerHTML = '<b>바꿨습니다 (이전 문서는 보관됨)</b>';
+      });
+    } catch (err) { opener.postMessage({ mapstoneMigrate: 'error', message: err.message }, origin); box.innerHTML = `<h1>옮기지 못했습니다</h1><p class="err">${esc(err.message)}</p>`; }
+  });
+  opener.postMessage({ mapstoneMigrate: 'ready' }, origin);
+}
+
+if (OLD.includes(location.host)) exportSide();
+else if (params.get('mode') === 'import') importSide();
+else location.replace('/');
+</script>
+</body>
+</html>

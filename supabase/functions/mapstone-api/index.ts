@@ -110,6 +110,14 @@ Deno.serve(async (req:Request)=>{
       if(!/^[a-f0-9]{48}$/.test(code))return json({error:'보관함 복구 코드가 필요합니다.'},401);
       const owner=await hash(code);
       if(path.length===1 && req.method==='GET')return json(await db('mapstone_version_projects?owner_hash=eq.'+owner+'&select=id,title,updated_at&order=updated_at.desc'));
+      /* 주소 통일: 예전 주소(다른 브라우저 저장소)의 접근 키가 가진 작업물을 현재 키로 옮긴다. 두 키를 모두 가진 요청만 허용(버전 이력·번호 그대로). */
+      if(path.length===2 && path[1]==='transfer' && req.method==='POST'){
+        if((await db('rpc/mapstone_take_rate_limit','POST',{p_key_hash:await hash('version-transfer:'+owner),p_limit:20}))!==true)return json({error:'요청이 많습니다. 잠시 후 다시 시도하세요.'},429);
+        const body=await readBody(req),from=String(body.from||'');
+        if(!/^[a-f0-9]{48}$/.test(from)||from===code)return json({error:'옮길 보관함 접근 키를 확인하세요.'},400);
+        const moved=await db('mapstone_version_projects?owner_hash=eq.'+await hash(from),'PATCH',{owner_hash:owner});
+        return json({moved:moved.length});
+      }
       if(!validId(path[1]||''))return json({error:'작업물 ID를 확인하세요.'},400);
       if(path.length===3 && path[2]==='versions' && req.method==='POST'){
         if((await db('rpc/mapstone_take_rate_limit','POST',{p_key_hash:await hash('version-save:'+owner),p_limit:100}))!==true)return json({error:'저장 요청이 많습니다. 잠시 후 다시 시도하세요.'},429);
