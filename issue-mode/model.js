@@ -30,6 +30,10 @@ const KIND = {
 const REQ = { open: '회신 대기', answered: '회신 받음', done: '확인 완료' };
 const STEP = { todo: '대기', current: '진행', done: '완료', fail: '실패' };
 const GROUP_COLORS = ['#234770', '#087F95', '#6D5CCE', '#5E7694', '#2959AF', '#147447', '#805400', '#9A3E6B'];
+const PROJECTS = ['e-Care', 'GS', 'ACOS', '기타'];
+const projectName = s => /^e-?care$/i.test(String(s).trim()) ? 'e-Care' : /^(GS|Global South)$/i.test(String(s).trim()) ? 'GS' : /^ACOS$/i.test(String(s).trim()) ? 'ACOS' : '기타';
+const issueDate = i => i.date || [i.constraint && i.constraint.start, i.checkDate, ...i.events.map(e => e.date)].filter(Boolean).sort()[0] || '';
+const issueGroupKey = i => JSON.stringify([i.project, i.group]);
 
 /* ================= 정규화 / 검증 ================= */
 function normalizeDoc(raw) {
@@ -39,9 +43,12 @@ function normalizeDoc(raw) {
   const N = x => (x === '' || x === null || x === undefined || isNaN(+x)) ? null : Math.max(0, Math.min(1e7, Math.floor(+x)));
   const asOf = isDate(raw.asOf) ? raw.asOf : todayISO();
   const issues = A(raw.issues).slice(0, 150).map((r, n) => {
+    // v2 문서의 group은 상위 영역이었다. 명시적인 project가 없는 문서만 기존 영역·주제로 분리한다.
+    const project = projectName(r.project || r.group || r.area);
+    const group = r.project ? r.group : (String(r.area || '').split('·').slice(1).join('·').trim() || r.key || (/^(e-?care|GS|Global South|ACOS)$/i.test(String(r.group || '').trim()) ? '미분류' : r.group));
     const i = {
       id: S(r.id || '', 60) || uid(), key: S(r.key || '', 20), title: S(r.title || '새 이슈', 200).trim() || '새 이슈',
-      group: S(r.group || r.area || '미분류', 60).trim() || '미분류', area: S(r.area || r.group || '미분류', 60).trim() || '미분류',
+      project, group: S(group || '미분류', 60).trim() || '미분류', area: S(r.area || r.group || '미분류', 60).trim() || '미분류', date: isDate(r.date) ? r.date : '',
       priority: Math.max(1, Math.min(9, Math.floor(+r.priority) || n + 1)), status: STATUS[r.status] ? r.status : 'pending',
       owner: S(r.owner, 200), checkDate: isDate(r.checkDate) ? r.checkDate : '', summary: S(r.summary, 2000), gate: S(r.gate, 2000),
       impact: { count: N(r.impact && r.impact.count), unit: (r.impact && r.impact.unit) === 'API' ? 'API' : 'TC', text: S(r.impact && r.impact.text, 500) },
@@ -266,7 +273,7 @@ function parseRules(src, opt = {}) {
 const CLAUDE_SHAPE = `{
  "title":"짧은 문서 제목","subtitle":"한 줄 부제","asOf":"YYYY-MM-DD(텍스트의 금일/현재/기준 날짜)",
  "issues":[{
-  "key":"짧은 약어(DCM, VDP …)","title":"이슈 이름 12~24자","group":"상위 영역(예: Global South, e-Care, DMS, QA)","area":"표시용 '영역 · 주제'",
+  "key":"짧은 약어(DCM, VDP …)","title":"이슈 이름 12~24자","project":"e-Care|GS|ACOS|기타 (원문에 명시된 프로젝트, 불명확하면 기타)","group":"프로젝트 안의 이슈그룹(예: VDP 인증, CTI 환경)","area":"표시용 '영역 · 주제'","date":"원문에 명시된 발생일 YYYY-MM-DD 또는 빈 문자열",
   "priority":1,"status":"blocked|progress|pending|resolved","owner":"원문에 있는 담당/관련 부문, 없으면 빈 문자열","checkDate":"원문에 있는 점검일 YYYY-MM-DD 또는 빈 문자열",
   "summary":"현재 현황 1~2문장","gate":"완료 조건·검증 게이트(화살표로 단계)",
   "impact":{"count":숫자 또는 null,"unit":"TC|API","text":"영향 범위 한 줄"},

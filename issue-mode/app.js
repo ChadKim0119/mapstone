@@ -5,7 +5,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 let doc;
-const ui = { view: 'manage', rtab: 'summary', list: false, sel: null, itab: 'manage', q: '', fStatus: 'all', fGroup: 'all', fGap: '', hideResolved: false, compress: true, sort: { k: 'priority', dir: 1 }, assume: {}, collapsed: {}, scrollX: null, rScrollX: null, revealNow: false, flash: null, editEvent: null };
+const ui = { view: 'manage', rtab: 'summary', list: false, sel: null, itab: 'manage', q: '', fStatus: 'all', fProject: 'all', fGroup: 'all', fGap: '', hideResolved: false, compress: true, sort: { k: 'priority', dir: 1 }, assume: {}, collapsed: {}, scrollX: null, rScrollX: null, revealNow: false, flash: null, editEvent: null, detailOpen: false };
 const undoStack = [];
 let savedAt = '', storageError = '';
 let sampleFn = null, downloadsFn = null;
@@ -78,12 +78,13 @@ function visibleIssues() {
   const q = ui.q.trim().toLowerCase();
   return sorted(doc.issues).filter(i =>
     (ui.fStatus === 'all' || i.status === ui.fStatus) &&
-    (ui.fGroup === 'all' || i.group === ui.fGroup) &&
+    (ui.fProject === 'all' || i.project === ui.fProject) &&
+    (ui.fGroup === 'all' || issueGroupKey(i) === ui.fGroup) &&
     (!ui.hideResolved || i.status !== 'resolved') &&
     (!ui.fGap || (ui.fGap === 'owner' && !i.owner.trim()) || (ui.fGap === 'check' && !i.checkDate) || (ui.fGap === 'late' && checkState(i) === 'late') || (ui.fGap === 'req' && openReq(i) > 0)) &&
-    (!q || [i.title, i.area, i.group, i.owner, i.summary, i.gate, i.key, ...i.events.map(e => e.text), ...i.actions.map(a => a.text), ...i.requests.map(r => r.text + ' ' + r.party)].join(' ').toLowerCase().includes(q)));
+    (!q || [i.title, i.area, i.project, i.group, i.owner, i.summary, i.gate, i.key, ...i.events.map(e => e.text), ...i.actions.map(a => a.text), ...i.requests.map(r => r.text + ' ' + r.party)].join(' ').toLowerCase().includes(q)));
 }
-const filtersOn = () => ui.q || ui.fStatus !== 'all' || ui.fGroup !== 'all' || ui.fGap || ui.hideResolved;
+const filtersOn = () => ui.q || ui.fStatus !== 'all' || ui.fProject !== 'all' || ui.fGroup !== 'all' || ui.fGap || ui.hideResolved;
 
 /* ================= 아이콘 ================= */
 const I = {
@@ -133,6 +134,7 @@ function refresh(parts) {
     if (k === 'insp') {
       const ae = document.activeElement, aid = ae && el.contains(ae) ? ae.id : '', body = $('#insp-body'), st = body ? body.scrollTop : 0, sameIssue = el.dataset.issue === ui.sel && el.dataset.tab === ui.itab;
       el.innerHTML = inspHTML(); el.dataset.issue = ui.sel || ''; el.dataset.tab = ui.itab; bindInsp();
+      el.classList.toggle('detail-open', ui.detailOpen);
       if (sameIssue) { const nb = $('#insp-body'); if (nb) nb.scrollTop = st; if (aid) { const n = document.getElementById(aid); if (n) n.focus({ preventScroll: true }); } }
     }
     if (k === 'blocks') { el.innerHTML = blocksHTML(true); bindBlocks(el); }
@@ -236,7 +238,8 @@ function wsbarHTML() {
     <div class="ws-bar-r">
       <div class="search">${I.search}<label class="sr" for="q">이슈 검색</label><input class="input" id="q" placeholder="이슈·담당·이력 검색" value="${esc(ui.q)}"></div>
       <label class="sr" for="f-st">상태</label><select class="select" id="f-st" style="width:132px"><option value="all">모든 상태</option>${Object.entries(STATUS).map(([k, s]) => `<option value="${k}" ${ui.fStatus === k ? 'selected' : ''}>${s.label} (${doc.issues.filter(i => i.status === k).length})</option>`).join('')}</select>
-      <label class="sr" for="f-gr">영역</label><select class="select" id="f-gr" style="width:140px"><option value="all">모든 영역</option>${doc.groupOrder.map(g => `<option value="${esc(g)}" ${ui.fGroup === g ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select>
+      <label class="sr" for="f-project">프로젝트</label><select class="select" id="f-project" style="width:124px"><option value="all">모든 프로젝트</option>${PROJECTS.map(p => `<option ${ui.fProject === p ? 'selected' : ''}>${p}</option>`).join('')}</select>
+      <label class="sr" for="f-gr">이슈그룹</label><select class="select" id="f-gr" style="width:140px"><option value="all">모든 이슈그룹</option>${[...new Map(doc.issues.filter(i => ui.fProject === 'all' || i.project === ui.fProject).map(i => [issueGroupKey(i), i])).values()].map(i => `<option value="${esc(issueGroupKey(i))}" ${ui.fGroup === issueGroupKey(i) ? 'selected' : ''}>${esc(i.project + ' · ' + i.group)}</option>`).join('')}</select>
       <label class="sr" for="f-gap">관리 공백</label><select class="select" id="f-gap" style="width:136px"><option value="">관리 공백 전체</option>${Object.entries(gaps).map(([k, l]) => `<option value="${k}" ${ui.fGap === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
       <button class="toggle" id="t-res" aria-pressed="${ui.hideResolved}"><span class="sw"></span>해결 숨김</button>
       <button class="btn" id="b-add">${I.plus}이슈 추가</button></div>`;
@@ -249,9 +252,10 @@ function bindWsbar() {
   const q = $('#q'); let qt;
   q.oninput = () => { clearTimeout(qt); qt = setTimeout(() => { ui.q = q.value; refresh(['canvas']); const c = $('#wsbar .caption'); refreshWsbarKeepFocus(); }, 160); };
   $('#f-st').onchange = e => { ui.fStatus = e.target.value; refresh(['wsbar', 'canvas']); };
+  $('#f-project').onchange = e => { ui.fProject = e.target.value; ui.fGroup = 'all'; refresh(['wsbar', 'canvas']); };
   $('#f-gr').onchange = e => { ui.fGroup = e.target.value; refresh(['wsbar', 'canvas']); };
   $('#f-gap').onchange = e => { ui.fGap = e.target.value; refresh(['wsbar', 'canvas']); };
-  const fc = $('#f-clear'); if (fc) fc.onclick = () => { ui.q = ''; ui.fStatus = 'all'; ui.fGroup = 'all'; ui.fGap = ''; ui.hideResolved = false; refresh(['wsbar', 'canvas']); };
+  const fc = $('#f-clear'); if (fc) fc.onclick = () => { ui.q = ''; ui.fStatus = 'all'; ui.fProject = 'all'; ui.fGroup = 'all'; ui.fGap = ''; ui.hideResolved = false; refresh(['wsbar', 'canvas']); };
   $('#b-add').onclick = addIssue;
 }
 function refreshWsbarKeepFocus() {
@@ -260,8 +264,10 @@ function refreshWsbarKeepFocus() {
   const nq = $('#q'); if (nq) { nq.focus(); try { nq.setSelectionRange(pos, pos); } catch (e) { } }
 }
 function addIssue() {
-  const g = ui.fGroup !== 'all' ? ui.fGroup : (issueById(ui.sel) || {}).group || '미분류';
-  const it = normalizeDoc({ issues: [{ title: '새 이슈', group: g, area: g, priority: 5, status: 'pending', actions: [] }] }).issues[0];
+  const selected = issueById(ui.sel), choice = ui.fGroup === 'all' ? null : JSON.parse(ui.fGroup);
+  const project = choice ? choice[0] : ui.fProject !== 'all' ? ui.fProject : selected ? selected.project : '기타';
+  const g = choice ? choice[1] : selected && selected.project === project ? selected.group : '미분류';
+  const it = normalizeDoc({ issues: [{ title: '새 이슈', project, group: g, area: project + ' · ' + g, priority: 5, status: 'pending', actions: [] }] }).issues[0];
   mutate(d => { d.issues.push(it); if (!d.groupOrder.includes(g)) d.groupOrder.push(g); }, { undo: '이슈 추가' });
   ui.q = ''; ui.fStatus = 'all'; ui.fGap = ''; ui.hideResolved = false;
   select(it.id, 'manage');
@@ -269,16 +275,25 @@ function addIssue() {
   toast('새 이슈를 추가했습니다. 제목과 담당을 입력하세요.', { label: '되돌리기', fn: undo });
 }
 function select(id, tab, flash) {
+  if (!issueById(id)) return;
   ui.sel = id; if (tab) ui.itab = tab; ui.flash = flash || null; ui.editEvent = null; persistUI();
-  if (ui.view !== 'manage') { ui.view = 'manage'; ui.q = ''; ui.fStatus = 'all'; ui.fGroup = 'all'; ui.fGap = ''; render(); window.scrollTo(0, 0); return; }
-  refresh(['canvas', 'insp']);
-  if (flash) setTimeout(() => { const h = $(`[data-he="${flash}"]`); if (h) h.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 30);
+  ui.detailOpen = true;
+  if (ui.view !== 'manage') { ui.view = 'manage'; ui.q = ''; ui.fStatus = 'all'; ui.fProject = 'all'; ui.fGroup = 'all'; ui.fGap = ''; render(); window.scrollTo(0, 0); return; }
+  // 선택은 DOM·포커스·축·페이지 높이를 보존한다. 이력 스크롤도 인스펙터 안에서만 이동한다.
+  paintSelection($('#canvas')); refresh(['insp']);
+  if (flash) revealInInspector($(`[data-he="${flash}"]`));
+}
+function revealInInspector(el) {
+  const body = $('#insp-body'); if (!body || !el) return;
+  const b = body.getBoundingClientRect(), r = el.getBoundingClientRect();
+  if (r.top < b.top || r.bottom > b.bottom) body.scrollTop += r.top - b.top - 12;
 }
 
 /* ================= 캔버스 ================= */
 function buildAxis(issues, compress) {
   const asOf = doc.now, keys = new Set([asOf, doc.asOf]);
   issues.forEach(i => {
+    if (issueDate(i)) keys.add(issueDate(i));
     i.events.forEach(e => e.date && keys.add(e.date));
     if (i.constraint && i.constraint.start && i.status !== 'resolved') keys.add(i.constraint.start);
     if (i.checkDate && Math.abs(diffD(asOf, i.checkDate)) <= 45) keys.add(i.checkDate);
@@ -305,14 +320,14 @@ function drawCanvas(host, ro) {
 }
 function drawCanvasIn(host, ro) {
   const issues = ro ? sorted(doc.issues) : visibleIssues();
-  const groups = doc.groupOrder.filter(g => issues.some(i => i.group === g));
   const cols = buildAxis(issues.length ? issues : doc.issues, ui.compress);
+  if (issues.some(i => !issueDate(i))) cols.unshift({ t: 'u', date: '' });
   const narrow = window.innerWidth < 760, LW = narrow ? 168 : 224, RW = narrow ? 0 : (host.clientWidth < 1060 ? 236 : 256), GAPW = 30;
   host.innerHTML = `<div class="canvas-top"><div class="legend">
       <span><i style="background:var(--blue)"></i>확인 이력</span><span><i style="background:var(--red)"></i>실패·오류</span><span><i style="background:var(--green)"></i>정상</span><span><i style="background:var(--amberline)"></i>정정·지연</span><span><i style="background:var(--white);border:1.5px dashed var(--slate)"></i>예정</span>
       <span><i style="background:var(--red1);border:1px solid var(--red2);width:16px"></i>지속 제약</span><span style="color:var(--violet)">${I.lock}선행 조건</span></div>
-      <span class="caption">${ui.compress ? '날짜 간격 비례 · 빈 기간은 +N일로 접음' : '날짜 간격 비례'} · 오른쪽은 다음 단계</span></div>
-    <div class="tl-band tl-hrow"><div class="tl-head tl-hl">우선순위 · 이슈</div><div class="tl-clip"><div class="tl-head tl-hin"></div></div><div class="tl-head tl-hr">다음 단계 · 검증 게이트<small>완료 조건 · 점검일 · 조치 · 선행 조건</small></div></div>
+      <span class="caption">${ui.compress ? '빈 기간은 +N일로 접음' : '날짜 간격 비례'} · 실선 화살표: 선행 → 후속 · ← → 그룹 내 카드 탐색</span><div class="track-nav" aria-label="이슈그룹 탐색"></div></div>
+    <div class="tl-band tl-hrow"><div class="tl-head tl-hl">프로젝트 / 이슈그룹</div><div class="tl-clip"><div class="tl-head tl-hin"></div></div><div class="tl-head tl-hr">다음 단계 · 검증 게이트<small>완료 조건 · 점검일 · 조치 · 선행 조건</small></div></div>
     <div class="tl"><div class="tl-col tl-l"></div><div class="tl-col tl-mid"><div class="tl-midin"></div></div><div class="tl-col tl-r"></div></div>
     <div class="tl-band tl-frow"><div class="tl-foot tl-fl"><span>NOW 드래그 · 더블클릭 오늘</span></div><div class="tl-clip"><div class="tl-foot tl-fin"></div></div><div class="tl-foot tl-fr"></div></div>`;
   /* 세로 스크롤은 페이지 하나. 머리(.tl-hrow)·아래 NOW 줄(.tl-frow)은 화면 맨 위/아래에 CSS sticky로 고정하고,
@@ -320,15 +335,15 @@ function drawCanvasIn(host, ro) {
      본문 가로 스크롤을 따라가므로 스크롤 이벤트 JS 없이 같은 프레임에 움직인다(미지원 브라우저만 가로 이동을 JS로 보조). */
   host.style.setProperty('--lw', LW + 'px'); host.style.setProperty('--rw', RW + 'px');
   const M = $('.tl-mid', host), L = $('.tl-l', host), MI = $('.tl-midin', host), R = $('.tl-r', host), HI = $('.tl-hin', host), FI = $('.tl-fin', host);
-  if (!issues.length) {
+  if (!issues.length && doc.issues.length) {
     MI.innerHTML = `<div class="empty"><b>${doc.issues.length ? '조건에 맞는 이슈가 없습니다' : '아직 이슈가 없습니다'}</b>${doc.issues.length ? '검색어나 필터를 바꾸거나 필터를 해제하세요.' : '이슈 텍스트 입력으로 원문을 정리하거나 이슈를 추가하세요.'}</div>`;
     return;
   }
   // widths
   const avail = Math.max(320, M.clientWidth);
-  const nd = cols.filter(c => c.t === 'd').length, ng = cols.length - nd;
-  const DAYW = Math.max(narrow ? 44 : 30, Math.min(120, Math.floor((avail - ng * GAPW) / Math.max(1, nd))));
-  let x = 0; cols.forEach(c => { c.x = x; c.w = c.t === 'd' ? DAYW : GAPW; x += c.w; });
+  const nd = cols.filter(c => c.t === 'd').length, ng = cols.filter(c => c.t === 'g').length;
+  const DAYW = Math.max(narrow ? 44 : 30, Math.min(120, Math.floor((avail - ng * GAPW - (cols[0].t === 'u' ? 186 : 0)) / Math.max(1, nd))));
+  let x = 0; cols.forEach(c => { c.x = x; c.w = c.t === 'u' ? 186 : c.t === 'd' ? DAYW : GAPW; x += c.w; });
   const MW = Math.max(x, avail);
   const colOf = d => cols.find(c => c.t === 'd' ? c.date === d : d >= c.from && d <= c.to) || (d < cols[0].date ? cols[0] : cols[cols.length - 1]);
   const xL = d => colOf(d).x, xC = d => { const c = colOf(d); return c.x + c.w / 2; }, xR = d => { const c = colOf(d); return c.x + c.w; };
@@ -338,11 +353,12 @@ function drawCanvasIn(host, ro) {
   let lastMonth = '';
   // NOW는 접힌 구간 안에서도 날짜 비율로 위치한다
   const xAt = d => { const c = colOf(d); return c.t === 'd' ? c.x + c.w / 2 : c.x + (Math.max(0, Math.min(c.n - 1, diffD(c.from, d))) + 0.5) / c.n * c.w; };
-  const dateAt = px => { const c = cols.find(c => px >= c.x && px < c.x + c.w) || (px < 0 ? cols[0] : cols[cols.length - 1]); return c.t === 'd' ? c.date : addD(c.from, Math.max(0, Math.min(c.n - 1, Math.floor((px - c.x) / c.w * c.n)))); };
+  const dateAt = px => { const c = cols.find(c => px >= c.x && px < c.x + c.w) || (px < 0 ? cols[0] : cols[cols.length - 1]); return c.t === 'u' ? '' : c.t === 'd' ? c.date : addD(c.from, Math.max(0, Math.min(c.n - 1, Math.floor((px - c.x) / c.w * c.n)))); };
   const pillW = 80, todayX = xAt(doc.now), repX = xAt(doc.asOf), showRep = doc.asOf !== doc.now && Math.abs(repX - todayX) >= pillW + 4;
   const nowLabel = d => `NOW<small>${dl(d)}</small>`;
   const nowPill = pos => `<div class="tl-now ${pos}" data-now="${pos}" role="slider" tabindex="0" aria-label="NOW 날짜" aria-valuetext="${doc.now}" title="NOW ${doc.now} · 드래그로 이동 · 더블클릭(Enter)으로 오늘 · ←/→ 하루, Shift 7일" style="left:${todayX}px"><b>${nowLabel(doc.now)}</b></div>`;
   cols.forEach(c => {
+    if (c.t === 'u') { head += `<div class="tl-undated" style="width:${c.w}px">일정 미정<small>발생일 확인 필요</small></div>`; return; }
     if (c.t === 'g') { head += `<div class="tl-day gap" style="left:${c.x}px;width:${c.w}px" title="${dl(c.from)}–${dl(c.to)} (${c.n}일)">⋯<small>+${c.n}일</small></div>`; return; }
     const m = c.date.slice(0, 7), dd = parseD(c.date), we = [0, 6].includes(dd.getUTCDay());
     if (m !== lastMonth) { head += `<div class="tl-month" style="left:${c.x + 3}px">${+c.date.slice(5, 7)}월</div>`; lastMonth = m; }
@@ -354,6 +370,7 @@ function drawCanvasIn(host, ro) {
   // background layer
   let bg = '';
   cols.forEach(c => {
+    if (c.t === 'u') { bg += `<div class="undated-bg" style="width:${c.w}px"></div>`; return; }
     if (c.t === 'g') bg += `<div style="position:absolute;left:${c.x}px;width:${c.w}px;top:0;bottom:0;background:repeating-linear-gradient(135deg,#F5F8FD 0 6px,#E9F0FA 6px 12px)"></div>`;
     else { const w = parseD(c.date).getUTCDay(); if (w === 0 || w === 6) bg += `<div style="position:absolute;left:${c.x}px;width:${c.w}px;top:0;bottom:0;background:rgb(210 226 247/.28)"></div>`; bg += `<div style="position:absolute;left:${c.x}px;width:1px;top:0;bottom:0;background:${w === 1 ? 'var(--blue2)' : 'rgb(210 226 247/.55)'}"></div>`; }
   });
@@ -362,10 +379,16 @@ function drawCanvasIn(host, ro) {
   // rows
   HI.innerHTML = head; FI.innerHTML = nowPill('bottom');
   let lh = '', mh = `<div class="tl-bg" style="width:${MW}px">${bg}</div>`, rh = '';
-  groups.forEach(g => {
-    const gi = issues.filter(i => i.group === g), col = !!ui.collapsed[g];
-    const gh = `<div class="tl-grp" data-grp="${esc(g)}"`;
-    lh += `${gh} role="button" tabindex="0" aria-expanded="${!col}" style="cursor:pointer"><span style="transform:rotate(${col ? -90 : 0}deg);display:inline-grid;transition:transform .12s">${I.chev}</span><i class="dot" style="background:${groupColor(g)}"></i>${esc(g)}<span class="count">${gi.length}</span></div>`;
+  PROJECTS.filter(p => ro || ui.fProject === 'all' || ui.fProject === p).forEach(project => {
+    const pi = issues.filter(i => i.project === project), pk = 'project:' + project, pc = !!ui.collapsed[pk];
+    const ph = `<div class="tl-project" data-project="${project}">`;
+    lh += `${ph}<button class="project-toggle" data-collapse="${pk}" aria-expanded="${!pc}" aria-label="${project} 프로젝트 ${pc ? '펼치기' : '접기'}">${I.chev}<strong>${project}</strong><span class="count">${pi.length}</span></button></div>`;
+    mh += `${ph}<span>${pi.length ? `${new Set(pi.map(i => i.group)).size}개 이슈그룹` : '등록된 이슈 없음'}</span></div>`; rh += `${ph}</div>`;
+    if (pc || !pi.length) return;
+    doc.groupOrder.filter(g => pi.some(i => i.group === g)).forEach(g => {
+    const gi = pi.filter(i => i.group === g), key = issueGroupKey(gi[0]), col = !!ui.collapsed[key];
+    const gh = `<div class="tl-grp" data-grp="${esc(key)}"`;
+    lh += `${gh}><button class="group-toggle" data-collapse="${esc(key)}" aria-expanded="${!col}" aria-label="${esc(g)} 그룹 ${col ? '펼치기' : '접기'}">${I.chev}</button><button class="group-select" data-group-select="${esc(key)}" title="그룹 선택 · ←/→ 카드 탐색"><i class="dot" style="background:${groupColor(g)}"></i><span>${esc(g)}</span><span class="count">${gi.length}</span></button></div>`;
     mh += `${gh}></div>`; rh += `${gh}></div>`;
     if (col) return;
     gi.forEach(i => {
@@ -374,6 +397,7 @@ function drawCanvasIn(host, ro) {
       mh += `<div class="tl-row${sel}" data-row="${i.id}"></div>`;
       rh += `<div class="tl-row${sel}" data-row="${i.id}">${rightCell(i, ro)}</div>`;
     });
+    });
   });
   L.innerHTML = lh; MI.insertAdjacentHTML('beforeend', mh); R.innerHTML = rh;
   // fill middle rows & pack
@@ -381,6 +405,13 @@ function drawCanvasIn(host, ro) {
   issues.forEach(i => {
     const m = $(`.tl-row[data-row="${i.id}"]`, MI); if (!m) return;
     const items = [];
+    const date = issueDate(i), w = 180, left = date ? Math.min(xL(date) + 2, MW - w - 2) : 4;
+    const card = document.createElement('button');
+    card.className = 'issue-card'; card.dataset.card = i.id; card.dataset.date = date; card.dataset.axisX = date ? xAt(date) : 94;
+    card.style.left = left + 'px'; card.style.width = w + 'px';
+    card.setAttribute('aria-label', `${i.project} · ${i.group} · ${i.title}${date ? ' · ' + date : ' · 일정 미정'}`);
+    card.innerHTML = `<span class="mini-top"><b>P${i.priority}</b>${badge(i.status, true)}</span><strong>${esc(i.title)}</strong><span class="mini-owner">${esc(i.owner.trim() || '담당 미정')}</span><span class="mini-date">${date ? dl(date) : '일정 미정'} · ${i.checkDate ? '점검 ' + dl(i.checkDate) : '점검일 미정'}</span>${i.dependsOn.length ? `<span class="mini-dep">선행 ${i.dependsOn.length} · 후속 ${doc.issues.filter(v => v.dependsOn.includes(i.id)).length}</span>` : ''}`;
+    m.appendChild(card); items.push({el:card,x:left,w});
     if (i.constraint && i.constraint.text && i.status !== 'resolved') {
       const left = i.constraint.start ? xL(i.constraint.start) + 2 : 0;
       const el = document.createElement('div');
@@ -396,7 +427,7 @@ function drawCanvasIn(host, ro) {
       const k = KIND[e.kind];
       const due = planDue(e);
       el.className = `ev${e.kind === 'plan' ? ' plan' : ''}${due ? ' due' : ''}${e.corrected ? ' corr' : ''}${ui.flash === e.id ? ' flash' : ''}`;
-      el.dataset.ev = e.id; el.dataset.issue = i.id;
+      el.dataset.ev = e.id; el.dataset.issue = i.id; el.dataset.date = e.date; el.dataset.axisX = xAt(e.date);
       let left = xL(e.date) + 2; if (left + CW > MW - 2) left = Math.max(0, MW - 2 - CW);
       el.style.left = left + 'px'; el.style.width = CW + 'px'; el.style.borderLeftColor = k.color;
       el.title = `${e.date}${e.flag === '*' ? ' (날짜 재확인)' : ''}${due ? ' · 예정일 지남, 결과 확인 필요' : ''} · ${e.text}`;
@@ -406,7 +437,7 @@ function drawCanvasIn(host, ro) {
     });
     if (i.checkDate && i.status !== 'resolved') {
       const cs = checkState(i), c = colOf(i.checkDate);
-      const last = cols[cols.length - 1]; if (i.checkDate >= (cols[0].date || cols[0].from) && i.checkDate <= (last.date || last.to)) {
+      const first = cols.find(c => c.t !== 'u'), last = cols[cols.length - 1]; if (i.checkDate >= (first.date || first.from) && i.checkDate <= (last.date || last.to)) {
         const el = document.createElement('span');
         el.className = 'flag' + (cs === 'late' ? ' late' : '');
         el.innerHTML = `${I.diamond(cs === 'late' ? 'var(--red)' : 'var(--amberline)', 9)}${cs === 'late' ? '점검일 경과' : '점검'} ${dl(i.checkDate)}`;
@@ -431,18 +462,19 @@ function drawCanvasIn(host, ro) {
     const h = Math.max(92, l.offsetHeight, r.offsetHeight, rowH[i.id] || 0);
     [l, r, m].forEach(e => e.style.height = h + 'px');
   });
-  // dependency connectors (right gutter)
-  const dep = []; issues.forEach(i => i.dependsOn.forEach(d => { if (issues.some(v => v.id === d) && (!ro && (d === ui.sel || i.id === ui.sel))) dep.push([d, i.id]); }));
-  if (dep.length && !narrow) {
-    const top = el => el.offsetTop + el.offsetHeight / 2;
-    let svg = `<svg class="dep-svg" width="28" height="${R.scrollHeight}" aria-hidden="true">`;
-    dep.forEach(([a, b], k) => {
-      const ea = $(`.tl-row[data-row="${a}"]`, R), eb = $(`.tl-row[data-row="${b}"]`, R); if (!ea || !eb) return;
-      const y1 = top(ea), y2 = top(eb), xg = 8 + (k % 3) * 5, dir = y2 > y1 ? 1 : -1, r = Math.min(6, Math.abs(y2 - y1) / 2);
-      svg += `<path d="M24 ${y1} H${xg + r} Q${xg} ${y1} ${xg} ${y1 + r * dir} V${y2 - r * dir} Q${xg} ${y2} ${xg + r} ${y2} H22" fill="none" stroke="var(--violet)" stroke-width="1.6" stroke-dasharray="4 3"/><path d="M18 ${y2 - 4} L23 ${y2} L18 ${y2 + 4}" fill="none" stroke="var(--violet)" stroke-width="1.6"/><circle cx="24" cy="${y1}" r="2.5" fill="var(--violet)"/>`;
-    });
-    R.insertAdjacentHTML('beforeend', svg + '</svg>');
-  }
+  // 선행 → 후속: 실제 미니카드 양 끝을 연결. 모바일에서도 같은 타임라인 안에 표시한다.
+  let connections = `<svg class="dep-svg" width="${MW}" height="${MI.offsetHeight}" aria-label="선행 이슈에서 후속 이슈로 연결">`;
+  issues.forEach(i => i.dependsOn.forEach(id => {
+    const a = $(`[data-card="${id}"]`, MI), b = $(`[data-card="${i.id}"]`, MI); if (!a || !b) return;
+    const x1 = a.offsetLeft + a.offsetWidth, y1 = a.parentElement.offsetTop + a.offsetTop + a.offsetHeight / 2;
+    const x2 = b.offsetLeft, y2 = b.parentElement.offsetTop + b.offsetTop + b.offsetHeight / 2;
+    // 행 위 여백으로 우회해 카드 텍스트를 가로지르지 않는다.
+    const laneY = b.parentElement.offsetTop + 5, laneX = Math.min(MW - 3, x1 + 8);
+    const title = `${issueById(id).title} → ${i.title}`;
+    connections += `<g data-from="${esc(id)}" data-to="${esc(i.id)}"><title>${esc(title)}</title><path d="M${x1} ${y1} H${laneX} V${laneY} H${Math.max(2,x2-3)} V${y2} H${x2}"/><path d="M${x2-4} ${y2-4} L${x2} ${y2} L${x2-4} ${y2+4}"/></g>`;
+  }));
+  MI.insertAdjacentHTML('beforeend', connections + '</svg><div class="issue-tracker" hidden><span></span></div>');
+  paintSelection(host);
   // scroll position
   const keep = ro ? ui.rScrollX : ui.scrollX;
   // 가로 스크롤 범위 → 머리·아래 줄 축 이동량(스크롤 연동 애니메이션의 끝 값)
@@ -465,7 +497,7 @@ function drawCanvasIn(host, ro) {
         if (!moved && Math.abs(ev.clientX - x0) < 3) return; moved = true;
         const mr = M.getBoundingClientRect();
         if (ev.clientX > mr.right - 24) M.scrollLeft += 14; else if (ev.clientX < mr.left + 24) M.scrollLeft -= 14;
-        const d = dateAt(ev.clientX - MI.getBoundingClientRect().left); if (d !== cur) { cur = d; paintNow(d); }
+        const d = dateAt(ev.clientX - MI.getBoundingClientRect().left); if (d && d !== cur) { cur = d; paintNow(d); }
       };
       el.onpointerup = el.onpointercancel = ev => {
         el.onpointermove = el.onpointerup = el.onpointercancel = null; host.classList.remove('now-drag');
@@ -487,22 +519,69 @@ function drawCanvasIn(host, ro) {
   host.onmouseover = e => { const r = e.target.closest('[data-row]'); const id = r && r.dataset.row; if (host._hov === id) return; if (host._hov) rows(host._hov).forEach(x => x.classList.remove('hover')); host._hov = id; if (id) rows(id).forEach(x => x.classList.add('hover')); };
   host.onmouseleave = () => { if (host._hov) rows(host._hov).forEach(x => x.classList.remove('hover')); host._hov = null; };
   host.onclick = e => {
-    const g = e.target.closest('.tl-l [data-grp]');
-    if (g) { ui.collapsed[g.dataset.grp] = !ui.collapsed[g.dataset.grp]; persistUI(); drawCanvas(host, ro); return; }
+    const toggle = e.target.closest('[data-collapse]');
+    if (toggle) { const key = toggle.dataset.collapse; ui.collapsed[key] = !ui.collapsed[key]; persistUI(); drawCanvas(host, ro); const f = $$('[data-collapse]', host).find(n => n.dataset.collapse === key); if (f) f.focus({preventScroll:true}); return; }
+    const group = e.target.closest('[data-group-select]');
+    if (group) { const key = group.dataset.groupSelect; if (ui.collapsed[key]) { ui.collapsed[key] = false; persistUI(); drawCanvas(host,ro); } const first = groupCards(host, key)[0]; if (first) selectCard(first, !ro); return; }
+    const nav = e.target.closest('[data-track-step]'); if (nav) { moveGroupCard(host, +nav.dataset.trackStep); return; }
     const dj = e.target.closest('[data-jump]'); if (dj) { e.stopPropagation(); select(dj.dataset.jump, 'manage'); return; }
+    const card = e.target.closest('[data-card]'); if (card) { selectCard(card, false); return; }
     const ev = e.target.closest('[data-ev]'); if (ev) { select(ev.dataset.issue, 'history', ev.dataset.ev); return; }
     const tb = e.target.closest('[data-tab-go]'); if (tb) { select(tb.dataset.row || tb.closest('[data-row]').dataset.row, tb.dataset.tabGo); return; }
-    const b = e.target.closest('[data-band]'); if (b) { select(b.dataset.band, 'manage'); setTimeout(() => { const f = $('#i-cons'); if (f) { f.open = true; f.scrollIntoView({ block: 'center' }); } }, 40); return; }
+    const b = e.target.closest('[data-band]'); if (b) { select(b.dataset.band, 'manage'); const f = $('#i-cons'); if (f) { f.open = true; revealInInspector(f); } return; }
     const r = e.target.closest('[data-row]'); if (r) select(r.dataset.row, ro ? 'manage' : null);
   };
   host.onkeydown = e => {
-    const g = e.target.closest('.tl-l [data-grp]'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.click(); return; }
+    if (e.target.closest('[data-now]')) return;
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key) && e.target.closest('[data-group-select],.tl-row,.track-nav')) {
+      const g = e.target.closest('[data-group-select]');
+      if (g && ui.collapsed[g.dataset.groupSelect]) { e.preventDefault(); g.click(); return; }
+      const cards = g ? groupCards(host, g.dataset.groupSelect) : groupCards(host);
+      if (!cards.length) return; e.preventDefault();
+      const current = cards.findIndex(n => n.dataset.ev ? n.dataset.ev === ui.flash : n.dataset.card === ui.sel && !ui.flash);
+      const idx = e.key === 'Home' ? 0 : e.key === 'End' ? cards.length - 1 : Math.max(0, Math.min(cards.length-1, current + (e.key === 'ArrowLeft' ? -1 : 1)));
+      selectCard(cards[idx], true); return;
+    }
     if (!['ArrowDown', 'ArrowUp'].includes(e.key) || !e.target.closest('.tl-l')) return;
     e.preventDefault();
     const list = $$('.tl-l .tl-row', host), idx = list.findIndex(x => x.dataset.row === ui.sel);
     const nx = list[Math.max(0, Math.min(list.length - 1, idx + (e.key === 'ArrowDown' ? 1 : -1)))];
-    if (nx) { select(nx.dataset.row); const f = $(`.tl-l .tl-row[data-row="${nx.dataset.row}"]`); if (f) f.focus(); }
+    if (nx) { select(nx.dataset.row); nx.focus({ preventScroll: true }); }
   };
+}
+function groupCards(host, key) {
+  const i = issueById(ui.sel); key = key || (i && issueGroupKey(i));
+  return $$('[data-card],[data-ev]', host).filter(n => { const i = issueById(n.dataset.card || n.dataset.issue); return i && issueGroupKey(i) === key; })
+    .sort((a,b) => (a.dataset.date || '9999').localeCompare(b.dataset.date || '9999'));
+}
+function selectCard(card, focus) {
+  select(card.dataset.card || card.dataset.issue, card.dataset.ev ? 'history' : 'manage', card.dataset.ev);
+  if (focus) {
+    card.focus({preventScroll:true});
+    const m = card.closest('.tl-mid'), r = card.getBoundingClientRect(), mr = m.getBoundingClientRect();
+    if (r.left < mr.left + 8) m.scrollLeft += r.left - mr.left - 8;
+    else if (r.right > mr.right - 8) m.scrollLeft += r.right - mr.right + 8;
+  }
+}
+function moveGroupCard(host, step) {
+  const cards = groupCards(host), n = cards.findIndex(c => c.dataset.ev ? c.dataset.ev === ui.flash : c.dataset.card === ui.sel && !ui.flash);
+  const next = cards[Math.max(0,Math.min(cards.length-1,n+step))]; if (next) selectCard(next,true);
+}
+function paintSelection(host) {
+  if (!host) return;
+  const issue = issueById(ui.sel), related = new Set(issue ? [...issue.dependsOn, ...doc.issues.filter(i => i.dependsOn.includes(issue.id)).map(i => i.id)] : []);
+  $$('[data-row]',host).forEach(n => { n.classList.toggle('sel', n.dataset.row === ui.sel); n.classList.toggle('related',related.has(n.dataset.row)); });
+  $$('[data-card]',host).forEach(n => { const on = n.dataset.card === ui.sel && !ui.flash; n.classList.toggle('sel',on); n.setAttribute('aria-pressed',on); });
+  $$('[data-ev]',host).forEach(n => { const on = n.dataset.ev === ui.flash; n.classList.toggle('flash',on); n.setAttribute('aria-pressed',on); });
+  $$('[data-group-select]',host).forEach(n => n.setAttribute('aria-pressed',!!issue && n.dataset.groupSelect === issueGroupKey(issue)));
+  $$('.dep-svg g',host).forEach(n => n.classList.toggle('active',n.dataset.from === ui.sel || n.dataset.to === ui.sel));
+  const cards = groupCards(host), n = cards.findIndex(c => c.dataset.ev ? c.dataset.ev === ui.flash : c.dataset.card === ui.sel && !ui.flash), active = cards[n];
+  const tracker = $('.issue-tracker',host), nav = $('.track-nav',host);
+  if (tracker) {
+    tracker.hidden = !active;
+    if (active) { const rows = cards.map(c => c.parentElement), top = Math.min(...rows.map(r => r.offsetTop)); tracker.style.left = active.dataset.axisX + 'px'; tracker.style.top = top + 'px'; tracker.style.height = Math.max(...rows.map(r => r.offsetTop+r.offsetHeight))-top+'px'; tracker.firstChild.textContent = active.dataset.date ? dl(active.dataset.date) : '일정 미정'; }
+  }
+  if (nav) nav.innerHTML = issue && cards.length ? `<span>${esc(issue.project + ' / ' + issue.group)} · ${n+1}/${cards.length}</span><button class="btn sm" data-track-step="-1" aria-label="그룹의 이전 카드" ${n<=0?'disabled':''}>←</button><button class="btn sm" data-track-step="1" aria-label="그룹의 다음 카드" ${n>=cards.length-1?'disabled':''}>→</button>` : '<span>이슈그룹을 선택하면 ← → 키로 탐색합니다</span>';
 }
 function rightCell(i, ro) {
   const cs = checkState(i), done = i.actions.filter(a => a.done).length;
@@ -542,7 +621,7 @@ function bindTable(el) {
 function inspHeadHTML(i) {
   if (!i) return '';
   const d = daysSince(i.updatedAt);
-  return `<div class="row1"><span class="eyebrow"><span style="color:var(--navy7);font-weight:800">P${i.priority}</span>·<span>${esc(i.area)}</span></span>${badge(i.status)}</div>
+  return `<div class="row1"><span class="eyebrow"><b>P${i.priority}</b>·<span>${esc(i.project + ' / ' + i.group)}</span></span>${badge(i.status)}<button class="btn sm detail-close" id="i-close" aria-label="이슈 상세 닫기">닫기</button></div>
     <h2>${esc(i.title)}</h2>
     <div class="facts"><span class="chip">${esc(i.owner.trim() || '담당 확인 필요')}</span>${(() => { const cs = checkState(i); return cs === 'none' ? '<span class="chip warn">점검일 미정</span>' : cs === 'late' ? `<span class="chip bad">점검일 경과 ${dl(i.checkDate)}</span>` : `<span class="chip">다음 점검 ${dl(i.checkDate)}</span>`; })()}<span class="chip">갱신 ${d === 0 ? '오늘' : d + '일 전'}</span></div>`;
 }
@@ -552,8 +631,13 @@ function inspHTML() {
   const tabs = [['manage', '조치 · 점검', ''], ['requests', '확인 요청', openReq(i) || ''], ['history', '원문 · 이력', i.events.length || '']];
   return `<div class="insp-head" id="insp-head">${inspHeadHTML(i)}</div>
     <div class="tabs" role="tablist">${tabs.map(([k, l, n]) => `<button role="tab" data-itab="${k}" aria-selected="${ui.itab === k}">${l}${n !== '' ? `<span class="count">${n}</span>` : ''}</button>`).join('')}</div>
-    <div class="insp-body" id="insp-body">${ui.itab === 'requests' ? reqTab(i) : ui.itab === 'history' ? histTab(i) : manageTab(i)}</div>
+    <div class="insp-body" id="insp-body">${relationHTML(i)}${ui.itab === 'requests' ? reqTab(i) : ui.itab === 'history' ? histTab(i) : manageTab(i)}</div>
     <div class="insp-foot"><span>변경 내용은 자동 저장됩니다</span><button class="btn sm danger" id="i-del">이슈 삭제</button></div>`;
+}
+function relationHTML(i) {
+  const before = i.dependsOn.map(issueById).filter(Boolean), after = doc.issues.filter(v => v.dependsOn.includes(i.id));
+  const links = (items, empty) => items.length ? items.map(v => `<button class="relation-link" data-related="${v.id}"><span>${esc(v.project + ' / ' + v.group)}</span><strong>${esc(v.title)}</strong>${badge(v.status,true)}</button>`).join('') : `<p class="caption">${empty}</p>`;
+  return `<section class="sec issue-context"><p class="caption">${esc(i.summary || '현재 현황을 입력하세요.')}</p><div class="sec-h"><h3>연관관계 <small>선행 → 선택 이슈 → 후속</small></h3></div><div><h4>선행 조건 ${before.length}</h4>${links(before,'등록된 선행 이슈 없음')}</div><div><h4>이 이슈에 의존하는 후속 ${after.length}</h4>${links(after,'등록된 후속 이슈 없음')}</div></section>`;
 }
 function manageTab(i) {
   const groups = doc.groupOrder;
@@ -563,8 +647,8 @@ function manageTab(i) {
       <div class="pair"><div class="field"><label for="i-status">상태</label><select class="select" id="i-status" data-f="status">${Object.entries(STATUS).map(([k, s]) => `<option value="${k}" ${k === i.status ? 'selected' : ''}>${s.label}</option>`).join('')}</select></div>
         <div class="field"><label for="i-pri">우선순위</label><select class="select" id="i-pri" data-f="priority">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<option value="${n}" ${n === i.priority ? 'selected' : ''}>P${n}</option>`).join('')}</select></div></div>
       <div class="field"><label for="i-owner">담당 / 관련 부문<small>${i.owner.trim() ? '' : '미정'}</small></label><input class="input" id="i-owner" data-f="owner" value="${esc(i.owner)}" placeholder="담당 확인 필요" maxlength="200"></div>
-      <div class="pair"><div class="field"><label for="i-check">다음 점검일</label><input class="input" type="date" id="i-check" data-f="checkDate" value="${i.checkDate}"></div>
-        <div class="field"><label for="i-group">영역</label><input class="input" id="i-group" data-f="group" list="i-groups" value="${esc(i.group)}" maxlength="60"><datalist id="i-groups">${groups.map(g => `<option value="${esc(g)}">`).join('')}</datalist></div></div>
+      <div class="pair"><div class="field"><label for="i-project">프로젝트</label><select class="select" id="i-project" data-f="project">${PROJECTS.map(p => `<option ${p===i.project?'selected':''}>${p}</option>`).join('')}</select></div><div class="field"><label for="i-group">이슈그룹</label><input class="input" id="i-group" data-f="group" list="i-groups" value="${esc(i.group)}" maxlength="60"><datalist id="i-groups">${groups.map(g => `<option value="${esc(g)}">`).join('')}</datalist></div></div>
+      <div class="pair"><div class="field"><label for="i-date">발생일<small>이력·점검일 기준</small></label><input class="input" type="date" id="i-date" data-f="date" value="${i.date}"></div><div class="field"><label for="i-check">다음 점검일</label><input class="input" type="date" id="i-check" data-f="checkDate" value="${i.checkDate}"></div></div>
       <div class="field"><label for="i-sum">현재 현황</label><textarea class="textarea" id="i-sum" data-f="summary" rows="3">${esc(i.summary)}</textarea></div>
       <div class="field"><label for="i-gate">완료 조건 · 검증 게이트</label><textarea class="textarea" id="i-gate" data-f="gate" rows="2">${esc(i.gate)}</textarea></div>
       <div class="field"><span class="label">게이트 단계<small>눌러서 대기 → 진행 → 완료 → 실패</small></span>
@@ -586,8 +670,8 @@ function manageTab(i) {
           <div class="field"><label for="i-iunit">단위</label><select class="select" id="i-iunit" data-f="impact.unit"><option ${i.impact.unit === 'TC' ? 'selected' : ''}>TC</option><option ${i.impact.unit === 'API' ? 'selected' : ''}>API</option></select></div></div>
         <div class="field"><label for="i-itext">영향 범위</label><textarea class="textarea" id="i-itext" data-f="impact.text" rows="2">${esc(i.impact.text)}</textarea></div></div></details>
       <details class="more"><summary>선행 이슈 <span class="count" style="margin-left:auto;margin-right:10px">${i.dependsOn.length}</span></summary><div>
-        <p class="caption">이 이슈가 진행되려면 먼저 해결돼야 하는 이슈를 고르세요. 타임라인 오른쪽에 연결선으로 표시됩니다.</p>
-        <div class="deps">${others.map(v => `<label class="check"><input type="checkbox" data-dep="${v.id}" ${i.dependsOn.includes(v.id) ? 'checked' : ''}><span>P${v.priority} · ${esc(v.title)}</span></label>`).join('')}</div></div></details>
+        <p class="caption">먼저 해결돼야 하는 이슈를 고르세요. 타임라인의 선행 → 후속 화살표와 상세 패널에 함께 표시됩니다.</p>
+        <div class="deps">${others.map(v => `<label class="check"><input type="checkbox" data-dep="${v.id}" ${i.dependsOn.includes(v.id) ? 'checked' : ''}><span>${esc(v.project + ' / ' + v.group)} · P${v.priority} · ${esc(v.title)}</span></label>`).join('')}</div></div></details>
       <details class="more"><summary>보고용 시나리오</summary><div>
         <div class="field"><label for="i-succ">선행 조건 해소 시</label><textarea class="textarea" id="i-succ" data-f="scenario.success" rows="3">${esc(i.scenario.success)}</textarea></div>
         <div class="field"><label for="i-fail">해소되지 않을 때</label><textarea class="textarea" id="i-fail" data-f="scenario.failure" rows="3">${esc(i.scenario.failure)}</textarea></div></div></details>
@@ -633,6 +717,9 @@ function bindInsp() {
   const box = $('#insp'), i = issueById(ui.sel);
   $$('[data-itab]', box).forEach(b => b.onclick = () => { ui.itab = b.dataset.itab; ui.flash = null; ui.editEvent = null; persistUI(); refresh(['insp']); });
   if (!i) return;
+  $('#i-close').onclick = () => { ui.detailOpen = false; box.classList.remove('detail-open'); const target = $$('[data-card]').find(n => n.dataset.card === ui.sel); if (target) target.focus({preventScroll:true}); };
+  $$('[data-related]',box).forEach(b => b.onclick = () => select(b.dataset.related,'manage'));
+  box.onkeydown = e => { if (e.key === 'Escape') { e.preventDefault(); $('#i-close').click(); } };
   $('#i-del').onclick = () => {
     const name = i.title;
     mutate(d => { d.issues = d.issues.filter(v => v.id !== i.id); d.issues.forEach(v => v.dependsOn = v.dependsOn.filter(x => x !== i.id)); }, { undo: `'${name}' 삭제`, parts: [] });
@@ -645,19 +732,19 @@ function bindInsp() {
       let v = inp.value;
       if (f === 'priority') v = +v;
       if (f === 'impact.count') v = v === '' ? null : Math.max(0, Math.min(1e7, Math.floor(+v)));
-      if (f === 'checkDate' && v && !isDate(v)) return;
+      if (['date','checkDate'].includes(f) && v && !isDate(v)) return;
       if (f.startsWith('constraint.')) {
         if (!i.constraint) i.constraint = { text: '', start: '', tone: 'red' };
         setPath(i, f, v); if (!i.constraint.text.trim()) i.constraint = f === 'constraint.text' ? null : i.constraint;
       } else if (f === 'status') {
         const from = i.status; i.status = v; i.notes.push({ at: new Date().toISOString(), text: `상태 변경: ${STATUS[from].label} → ${STATUS[v].label}`, sys: true });
-      } else if (f === 'group') { i.group = v.trim() || '미분류'; i.area = i.area && i.area.includes('·') ? i.area : i.group; if (!doc.groupOrder.includes(i.group)) doc.groupOrder.push(i.group); doc.groupOrder = doc.groupOrder.filter(g => doc.issues.some(x => x.group === g)); }
+      } else if (f === 'group' || f === 'project') { const oldKey = issueGroupKey(i), oldProject = i.project; if (f === 'project') i.project = projectName(v); else i.group = v.trim() || '미분류'; i.area = i.project + ' · ' + i.group; if (ui.fGroup === oldKey) ui.fGroup = issueGroupKey(i); if (ui.fProject === oldProject) ui.fProject = i.project; if (!doc.groupOrder.includes(i.group)) doc.groupOrder.push(i.group); doc.groupOrder = doc.groupOrder.filter(g => doc.issues.some(x => x.group === g)); }
       else setPath(i, f, v);
       i.updatedAt = new Date().toISOString(); doc.example = false; persist();
     };
     const isText = (inp.tagName === 'INPUT' && !['date', 'number'].includes(inp.type)) || inp.tagName === 'TEXTAREA';
-    if (isText) inp.addEventListener('input', () => { apply(); refreshSoon(['strip', 'canvas', 'blocks', 'insphead']); });
-    else inp.addEventListener('change', () => { apply(); if (['status', 'priority', 'group'].includes(f)) refresh(['dochead', 'strip', 'wsbar', 'canvas', 'blocks', 'insp']); else refresh(['strip', 'canvas', 'blocks', 'insphead']); });
+    if (isText) inp.addEventListener('input', () => { apply(); refreshSoon(['strip', 'canvas', 'blocks', 'insphead', ...(f === 'group' ? ['wsbar'] : [])]); });
+    else inp.addEventListener('change', () => { apply(); if (['status', 'priority', 'project'].includes(f)) refresh(['dochead', 'strip', 'wsbar', 'canvas', 'blocks', 'insp']); else refresh(['strip', 'canvas', 'blocks', 'insphead']); });
   });
   // 게이트 단계
   $$('[data-istep]', box).forEach(s => { const go = e => { if (e.target.closest('[data-rmstep]')) return; const st = i.steps[+s.dataset.istep], order = ['todo', 'current', 'done', 'fail']; const nx = order[(order.indexOf(st[1]) + 1) % 4]; mutate(() => { st[1] = nx; i.notes.push({ at: new Date().toISOString(), text: `게이트 단계 '${st[0]}' → ${STEP[nx]}`, sys: true }); }, { parts: ['strip', 'canvas', 'insp'], touch: i.id }); }; s.onclick = go; s.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(e); } }; });
@@ -669,7 +756,7 @@ function bindInsp() {
   wireAdd('#f-act', '#n-act', v => mutate(() => i.actions.push({ id: uid(), text: v, done: false }), { parts: ['canvas', 'insp'], touch: i.id }), '#n-act');
   wireAdd('#f-note', '#n-note', v => mutate(() => i.notes.push({ at: new Date().toISOString(), text: v }), { parts: ['insp', 'canvas'], touch: i.id, toast: '점검 결과를 기록했습니다' }));
   // 선행 이슈
-  $$('[data-dep]', box).forEach(c => c.onchange = () => mutate(() => { i.dependsOn = c.checked ? [...new Set([...i.dependsOn, c.dataset.dep])] : i.dependsOn.filter(x => x !== c.dataset.dep); }, { parts: ['canvas'], touch: i.id }));
+  $$('[data-dep]', box).forEach(c => c.onchange = () => { mutate(() => { i.dependsOn = c.checked ? [...new Set([...i.dependsOn, c.dataset.dep])] : i.dependsOn.filter(x => x !== c.dataset.dep); }, { parts: ['canvas'], touch: i.id }); const context = $('.issue-context',box); context.outerHTML = relationHTML(i); $$('[data-related]',box).forEach(b => b.onclick = () => select(b.dataset.related,'manage')); });
   // 요청
   $$('[data-req]', box).forEach(b => b.onclick = () => { const r = i.requests.find(x => x.id === b.dataset.req), order = ['open', 'answered', 'done']; const nx = order[(order.indexOf(r.state) + 1) % 3]; mutate(() => { r.state = nx; r.at = nx === 'open' ? '' : `${REQ[nx]} ${new Date().toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}`; }, { parts: ['canvas', 'insp', 'blocks'], touch: i.id }); setTimeout(() => { const n = $(`[data-req="${r.id}"]`); if (n) n.focus(); }, 0); });
   $$('[data-rmreq]', box).forEach(b => b.onclick = () => mutate(() => i.requests = i.requests.filter(r => r.id !== b.dataset.rmreq), { parts: ['canvas', 'insp', 'blocks'], touch: i.id, undo: '요청 삭제', toast: '확인 요청을 삭제했습니다' }));
@@ -986,7 +1073,7 @@ function openImport() {
     } else {
       snapshot('이슈 텍스트 반영'); doc = d; doc.example = false; persist();
     }
-    ui.sel = (sorted(d.issues)[0] || {}).id || null; ui.view = 'manage'; ui.itab = 'manage'; ui.q = ''; ui.fStatus = 'all'; ui.fGroup = 'all'; ui.fGap = ''; ui.hideResolved = false; ui.scrollX = null; ui.assume = {};
+    ui.sel = (sorted(d.issues)[0] || {}).id || null; ui.view = 'manage'; ui.itab = 'manage'; ui.q = ''; ui.fStatus = 'all'; ui.fProject = 'all'; ui.fGroup = 'all'; ui.fGap = ''; ui.hideResolved = false; ui.scrollX = null; ui.assume = {};
     try { localStorage.removeItem(STORE + '.draft'); } catch (e) { }
     m.close(); render(); window.scrollTo(0, 0);
     toast(`${d.issues.length}개 이슈를 반영했습니다. 담당·점검일을 이어서 관리하세요.`, { label: '되돌리기', fn: undo });
@@ -1006,6 +1093,7 @@ if (document.prerendering) document.addEventListener('prerenderingchange', () =>
 let rz, lastW = window.innerWidth;
 window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { syncBarH(); if (Math.abs(window.innerWidth - lastW) < 2) return; lastW = window.innerWidth; if (ui.view === 'manage') refresh(['canvas']); else { const rc = $('#r-canvas'); if (rc) drawCanvas(rc, true); } }, 150); });
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && ui.detailOpen && window.innerWidth <= 1100 && !$('#modal-root').innerHTML) { const close = $('#i-close'); if (close) close.click(); }
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey && !e.target.closest('input,textarea,select') && !$('#modal-root').innerHTML) { e.preventDefault(); undo(); }
 });
 (async () => {
